@@ -38444,7 +38444,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$26(function() {
+			useEffect$27(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -38467,7 +38467,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$58 = React$67.useState, useEffect$26 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$58 = React$67.useState, useEffect$27 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -76820,7 +76820,7 @@ var usePublicityStore = () => {
 };
 var usePublicityStore_default = usePublicityStore;
 function AdsManager() {
-	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement } = usePublicityStore_default();
+	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement, advertisers } = usePublicityStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { addLedgerEntry, addInvoice, currency } = useFinancialStore_default();
@@ -76838,6 +76838,7 @@ function AdsManager() {
 		placement: "home_top",
 		partnerId: "none",
 		propertyId: "none",
+		advertiserId: "none",
 		price: 0,
 		baseCost: 0,
 		pmCommissionType: "percentage",
@@ -76849,13 +76850,78 @@ function AdsManager() {
 	};
 	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
 	const filteredAds = advertisements$1.filter((a$1) => a$1.title.toLowerCase().includes(searchTerm.toLowerCase()));
+	const handleAutoExpire = (ad, manual = false) => {
+		const finalAmt = ad.finalPrice || ad.price || 0;
+		if (finalAmt > 0) {
+			if (ad.advertiserId && ad.advertiserId !== "none") {
+				const advertiser = advertisers.find((a$1) => a$1.id === ad.advertiserId);
+				addInvoice({
+					id: `inv-adv-${Date.now()}-${Math.floor(Math.random() * 1e3)}`,
+					description: `Advertisement Expiration: ${ad.title}`,
+					amount: finalAmt,
+					status: "pending",
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					toId: ad.advertiserId,
+					type: "generic"
+				});
+				addLedgerEntry({
+					id: `ledg-adv-${Date.now()}-${Math.floor(Math.random() * 1e3)}`,
+					propertyId: "all",
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					type: "income",
+					category: "Marketing/Publicity",
+					amount: finalAmt,
+					description: `Ad Revenue: ${ad.title} (${advertiser?.name || "Unknown"})`,
+					status: "pending",
+					beneficiaryId: ad.advertiserId
+				});
+			} else if (ad.propertyId && ad.propertyId !== "none") addLedgerEntry({
+				id: `ledg-ad-${Date.now()}-${Math.floor(Math.random() * 1e3)}`,
+				propertyId: ad.propertyId,
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				type: "expense",
+				category: "Marketing/Publicity",
+				amount: finalAmt,
+				description: `Marketing Campaign: ${ad.title}`,
+				status: "pending"
+			});
+			if (ad.partnerId && ad.partnerId !== "none" && ad.baseCost && ad.baseCost > 0) addInvoice({
+				id: `inv-ad-part-${Date.now()}-${Math.floor(Math.random() * 1e3)}`,
+				description: `Ad Execution: ${ad.title}`,
+				amount: ad.baseCost,
+				status: "pending",
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				toId: ad.partnerId,
+				type: "generic"
+			});
+		}
+		updateAdvertisement({
+			...ad,
+			status: manual ? "finalized" : "expired",
+			active: false
+		});
+		toast$2({
+			title: manual ? "Advertisement finalized and billed successfully." : "Ad Expired",
+			description: manual ? void 0 : `The advertisement "${ad.title}" has expired and its billing was processed automatically.`
+		});
+	};
+	(0, import_react.useEffect)(() => {
+		const checkExpired = () => {
+			const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+			advertisements$1.filter((ad) => ad.active && ad.endDate && ad.endDate < today && ad.status !== "expired" && ad.status !== "finalized").forEach((ad) => {
+				handleAutoExpire(ad, false);
+			});
+		};
+		checkExpired();
+	}, []);
 	const handleOpen = (ad) => {
 		if (ad) {
 			setEditingId(ad.id);
 			setFormData({
 				...ad,
 				propertyId: ad.propertyId || "none",
-				partnerId: ad.partnerId || "none"
+				partnerId: ad.partnerId || "none",
+				advertiserId: ad.advertiserId || "none"
 			});
 		} else {
 			setEditingId(null);
@@ -76880,7 +76946,8 @@ function AdsManager() {
 			price: finalPrice,
 			status: formData.status || "draft",
 			propertyId: formData.propertyId === "none" ? void 0 : formData.propertyId,
-			partnerId: formData.partnerId === "none" ? void 0 : formData.partnerId
+			partnerId: formData.partnerId === "none" ? void 0 : formData.partnerId,
+			advertiserId: formData.advertiserId === "none" ? void 0 : formData.advertiserId
 		};
 		if (editingId) {
 			updateAdvertisement({
@@ -76905,33 +76972,7 @@ function AdsManager() {
 		}
 	};
 	const handleFinalize = (ad) => {
-		if (confirm("Finalize ad? This will record the expense for the property owner and generate an invoice for the partner.")) {
-			if (ad.propertyId && ad.propertyId !== "none" && ad.finalPrice && ad.finalPrice > 0) addLedgerEntry({
-				id: `ledg-ad-${Date.now()}`,
-				propertyId: ad.propertyId,
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				type: "expense",
-				category: "Marketing/Publicity",
-				amount: ad.finalPrice,
-				description: `Marketing Campaign: ${ad.title}`,
-				status: "pending"
-			});
-			if (ad.partnerId && ad.partnerId !== "none" && ad.baseCost && ad.baseCost > 0) addInvoice({
-				id: `inv-ad-${Date.now()}`,
-				description: `Ad Execution: ${ad.title}`,
-				amount: ad.baseCost,
-				status: "pending",
-				date: (/* @__PURE__ */ new Date()).toISOString(),
-				toId: ad.partnerId,
-				type: "generic"
-			});
-			updateAdvertisement({
-				...ad,
-				status: "finalized",
-				active: false
-			});
-			toast$2({ title: "Advertisement finalized and billed successfully." });
-		}
+		if (confirm("Finalize ad? This will record the necessary financial entries and generate invoices depending on the target.")) handleAutoExpire(ad, true);
 	};
 	const pmValueCalculated = formData.pmCommissionType === "percentage" ? (formData.baseCost || 0) * ((formData.pmCommissionValue || 0) / 100) : formData.pmCommissionValue || 0;
 	const finalPriceCalculated = (formData.baseCost || 0) + pmValueCalculated;
@@ -76959,7 +77000,7 @@ function AdsManager() {
 		})]
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_ad_info") || "Ad Info" }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target / Partner" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target / Partner / Advertiser" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_placement") || "Placement" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_validity") || "Validity" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Financials" }),
@@ -77000,10 +77041,10 @@ function AdsManager() {
 			className: "flex flex-col text-sm",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 				className: "font-medium text-slate-900",
-				children: ad.propertyId && ad.propertyId !== "none" ? properties$1.find((p$1) => p$1.id === ad.propertyId)?.name || "Unknown Property" : "Global"
+				children: ad.advertiserId && ad.advertiserId !== "none" ? advertisers.find((a$1) => a$1.id === ad.advertiserId)?.name || "Unknown Advertiser" : ad.propertyId && ad.propertyId !== "none" ? properties$1.find((p$1) => p$1.id === ad.propertyId)?.name || "Unknown Property" : "Global"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 				className: "text-muted-foreground text-xs",
-				children: ad.partnerId && ad.partnerId !== "none" ? partners$1.find((p$1) => p$1.id === ad.partnerId)?.name || "No Partner" : "No Partner"
+				children: ad.advertiserId && ad.advertiserId !== "none" ? "External Advertiser" : ad.partnerId && ad.partnerId !== "none" ? partners$1.find((p$1) => p$1.id === ad.partnerId)?.name || "No Partner" : "No Partner"
 			})]
 		}) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
@@ -77032,10 +77073,10 @@ function AdsManager() {
 				children: ["Base: ", formatCurrency(ad.baseCost || 0, currency)]
 			})]
 		}) }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: ad.status === "finalized" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: ad.status === "finalized" || ad.status === "expired" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			variant: "outline",
-			className: "bg-slate-100 text-slate-700",
-			children: "Finalized"
+			className: "bg-slate-100 text-slate-700 capitalize",
+			children: ad.status
 		}) : ad.active ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
 			className: "bg-green-600 text-white border-transparent",
 			children: "Active"
@@ -77046,7 +77087,7 @@ function AdsManager() {
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
 			className: "text-right whitespace-nowrap",
 			children: [
-				ad.status !== "finalized" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				ad.status !== "finalized" && ad.status !== "expired" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					variant: "ghost",
 					size: "icon",
 					onClick: () => handleFinalize(ad),
@@ -77123,47 +77164,69 @@ function AdsManager() {
 							})]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid grid-cols-2 gap-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Target Property" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: formData.propertyId,
-									onValueChange: (v) => setFormData({
-										...formData,
-										propertyId: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Global / No Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "none",
-										children: "Global (No Property)"
-									}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: p$1.id,
-										children: p$1.name
-									}, p$1.id))] })]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Executor Partner" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: formData.partnerId,
-									onValueChange: (v) => setFormData({
-										...formData,
-										partnerId: v
-									}),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Partner" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: "none",
-										children: "None"
-									}), partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-										value: p$1.id,
-										children: p$1.name
-									}, p$1.id))] })]
-								})]
-							})]
+							className: "grid grid-cols-3 gap-4",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Target Property" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: formData.propertyId,
+										onValueChange: (v) => setFormData({
+											...formData,
+											propertyId: v
+										}),
+										disabled: formData.advertiserId !== "none",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Global / No Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "Global (No Property)"
+										}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: p$1.id,
+											children: p$1.name
+										}, p$1.id))] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Executor Partner" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: formData.partnerId,
+										onValueChange: (v) => setFormData({
+											...formData,
+											partnerId: v
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Partner" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "None"
+										}), partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: p$1.id,
+											children: p$1.name
+										}, p$1.id))] })]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Advertiser (External)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+										value: formData.advertiserId || "none",
+										onValueChange: (v) => setFormData({
+											...formData,
+											advertiserId: v,
+											propertyId: v !== "none" ? "none" : formData.propertyId
+										}),
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Advertiser" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "none",
+											children: "Internal Campaign"
+										}), advertisers.map((a$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: a$1.id,
+											children: a$1.name
+										}, a$1.id))] })]
+									})]
+								})
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-3 gap-4 border-t border-b py-4 my-2 border-slate-100",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Cost (Partner)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Cost" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
 										value: formData.baseCost || 0,
 										onChange: (v) => setFormData({
 											...formData,
@@ -77212,7 +77275,7 @@ function AdsManager() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "grid gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Final Price (Owner Pays)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Final Price (Billed Amount)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 										className: "h-10 flex items-center px-3 border rounded-md bg-slate-50 font-bold text-slate-800",
 										children: formatCurrency(finalPriceCalculated, currency)
 									})]
@@ -77304,38 +77367,39 @@ function AdsManager() {
 }
 function AdvertiserList() {
 	const { advertisers, addAdvertiser, updateAdvertiser, deleteAdvertiser } = usePublicityStore_default();
-	const { t, language } = useLanguageStore_default();
+	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
 	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
 	const [editingId, setEditingId] = (0, import_react.useState)(null);
-	const [formData, setFormData] = (0, import_react.useState)({
+	const initialFormState = {
 		name: "",
+		legalName: "",
+		taxId: "",
 		email: "",
 		phone: "",
-		address: ""
-	});
-	const filteredAdvertisers = advertisers.filter((a$1) => a$1.name.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.email.toLowerCase().includes(searchTerm.toLowerCase()));
+		address: "",
+		billingContactName: "",
+		billingContactEmail: "",
+		billingContactPhone: ""
+	};
+	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
+	const filteredAdvertisers = advertisers.filter((a$1) => a$1.name.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.email.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.legalName?.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.taxId?.toLowerCase().includes(searchTerm.toLowerCase()));
 	const handleOpen = (advertiser) => {
 		if (advertiser) {
 			setEditingId(advertiser.id);
 			setFormData({ ...advertiser });
 		} else {
 			setEditingId(null);
-			setFormData({
-				name: "",
-				email: "",
-				phone: "",
-				address: ""
-			});
+			setFormData(initialFormState);
 		}
 		setIsOpen(true);
 	};
 	const handleSave = () => {
 		if (!formData.name || !formData.email) {
 			toast$2({
-				title: t("common.validation_error"),
-				description: t("publicity.advertiser_list.validation_error"),
+				title: t("common.validation_error") || "Validation Error",
+				description: t("publicity.advertiser_list.validation_error") || "Please fill in all required fields.",
 				variant: "destructive"
 			});
 			return;
@@ -77345,63 +77409,76 @@ function AdvertiserList() {
 				...formData,
 				id: editingId
 			});
-			toast$2({ title: t("publicity.advertiser_list.update_success") });
+			toast$2({ title: t("publicity.advertiser_list.update_success") || "Advertiser updated successfully." });
 		} else {
 			addAdvertiser({
 				...formData,
 				id: `adv-${Date.now()}`,
 				createdAt: (/* @__PURE__ */ new Date()).toISOString()
 			});
-			toast$2({ title: t("publicity.advertiser_list.add_success") });
+			toast$2({ title: t("publicity.advertiser_list.add_success") || "Advertiser created successfully." });
 		}
 		setIsOpen(false);
 	};
 	const handleDelete = (id) => {
-		if (confirm(t("publicity.advertiser_list.delete_confirm"))) {
+		if (confirm(t("publicity.advertiser_list.delete_confirm") || "Are you sure you want to delete this advertiser?")) {
 			deleteAdvertiser(id);
-			toast$2({ title: t("publicity.advertiser_list.delete_success") });
+			toast$2({ title: t("publicity.advertiser_list.delete_success") || "Advertiser deleted." });
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 		className: "flex flex-row items-center justify-between pb-4",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("publicity.advertiser_list.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("publicity.advertiser_list.title") || "Advertisers" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex gap-2",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "relative w-64",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-					placeholder: t("publicity.advertiser_list.search_placeholder"),
+					placeholder: t("publicity.advertiser_list.search_placeholder") || "Search advertisers...",
 					value: searchTerm,
 					onChange: (e) => setSearchTerm(e.target.value),
 					className: "pl-8"
 				})]
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 				onClick: () => handleOpen(),
-				className: "gap-2",
+				className: "gap-2 bg-trust-blue",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
 					" ",
-					t("publicity.advertiser_list.add_btn")
+					t("publicity.advertiser_list.add_btn") || "Add Advertiser"
 				]
 			})]
 		})]
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_company") }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_contact") }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_address") }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_registered") }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_company") || "Company" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_contact") || "Contact" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_address") || "Address" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Billing Contact" }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
 			className: "text-right",
-			children: t("common.actions")
+			children: t("common.actions") || "Actions"
 		})
 	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredAdvertisers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 		colSpan: 5,
 		className: "text-center py-6 text-muted-foreground",
-		children: t("publicity.advertiser_list.empty_state")
+		children: t("publicity.advertiser_list.empty_state") || "No advertisers found."
 	}) }) : filteredAdvertisers.map((adv) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-			className: "font-medium",
-			children: adv.name
-		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "font-medium",
+					children: adv.name
+				}),
+				adv.legalName && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "text-xs text-muted-foreground",
+					children: adv.legalName
+				}),
+				adv.taxId && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+					className: "text-xs text-muted-foreground",
+					children: ["ID: ", adv.taxId]
+				})
+			]
+		}) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col text-sm",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: adv.email }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -77409,8 +77486,23 @@ function AdvertiserList() {
 				children: adv.phone
 			})]
 		}) }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: adv.address || "-" }),
-		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatDate(adv.createdAt, language) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "flex flex-col text-sm",
+			children: adv.address || "-"
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "flex flex-col text-sm",
+			children: adv.billingContactName ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "font-medium",
+				children: adv.billingContactName
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "text-muted-foreground",
+				children: adv.billingContactEmail
+			})] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "text-muted-foreground italic",
+				children: "Same as primary"
+			})
+		}) }),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
 			className: "text-right",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -77429,64 +77521,136 @@ function AdvertiserList() {
 	] }, adv.id)) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
 		open: isOpen,
 		onOpenChange: setIsOpen,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("publicity.advertiser_list.modal_edit") : t("publicity.advertiser_list.modal_new") }) }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "grid gap-4 py-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_company") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: formData.name,
-							onChange: (e) => setFormData({
-								...formData,
-								name: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid grid-cols-2 gap-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.email,
-								onChange: (e) => setFormData({
-									...formData,
-									email: e.target.value
-								})
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-w-3xl",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("publicity.advertiser_list.modal_edit") || "Edit Advertiser" : t("publicity.advertiser_list.modal_new") || "New Advertiser" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_company") || "Company/Brand Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.name,
+									onChange: (e) => setFormData({
+										...formData,
+										name: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Legal Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.legalName,
+									onChange: (e) => setFormData({
+										...formData,
+										legalName: e.target.value
+									}),
+									placeholder: "Official Company Name"
+								})]
 							})]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "grid gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								value: formData.phone,
-								onChange: (e) => setFormData({
-									...formData,
-									phone: e.target.value
-								})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tax ID / CNPJ / EIN" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.taxId,
+									onChange: (e) => setFormData({
+										...formData,
+										taxId: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_address") || "Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.address,
+									onChange: (e) => setFormData({
+										...formData,
+										address: e.target.value
+									})
+								})]
 							})]
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "grid gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							value: formData.address,
-							onChange: (e) => setFormData({
-								...formData,
-								address: e.target.value
-							})
-						})]
-					})
-				]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				variant: "outline",
-				onClick: () => setIsOpen(false),
-				children: t("common.cancel")
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-				onClick: handleSave,
-				children: t("common.save")
-			})] })
-		] })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_email") || "General Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.email,
+									onChange: (e) => setFormData({
+										...formData,
+										email: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_phone") || "General Phone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.phone,
+									onChange: (e) => setFormData({
+										...formData,
+										phone: e.target.value
+									})
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "border-t pt-4 mt-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "text-sm font-semibold mb-3",
+								children: "Billing Contact"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-3 gap-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: formData.billingContactName,
+											onChange: (e) => setFormData({
+												...formData,
+												billingContactName: e.target.value
+											}),
+											placeholder: "Jane Doe"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: formData.billingContactEmail,
+											onChange: (e) => setFormData({
+												...formData,
+												billingContactEmail: e.target.value
+											}),
+											placeholder: "billing@company.com"
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Phone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: formData.billingContactPhone,
+											onChange: (e) => setFormData({
+												...formData,
+												billingContactPhone: e.target.value
+											})
+										})]
+									})
+								]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => setIsOpen(false),
+					children: t("common.cancel") || "Cancel"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue",
+					children: t("common.save") || "Save"
+				})] })
+			]
+		})
 	})] })] });
 }
 function PricingConfig() {
@@ -81838,4 +82002,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DAbaHvJM.js.map
+//# sourceMappingURL=index-D7-t4FyF.js.map

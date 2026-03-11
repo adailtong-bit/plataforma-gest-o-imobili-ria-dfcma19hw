@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -52,6 +52,7 @@ export function AdsManager() {
     addAdvertisement,
     updateAdvertisement,
     deleteAdvertisement,
+    advertisers,
   } = usePublicityStore()
   const { partners } = usePartnerStore()
   const { properties } = usePropertyStore()
@@ -73,6 +74,7 @@ export function AdsManager() {
     placement: 'home_top',
     partnerId: 'none',
     propertyId: 'none',
+    advertiserId: 'none',
     price: 0,
     baseCost: 0,
     pmCommissionType: 'percentage',
@@ -89,6 +91,107 @@ export function AdsManager() {
     a.title.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  const handleAutoExpire = (ad: Advertisement, manual: boolean = false) => {
+    const finalAmt = ad.finalPrice || ad.price || 0
+
+    if (finalAmt > 0) {
+      if (ad.advertiserId && ad.advertiserId !== 'none') {
+        const advertiser = advertisers.find((a) => a.id === ad.advertiserId)
+
+        // Auto-generate invoice billed to the external advertiser
+        addInvoice({
+          id: `inv-adv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          description: `Advertisement Expiration: ${ad.title}`,
+          amount: finalAmt,
+          status: 'pending',
+          date: new Date().toISOString(),
+          toId: ad.advertiserId,
+          type: 'generic',
+        })
+
+        // Auto-generate financial ledger entry as income
+        addLedgerEntry({
+          id: `ledg-adv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          propertyId: 'all',
+          date: new Date().toISOString(),
+          type: 'income',
+          category: 'Marketing/Publicity',
+          amount: finalAmt,
+          description: `Ad Revenue: ${ad.title} (${advertiser?.name || 'Unknown'})`,
+          status: 'pending',
+          beneficiaryId: ad.advertiserId,
+        })
+      } else if (ad.propertyId && ad.propertyId !== 'none') {
+        // Bill the property owner
+        addLedgerEntry({
+          id: `ledg-ad-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          propertyId: ad.propertyId,
+          date: new Date().toISOString(),
+          type: 'expense',
+          category: 'Marketing/Publicity',
+          amount: finalAmt,
+          description: `Marketing Campaign: ${ad.title}`,
+          status: 'pending',
+        })
+      }
+
+      if (
+        ad.partnerId &&
+        ad.partnerId !== 'none' &&
+        ad.baseCost &&
+        ad.baseCost > 0
+      ) {
+        // Pay the executing partner
+        addInvoice({
+          id: `inv-ad-part-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          description: `Ad Execution: ${ad.title}`,
+          amount: ad.baseCost,
+          status: 'pending',
+          date: new Date().toISOString(),
+          toId: ad.partnerId,
+          type: 'generic',
+        })
+      }
+    }
+
+    updateAdvertisement({
+      ...ad,
+      status: manual ? 'finalized' : 'expired',
+      active: false,
+    })
+    toast({
+      title: manual
+        ? 'Advertisement finalized and billed successfully.'
+        : 'Ad Expired',
+      description: manual
+        ? undefined
+        : `The advertisement "${ad.title}" has expired and its billing was processed automatically.`,
+    })
+  }
+
+  // Effect to automatically expire and bill advertisements
+  useEffect(() => {
+    const checkExpired = () => {
+      const today = new Date().toISOString().split('T')[0]
+      const expiredAds = advertisements.filter(
+        (ad) =>
+          ad.active &&
+          ad.endDate &&
+          ad.endDate < today &&
+          ad.status !== 'expired' &&
+          ad.status !== 'finalized',
+      )
+
+      expiredAds.forEach((ad) => {
+        handleAutoExpire(ad, false)
+      })
+    }
+
+    checkExpired()
+    // Intentionally run only once on mount to avoid loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleOpen = (ad?: Advertisement) => {
     if (ad) {
       setEditingId(ad.id)
@@ -96,6 +199,7 @@ export function AdsManager() {
         ...ad,
         propertyId: ad.propertyId || 'none',
         partnerId: ad.partnerId || 'none',
+        advertiserId: ad.advertiserId || 'none',
       })
     } else {
       setEditingId(null)
@@ -125,11 +229,13 @@ export function AdsManager() {
     const payload = {
       ...formData,
       finalPrice,
-      price: finalPrice, // Keep backwards compatibility
+      price: finalPrice,
       status: formData.status || 'draft',
       propertyId:
         formData.propertyId === 'none' ? undefined : formData.propertyId,
       partnerId: formData.partnerId === 'none' ? undefined : formData.partnerId,
+      advertiserId:
+        formData.advertiserId === 'none' ? undefined : formData.advertiserId,
     }
 
     if (editingId) {
@@ -165,46 +271,10 @@ export function AdsManager() {
   const handleFinalize = (ad: Advertisement) => {
     if (
       confirm(
-        'Finalize ad? This will record the expense for the property owner and generate an invoice for the partner.',
+        'Finalize ad? This will record the necessary financial entries and generate invoices depending on the target.',
       )
     ) {
-      if (
-        ad.propertyId &&
-        ad.propertyId !== 'none' &&
-        ad.finalPrice &&
-        ad.finalPrice > 0
-      ) {
-        addLedgerEntry({
-          id: `ledg-ad-${Date.now()}`,
-          propertyId: ad.propertyId,
-          date: new Date().toISOString(),
-          type: 'expense',
-          category: 'Marketing/Publicity',
-          amount: ad.finalPrice,
-          description: `Marketing Campaign: ${ad.title}`,
-          status: 'pending',
-        })
-      }
-
-      if (
-        ad.partnerId &&
-        ad.partnerId !== 'none' &&
-        ad.baseCost &&
-        ad.baseCost > 0
-      ) {
-        addInvoice({
-          id: `inv-ad-${Date.now()}`,
-          description: `Ad Execution: ${ad.title}`,
-          amount: ad.baseCost,
-          status: 'pending',
-          date: new Date().toISOString(),
-          toId: ad.partnerId,
-          type: 'generic',
-        })
-      }
-
-      updateAdvertisement({ ...ad, status: 'finalized', active: false })
-      toast({ title: 'Advertisement finalized and billed successfully.' })
+      handleAutoExpire(ad, true)
     }
   }
 
@@ -245,7 +315,7 @@ export function AdsManager() {
               <TableHead>
                 {t('publicity.ads_manager.table_ad_info') || 'Ad Info'}
               </TableHead>
-              <TableHead>Target / Partner</TableHead>
+              <TableHead>Target / Partner / Advertiser</TableHead>
               <TableHead>
                 {t('publicity.ads_manager.table_placement') || 'Placement'}
               </TableHead>
@@ -300,16 +370,21 @@ export function AdsManager() {
                   <TableCell>
                     <div className="flex flex-col text-sm">
                       <span className="font-medium text-slate-900">
-                        {ad.propertyId && ad.propertyId !== 'none'
-                          ? properties.find((p) => p.id === ad.propertyId)
-                              ?.name || 'Unknown Property'
-                          : 'Global'}
+                        {ad.advertiserId && ad.advertiserId !== 'none'
+                          ? advertisers.find((a) => a.id === ad.advertiserId)
+                              ?.name || 'Unknown Advertiser'
+                          : ad.propertyId && ad.propertyId !== 'none'
+                            ? properties.find((p) => p.id === ad.propertyId)
+                                ?.name || 'Unknown Property'
+                            : 'Global'}
                       </span>
                       <span className="text-muted-foreground text-xs">
-                        {ad.partnerId && ad.partnerId !== 'none'
-                          ? partners.find((p) => p.id === ad.partnerId)?.name ||
-                            'No Partner'
-                          : 'No Partner'}
+                        {ad.advertiserId && ad.advertiserId !== 'none'
+                          ? 'External Advertiser'
+                          : ad.partnerId && ad.partnerId !== 'none'
+                            ? partners.find((p) => p.id === ad.partnerId)
+                                ?.name || 'No Partner'
+                            : 'No Partner'}
                       </span>
                     </div>
                   </TableCell>
@@ -345,12 +420,12 @@ export function AdsManager() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {ad.status === 'finalized' ? (
+                    {ad.status === 'finalized' || ad.status === 'expired' ? (
                       <Badge
                         variant="outline"
-                        className="bg-slate-100 text-slate-700"
+                        className="bg-slate-100 text-slate-700 capitalize"
                       >
-                        Finalized
+                        {ad.status}
                       </Badge>
                     ) : ad.active ? (
                       <Badge className="bg-green-600 text-white border-transparent">
@@ -361,7 +436,7 @@ export function AdsManager() {
                     )}
                   </TableCell>
                   <TableCell className="text-right whitespace-nowrap">
-                    {ad.status !== 'finalized' && (
+                    {ad.status !== 'finalized' && ad.status !== 'expired' && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -441,7 +516,7 @@ export function AdsManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label>Target Property</Label>
                   <Select
@@ -449,6 +524,7 @@ export function AdsManager() {
                     onValueChange={(v) =>
                       setFormData({ ...formData, propertyId: v })
                     }
+                    disabled={formData.advertiserId !== 'none'}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Global / No Property" />
@@ -484,11 +560,36 @@ export function AdsManager() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="grid gap-2">
+                  <Label>Advertiser (External)</Label>
+                  <Select
+                    value={formData.advertiserId || 'none'}
+                    onValueChange={(v) =>
+                      setFormData({
+                        ...formData,
+                        advertiserId: v,
+                        propertyId: v !== 'none' ? 'none' : formData.propertyId,
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Advertiser" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Internal Campaign</SelectItem>
+                      {advertisers.map((a) => (
+                        <SelectItem key={a.id} value={a.id}>
+                          {a.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4 border-t border-b py-4 my-2 border-slate-100">
                 <div className="grid gap-2">
-                  <Label>Base Cost (Partner)</Label>
+                  <Label>Base Cost</Label>
                   <CurrencyInput
                     value={formData.baseCost || 0}
                     onChange={(v) => setFormData({ ...formData, baseCost: v })}
@@ -536,7 +637,7 @@ export function AdsManager() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Final Price (Owner Pays)</Label>
+                  <Label>Final Price (Billed Amount)</Label>
                   <div className="h-10 flex items-center px-3 border rounded-md bg-slate-50 font-bold text-slate-800">
                     {formatCurrency(finalPriceCalculated, currency)}
                   </div>

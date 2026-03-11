@@ -1109,6 +1109,8 @@ export interface ContactInfo {
 export interface Advertiser {
   id: string
   name: string
+  legalName?: string
+  taxId?: string
   email: string
   phone: string
   address: string
@@ -1116,6 +1118,9 @@ export interface Advertiser {
   city?: string
   state?: string
   country?: string
+  billingContactName?: string
+  billingContactEmail?: string
+  billingContactPhone?: string
   contacts?: ContactInfo[]
   createdAt: string
 }
@@ -1169,7 +1174,7 @@ export interface Advertisement {
   pmCommissionType?: 'fixed' | 'percentage'
   pmCommissionValue?: number
   finalPrice?: number
-  status?: 'draft' | 'active' | 'finalized' | 'cancelled'
+  status?: 'draft' | 'active' | 'finalized' | 'cancelled' | 'expired'
 }
 
 export interface Visit {
