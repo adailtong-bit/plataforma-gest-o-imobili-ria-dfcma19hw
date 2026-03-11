@@ -17,8 +17,6 @@ import {
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import { cn } from '@/lib/utils'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 
 interface TaskCardProps {
   task: Task
@@ -43,7 +41,7 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow bg-white relative group cursor-grab active:cursor-grabbing border-slate-200">
+    <Card className="hover:shadow-md transition-shadow bg-white relative group border-slate-200">
       <CardContent className="p-4 flex flex-col gap-3">
         <div className="flex justify-between items-start">
           <div className="flex flex-wrap gap-1">

@@ -3161,7 +3161,7 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			return "input" === nodeName ? !!supportedInputTypes[elem.type] : "textarea" === nodeName ? !0 : !1;
 		}
 		function isEventSupported(eventNameSuffix) {
-			if (!canUseDOM$2) return !1;
+			if (!canUseDOM$1) return !1;
 			eventNameSuffix = "on" + eventNameSuffix;
 			var isSupported = eventNameSuffix in document;
 			isSupported || (isSupported = document.createElement("div"), isSupported.setAttribute(eventNameSuffix, "return;"), isSupported = "function" === typeof isSupported[eventNameSuffix]);
@@ -13471,8 +13471,8 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			"aria-brailleroledescription": 0,
 			"aria-colindextext": 0,
 			"aria-rowindextext": 0
-		}, warnedProperties$1 = {}, rARIA$1 = RegExp("^(aria)-[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), rARIACamel$1 = RegExp("^(aria)[A-Z][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), didWarnValueNull = !1, warnedProperties = {}, EVENT_NAME_REGEX = /^on./, INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/, rARIA = RegExp("^(aria)-[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), rARIACamel = RegExp("^(aria)[A-Z][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i, currentReplayingEvent = null, restoreTarget = null, restoreQueue = null, isInsideEventHandler = !1, canUseDOM$2 = !("undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement), passiveBrowserEventsSupported = !1;
-		if (canUseDOM$2) try {
+		}, warnedProperties$1 = {}, rARIA$1 = RegExp("^(aria)-[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), rARIACamel$1 = RegExp("^(aria)[A-Z][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), didWarnValueNull = !1, warnedProperties = {}, EVENT_NAME_REGEX = /^on./, INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/, rARIA = RegExp("^(aria)-[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), rARIACamel = RegExp("^(aria)[A-Z][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i, currentReplayingEvent = null, restoreTarget = null, restoreQueue = null, isInsideEventHandler = !1, canUseDOM$1 = !("undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement), passiveBrowserEventsSupported = !1;
+		if (canUseDOM$1) try {
 			var options$jscomp$0 = {};
 			Object.defineProperty(options$jscomp$0, "passive", { get: function() {
 				passiveBrowserEventsSupported = !0;
@@ -13647,9 +13647,9 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			13,
 			27,
 			32
-		], START_KEYCODE = 229, canUseCompositionEvent = canUseDOM$2 && "CompositionEvent" in window, documentMode = null;
-		canUseDOM$2 && "documentMode" in document && (documentMode = document.documentMode);
-		var canUseTextInputEvent = canUseDOM$2 && "TextEvent" in window && !documentMode, useFallbackCompositionData = canUseDOM$2 && (!canUseCompositionEvent || documentMode && 8 < documentMode && 11 >= documentMode), SPACEBAR_CODE = 32, SPACEBAR_CHAR = String.fromCharCode(SPACEBAR_CODE), hasSpaceKeypress = !1, isComposing = !1, supportedInputTypes = {
+		], START_KEYCODE = 229, canUseCompositionEvent = canUseDOM$1 && "CompositionEvent" in window, documentMode = null;
+		canUseDOM$1 && "documentMode" in document && (documentMode = document.documentMode);
+		var canUseTextInputEvent = canUseDOM$1 && "TextEvent" in window && !documentMode, useFallbackCompositionData = canUseDOM$1 && (!canUseCompositionEvent || documentMode && 8 < documentMode && 11 >= documentMode), SPACEBAR_CODE = 32, SPACEBAR_CHAR = String.fromCharCode(SPACEBAR_CODE), hasSpaceKeypress = !1, isComposing = !1, supportedInputTypes = {
 			color: !0,
 			date: !0,
 			datetime: !0,
@@ -13666,8 +13666,8 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			url: !0,
 			week: !0
 		}, activeElement$1 = null, activeElementInst$1 = null, isInputEventSupported = !1;
-		canUseDOM$2 && (isInputEventSupported = isEventSupported("input") && (!document.documentMode || 9 < document.documentMode));
-		var objectIs = "function" === typeof Object.is ? Object.is : is, skipSelectionChangeEvent = canUseDOM$2 && "documentMode" in document && 11 >= document.documentMode, activeElement = null, activeElementInst = null, lastSelection = null, mouseDown = !1, vendorPrefixes = {
+		canUseDOM$1 && (isInputEventSupported = isEventSupported("input") && (!document.documentMode || 9 < document.documentMode));
+		var objectIs = "function" === typeof Object.is ? Object.is : is, skipSelectionChangeEvent = canUseDOM$1 && "documentMode" in document && 11 >= document.documentMode, activeElement = null, activeElementInst = null, lastSelection = null, mouseDown = !1, vendorPrefixes = {
 			animationend: makePrefixMap("Animation", "AnimationEnd"),
 			animationiteration: makePrefixMap("Animation", "AnimationIteration"),
 			animationstart: makePrefixMap("Animation", "AnimationStart"),
@@ -13676,7 +13676,7 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			transitioncancel: makePrefixMap("Transition", "TransitionCancel"),
 			transitionend: makePrefixMap("Transition", "TransitionEnd")
 		}, prefixedEventNames = {}, style = {};
-		canUseDOM$2 && (style = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
+		canUseDOM$1 && (style = document.createElement("div").style, "AnimationEvent" in window || (delete vendorPrefixes.animationend.animation, delete vendorPrefixes.animationiteration.animation, delete vendorPrefixes.animationstart.animation), "TransitionEvent" in window || delete vendorPrefixes.transitionend.transition);
 		var ANIMATION_END = getVendorPrefixedEventName("animationend"), ANIMATION_ITERATION = getVendorPrefixedEventName("animationiteration"), ANIMATION_START = getVendorPrefixedEventName("animationstart"), TRANSITION_RUN = getVendorPrefixedEventName("transitionrun"), TRANSITION_START = getVendorPrefixedEventName("transitionstart"), TRANSITION_CANCEL = getVendorPrefixedEventName("transitioncancel"), TRANSITION_END = getVendorPrefixedEventName("transitionend"), topLevelEventsToReactNames = /* @__PURE__ */ new Map(), simpleEventPluginEvents = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(" ");
 		simpleEventPluginEvents.push("scrollEnd");
 		var lastResetTime = 0;
@@ -15320,7 +15320,7 @@ var require_react_dom_client_development = /* @__PURE__ */ __commonJSMin(((expor
 			internals.setRefreshHandler = setRefreshHandler;
 			internals.getCurrentFiber = getCurrentFiberForDevTools;
 			return injectInternals(internals);
-		})() && canUseDOM$2 && window.top === window.self && (-1 < navigator.userAgent.indexOf("Chrome") && -1 === navigator.userAgent.indexOf("Edge") || -1 < navigator.userAgent.indexOf("Firefox"))) {
+		})() && canUseDOM$1 && window.top === window.self && (-1 < navigator.userAgent.indexOf("Chrome") && -1 === navigator.userAgent.indexOf("Edge") || -1 < navigator.userAgent.indexOf("Firefox"))) {
 			var protocol = window.location.protocol;
 			/^(https?|file):$/.test(protocol) && console.info("%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools" + ("file:" === protocol ? "\nYou might need to use a local HTTP server (instead of file://): https://react.dev/link/react-devtools-faq" : ""), "font-weight:bold");
 		}
@@ -18199,7 +18199,7 @@ function useControllableState({ prop, defaultProp, onChange = () => {}, caller }
 	}
 	return [value, import_react.useCallback((nextValue) => {
 		if (isControlled) {
-			const value2 = isFunction$27(nextValue) ? nextValue(prop) : nextValue;
+			const value2 = isFunction$26(nextValue) ? nextValue(prop) : nextValue;
 			if (value2 !== prop) onChangeRef.current?.(value2);
 		} else setUncontrolledProp(nextValue);
 	}, [
@@ -18228,7 +18228,7 @@ function useUncontrolledState({ defaultProp, onChange }) {
 		onChangeRef
 	];
 }
-function isFunction$27(value) {
+function isFunction$26(value) {
 	return typeof value === "function";
 }
 var VISUALLY_HIDDEN_STYLES = Object.freeze({
@@ -18926,13 +18926,6 @@ var ArrowLeft = createLucideIcon("arrow-left", [["path", {
 	d: "M19 12H5",
 	key: "x3x0zl"
 }]]);
-var ArrowRight = createLucideIcon("arrow-right", [["path", {
-	d: "M5 12h14",
-	key: "1ays0h"
-}], ["path", {
-	d: "m12 5 7 7-7 7",
-	key: "xquz4c"
-}]]);
 var ArrowUp = createLucideIcon("arrow-up", [["path", {
 	d: "m5 12 7-7 7 7",
 	key: "hav0vg"
@@ -19478,27 +19471,6 @@ var House = createLucideIcon("house", [["path", {
 	d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
 	key: "r6nss1"
 }]]);
-var Image = createLucideIcon("image", [
-	["rect", {
-		width: "18",
-		height: "18",
-		x: "3",
-		y: "3",
-		rx: "2",
-		ry: "2",
-		key: "1m3agn"
-	}],
-	["circle", {
-		cx: "9",
-		cy: "9",
-		r: "2",
-		key: "af1f0g"
-	}],
-	["path", {
-		d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21",
-		key: "1xmnt7"
-	}]
-]);
 var Info = createLucideIcon("info", [
 	["circle", {
 		cx: "12",
@@ -20305,12 +20277,12 @@ var lengthUnitRegex = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|
 var colorFunctionRegex = /^(rgba?|hsla?|hwb|(ok)?(lab|lch))\(.+\)$/;
 var shadowRegex = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/;
 var imageRegex = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/;
-var isLength$4 = (value) => isNumber$4(value) || stringLengths.has(value) || fractionRegex.test(value);
+var isLength$4 = (value) => isNumber$3(value) || stringLengths.has(value) || fractionRegex.test(value);
 var isArbitraryLength = (value) => getIsArbitraryValue(value, "length", isLengthOnly);
-var isNumber$4 = (value) => Boolean(value) && !Number.isNaN(Number(value));
-var isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber$4);
+var isNumber$3 = (value) => Boolean(value) && !Number.isNaN(Number(value));
+var isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber$3);
 var isInteger = (value) => Boolean(value) && Number.isInteger(Number(value));
-var isPercent$1 = (value) => value.endsWith("%") && isNumber$4(value.slice(0, -1));
+var isPercent$1 = (value) => value.endsWith("%") && isNumber$3(value.slice(0, -1));
 var isArbitraryValue = (value) => arbitraryValueRegex.test(value);
 var isTshirtSize = (value) => tshirtUnitRegex.test(value);
 var sizeLabels = /* @__PURE__ */ new Set([
@@ -20387,7 +20359,7 @@ var getDefaultConfig = () => {
 	];
 	const getNumberWithAutoAndArbitrary = () => [
 		"auto",
-		isNumber$4,
+		isNumber$3,
 		isArbitraryValue
 	];
 	const getPositions = () => [
@@ -20450,7 +20422,7 @@ var getDefaultConfig = () => {
 		"right",
 		"column"
 	];
-	const getNumberAndArbitrary = () => [isNumber$4, isArbitraryValue];
+	const getNumberAndArbitrary = () => [isNumber$3, isArbitraryValue];
 	return {
 		cacheSize: 500,
 		separator: ":",
@@ -20839,7 +20811,7 @@ var getDefaultConfig = () => {
 			] }],
 			"line-clamp": [{ "line-clamp": [
 				"none",
-				isNumber$4,
+				isNumber$3,
 				isArbitraryNumber
 			] }],
 			leading: [{ leading: [
@@ -21442,13 +21414,13 @@ function addMonths(date$1, amount, options$1) {
 		return _date;
 	}
 }
-var defaultOptions$1 = {};
+var defaultOptions = {};
 function getDefaultOptions() {
-	return defaultOptions$1;
+	return defaultOptions;
 }
 function startOfWeek(date$1, options$1) {
-	const defaultOptions$2 = getDefaultOptions();
-	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$2.weekStartsOn ?? defaultOptions$2.locale?.options?.weekStartsOn ?? 0;
+	const defaultOptions$1 = getDefaultOptions();
+	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$1.weekStartsOn ?? defaultOptions$1.locale?.options?.weekStartsOn ?? 0;
 	const _date = toDate(date$1, options$1?.in);
 	const day = _date.getDay();
 	const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
@@ -21637,8 +21609,8 @@ function eachYearOfInterval(interval, options$1) {
 	return reversed ? dates.reverse() : dates;
 }
 function endOfWeek(date$1, options$1) {
-	const defaultOptions$2 = getDefaultOptions();
-	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$2.weekStartsOn ?? defaultOptions$2.locale?.options?.weekStartsOn ?? 0;
+	const defaultOptions$1 = getDefaultOptions();
+	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$1.weekStartsOn ?? defaultOptions$1.locale?.options?.weekStartsOn ?? 0;
 	const _date = toDate(date$1, options$1?.in);
 	const day = _date.getDay();
 	const diff = (day < weekStartsOn ? -7 : 0) + 6 - (day - weekStartsOn);
@@ -22177,8 +22149,8 @@ function getISOWeek(date$1, options$1) {
 function getWeekYear(date$1, options$1) {
 	const _date = toDate(date$1, options$1?.in);
 	const year = _date.getFullYear();
-	const defaultOptions$2 = getDefaultOptions();
-	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$2.firstWeekContainsDate ?? defaultOptions$2.locale?.options?.firstWeekContainsDate ?? 1;
+	const defaultOptions$1 = getDefaultOptions();
+	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$1.firstWeekContainsDate ?? defaultOptions$1.locale?.options?.firstWeekContainsDate ?? 1;
 	const firstWeekOfNextYear = constructFrom(options$1?.in || date$1, 0);
 	firstWeekOfNextYear.setFullYear(year + 1, 0, firstWeekContainsDate);
 	firstWeekOfNextYear.setHours(0, 0, 0, 0);
@@ -22192,8 +22164,8 @@ function getWeekYear(date$1, options$1) {
 	else return year - 1;
 }
 function startOfWeekYear(date$1, options$1) {
-	const defaultOptions$2 = getDefaultOptions();
-	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$2.firstWeekContainsDate ?? defaultOptions$2.locale?.options?.firstWeekContainsDate ?? 1;
+	const defaultOptions$1 = getDefaultOptions();
+	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$1.firstWeekContainsDate ?? defaultOptions$1.locale?.options?.firstWeekContainsDate ?? 1;
 	const year = getWeekYear(date$1, options$1);
 	const firstWeek = constructFrom(options$1?.in || date$1, 0);
 	firstWeek.setFullYear(year, 0, firstWeekContainsDate);
@@ -22750,10 +22722,10 @@ var escapedStringRegExp = /^'([^]*?)'?$/;
 var doubleQuoteRegExp = /''/g;
 var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
 function format(date$1, formatStr, options$1) {
-	const defaultOptions$2 = getDefaultOptions();
-	const locale$2 = options$1?.locale ?? defaultOptions$2.locale ?? enUS;
-	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$2.firstWeekContainsDate ?? defaultOptions$2.locale?.options?.firstWeekContainsDate ?? 1;
-	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$2.weekStartsOn ?? defaultOptions$2.locale?.options?.weekStartsOn ?? 0;
+	const defaultOptions$1 = getDefaultOptions();
+	const locale$2 = options$1?.locale ?? defaultOptions$1.locale ?? enUS;
+	const firstWeekContainsDate = options$1?.firstWeekContainsDate ?? options$1?.locale?.options?.firstWeekContainsDate ?? defaultOptions$1.firstWeekContainsDate ?? defaultOptions$1.locale?.options?.firstWeekContainsDate ?? 1;
+	const weekStartsOn = options$1?.weekStartsOn ?? options$1?.locale?.options?.weekStartsOn ?? defaultOptions$1.weekStartsOn ?? defaultOptions$1.locale?.options?.weekStartsOn ?? 0;
 	const originalDate = toDate(date$1, options$1?.in);
 	if (!isValid(originalDate)) throw new RangeError("Invalid time value");
 	let parts = formatStr.match(longFormattingTokensRegExp).map((substring) => {
@@ -24470,10 +24442,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$31, data) => {
+		this.custom = (jsx$30, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$31(id),
+				jsx: jsx$30(id),
 				id,
 				...data
 			});
@@ -27007,11 +26979,11 @@ var Tooltip$2 = (props) => {
 	});
 };
 Tooltip$2.displayName = TOOLTIP_NAME;
-var TRIGGER_NAME$7 = "TooltipTrigger";
+var TRIGGER_NAME$6 = "TooltipTrigger";
 var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTooltip, ...triggerProps } = props;
-	const context = useTooltipContext(TRIGGER_NAME$7, __scopeTooltip);
-	const providerContext = useTooltipProviderContext(TRIGGER_NAME$7, __scopeTooltip);
+	const context = useTooltipContext(TRIGGER_NAME$6, __scopeTooltip);
+	const providerContext = useTooltipProviderContext(TRIGGER_NAME$6, __scopeTooltip);
 	const popperScope = usePopperScope$3(__scopeTooltip);
 	const composedRefs = useComposedRefs(forwardedRef, import_react.useRef(null), context.onTriggerChange);
 	const isPointerDownRef = import_react.useRef(false);
@@ -27052,7 +27024,7 @@ var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TooltipTrigger$1.displayName = TRIGGER_NAME$7;
+TooltipTrigger$1.displayName = TRIGGER_NAME$6;
 var PORTAL_NAME$6 = "TooltipPortal";
 var [PortalProvider$3, usePortalContext$3] = createTooltipContext(PORTAL_NAME$6, { forceMount: void 0 });
 var TooltipPortal = (props) => {
@@ -35347,23 +35319,23 @@ var Dialog$1 = (props) => {
 	});
 };
 Dialog$1.displayName = DIALOG_NAME;
-var TRIGGER_NAME$6 = "DialogTrigger";
+var TRIGGER_NAME$5 = "DialogTrigger";
 var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...triggerProps } = props;
-	const context = useDialogContext(TRIGGER_NAME$6, __scopeDialog);
+	const context = useDialogContext(TRIGGER_NAME$5, __scopeDialog);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
 		type: "button",
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$4(context.open),
+		"data-state": getState$3(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
 	});
 });
-DialogTrigger$1.displayName = TRIGGER_NAME$6;
+DialogTrigger$1.displayName = TRIGGER_NAME$5;
 var PORTAL_NAME$5 = "DialogPortal";
 var [PortalProvider$2, usePortalContext$2] = createDialogContext(PORTAL_NAME$5, { forceMount: void 0 });
 var DialogPortal$1 = (props) => {
@@ -35406,7 +35378,7 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		allowPinchZoom: true,
 		shards: [context.contentRef],
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
-			"data-state": getState$4(context.open),
+			"data-state": getState$3(context.open),
 			...overlayProps,
 			ref: forwardedRef,
 			style: {
@@ -35505,7 +35477,7 @@ var DialogContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			id: context.contentId,
 			"aria-describedby": context.descriptionId,
 			"aria-labelledby": context.titleId,
-			"data-state": getState$4(context.open),
+			"data-state": getState$3(context.open),
 			...contentProps,
 			ref: composedRefs,
 			onDismiss: () => context.onOpenChange(false)
@@ -35549,7 +35521,7 @@ var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DialogClose$1.displayName = CLOSE_NAME$1;
-function getState$4(open) {
+function getState$3(open) {
 	return open ? "open" : "closed";
 }
 var TITLE_WARNING_NAME = "DialogTitleWarning";
@@ -36606,11 +36578,11 @@ var MenuCheckboxItem = import_react.forwardRef((props, forwardedRef) => {
 		checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MenuItem, {
 			role: "menuitemcheckbox",
-			"aria-checked": isIndeterminate$1(checked) ? "mixed" : checked,
+			"aria-checked": isIndeterminate(checked) ? "mixed" : checked,
 			...checkboxItemProps,
 			ref: forwardedRef,
 			"data-state": getCheckedState(checked),
-			onSelect: composeEventHandlers(checkboxItemProps.onSelect, () => onCheckedChange?.(isIndeterminate$1(checked) ? true : !checked), { checkForDefaultPrevented: false })
+			onSelect: composeEventHandlers(checkboxItemProps.onSelect, () => onCheckedChange?.(isIndeterminate(checked) ? true : !checked), { checkForDefaultPrevented: false })
 		})
 	});
 });
@@ -36659,7 +36631,7 @@ var MenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, forceMount, ...itemIndicatorProps } = props;
 	const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME$1, __scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || isIndeterminate$1(indicatorContext.checked) || indicatorContext.checked === true,
+		present: forceMount || isIndeterminate(indicatorContext.checked) || indicatorContext.checked === true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
 			...itemIndicatorProps,
 			ref: forwardedRef,
@@ -36882,11 +36854,11 @@ MenuSubContent.displayName = SUB_CONTENT_NAME$1;
 function getOpenState(open) {
 	return open ? "open" : "closed";
 }
-function isIndeterminate$1(checked) {
+function isIndeterminate(checked) {
 	return checked === "indeterminate";
 }
 function getCheckedState(checked) {
-	return isIndeterminate$1(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
+	return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
 function focusFirst(candidates) {
 	const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
@@ -36980,10 +36952,10 @@ var DropdownMenu$1 = (props) => {
 	});
 };
 DropdownMenu$1.displayName = DROPDOWN_MENU_NAME;
-var TRIGGER_NAME$5 = "DropdownMenuTrigger";
+var TRIGGER_NAME$4 = "DropdownMenuTrigger";
 var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, disabled = false, ...triggerProps } = props;
-	const context = useDropdownMenuContext(TRIGGER_NAME$5, __scopeDropdownMenu);
+	const context = useDropdownMenuContext(TRIGGER_NAME$4, __scopeDropdownMenu);
 	const menuScope = useMenuScope(__scopeDropdownMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor2, {
 		asChild: true,
@@ -37018,7 +36990,7 @@ var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-DropdownMenuTrigger$1.displayName = TRIGGER_NAME$5;
+DropdownMenuTrigger$1.displayName = TRIGGER_NAME$4;
 var PORTAL_NAME$3 = "DropdownMenuPortal";
 var DropdownMenuPortal$1 = (props) => {
 	const { __scopeDropdownMenu, ...portalProps } = props;
@@ -37129,7 +37101,7 @@ var DropdownMenuRadioItem$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DropdownMenuRadioItem$1.displayName = RADIO_ITEM_NAME;
-var INDICATOR_NAME$2 = "DropdownMenuItemIndicator";
+var INDICATOR_NAME$1 = "DropdownMenuItemIndicator";
 var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...itemIndicatorProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -37139,7 +37111,7 @@ var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) =>
 		ref: forwardedRef
 	});
 });
-DropdownMenuItemIndicator.displayName = INDICATOR_NAME$2;
+DropdownMenuItemIndicator.displayName = INDICATOR_NAME$1;
 var SEPARATOR_NAME$1 = "DropdownMenuSeparator";
 var DropdownMenuSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...separatorProps } = props;
@@ -37401,11 +37373,11 @@ var Select$1 = (props) => {
 	});
 };
 Select$1.displayName = SELECT_NAME;
-var TRIGGER_NAME$4 = "SelectTrigger";
+var TRIGGER_NAME$3 = "SelectTrigger";
 var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, disabled = false, ...triggerProps } = props;
 	const popperScope = usePopperScope$1(__scopeSelect);
-	const context = useSelectContext(TRIGGER_NAME$4, __scopeSelect);
+	const context = useSelectContext(TRIGGER_NAME$3, __scopeSelect);
 	const isDisabled = context.disabled || disabled;
 	const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
 	const getItems = useCollection(__scopeSelect);
@@ -37467,7 +37439,7 @@ var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-SelectTrigger$1.displayName = TRIGGER_NAME$4;
+SelectTrigger$1.displayName = TRIGGER_NAME$3;
 var VALUE_NAME = "SelectValue";
 var SelectValue$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, className, style, children, placeholder = "", ...valueProps } = props;
@@ -38182,7 +38154,7 @@ var SelectArrow = import_react.forwardRef((props, forwardedRef) => {
 	}) : null;
 });
 SelectArrow.displayName = ARROW_NAME$1;
-var BUBBLE_INPUT_NAME$3 = "SelectBubbleInput";
+var BUBBLE_INPUT_NAME$2 = "SelectBubbleInput";
 var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(forwardedRef, ref);
@@ -38208,7 +38180,7 @@ var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...prop
 		defaultValue: value
 	});
 });
-SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$3;
+SelectBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
 function shouldShowPlaceholder(value) {
 	return value === "" || value === void 0;
 }
@@ -38412,7 +38384,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$56({ inst: {
+			cachedValue = useState$55({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -38426,7 +38398,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$24(function() {
+			useEffect$25(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -38449,7 +38421,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$56 = React$67.useState, useEffect$24 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$55 = React$67.useState, useEffect$25 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -38557,7 +38529,7 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	return loadingStatus;
 }
 var Root$3 = Avatar$1;
-var Image$1 = AvatarImage$1;
+var Image = AvatarImage$1;
 var Fallback = AvatarFallback$1;
 var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 	ref,
@@ -38565,12 +38537,12 @@ var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PUR
 	...props
 }));
 Avatar.displayName = Root$3.displayName;
-var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
+var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
 	...props
 }));
-AvatarImage.displayName = Image$1.displayName;
+AvatarImage.displayName = Image.displayName;
 var AvatarFallback = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Fallback, {
 	ref,
 	className: cn("flex h-full w-full items-center justify-center rounded-full bg-muted", className),
@@ -39504,7 +39476,7 @@ var AlertDialog$1 = (props) => {
 	});
 };
 AlertDialog$1.displayName = ROOT_NAME;
-var TRIGGER_NAME$3 = "AlertDialogTrigger";
+var TRIGGER_NAME$2 = "AlertDialogTrigger";
 var AlertDialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAlertDialog, ...triggerProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
@@ -39514,7 +39486,7 @@ var AlertDialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		ref: forwardedRef
 	});
 });
-AlertDialogTrigger$1.displayName = TRIGGER_NAME$3;
+AlertDialogTrigger$1.displayName = TRIGGER_NAME$2;
 var PORTAL_NAME$1 = "AlertDialogPortal";
 var AlertDialogPortal$1 = (props) => {
 	const { __scopeAlertDialog, ...portalProps } = props;
@@ -39703,7 +39675,7 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 			type: "button",
 			role: "radio",
 			"aria-checked": checked,
-			"data-state": getState$3(checked),
+			"data-state": getState$2(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -39730,22 +39702,22 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Radio.displayName = RADIO_NAME;
-var INDICATOR_NAME$1 = "RadioIndicator";
+var INDICATOR_NAME = "RadioIndicator";
 var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeRadio, forceMount, ...indicatorProps } = props;
-	const context = useRadioContext(INDICATOR_NAME$1, __scopeRadio);
+	const context = useRadioContext(INDICATOR_NAME, __scopeRadio);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.checked,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState$3(context.checked),
+			"data-state": getState$2(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
 			ref: forwardedRef
 		})
 	});
 });
-RadioIndicator.displayName = INDICATOR_NAME$1;
-var BUBBLE_INPUT_NAME$2 = "RadioBubbleInput";
+RadioIndicator.displayName = INDICATOR_NAME;
+var BUBBLE_INPUT_NAME$1 = "RadioBubbleInput";
 var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -39783,8 +39755,8 @@ var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked
 		}
 	});
 });
-RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$2;
-function getState$3(checked) {
+RadioBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function getState$2(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var ARROW_KEYS = [
@@ -40912,10 +40884,10 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 TabsList$1.displayName = TAB_LIST_NAME;
-var TRIGGER_NAME$2 = "TabsTrigger";
+var TRIGGER_NAME$1 = "TabsTrigger";
 var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, value, disabled = false, ...triggerProps } = props;
-	const context = useTabsContext(TRIGGER_NAME$2, __scopeTabs);
+	const context = useTabsContext(TRIGGER_NAME$1, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
 	const triggerId = makeTriggerId(context.baseId, value);
 	const contentId = makeContentId(context.baseId, value);
@@ -40950,7 +40922,7 @@ var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-TabsTrigger$1.displayName = TRIGGER_NAME$2;
+TabsTrigger$1.displayName = TRIGGER_NAME$1;
 var CONTENT_NAME$1 = "TabsContent";
 var TabsContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, value, forceMount, children, ...contentProps } = props;
@@ -43515,7 +43487,7 @@ function TaskCard({ task, onStatusChange, canEdit }) {
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-		className: "hover:shadow-md transition-shadow bg-white relative group cursor-grab active:cursor-grabbing border-slate-200",
+		className: "hover:shadow-md transition-shadow bg-white relative group border-slate-200",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 			className: "p-4 flex flex-col gap-3",
 			children: [
@@ -44854,7 +44826,7 @@ var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
 			role: "switch",
 			"aria-checked": checked,
 			"aria-required": required,
-			"data-state": getState$2(checked),
+			"data-state": getState$1(checked),
 			"data-disabled": disabled ? "" : void 0,
 			disabled,
 			value,
@@ -44886,14 +44858,14 @@ var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSwitch, ...thumbProps } = props;
 	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-		"data-state": getState$2(context.checked),
+		"data-state": getState$1(context.checked),
 		"data-disabled": context.disabled ? "" : void 0,
 		...thumbProps,
 		ref: forwardedRef
 	});
 });
 SwitchThumb.displayName = THUMB_NAME;
-var BUBBLE_INPUT_NAME$1 = "SwitchBubbleInput";
+var BUBBLE_INPUT_NAME = "SwitchBubbleInput";
 var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
 	const composedRefs = useComposedRefs(ref, forwardedRef);
@@ -44931,8 +44903,8 @@ var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, check
 		}
 	});
 });
-SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-function getState$2(checked) {
+SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME;
+function getState$1(checked) {
 	return checked ? "checked" : "unchecked";
 }
 var Root = Switch$1;
@@ -49163,10 +49135,10 @@ var PopoverAnchor = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverAnchor.displayName = ANCHOR_NAME;
-var TRIGGER_NAME$1 = "PopoverTrigger";
+var TRIGGER_NAME = "PopoverTrigger";
 var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopePopover, ...triggerProps } = props;
-	const context = usePopoverContext(TRIGGER_NAME$1, __scopePopover);
+	const context = usePopoverContext(TRIGGER_NAME, __scopePopover);
 	const popperScope = usePopperScope(__scopePopover);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
 	const trigger = /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
@@ -49174,7 +49146,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
 		"aria-controls": context.contentId,
-		"data-state": getState$1(context.open),
+		"data-state": getState(context.open),
 		...triggerProps,
 		ref: composedTriggerRef,
 		onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
@@ -49185,7 +49157,7 @@ var PopoverTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		children: trigger
 	});
 });
-PopoverTrigger$1.displayName = TRIGGER_NAME$1;
+PopoverTrigger$1.displayName = TRIGGER_NAME;
 var PORTAL_NAME = "PopoverPortal";
 var [PortalProvider, usePortalContext] = createPopoverContext(PORTAL_NAME, { forceMount: void 0 });
 var PopoverPortal = (props) => {
@@ -49303,7 +49275,7 @@ var PopoverContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			onFocusOutside,
 			onDismiss: () => context.onOpenChange(false),
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content$2, {
-				"data-state": getState$1(context.open),
+				"data-state": getState(context.open),
 				role: "dialog",
 				id: context.contentId,
 				...popperScope,
@@ -49344,7 +49316,7 @@ var PopoverArrow = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 PopoverArrow.displayName = ARROW_NAME;
-function getState$1(open) {
+function getState(open) {
 	return open ? "open" : "closed";
 }
 var Root2 = Popover$1;
@@ -50084,6 +50056,57 @@ function PartnerDocuments({ partner, onUpdate, canEdit }) {
 		})]
 	});
 }
+function PartnerProperties({ partner }) {
+	const { properties: properties$1 } = usePropertyStore_default();
+	const linkedProps = properties$1.filter((p$1) => partner.linkedPropertyIds?.includes(p$1.id));
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+		className: "border-slate-200 shadow-sm bg-white",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+			className: "pb-4 border-b",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Linked Properties" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Properties where this partner provides services." })] })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "p-0",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+				className: "bg-slate-50",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Property Name" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Address" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+						className: "text-right",
+						children: "Actions"
+					})
+				] })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [linkedProps.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "font-medium",
+					children: p$1.name
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: p$1.address }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+					variant: "outline",
+					children: p$1.status
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+					className: "text-right",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "ghost",
+						size: "sm",
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							to: `/properties/${p$1.id}`,
+							children: "View"
+						})
+					})
+				})
+			] }, p$1.id)), linkedProps.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				colSpan: 4,
+				className: "text-center py-8 text-muted-foreground",
+				children: "No linked properties found."
+			}) })] })] })
+		})]
+	});
+}
 function PartnerDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -50151,7 +50174,7 @@ function PartnerDetails() {
 			className: "w-full",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
-					className: "grid grid-cols-4 w-full max-w-2xl bg-white border h-auto p-1 mb-6",
+					className: `grid ${partner.entityType === "company" ? "grid-cols-5 max-w-3xl" : "grid-cols-4 max-w-2xl"} w-full bg-white border h-auto p-1 mb-6`,
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "overview",
@@ -50167,6 +50190,11 @@ function PartnerDetails() {
 							value: "staff",
 							className: "data-[state=active]:bg-slate-100 py-2",
 							children: "Team / Staff"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "properties",
+							className: "data-[state=active]:bg-slate-100 py-2",
+							children: "Properties"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
 							value: "documents",
@@ -50273,6 +50301,14 @@ function PartnerDetails() {
 				partner.entityType === "company" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "staff",
 					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerStaff, {
+						partner,
+						onUpdate: handleUpdate,
+						canEdit: true
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "properties",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PartnerProperties, {
 						partner,
 						onUpdate: handleUpdate,
 						canEdit: true
@@ -51508,2099 +51544,404 @@ function Hotels() {
 		})]
 	});
 }
-function HotelDetails() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Hotel Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
-	});
-}
-function TowerDetails() {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "p-6",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Tower Details" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-slate-600",
-			children: "Details module under construction."
-		}) })] })
-	});
-}
-function isObject$13(subject) {
-	return Object.prototype.toString.call(subject) === "[object Object]";
-}
-function isRecord(subject) {
-	return isObject$13(subject) || Array.isArray(subject);
-}
-function canUseDOM() {
-	return !!(typeof window !== "undefined" && window.document && window.document.createElement);
-}
-function areOptionsEqual(optionsA, optionsB) {
-	const optionsAKeys = Object.keys(optionsA);
-	const optionsBKeys = Object.keys(optionsB);
-	if (optionsAKeys.length !== optionsBKeys.length) return false;
-	if (JSON.stringify(Object.keys(optionsA.breakpoints || {})) !== JSON.stringify(Object.keys(optionsB.breakpoints || {}))) return false;
-	return optionsAKeys.every((key) => {
-		const valueA = optionsA[key];
-		const valueB = optionsB[key];
-		if (typeof valueA === "function") return `${valueA}` === `${valueB}`;
-		if (!isRecord(valueA) || !isRecord(valueB)) return valueA === valueB;
-		return areOptionsEqual(valueA, valueB);
-	});
-}
-function sortAndMapPluginToOptions(plugins) {
-	return plugins.concat().sort((a$1, b$1) => a$1.name > b$1.name ? 1 : -1).map((plugin) => plugin.options);
-}
-function arePluginsEqual(pluginsA, pluginsB) {
-	if (pluginsA.length !== pluginsB.length) return false;
-	const optionsA = sortAndMapPluginToOptions(pluginsA);
-	const optionsB = sortAndMapPluginToOptions(pluginsB);
-	return optionsA.every((optionA, index$1) => {
-		const optionB = optionsB[index$1];
-		return areOptionsEqual(optionA, optionB);
-	});
-}
-function isNumber$3(subject) {
-	return typeof subject === "number";
-}
-function isString$4(subject) {
-	return typeof subject === "string";
-}
-function isBoolean$2(subject) {
-	return typeof subject === "boolean";
-}
-function isObject$12(subject) {
-	return Object.prototype.toString.call(subject) === "[object Object]";
-}
-function mathAbs(n) {
-	return Math.abs(n);
-}
-function mathSign$1(n) {
-	return Math.sign(n);
-}
-function deltaAbs(valueB, valueA) {
-	return mathAbs(valueB - valueA);
-}
-function factorAbs(valueB, valueA) {
-	if (valueB === 0 || valueA === 0) return 0;
-	if (mathAbs(valueB) <= mathAbs(valueA)) return 0;
-	return mathAbs(deltaAbs(mathAbs(valueB), mathAbs(valueA)) / valueB);
-}
-function roundToTwoDecimals(num) {
-	return Math.round(num * 100) / 100;
-}
-function arrayKeys(array) {
-	return objectKeys(array).map(Number);
-}
-function arrayLast(array) {
-	return array[arrayLastIndex(array)];
-}
-function arrayLastIndex(array) {
-	return Math.max(0, array.length - 1);
-}
-function arrayIsLastIndex(array, index$1) {
-	return index$1 === arrayLastIndex(array);
-}
-function arrayFromNumber(n, startAt = 0) {
-	return Array.from(Array(n), (_$1, i) => startAt + i);
-}
-function objectKeys(object) {
-	return Object.keys(object);
-}
-function objectsMergeDeep(objectA, objectB) {
-	return [objectA, objectB].reduce((mergedObjects, currentObject) => {
-		objectKeys(currentObject).forEach((key) => {
-			const valueA = mergedObjects[key];
-			const valueB = currentObject[key];
-			mergedObjects[key] = isObject$12(valueA) && isObject$12(valueB) ? objectsMergeDeep(valueA, valueB) : valueB;
-		});
-		return mergedObjects;
-	}, {});
-}
-function isMouseEvent(evt, ownerWindow) {
-	return typeof ownerWindow.MouseEvent !== "undefined" && evt instanceof ownerWindow.MouseEvent;
-}
-function Alignment(align, viewSize) {
-	const predefined = {
-		start,
-		center,
-		end
-	};
-	function start() {
-		return 0;
-	}
-	function center(n) {
-		return end(n) / 2;
-	}
-	function end(n) {
-		return viewSize - n;
-	}
-	function measure(n, index$1) {
-		if (isString$4(align)) return predefined[align](n);
-		return align(viewSize, n, index$1);
-	}
-	return { measure };
-}
-function EventStore() {
-	let listeners$3 = [];
-	function add(node, type, handler, options$1 = { passive: true }) {
-		let removeListener;
-		if ("addEventListener" in node) {
-			node.addEventListener(type, handler, options$1);
-			removeListener = () => node.removeEventListener(type, handler, options$1);
-		} else {
-			const legacyMediaQueryList = node;
-			legacyMediaQueryList.addListener(handler);
-			removeListener = () => legacyMediaQueryList.removeListener(handler);
-		}
-		listeners$3.push(removeListener);
-		return self$1;
-	}
-	function clear() {
-		listeners$3 = listeners$3.filter((remove) => remove());
-	}
-	const self$1 = {
-		add,
-		clear
-	};
-	return self$1;
-}
-function Animations(ownerDocument, ownerWindow, update, render) {
-	const documentVisibleHandler = EventStore();
-	const fixedTimeStep = 1e3 / 60;
-	let lastTimeStamp = null;
-	let accumulatedTime = 0;
-	let animationId = 0;
-	function init() {
-		documentVisibleHandler.add(ownerDocument, "visibilitychange", () => {
-			if (ownerDocument.hidden) reset();
-		});
-	}
-	function destroy() {
-		stop();
-		documentVisibleHandler.clear();
-	}
-	function animate(timeStamp) {
-		if (!animationId) return;
-		if (!lastTimeStamp) {
-			lastTimeStamp = timeStamp;
-			update();
-			update();
-		}
-		const timeElapsed = timeStamp - lastTimeStamp;
-		lastTimeStamp = timeStamp;
-		accumulatedTime += timeElapsed;
-		while (accumulatedTime >= fixedTimeStep) {
-			update();
-			accumulatedTime -= fixedTimeStep;
-		}
-		render(accumulatedTime / fixedTimeStep);
-		if (animationId) animationId = ownerWindow.requestAnimationFrame(animate);
-	}
-	function start() {
-		if (animationId) return;
-		animationId = ownerWindow.requestAnimationFrame(animate);
-	}
-	function stop() {
-		ownerWindow.cancelAnimationFrame(animationId);
-		lastTimeStamp = null;
-		accumulatedTime = 0;
-		animationId = 0;
-	}
-	function reset() {
-		lastTimeStamp = null;
-		accumulatedTime = 0;
-	}
-	return {
-		init,
-		destroy,
-		start,
-		stop,
-		update,
-		render
-	};
-}
-function Axis(axis, contentDirection) {
-	const isRightToLeft = contentDirection === "rtl";
-	const isVertical = axis === "y";
-	const scroll = isVertical ? "y" : "x";
-	const cross = isVertical ? "x" : "y";
-	const sign$1 = !isVertical && isRightToLeft ? -1 : 1;
-	const startEdge = getStartEdge();
-	const endEdge = getEndEdge();
-	function measureSize(nodeRect) {
-		const { height, width } = nodeRect;
-		return isVertical ? height : width;
-	}
-	function getStartEdge() {
-		if (isVertical) return "top";
-		return isRightToLeft ? "right" : "left";
-	}
-	function getEndEdge() {
-		if (isVertical) return "bottom";
-		return isRightToLeft ? "left" : "right";
-	}
-	function direction(n) {
-		return n * sign$1;
-	}
-	return {
-		scroll,
-		cross,
-		startEdge,
-		endEdge,
-		measureSize,
-		direction
-	};
-}
-function Limit(min$5 = 0, max$6 = 0) {
-	const length = mathAbs(min$5 - max$6);
-	function reachedMin(n) {
-		return n < min$5;
-	}
-	function reachedMax(n) {
-		return n > max$6;
-	}
-	function reachedAny(n) {
-		return reachedMin(n) || reachedMax(n);
-	}
-	function constrain(n) {
-		if (!reachedAny(n)) return n;
-		return reachedMin(n) ? min$5 : max$6;
-	}
-	function removeOffset(n) {
-		if (!length) return n;
-		return n - length * Math.ceil((n - max$6) / length);
-	}
-	return {
-		length,
-		max: max$6,
-		min: min$5,
-		constrain,
-		reachedAny,
-		reachedMax,
-		reachedMin,
-		removeOffset
-	};
-}
-function Counter(max$6, start, loop) {
-	const { constrain } = Limit(0, max$6);
-	const loopEnd = max$6 + 1;
-	let counter = withinLimit(start);
-	function withinLimit(n) {
-		return !loop ? constrain(n) : mathAbs((loopEnd + n) % loopEnd);
-	}
-	function get$8() {
-		return counter;
-	}
-	function set(n) {
-		counter = withinLimit(n);
-		return self$1;
-	}
-	function add(n) {
-		return clone().set(get$8() + n);
-	}
-	function clone() {
-		return Counter(max$6, get$8(), loop);
-	}
-	const self$1 = {
-		get: get$8,
-		set,
-		add,
-		clone
-	};
-	return self$1;
-}
-function DragHandler(axis, rootNode, ownerDocument, ownerWindow, target, dragTracker, location, animation, scrollTo, scrollBody, scrollTarget, index$1, eventHandler, percentOfView, dragFree, dragThreshold, skipSnaps, baseFriction, watchDrag) {
-	const { cross: crossAxis, direction } = axis;
-	const focusNodes = [
-		"INPUT",
-		"SELECT",
-		"TEXTAREA"
-	];
-	const nonPassiveEvent = { passive: false };
-	const initEvents = EventStore();
-	const dragEvents = EventStore();
-	const goToNextThreshold = Limit(50, 225).constrain(percentOfView.measure(20));
-	const snapForceBoost = {
-		mouse: 300,
-		touch: 400
-	};
-	const freeForceBoost = {
-		mouse: 500,
-		touch: 600
-	};
-	const baseSpeed = dragFree ? 43 : 25;
-	let isMoving = false;
-	let startScroll = 0;
-	let startCross = 0;
-	let pointerIsDown = false;
-	let preventScroll = false;
-	let preventClick = false;
-	let isMouse = false;
-	function init(emblaApi) {
-		if (!watchDrag) return;
-		function downIfAllowed(evt) {
-			if (isBoolean$2(watchDrag) || watchDrag(emblaApi, evt)) down(evt);
-		}
-		const node = rootNode;
-		initEvents.add(node, "dragstart", (evt) => evt.preventDefault(), nonPassiveEvent).add(node, "touchmove", () => void 0, nonPassiveEvent).add(node, "touchend", () => void 0).add(node, "touchstart", downIfAllowed).add(node, "mousedown", downIfAllowed).add(node, "touchcancel", up).add(node, "contextmenu", up).add(node, "click", click, true);
-	}
-	function destroy() {
-		initEvents.clear();
-		dragEvents.clear();
-	}
-	function addDragEvents() {
-		const node = isMouse ? ownerDocument : rootNode;
-		dragEvents.add(node, "touchmove", move, nonPassiveEvent).add(node, "touchend", up).add(node, "mousemove", move, nonPassiveEvent).add(node, "mouseup", up);
-	}
-	function isFocusNode(node) {
-		const nodeName = node.nodeName || "";
-		return focusNodes.includes(nodeName);
-	}
-	function forceBoost() {
-		return (dragFree ? freeForceBoost : snapForceBoost)[isMouse ? "mouse" : "touch"];
-	}
-	function allowedForce(force, targetChanged) {
-		const next = index$1.add(mathSign$1(force) * -1);
-		const baseForce = scrollTarget.byDistance(force, !dragFree).distance;
-		if (dragFree || mathAbs(force) < goToNextThreshold) return baseForce;
-		if (skipSnaps && targetChanged) return baseForce * .5;
-		return scrollTarget.byIndex(next.get(), 0).distance;
-	}
-	function down(evt) {
-		const isMouseEvt = isMouseEvent(evt, ownerWindow);
-		isMouse = isMouseEvt;
-		preventClick = dragFree && isMouseEvt && !evt.buttons && isMoving;
-		isMoving = deltaAbs(target.get(), location.get()) >= 2;
-		if (isMouseEvt && evt.button !== 0) return;
-		if (isFocusNode(evt.target)) return;
-		pointerIsDown = true;
-		dragTracker.pointerDown(evt);
-		scrollBody.useFriction(0).useDuration(0);
-		target.set(location);
-		addDragEvents();
-		startScroll = dragTracker.readPoint(evt);
-		startCross = dragTracker.readPoint(evt, crossAxis);
-		eventHandler.emit("pointerDown");
-	}
-	function move(evt) {
-		if (!isMouseEvent(evt, ownerWindow) && evt.touches.length >= 2) return up(evt);
-		const lastScroll = dragTracker.readPoint(evt);
-		const lastCross = dragTracker.readPoint(evt, crossAxis);
-		const diffScroll = deltaAbs(lastScroll, startScroll);
-		const diffCross = deltaAbs(lastCross, startCross);
-		if (!preventScroll && !isMouse) {
-			if (!evt.cancelable) return up(evt);
-			preventScroll = diffScroll > diffCross;
-			if (!preventScroll) return up(evt);
-		}
-		const diff = dragTracker.pointerMove(evt);
-		if (diffScroll > dragThreshold) preventClick = true;
-		scrollBody.useFriction(.3).useDuration(.75);
-		animation.start();
-		target.add(direction(diff));
-		evt.preventDefault();
-	}
-	function up(evt) {
-		const targetChanged = scrollTarget.byDistance(0, false).index !== index$1.get();
-		const rawForce = dragTracker.pointerUp(evt) * forceBoost();
-		const force = allowedForce(direction(rawForce), targetChanged);
-		const forceFactor = factorAbs(rawForce, force);
-		const speed = baseSpeed - 10 * forceFactor;
-		const friction = baseFriction + forceFactor / 50;
-		preventScroll = false;
-		pointerIsDown = false;
-		dragEvents.clear();
-		scrollBody.useDuration(speed).useFriction(friction);
-		scrollTo.distance(force, !dragFree);
-		isMouse = false;
-		eventHandler.emit("pointerUp");
-	}
-	function click(evt) {
-		if (preventClick) {
-			evt.stopPropagation();
-			evt.preventDefault();
-			preventClick = false;
-		}
-	}
-	function pointerDown() {
-		return pointerIsDown;
-	}
-	return {
-		init,
-		destroy,
-		pointerDown
-	};
-}
-function DragTracker(axis, ownerWindow) {
-	const logInterval = 170;
-	let startEvent;
-	let lastEvent;
-	function readTime(evt) {
-		return evt.timeStamp;
-	}
-	function readPoint(evt, evtAxis) {
-		const coord = `client${(evtAxis || axis.scroll) === "x" ? "X" : "Y"}`;
-		return (isMouseEvent(evt, ownerWindow) ? evt : evt.touches[0])[coord];
-	}
-	function pointerDown(evt) {
-		startEvent = evt;
-		lastEvent = evt;
-		return readPoint(evt);
-	}
-	function pointerMove(evt) {
-		const diff = readPoint(evt) - readPoint(lastEvent);
-		const expired = readTime(evt) - readTime(startEvent) > logInterval;
-		lastEvent = evt;
-		if (expired) startEvent = evt;
-		return diff;
-	}
-	function pointerUp(evt) {
-		if (!startEvent || !lastEvent) return 0;
-		const diffDrag = readPoint(lastEvent) - readPoint(startEvent);
-		const diffTime = readTime(evt) - readTime(startEvent);
-		const expired = readTime(evt) - readTime(lastEvent) > logInterval;
-		const force = diffDrag / diffTime;
-		return diffTime && !expired && mathAbs(force) > .1 ? force : 0;
-	}
-	return {
-		pointerDown,
-		pointerMove,
-		pointerUp,
-		readPoint
-	};
-}
-function NodeRects() {
-	function measure(node) {
-		const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = node;
-		return {
-			top: offsetTop,
-			right: offsetLeft + offsetWidth,
-			bottom: offsetTop + offsetHeight,
-			left: offsetLeft,
-			width: offsetWidth,
-			height: offsetHeight
-		};
-	}
-	return { measure };
-}
-function PercentOfView(viewSize) {
-	function measure(n) {
-		return viewSize * (n / 100);
-	}
-	return { measure };
-}
-function ResizeHandler(container, eventHandler, ownerWindow, slides, axis, watchResize, nodeRects) {
-	const observeNodes = [container].concat(slides);
-	let resizeObserver;
-	let containerSize;
-	let slideSizes = [];
-	let destroyed = false;
-	function readSize(node) {
-		return axis.measureSize(nodeRects.measure(node));
-	}
-	function init(emblaApi) {
-		if (!watchResize) return;
-		containerSize = readSize(container);
-		slideSizes = slides.map(readSize);
-		function defaultCallback(entries) {
-			for (const entry of entries) {
-				if (destroyed) return;
-				const isContainer = entry.target === container;
-				const slideIndex = slides.indexOf(entry.target);
-				const lastSize = isContainer ? containerSize : slideSizes[slideIndex];
-				if (mathAbs(readSize(isContainer ? container : slides[slideIndex]) - lastSize) >= .5) {
-					emblaApi.reInit();
-					eventHandler.emit("resize");
-					break;
-				}
-			}
-		}
-		resizeObserver = new ResizeObserver((entries) => {
-			if (isBoolean$2(watchResize) || watchResize(emblaApi, entries)) defaultCallback(entries);
-		});
-		ownerWindow.requestAnimationFrame(() => {
-			observeNodes.forEach((node) => resizeObserver.observe(node));
-		});
-	}
-	function destroy() {
-		destroyed = true;
-		if (resizeObserver) resizeObserver.disconnect();
-	}
-	return {
-		init,
-		destroy
-	};
-}
-function ScrollBody(location, offsetLocation, previousLocation, target, baseDuration, baseFriction) {
-	let scrollVelocity = 0;
-	let scrollDirection = 0;
-	let scrollDuration = baseDuration;
-	let scrollFriction = baseFriction;
-	let rawLocation = location.get();
-	let rawLocationPrevious = 0;
-	function seek() {
-		const displacement = target.get() - location.get();
-		const isInstant = !scrollDuration;
-		let scrollDistance = 0;
-		if (isInstant) {
-			scrollVelocity = 0;
-			previousLocation.set(target);
-			location.set(target);
-			scrollDistance = displacement;
-		} else {
-			previousLocation.set(location);
-			scrollVelocity += displacement / scrollDuration;
-			scrollVelocity *= scrollFriction;
-			rawLocation += scrollVelocity;
-			location.add(scrollVelocity);
-			scrollDistance = rawLocation - rawLocationPrevious;
-		}
-		scrollDirection = mathSign$1(scrollDistance);
-		rawLocationPrevious = rawLocation;
-		return self$1;
-	}
-	function settled() {
-		return mathAbs(target.get() - offsetLocation.get()) < .001;
-	}
-	function duration() {
-		return scrollDuration;
-	}
-	function direction() {
-		return scrollDirection;
-	}
-	function velocity() {
-		return scrollVelocity;
-	}
-	function useBaseDuration() {
-		return useDuration(baseDuration);
-	}
-	function useBaseFriction() {
-		return useFriction(baseFriction);
-	}
-	function useDuration(n) {
-		scrollDuration = n;
-		return self$1;
-	}
-	function useFriction(n) {
-		scrollFriction = n;
-		return self$1;
-	}
-	const self$1 = {
-		direction,
-		duration,
-		velocity,
-		seek,
-		settled,
-		useBaseFriction,
-		useBaseDuration,
-		useFriction,
-		useDuration
-	};
-	return self$1;
-}
-function ScrollBounds(limit, location, target, scrollBody, percentOfView) {
-	const pullBackThreshold = percentOfView.measure(10);
-	const edgeOffsetTolerance = percentOfView.measure(50);
-	const frictionLimit = Limit(.1, .99);
-	let disabled = false;
-	function shouldConstrain() {
-		if (disabled) return false;
-		if (!limit.reachedAny(target.get())) return false;
-		if (!limit.reachedAny(location.get())) return false;
-		return true;
-	}
-	function constrain(pointerDown) {
-		if (!shouldConstrain()) return;
-		const diffToEdge = mathAbs(limit[limit.reachedMin(location.get()) ? "min" : "max"] - location.get());
-		const diffToTarget = target.get() - location.get();
-		const friction = frictionLimit.constrain(diffToEdge / edgeOffsetTolerance);
-		target.subtract(diffToTarget * friction);
-		if (!pointerDown && mathAbs(diffToTarget) < pullBackThreshold) {
-			target.set(limit.constrain(target.get()));
-			scrollBody.useDuration(25).useBaseFriction();
-		}
-	}
-	function toggleActive(active) {
-		disabled = !active;
-	}
-	return {
-		shouldConstrain,
-		constrain,
-		toggleActive
-	};
-}
-function ScrollContain(viewSize, contentSize, snapsAligned, containScroll, pixelTolerance) {
-	const scrollBounds = Limit(-contentSize + viewSize, 0);
-	const snapsBounded = measureBounded();
-	const scrollContainLimit = findScrollContainLimit();
-	const snapsContained = measureContained();
-	function usePixelTolerance(bound, snap) {
-		return deltaAbs(bound, snap) <= 1;
-	}
-	function findScrollContainLimit() {
-		const startSnap = snapsBounded[0];
-		const endSnap = arrayLast(snapsBounded);
-		return Limit(snapsBounded.lastIndexOf(startSnap), snapsBounded.indexOf(endSnap) + 1);
-	}
-	function measureBounded() {
-		return snapsAligned.map((snapAligned, index$1) => {
-			const { min: min$5, max: max$6 } = scrollBounds;
-			const snap = scrollBounds.constrain(snapAligned);
-			const isFirst = !index$1;
-			const isLast = arrayIsLastIndex(snapsAligned, index$1);
-			if (isFirst) return max$6;
-			if (isLast) return min$5;
-			if (usePixelTolerance(min$5, snap)) return min$5;
-			if (usePixelTolerance(max$6, snap)) return max$6;
-			return snap;
-		}).map((scrollBound) => parseFloat(scrollBound.toFixed(3)));
-	}
-	function measureContained() {
-		if (contentSize <= viewSize + pixelTolerance) return [scrollBounds.max];
-		if (containScroll === "keepSnaps") return snapsBounded;
-		const { min: min$5, max: max$6 } = scrollContainLimit;
-		return snapsBounded.slice(min$5, max$6);
-	}
-	return {
-		snapsContained,
-		scrollContainLimit
-	};
-}
-function ScrollLimit(contentSize, scrollSnaps, loop) {
-	const max$6 = scrollSnaps[0];
-	return { limit: Limit(loop ? max$6 - contentSize : arrayLast(scrollSnaps), max$6) };
-}
-function ScrollLooper(contentSize, limit, location, vectors) {
-	const jointSafety = .1;
-	const { reachedMin, reachedMax } = Limit(limit.min + jointSafety, limit.max + jointSafety);
-	function shouldLoop(direction) {
-		if (direction === 1) return reachedMax(location.get());
-		if (direction === -1) return reachedMin(location.get());
-		return false;
-	}
-	function loop(direction) {
-		if (!shouldLoop(direction)) return;
-		const loopDistance = contentSize * (direction * -1);
-		vectors.forEach((v) => v.add(loopDistance));
-	}
-	return { loop };
-}
-function ScrollProgress(limit) {
-	const { max: max$6, length } = limit;
-	function get$8(n) {
-		const currentLocation = n - max$6;
-		return length ? currentLocation / -length : 0;
-	}
-	return { get: get$8 };
-}
-function ScrollSnaps(axis, alignment, containerRect, slideRects, slidesToScroll) {
-	const { startEdge, endEdge } = axis;
-	const { groupSlides } = slidesToScroll;
-	const alignments = measureSizes().map(alignment.measure);
-	const snaps = measureUnaligned();
-	const snapsAligned = measureAligned();
-	function measureSizes() {
-		return groupSlides(slideRects).map((rects) => arrayLast(rects)[endEdge] - rects[0][startEdge]).map(mathAbs);
-	}
-	function measureUnaligned() {
-		return slideRects.map((rect) => containerRect[startEdge] - rect[startEdge]).map((snap) => -mathAbs(snap));
-	}
-	function measureAligned() {
-		return groupSlides(snaps).map((g) => g[0]).map((snap, index$1) => snap + alignments[index$1]);
-	}
-	return {
-		snaps,
-		snapsAligned
-	};
-}
-function SlideRegistry(containSnaps, containScroll, scrollSnaps, scrollContainLimit, slidesToScroll, slideIndexes) {
-	const { groupSlides } = slidesToScroll;
-	const { min: min$5, max: max$6 } = scrollContainLimit;
-	const slideRegistry = createSlideRegistry();
-	function createSlideRegistry() {
-		const groupedSlideIndexes = groupSlides(slideIndexes);
-		const doNotContain = !containSnaps || containScroll === "keepSnaps";
-		if (scrollSnaps.length === 1) return [slideIndexes];
-		if (doNotContain) return groupedSlideIndexes;
-		return groupedSlideIndexes.slice(min$5, max$6).map((group, index$1, groups) => {
-			const isFirst = !index$1;
-			const isLast = arrayIsLastIndex(groups, index$1);
-			if (isFirst) return arrayFromNumber(arrayLast(groups[0]) + 1);
-			if (isLast) return arrayFromNumber(arrayLastIndex(slideIndexes) - arrayLast(groups)[0] + 1, arrayLast(groups)[0]);
-			return group;
-		});
-	}
-	return { slideRegistry };
-}
-function ScrollTarget(loop, scrollSnaps, contentSize, limit, targetVector) {
-	const { reachedAny, removeOffset, constrain } = limit;
-	function minDistance(distances) {
-		return distances.concat().sort((a$1, b$1) => mathAbs(a$1) - mathAbs(b$1))[0];
-	}
-	function findTargetSnap(target) {
-		const distance = loop ? removeOffset(target) : constrain(target);
-		const { index: index$1 } = scrollSnaps.map((snap, index$2) => ({
-			diff: shortcut(snap - distance, 0),
-			index: index$2
-		})).sort((d1, d2) => mathAbs(d1.diff) - mathAbs(d2.diff))[0];
-		return {
-			index: index$1,
-			distance
-		};
-	}
-	function shortcut(target, direction) {
-		const targets = [
-			target,
-			target + contentSize,
-			target - contentSize
-		];
-		if (!loop) return target;
-		if (!direction) return minDistance(targets);
-		const matchingTargets = targets.filter((t) => mathSign$1(t) === direction);
-		if (matchingTargets.length) return minDistance(matchingTargets);
-		return arrayLast(targets) - contentSize;
-	}
-	function byIndex(index$1, direction) {
-		return {
-			index: index$1,
-			distance: shortcut(scrollSnaps[index$1] - targetVector.get(), direction)
-		};
-	}
-	function byDistance(distance, snap) {
-		const target = targetVector.get() + distance;
-		const { index: index$1, distance: targetSnapDistance } = findTargetSnap(target);
-		const reachedBound = !loop && reachedAny(target);
-		if (!snap || reachedBound) return {
-			index: index$1,
-			distance
-		};
-		return {
-			index: index$1,
-			distance: distance + shortcut(scrollSnaps[index$1] - targetSnapDistance, 0)
-		};
-	}
-	return {
-		byDistance,
-		byIndex,
-		shortcut
-	};
-}
-function ScrollTo(animation, indexCurrent, indexPrevious, scrollBody, scrollTarget, targetVector, eventHandler) {
-	function scrollTo(target) {
-		const distanceDiff = target.distance;
-		const indexDiff = target.index !== indexCurrent.get();
-		targetVector.add(distanceDiff);
-		if (distanceDiff) if (scrollBody.duration()) animation.start();
-		else {
-			animation.update();
-			animation.render(1);
-			animation.update();
-		}
-		if (indexDiff) {
-			indexPrevious.set(indexCurrent.get());
-			indexCurrent.set(target.index);
-			eventHandler.emit("select");
-		}
-	}
-	function distance(n, snap) {
-		scrollTo(scrollTarget.byDistance(n, snap));
-	}
-	function index$1(n, direction) {
-		const targetIndex = indexCurrent.clone().set(n);
-		scrollTo(scrollTarget.byIndex(targetIndex.get(), direction));
-	}
-	return {
-		distance,
-		index: index$1
-	};
-}
-function SlideFocus(root$3, slides, slideRegistry, scrollTo, scrollBody, eventStore, eventHandler, watchFocus) {
-	const focusListenerOptions = {
-		passive: true,
-		capture: true
-	};
-	let lastTabPressTime = 0;
-	function init(emblaApi) {
-		if (!watchFocus) return;
-		function defaultCallback(index$1) {
-			if ((/* @__PURE__ */ new Date()).getTime() - lastTabPressTime > 10) return;
-			eventHandler.emit("slideFocusStart");
-			root$3.scrollLeft = 0;
-			const group = slideRegistry.findIndex((group$1) => group$1.includes(index$1));
-			if (!isNumber$3(group)) return;
-			scrollBody.useDuration(0);
-			scrollTo.index(group, 0);
-			eventHandler.emit("slideFocus");
-		}
-		eventStore.add(document, "keydown", registerTabPress, false);
-		slides.forEach((slide, slideIndex) => {
-			eventStore.add(slide, "focus", (evt) => {
-				if (isBoolean$2(watchFocus) || watchFocus(emblaApi, evt)) defaultCallback(slideIndex);
-			}, focusListenerOptions);
-		});
-	}
-	function registerTabPress(event) {
-		if (event.code === "Tab") lastTabPressTime = (/* @__PURE__ */ new Date()).getTime();
-	}
-	return { init };
-}
-function Vector1D(initialValue) {
-	let value = initialValue;
-	function get$8() {
-		return value;
-	}
-	function set(n) {
-		value = normalizeInput(n);
-	}
-	function add(n) {
-		value += normalizeInput(n);
-	}
-	function subtract(n) {
-		value -= normalizeInput(n);
-	}
-	function normalizeInput(n) {
-		return isNumber$3(n) ? n : n.get();
-	}
-	return {
-		get: get$8,
-		set,
-		add,
-		subtract
-	};
-}
-function Translate(axis, container) {
-	const translate = axis.scroll === "x" ? x$2 : y$1;
-	const containerStyle = container.style;
-	let previousTarget = null;
-	let disabled = false;
-	function x$2(n) {
-		return `translate3d(${n}px,0px,0px)`;
-	}
-	function y$1(n) {
-		return `translate3d(0px,${n}px,0px)`;
-	}
-	function to(target) {
-		if (disabled) return;
-		const newTarget = roundToTwoDecimals(axis.direction(target));
-		if (newTarget === previousTarget) return;
-		containerStyle.transform = translate(newTarget);
-		previousTarget = newTarget;
-	}
-	function toggleActive(active) {
-		disabled = !active;
-	}
-	function clear() {
-		if (disabled) return;
-		containerStyle.transform = "";
-		if (!container.getAttribute("style")) container.removeAttribute("style");
-	}
-	return {
-		clear,
-		to,
-		toggleActive
-	};
-}
-function SlideLooper(axis, viewSize, contentSize, slideSizes, slideSizesWithGaps, snaps, scrollSnaps, location, slides) {
-	const roundingSafety = .5;
-	const ascItems = arrayKeys(slideSizesWithGaps);
-	const descItems = arrayKeys(slideSizesWithGaps).reverse();
-	const loopPoints = startPoints().concat(endPoints());
-	function removeSlideSizes(indexes, from) {
-		return indexes.reduce((a$1, i) => {
-			return a$1 - slideSizesWithGaps[i];
-		}, from);
-	}
-	function slidesInGap(indexes, gap) {
-		return indexes.reduce((a$1, i) => {
-			return removeSlideSizes(a$1, gap) > 0 ? a$1.concat([i]) : a$1;
-		}, []);
-	}
-	function findSlideBounds(offset$3) {
-		return snaps.map((snap, index$1) => ({
-			start: snap - slideSizes[index$1] + roundingSafety + offset$3,
-			end: snap + viewSize - roundingSafety + offset$3
-		}));
-	}
-	function findLoopPoints(indexes, offset$3, isEndEdge) {
-		const slideBounds = findSlideBounds(offset$3);
-		return indexes.map((index$1) => {
-			const initial = isEndEdge ? 0 : -contentSize;
-			const altered = isEndEdge ? contentSize : 0;
-			const boundEdge = isEndEdge ? "end" : "start";
-			const loopPoint = slideBounds[index$1][boundEdge];
-			return {
-				index: index$1,
-				loopPoint,
-				slideLocation: Vector1D(-1),
-				translate: Translate(axis, slides[index$1]),
-				target: () => location.get() > loopPoint ? initial : altered
-			};
-		});
-	}
-	function startPoints() {
-		const gap = scrollSnaps[0];
-		return findLoopPoints(slidesInGap(descItems, gap), contentSize, false);
-	}
-	function endPoints() {
-		return findLoopPoints(slidesInGap(ascItems, viewSize - scrollSnaps[0] - 1), -contentSize, true);
-	}
-	function canLoop() {
-		return loopPoints.every(({ index: index$1 }) => {
-			return removeSlideSizes(ascItems.filter((i) => i !== index$1), viewSize) <= .1;
-		});
-	}
-	function loop() {
-		loopPoints.forEach((loopPoint) => {
-			const { target, translate, slideLocation } = loopPoint;
-			const shiftLocation = target();
-			if (shiftLocation === slideLocation.get()) return;
-			translate.to(shiftLocation);
-			slideLocation.set(shiftLocation);
-		});
-	}
-	function clear() {
-		loopPoints.forEach((loopPoint) => loopPoint.translate.clear());
-	}
-	return {
-		canLoop,
-		clear,
-		loop,
-		loopPoints
-	};
-}
-function SlidesHandler(container, eventHandler, watchSlides) {
-	let mutationObserver;
-	let destroyed = false;
-	function init(emblaApi) {
-		if (!watchSlides) return;
-		function defaultCallback(mutations) {
-			for (const mutation of mutations) if (mutation.type === "childList") {
-				emblaApi.reInit();
-				eventHandler.emit("slidesChanged");
-				break;
-			}
-		}
-		mutationObserver = new MutationObserver((mutations) => {
-			if (destroyed) return;
-			if (isBoolean$2(watchSlides) || watchSlides(emblaApi, mutations)) defaultCallback(mutations);
-		});
-		mutationObserver.observe(container, { childList: true });
-	}
-	function destroy() {
-		if (mutationObserver) mutationObserver.disconnect();
-		destroyed = true;
-	}
-	return {
-		init,
-		destroy
-	};
-}
-function SlidesInView(container, slides, eventHandler, threshold$1) {
-	const intersectionEntryMap = {};
-	let inViewCache = null;
-	let notInViewCache = null;
-	let intersectionObserver;
-	let destroyed = false;
-	function init() {
-		intersectionObserver = new IntersectionObserver((entries) => {
-			if (destroyed) return;
-			entries.forEach((entry) => {
-				const index$1 = slides.indexOf(entry.target);
-				intersectionEntryMap[index$1] = entry;
-			});
-			inViewCache = null;
-			notInViewCache = null;
-			eventHandler.emit("slidesInView");
-		}, {
-			root: container.parentElement,
-			threshold: threshold$1
-		});
-		slides.forEach((slide) => intersectionObserver.observe(slide));
-	}
-	function destroy() {
-		if (intersectionObserver) intersectionObserver.disconnect();
-		destroyed = true;
-	}
-	function createInViewList(inView) {
-		return objectKeys(intersectionEntryMap).reduce((list, slideIndex) => {
-			const index$1 = parseInt(slideIndex);
-			const { isIntersecting } = intersectionEntryMap[index$1];
-			if (inView && isIntersecting || !inView && !isIntersecting) list.push(index$1);
-			return list;
-		}, []);
-	}
-	function get$8(inView = true) {
-		if (inView && inViewCache) return inViewCache;
-		if (!inView && notInViewCache) return notInViewCache;
-		const slideIndexes = createInViewList(inView);
-		if (inView) inViewCache = slideIndexes;
-		if (!inView) notInViewCache = slideIndexes;
-		return slideIndexes;
-	}
-	return {
-		init,
-		destroy,
-		get: get$8
-	};
-}
-function SlideSizes(axis, containerRect, slideRects, slides, readEdgeGap, ownerWindow) {
-	const { measureSize, startEdge, endEdge } = axis;
-	const withEdgeGap = slideRects[0] && readEdgeGap;
-	const startGap = measureStartGap();
-	const endGap = measureEndGap();
-	const slideSizes = slideRects.map(measureSize);
-	const slideSizesWithGaps = measureWithGaps();
-	function measureStartGap() {
-		if (!withEdgeGap) return 0;
-		const slideRect = slideRects[0];
-		return mathAbs(containerRect[startEdge] - slideRect[startEdge]);
-	}
-	function measureEndGap() {
-		if (!withEdgeGap) return 0;
-		const style = ownerWindow.getComputedStyle(arrayLast(slides));
-		return parseFloat(style.getPropertyValue(`margin-${endEdge}`));
-	}
-	function measureWithGaps() {
-		return slideRects.map((rect, index$1, rects) => {
-			const isFirst = !index$1;
-			const isLast = arrayIsLastIndex(rects, index$1);
-			if (isFirst) return slideSizes[index$1] + startGap;
-			if (isLast) return slideSizes[index$1] + endGap;
-			return rects[index$1 + 1][startEdge] - rect[startEdge];
-		}).map(mathAbs);
-	}
-	return {
-		slideSizes,
-		slideSizesWithGaps,
-		startGap,
-		endGap
-	};
-}
-function SlidesToScroll(axis, viewSize, slidesToScroll, loop, containerRect, slideRects, startGap, endGap, pixelTolerance) {
-	const { startEdge, endEdge, direction } = axis;
-	const groupByNumber = isNumber$3(slidesToScroll);
-	function byNumber(array, groupSize) {
-		return arrayKeys(array).filter((i) => i % groupSize === 0).map((i) => array.slice(i, i + groupSize));
-	}
-	function bySize(array) {
-		if (!array.length) return [];
-		return arrayKeys(array).reduce((groups, rectB, index$1) => {
-			const rectA = arrayLast(groups) || 0;
-			const isFirst = rectA === 0;
-			const isLast = rectB === arrayLastIndex(array);
-			const edgeA = containerRect[startEdge] - slideRects[rectA][startEdge];
-			const edgeB = containerRect[startEdge] - slideRects[rectB][endEdge];
-			const gapA = !loop && isFirst ? direction(startGap) : 0;
-			const chunkSize = mathAbs(edgeB - (!loop && isLast ? direction(endGap) : 0) - (edgeA + gapA));
-			if (index$1 && chunkSize > viewSize + pixelTolerance) groups.push(rectB);
-			if (isLast) groups.push(array.length);
-			return groups;
-		}, []).map((currentSize, index$1, groups) => {
-			const previousSize = Math.max(groups[index$1 - 1] || 0);
-			return array.slice(previousSize, currentSize);
-		});
-	}
-	function groupSlides(array) {
-		return groupByNumber ? byNumber(array, slidesToScroll) : bySize(array);
-	}
-	return { groupSlides };
-}
-function Engine(root$3, container, slides, ownerDocument, ownerWindow, options$1, eventHandler) {
-	const { align, axis: scrollAxis, direction, startIndex, loop, duration, dragFree, dragThreshold, inViewThreshold, slidesToScroll: groupSlides, skipSnaps, containScroll, watchResize, watchSlides, watchDrag, watchFocus } = options$1;
-	const pixelTolerance = 2;
-	const nodeRects = NodeRects();
-	const containerRect = nodeRects.measure(container);
-	const slideRects = slides.map(nodeRects.measure);
-	const axis = Axis(scrollAxis, direction);
-	const viewSize = axis.measureSize(containerRect);
-	const percentOfView = PercentOfView(viewSize);
-	const alignment = Alignment(align, viewSize);
-	const containSnaps = !loop && !!containScroll;
-	const { slideSizes, slideSizesWithGaps, startGap, endGap } = SlideSizes(axis, containerRect, slideRects, slides, loop || !!containScroll, ownerWindow);
-	const slidesToScroll = SlidesToScroll(axis, viewSize, groupSlides, loop, containerRect, slideRects, startGap, endGap, pixelTolerance);
-	const { snaps, snapsAligned } = ScrollSnaps(axis, alignment, containerRect, slideRects, slidesToScroll);
-	const contentSize = -arrayLast(snaps) + arrayLast(slideSizesWithGaps);
-	const { snapsContained, scrollContainLimit } = ScrollContain(viewSize, contentSize, snapsAligned, containScroll, pixelTolerance);
-	const scrollSnaps = containSnaps ? snapsContained : snapsAligned;
-	const { limit } = ScrollLimit(contentSize, scrollSnaps, loop);
-	const index$1 = Counter(arrayLastIndex(scrollSnaps), startIndex, loop);
-	const indexPrevious = index$1.clone();
-	const slideIndexes = arrayKeys(slides);
-	const update = ({ dragHandler, scrollBody: scrollBody$1, scrollBounds, options: { loop: loop$1 } }) => {
-		if (!loop$1) scrollBounds.constrain(dragHandler.pointerDown());
-		scrollBody$1.seek();
-	};
-	const render = ({ scrollBody: scrollBody$1, translate, location: location$1, offsetLocation: offsetLocation$1, previousLocation: previousLocation$1, scrollLooper, slideLooper, dragHandler, animation: animation$1, eventHandler: eventHandler$1, scrollBounds, options: { loop: loop$1 } }, alpha$1) => {
-		const shouldSettle = scrollBody$1.settled();
-		const withinBounds = !scrollBounds.shouldConstrain();
-		const hasSettled = loop$1 ? shouldSettle : shouldSettle && withinBounds;
-		const hasSettledAndIdle = hasSettled && !dragHandler.pointerDown();
-		if (hasSettledAndIdle) animation$1.stop();
-		const interpolatedLocation = location$1.get() * alpha$1 + previousLocation$1.get() * (1 - alpha$1);
-		offsetLocation$1.set(interpolatedLocation);
-		if (loop$1) {
-			scrollLooper.loop(scrollBody$1.direction());
-			slideLooper.loop();
-		}
-		translate.to(offsetLocation$1.get());
-		if (hasSettledAndIdle) eventHandler$1.emit("settle");
-		if (!hasSettled) eventHandler$1.emit("scroll");
-	};
-	const animation = Animations(ownerDocument, ownerWindow, () => update(engine), (alpha$1) => render(engine, alpha$1));
-	const friction = .68;
-	const startLocation = scrollSnaps[index$1.get()];
-	const location = Vector1D(startLocation);
-	const previousLocation = Vector1D(startLocation);
-	const offsetLocation = Vector1D(startLocation);
-	const target = Vector1D(startLocation);
-	const scrollBody = ScrollBody(location, offsetLocation, previousLocation, target, duration, friction);
-	const scrollTarget = ScrollTarget(loop, scrollSnaps, contentSize, limit, target);
-	const scrollTo = ScrollTo(animation, index$1, indexPrevious, scrollBody, scrollTarget, target, eventHandler);
-	const scrollProgress = ScrollProgress(limit);
-	const eventStore = EventStore();
-	const slidesInView = SlidesInView(container, slides, eventHandler, inViewThreshold);
-	const { slideRegistry } = SlideRegistry(containSnaps, containScroll, scrollSnaps, scrollContainLimit, slidesToScroll, slideIndexes);
-	const slideFocus = SlideFocus(root$3, slides, slideRegistry, scrollTo, scrollBody, eventStore, eventHandler, watchFocus);
-	const engine = {
-		ownerDocument,
-		ownerWindow,
-		eventHandler,
-		containerRect,
-		slideRects,
-		animation,
-		axis,
-		dragHandler: DragHandler(axis, root$3, ownerDocument, ownerWindow, target, DragTracker(axis, ownerWindow), location, animation, scrollTo, scrollBody, scrollTarget, index$1, eventHandler, percentOfView, dragFree, dragThreshold, skipSnaps, friction, watchDrag),
-		eventStore,
-		percentOfView,
-		index: index$1,
-		indexPrevious,
-		limit,
-		location,
-		offsetLocation,
-		previousLocation,
-		options: options$1,
-		resizeHandler: ResizeHandler(container, eventHandler, ownerWindow, slides, axis, watchResize, nodeRects),
-		scrollBody,
-		scrollBounds: ScrollBounds(limit, offsetLocation, target, scrollBody, percentOfView),
-		scrollLooper: ScrollLooper(contentSize, limit, offsetLocation, [
-			location,
-			offsetLocation,
-			previousLocation,
-			target
-		]),
-		scrollProgress,
-		scrollSnapList: scrollSnaps.map(scrollProgress.get),
-		scrollSnaps,
-		scrollTarget,
-		scrollTo,
-		slideLooper: SlideLooper(axis, viewSize, contentSize, slideSizes, slideSizesWithGaps, snaps, scrollSnaps, offsetLocation, slides),
-		slideFocus,
-		slidesHandler: SlidesHandler(container, eventHandler, watchSlides),
-		slidesInView,
-		slideIndexes,
-		slideRegistry,
-		slidesToScroll,
-		target,
-		translate: Translate(axis, container)
-	};
-	return engine;
-}
-function EventHandler() {
-	let listeners$3 = {};
-	let api;
-	function init(emblaApi) {
-		api = emblaApi;
-	}
-	function getListeners(evt) {
-		return listeners$3[evt] || [];
-	}
-	function emit(evt) {
-		getListeners(evt).forEach((e) => e(api, evt));
-		return self$1;
-	}
-	function on(evt, cb) {
-		listeners$3[evt] = getListeners(evt).concat([cb]);
-		return self$1;
-	}
-	function off(evt, cb) {
-		listeners$3[evt] = getListeners(evt).filter((e) => e !== cb);
-		return self$1;
-	}
-	function clear() {
-		listeners$3 = {};
-	}
-	const self$1 = {
-		init,
-		emit,
-		off,
-		on,
-		clear
-	};
-	return self$1;
-}
-var defaultOptions = {
-	align: "center",
-	axis: "x",
-	container: null,
-	slides: null,
-	containScroll: "trimSnaps",
-	direction: "ltr",
-	slidesToScroll: 1,
-	inViewThreshold: 0,
-	breakpoints: {},
-	dragFree: false,
-	dragThreshold: 10,
-	loop: false,
-	skipSnaps: false,
-	duration: 25,
-	startIndex: 0,
-	active: true,
-	watchDrag: true,
-	watchResize: true,
-	watchSlides: true,
-	watchFocus: true
-};
-function OptionsHandler(ownerWindow) {
-	function mergeOptions(optionsA, optionsB) {
-		return objectsMergeDeep(optionsA, optionsB || {});
-	}
-	function optionsAtMedia(options$1) {
-		const optionsAtMedia$1 = options$1.breakpoints || {};
-		return mergeOptions(options$1, objectKeys(optionsAtMedia$1).filter((media) => ownerWindow.matchMedia(media).matches).map((media) => optionsAtMedia$1[media]).reduce((a$1, mediaOption) => mergeOptions(a$1, mediaOption), {}));
-	}
-	function optionsMediaQueries(optionsList) {
-		return optionsList.map((options$1) => objectKeys(options$1.breakpoints || {})).reduce((acc, mediaQueries) => acc.concat(mediaQueries), []).map(ownerWindow.matchMedia);
-	}
-	return {
-		mergeOptions,
-		optionsAtMedia,
-		optionsMediaQueries
-	};
-}
-function PluginsHandler(optionsHandler) {
-	let activePlugins = [];
-	function init(emblaApi, plugins) {
-		activePlugins = plugins.filter(({ options: options$1 }) => optionsHandler.optionsAtMedia(options$1).active !== false);
-		activePlugins.forEach((plugin) => plugin.init(emblaApi, optionsHandler));
-		return plugins.reduce((map$4, plugin) => Object.assign(map$4, { [plugin.name]: plugin }), {});
-	}
-	function destroy() {
-		activePlugins = activePlugins.filter((plugin) => plugin.destroy());
-	}
-	return {
-		init,
-		destroy
-	};
-}
-function EmblaCarousel(root$3, userOptions, userPlugins) {
-	const ownerDocument = root$3.ownerDocument;
-	const ownerWindow = ownerDocument.defaultView;
-	const optionsHandler = OptionsHandler(ownerWindow);
-	const pluginsHandler = PluginsHandler(optionsHandler);
-	const mediaHandlers = EventStore();
-	const eventHandler = EventHandler();
-	const { mergeOptions, optionsAtMedia, optionsMediaQueries } = optionsHandler;
-	const { on, off, emit } = eventHandler;
-	const reInit = reActivate;
-	let destroyed = false;
-	let engine;
-	let optionsBase = mergeOptions(defaultOptions, EmblaCarousel.globalOptions);
-	let options$1 = mergeOptions(optionsBase);
-	let pluginList = [];
-	let pluginApis;
-	let container;
-	let slides;
-	function storeElements() {
-		const { container: userContainer, slides: userSlides } = options$1;
-		container = (isString$4(userContainer) ? root$3.querySelector(userContainer) : userContainer) || root$3.children[0];
-		const customSlides = isString$4(userSlides) ? container.querySelectorAll(userSlides) : userSlides;
-		slides = [].slice.call(customSlides || container.children);
-	}
-	function createEngine(options$2) {
-		const engine$1 = Engine(root$3, container, slides, ownerDocument, ownerWindow, options$2, eventHandler);
-		if (options$2.loop && !engine$1.slideLooper.canLoop()) return createEngine(Object.assign({}, options$2, { loop: false }));
-		return engine$1;
-	}
-	function activate(withOptions, withPlugins) {
-		if (destroyed) return;
-		optionsBase = mergeOptions(optionsBase, withOptions);
-		options$1 = optionsAtMedia(optionsBase);
-		pluginList = withPlugins || pluginList;
-		storeElements();
-		engine = createEngine(options$1);
-		optionsMediaQueries([optionsBase, ...pluginList.map(({ options: options$2 }) => options$2)]).forEach((query) => mediaHandlers.add(query, "change", reActivate));
-		if (!options$1.active) return;
-		engine.translate.to(engine.location.get());
-		engine.animation.init();
-		engine.slidesInView.init();
-		engine.slideFocus.init(self$1);
-		engine.eventHandler.init(self$1);
-		engine.resizeHandler.init(self$1);
-		engine.slidesHandler.init(self$1);
-		if (engine.options.loop) engine.slideLooper.loop();
-		if (container.offsetParent && slides.length) engine.dragHandler.init(self$1);
-		pluginApis = pluginsHandler.init(self$1, pluginList);
-	}
-	function reActivate(withOptions, withPlugins) {
-		const startIndex = selectedScrollSnap();
-		deActivate();
-		activate(mergeOptions({ startIndex }, withOptions), withPlugins);
-		eventHandler.emit("reInit");
-	}
-	function deActivate() {
-		engine.dragHandler.destroy();
-		engine.eventStore.clear();
-		engine.translate.clear();
-		engine.slideLooper.clear();
-		engine.resizeHandler.destroy();
-		engine.slidesHandler.destroy();
-		engine.slidesInView.destroy();
-		engine.animation.destroy();
-		pluginsHandler.destroy();
-		mediaHandlers.clear();
-	}
-	function destroy() {
-		if (destroyed) return;
-		destroyed = true;
-		mediaHandlers.clear();
-		deActivate();
-		eventHandler.emit("destroy");
-		eventHandler.clear();
-	}
-	function scrollTo(index$1, jump, direction) {
-		if (!options$1.active || destroyed) return;
-		engine.scrollBody.useBaseFriction().useDuration(jump === true ? 0 : options$1.duration);
-		engine.scrollTo.index(index$1, direction || 0);
-	}
-	function scrollNext(jump) {
-		scrollTo(engine.index.add(1).get(), jump, -1);
-	}
-	function scrollPrev(jump) {
-		scrollTo(engine.index.add(-1).get(), jump, 1);
-	}
-	function canScrollNext() {
-		return engine.index.add(1).get() !== selectedScrollSnap();
-	}
-	function canScrollPrev() {
-		return engine.index.add(-1).get() !== selectedScrollSnap();
-	}
-	function scrollSnapList() {
-		return engine.scrollSnapList;
-	}
-	function scrollProgress() {
-		return engine.scrollProgress.get(engine.offsetLocation.get());
-	}
-	function selectedScrollSnap() {
-		return engine.index.get();
-	}
-	function previousScrollSnap() {
-		return engine.indexPrevious.get();
-	}
-	function slidesInView() {
-		return engine.slidesInView.get();
-	}
-	function slidesNotInView() {
-		return engine.slidesInView.get(false);
-	}
-	function plugins() {
-		return pluginApis;
-	}
-	function internalEngine() {
-		return engine;
-	}
-	function rootNode() {
-		return root$3;
-	}
-	function containerNode() {
-		return container;
-	}
-	function slideNodes() {
-		return slides;
-	}
-	const self$1 = {
-		canScrollNext,
-		canScrollPrev,
-		containerNode,
-		internalEngine,
-		destroy,
-		off,
-		on,
-		emit,
-		plugins,
-		previousScrollSnap,
-		reInit,
-		rootNode,
-		scrollNext,
-		scrollPrev,
-		scrollProgress,
-		scrollSnapList,
-		scrollTo,
-		selectedScrollSnap,
-		slideNodes,
-		slidesInView,
-		slidesNotInView
-	};
-	activate(userOptions, userPlugins);
-	setTimeout(() => eventHandler.emit("init"), 0);
-	return self$1;
-}
-EmblaCarousel.globalOptions = void 0;
-function useEmblaCarousel(options$1 = {}, plugins = []) {
-	const storedOptions = (0, import_react.useRef)(options$1);
-	const storedPlugins = (0, import_react.useRef)(plugins);
-	const [emblaApi, setEmblaApi] = (0, import_react.useState)();
-	const [viewport, setViewport] = (0, import_react.useState)();
-	const reInit = (0, import_react.useCallback)(() => {
-		if (emblaApi) emblaApi.reInit(storedOptions.current, storedPlugins.current);
-	}, [emblaApi]);
-	(0, import_react.useEffect)(() => {
-		if (areOptionsEqual(storedOptions.current, options$1)) return;
-		storedOptions.current = options$1;
-		reInit();
-	}, [options$1, reInit]);
-	(0, import_react.useEffect)(() => {
-		if (arePluginsEqual(storedPlugins.current, plugins)) return;
-		storedPlugins.current = plugins;
-		reInit();
-	}, [plugins, reInit]);
-	(0, import_react.useEffect)(() => {
-		if (canUseDOM() && viewport) {
-			EmblaCarousel.globalOptions = useEmblaCarousel.globalOptions;
-			const newEmblaApi = EmblaCarousel(viewport, storedOptions.current, storedPlugins.current);
-			setEmblaApi(newEmblaApi);
-			return () => newEmblaApi.destroy();
-		} else setEmblaApi(void 0);
-	}, [viewport, setEmblaApi]);
-	return [setViewport, emblaApi];
-}
-useEmblaCarousel.globalOptions = void 0;
-var CarouselContext = import_react.createContext(null);
-function useCarousel() {
-	const context = import_react.useContext(CarouselContext);
-	if (!context) throw new Error("useCarousel must be used within a <Carousel />");
-	return context;
-}
-var Carousel = import_react.forwardRef(({ orientation = "horizontal", opts, setApi, plugins, className, children, ...props }, ref) => {
-	const [carouselRef, api] = useEmblaCarousel({
-		...opts,
-		axis: orientation === "horizontal" ? "x" : "y"
-	}, plugins);
-	const [canScrollPrev, setCanScrollPrev] = import_react.useState(false);
-	const [canScrollNext, setCanScrollNext] = import_react.useState(false);
-	const onSelect = import_react.useCallback((api$1) => {
-		if (!api$1) return;
-		setCanScrollPrev(api$1.canScrollPrev());
-		setCanScrollNext(api$1.canScrollNext());
-	}, []);
-	const scrollPrev = import_react.useCallback(() => {
-		api?.scrollPrev();
-	}, [api]);
-	const scrollNext = import_react.useCallback(() => {
-		api?.scrollNext();
-	}, [api]);
-	const handleKeyDown = import_react.useCallback((event) => {
-		if (event.key === "ArrowLeft") {
-			event.preventDefault();
-			scrollPrev();
-		} else if (event.key === "ArrowRight") {
-			event.preventDefault();
-			scrollNext();
-		}
-	}, [scrollPrev, scrollNext]);
-	import_react.useEffect(() => {
-		if (!api || !setApi) return;
-		setApi(api);
-	}, [api, setApi]);
-	import_react.useEffect(() => {
-		if (!api) return;
-		onSelect(api);
-		api.on("reInit", onSelect);
-		api.on("select", onSelect);
-		return () => {
-			api?.off("select", onSelect);
-		};
-	}, [api, onSelect]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselContext.Provider, {
-		value: {
-			carouselRef,
-			api,
-			opts,
-			orientation: orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-			scrollPrev,
-			scrollNext,
-			canScrollPrev,
-			canScrollNext
-		},
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			ref,
-			onKeyDownCapture: handleKeyDown,
-			className: cn("relative", className),
-			role: "region",
-			"aria-roledescription": "carousel",
-			...props,
-			children
+function RoomList({ hotelId, towerId }) {
+	const { properties: properties$1 } = usePropertyStore_default();
+	const rooms = properties$1.filter((p$1) => p$1.hotelId === hotelId && (towerId === "none" || p$1.towerId === towerId) && p$1.profileType === "short_term");
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Number" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Type" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Price" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+			className: "text-right",
+			children: "Action"
 		})
-	});
-});
-Carousel.displayName = "Carousel";
-var CarouselContent = import_react.forwardRef(({ className, ...props }, ref) => {
-	const { carouselRef, orientation } = useCarousel();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		ref: carouselRef,
-		className: "overflow-hidden",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			ref,
-			className: cn("flex", orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col", className),
-			...props
-		})
-	});
-});
-CarouselContent.displayName = "CarouselContent";
-var CarouselItem = import_react.forwardRef(({ className, ...props }, ref) => {
-	const { orientation } = useCarousel();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		ref,
-		role: "group",
-		"aria-roledescription": "slide",
-		className: cn("min-w-0 shrink-0 grow-0 basis-full", orientation === "horizontal" ? "pl-4" : "pt-4", className),
-		...props
-	});
-});
-CarouselItem.displayName = "CarouselItem";
-var CarouselPrevious = import_react.forwardRef(({ className, variant = "outline", size: size$3 = "icon", ...props }, ref) => {
-	const { orientation, scrollPrev, canScrollPrev } = useCarousel();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-		ref,
-		variant,
-		size: size$3,
-		className: cn("absolute  h-8 w-8 rounded-full", orientation === "horizontal" ? "-left-12 top-1/2 -translate-y-1/2" : "-top-12 left-1/2 -translate-x-1/2 rotate-90", className),
-		disabled: !canScrollPrev,
-		onClick: scrollPrev,
-		...props,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-			className: "sr-only",
-			children: "Previous slide"
-		})]
-	});
-});
-CarouselPrevious.displayName = "CarouselPrevious";
-var CarouselNext = import_react.forwardRef(({ className, variant = "outline", size: size$3 = "icon", ...props }, ref) => {
-	const { orientation, scrollNext, canScrollNext } = useCarousel();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-		ref,
-		variant,
-		size: size$3,
-		className: cn("absolute h-8 w-8 rounded-full", orientation === "horizontal" ? "-right-12 top-1/2 -translate-y-1/2" : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90", className),
-		disabled: !canScrollNext,
-		onClick: scrollNext,
-		...props,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowRight, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-			className: "sr-only",
-			children: "Next slide"
-		})]
-	});
-});
-CarouselNext.displayName = "CarouselNext";
-var CHECKBOX_NAME = "Checkbox";
-var [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
-var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
-function CheckboxProvider(props) {
-	const { __scopeCheckbox, checked: checkedProp, children, defaultChecked, disabled, form, name, onCheckedChange, required, value = "on", internal_do_not_use_render } = props;
-	const [checked, setChecked] = useControllableState({
-		prop: checkedProp,
-		defaultProp: defaultChecked ?? false,
-		onChange: onCheckedChange,
-		caller: CHECKBOX_NAME
-	});
-	const [control, setControl] = import_react.useState(null);
-	const [bubbleInput, setBubbleInput] = import_react.useState(null);
-	const hasConsumerStoppedPropagationRef = import_react.useRef(false);
-	const isFormControl = control ? !!form || !!control.closest("form") : true;
-	const context = {
-		checked,
-		disabled,
-		setChecked,
-		control,
-		setControl,
-		name,
-		form,
-		value,
-		hasConsumerStoppedPropagationRef,
-		required,
-		defaultChecked: isIndeterminate(defaultChecked) ? false : defaultChecked,
-		isFormControl,
-		bubbleInput,
-		setBubbleInput
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProviderImpl, {
-		scope: __scopeCheckbox,
-		...context,
-		children: isFunction$26(internal_do_not_use_render) ? internal_do_not_use_render(context) : children
-	});
-}
-var TRIGGER_NAME = "CheckboxTrigger";
-var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onClick, ...checkboxProps }, forwardedRef) => {
-	const { control, value, disabled, checked, required, setControl, setChecked, hasConsumerStoppedPropagationRef, isFormControl, bubbleInput } = useCheckboxContext(TRIGGER_NAME, __scopeCheckbox);
-	const composedRefs = useComposedRefs(forwardedRef, setControl);
-	const initialCheckedStateRef = import_react.useRef(checked);
-	import_react.useEffect(() => {
-		const form = control?.form;
-		if (form) {
-			const reset = () => setChecked(initialCheckedStateRef.current);
-			form.addEventListener("reset", reset);
-			return () => form.removeEventListener("reset", reset);
-		}
-	}, [control, setChecked]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-		type: "button",
-		role: "checkbox",
-		"aria-checked": isIndeterminate(checked) ? "mixed" : checked,
-		"aria-required": required,
-		"data-state": getState(checked),
-		"data-disabled": disabled ? "" : void 0,
-		disabled,
-		value,
-		...checkboxProps,
-		ref: composedRefs,
-		onKeyDown: composeEventHandlers(onKeyDown, (event) => {
-			if (event.key === "Enter") event.preventDefault();
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [rooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "font-bold",
+			children: room.roomNumber
 		}),
-		onClick: composeEventHandlers(onClick, (event) => {
-			setChecked((prevChecked) => isIndeterminate(prevChecked) ? true : !prevChecked);
-			if (bubbleInput && isFormControl) {
-				hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-				if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-			}
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: room.name }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+			variant: "outline",
+			children: room.status
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: ["$", room.listingPrice] }) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "text-right",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				size: "sm",
+				variant: "ghost",
+				asChild: true,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+					to: towerId !== "none" ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}` : `/hotels/${hotelId}/rooms/${room.id}`,
+					children: "View"
+				})
+			})
 		})
-	});
-});
-CheckboxTrigger.displayName = TRIGGER_NAME;
-var Checkbox$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCheckbox, name, checked, defaultChecked, required, disabled, value, onCheckedChange, form, ...checkboxProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxProvider, {
-		__scopeCheckbox,
-		checked,
-		defaultChecked,
-		disabled,
-		required,
-		onCheckedChange,
-		name,
-		form,
-		value,
-		internal_do_not_use_render: ({ isFormControl }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxTrigger, {
-			...checkboxProps,
-			ref: forwardedRef,
-			__scopeCheckbox
-		}), isFormControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxBubbleInput, { __scopeCheckbox })] })
-	});
-});
-Checkbox$1.displayName = CHECKBOX_NAME;
-var INDICATOR_NAME = "CheckboxIndicator";
-var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
-	const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
-		present: forceMount || isIndeterminate(context.checked) || context.checked === true,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-			"data-state": getState(context.checked),
-			"data-disabled": context.disabled ? "" : void 0,
-			...indicatorProps,
-			ref: forwardedRef,
-			style: {
-				pointerEvents: "none",
-				...props.style
-			}
-		})
-	});
-});
-CheckboxIndicator.displayName = INDICATOR_NAME;
-var BUBBLE_INPUT_NAME = "CheckboxBubbleInput";
-var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }, forwardedRef) => {
-	const { control, hasConsumerStoppedPropagationRef, checked, defaultChecked, required, disabled, name, value, form, bubbleInput, setBubbleInput } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
-	const composedRefs = useComposedRefs(forwardedRef, setBubbleInput);
-	const prevChecked = usePrevious(checked);
-	const controlSize = useSize(control);
-	import_react.useEffect(() => {
-		const input = bubbleInput;
-		if (!input) return;
-		const inputProto = window.HTMLInputElement.prototype;
-		const setChecked = Object.getOwnPropertyDescriptor(inputProto, "checked").set;
-		const bubbles = !hasConsumerStoppedPropagationRef.current;
-		if (prevChecked !== checked && setChecked) {
-			const event = new Event("click", { bubbles });
-			input.indeterminate = isIndeterminate(checked);
-			setChecked.call(input, isIndeterminate(checked) ? false : checked);
-			input.dispatchEvent(event);
-		}
-	}, [
-		bubbleInput,
-		prevChecked,
-		checked,
-		hasConsumerStoppedPropagationRef
-	]);
-	const defaultCheckedRef = import_react.useRef(isIndeterminate(checked) ? false : checked);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.input, {
-		type: "checkbox",
-		"aria-hidden": true,
-		defaultChecked: defaultChecked ?? defaultCheckedRef.current,
-		required,
-		disabled,
-		name,
-		value,
-		form,
-		...props,
-		tabIndex: -1,
-		ref: composedRefs,
-		style: {
-			...props.style,
-			...controlSize,
-			position: "absolute",
-			pointerEvents: "none",
-			opacity: 0,
-			margin: 0,
-			transform: "translateX(-100%)"
-		}
-	});
-});
-CheckboxBubbleInput.displayName = BUBBLE_INPUT_NAME;
-function isFunction$26(value) {
-	return typeof value === "function";
+	] }, room.id)), rooms.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+		colSpan: 5,
+		className: "text-center py-4 text-muted-foreground",
+		children: "No rooms found."
+	}) })] })] });
 }
-function isIndeterminate(checked) {
-	return checked === "indeterminate";
-}
-function getState(checked) {
-	return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
-}
-var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
-	ref,
-	className: cn("peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground", className),
-	...props,
-	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CheckboxIndicator, {
-		className: cn("flex items-center justify-center text-current"),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" })
-	})
-}));
-Checkbox.displayName = Checkbox$1.displayName;
-function HotelRoomDetails() {
-	const { hotelId, towerId, roomId } = useParams();
-	const { properties: properties$1, updateProperty } = usePropertyStore_default();
-	const { hotels: hotels$1, towers: towers$1 } = useHotelStore_default();
-	const { t, language } = useLanguageStore_default();
-	const { currency } = useFinancialStore_default();
+function HotelDetails() {
+	const { id } = useParams();
+	const navigate = useNavigate();
+	const { hotels: hotels$1, towers: towers$1, updateHotel, deleteHotel, addTower, updateTower, deleteTower } = (0, import_react.useContext)(AppContext);
+	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
-	const room = properties$1.find((p$1) => p$1.id === roomId);
-	const hotel = hotels$1.find((h) => h.id === hotelId);
-	const tower = towers$1.find((t$1) => t$1.id === towerId);
-	const [formData, setFormData] = (0, import_react.useState)(room ? { ...room } : null);
-	const [newImageUrl, setNewImageUrl] = (0, import_react.useState)("");
-	if (!room || !formData || !hotel) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Room not found" });
+	const [hotel, setHotel] = (0, import_react.useState)(null);
+	const [isEditing, setIsEditing] = (0, import_react.useState)(false);
+	const [formData, setFormData] = (0, import_react.useState)(null);
+	const [newTowerName, setNewTowerName] = (0, import_react.useState)("");
+	const [isAddTowerOpen, setIsAddTowerOpen] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		const found = hotels$1.find((h) => h.id === id);
+		if (found) {
+			setHotel(found);
+			setFormData(found);
+		}
+	}, [id, hotels$1]);
+	if (!hotel || !formData) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 text-center max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh]",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-2xl font-bold text-slate-900 mb-2",
+			children: "Hotel Not Found"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+			onClick: () => navigate("/hotels"),
+			className: "bg-trust-blue text-white",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "mr-2 h-4 w-4" }), " Back to Hotels"]
+		})]
+	});
 	const handleSave = () => {
-		updateProperty(formData);
+		updateHotel(formData);
+		setHotel(formData);
+		setIsEditing(false);
 		toast$2({
 			title: t("common.success"),
-			description: "Room details updated."
+			description: "Hotel updated successfully."
 		});
 	};
-	const handleChange = (field, value) => {
-		setFormData((prev) => prev ? {
-			...prev,
-			[field]: value
-		} : null);
+	const handleDelete = () => {
+		deleteHotel(hotel.id);
+		toast$2({
+			title: t("common.success"),
+			description: "Hotel deleted."
+		});
+		navigate("/hotels");
 	};
-	const handleCharacteristicChange = (field, value) => {
-		setFormData((prev) => prev ? {
-			...prev,
-			roomCharacteristics: {
-				...prev.roomCharacteristics,
-				[field]: value
-			}
-		} : null);
+	const handleAddTower = () => {
+		if (!newTowerName) return;
+		addTower({
+			id: `tower-${Date.now()}`,
+			hotelId: hotel.id,
+			name: newTowerName
+		});
+		setNewTowerName("");
+		setIsAddTowerOpen(false);
+		toast$2({ title: "Tower added successfully." });
 	};
-	const addImage = () => {
-		if (newImageUrl) {
-			handleChange("gallery", [...formData.gallery || [], newImageUrl]);
-			setNewImageUrl("");
-		}
-	};
+	const hotelTowers = towers$1.filter((t$1) => t$1.hotelId === hotel.id);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6 pb-10",
+		className: "p-6 flex flex-col gap-6 max-w-6xl mx-auto animate-in fade-in duration-500",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex items-center gap-4",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-					to: tower ? `/hotels/${hotel.id}/towers/${tower.id}` : `/hotels/${hotel.id}`,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						variant: "ghost",
-						size: "icon",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-5 w-5" })
+			className: "flex items-center justify-between flex-wrap gap-4 bg-white p-4 rounded-lg border shadow-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					size: "icon",
+					onClick: () => navigate("/hotels"),
+					className: "border-slate-300",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4 text-slate-700" })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
+					className: "text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "h-6 w-6 text-trust-blue" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.name })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "text-sm text-slate-500 font-medium flex items-center gap-1 mt-1",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MapPin, { className: "h-3 w-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DataMask, { children: [
+						formData.address,
+						", ",
+						formData.city
+					] })]
+				})] })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-center gap-2",
+				children: isEditing ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					onClick: () => {
+						setFormData(hotel);
+						setIsEditing(false);
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4 mr-2" }), " Cancel"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue text-white",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4 mr-2" }), " Save"]
+				})] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "outline",
+					onClick: () => setIsEditing(true),
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Edit"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+						variant: "destructive",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Delete"]
 					})
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", {
-					className: "text-3xl font-bold tracking-tight text-slate-950 flex items-center gap-2",
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Are you sure?" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "This action cannot be undone." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancel" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+					onClick: handleDelete,
+					className: "bg-red-600",
+					children: "Delete"
+				})] })] })] })] })
+			})]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "overview",
+			className: "w-full",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "mb-6",
 					children: [
-						"Room ",
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: formData.roomNumber }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: "outline",
-							className: "text-lg font-normal ml-2",
-							children: formData.status
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "overview",
+							children: "Overview"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "towers",
+							children: "Towers"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "rooms",
+							children: "All Rooms"
 						})
 					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center gap-2 text-sm text-slate-500",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-							to: "/hotels",
-							className: "hover:underline",
-							children: t("hotels.title")
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-							to: `/hotels/${hotel.id}`,
-							className: "hover:underline",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: hotel.name })
-						}),
-						tower && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
-							to: `/hotels/${hotel.id}/towers/${tower.id}`,
-							className: "hover:underline",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataMask, { children: tower.name })
-						})] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "/" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Room ", formData.roomNumber] })
-					]
-				})] }),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "ml-auto",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						onClick: handleSave,
-						className: "bg-trust-blue gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
-							" ",
-							t("common.save")
-						]
-					})
-				})
-			]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "lg:col-span-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Room Specifications" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "overview",
 					className: "space-y-6",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Hotel Information" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+						className: "space-y-4",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "grid grid-cols-2 gap-4",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Room Name/Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 										value: formData.name,
-										onChange: (e) => handleChange("name", e.target.value)
+										onChange: (e) => setFormData({
+											...formData,
+											name: e.target.value
+										}),
+										disabled: !isEditing
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Room Number" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-										value: formData.roomNumber,
-										onChange: (e) => handleChange("roomNumber", e.target.value)
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.managerName || "",
+										onChange: (e) => setFormData({
+											...formData,
+											managerName: e.target.value
+										}),
+										disabled: !isEditing
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Current Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-										value: formData.status,
-										onValueChange: (v) => handleChange("status", v),
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "available",
-												children: "Ready"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "occupied",
-												children: "Occupied"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "maintenance",
-												children: "Maintenance"
-											}),
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-												value: "cleaning",
-												children: "In Cleaning"
-											})
-										] })]
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Email" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.managerEmail || "",
+										onChange: (e) => setFormData({
+											...formData,
+											managerEmail: e.target.value
+										}),
+										disabled: !isEditing
 									})]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 									className: "space-y-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Nightly Rate" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
-										value: formData.listingPrice || 0,
-										onChange: (val) => handleChange("listingPrice", val),
-										currency,
-										locale: language === "pt" ? "pt-BR" : language === "es" ? "es-ES" : "en-US"
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Manager Phone" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.managerPhone || "",
+										onChange: (e) => setFormData({
+											...formData,
+											managerPhone: e.target.value
+										}),
+										disabled: !isEditing
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2 col-span-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Address" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.address,
+										onChange: (e) => setFormData({
+											...formData,
+											address: e.target.value
+										}),
+										disabled: !isEditing
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "City" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.city,
+										onChange: (e) => setFormData({
+											...formData,
+											city: e.target.value
+										}),
+										disabled: !isEditing
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "space-y-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "State" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+										value: formData.state,
+										onChange: (e) => setFormData({
+											...formData,
+											state: e.target.value
+										}),
+										disabled: !isEditing
 									})]
 								})
 							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Description" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Textarea, {
-								value: formData.additionalInfo || "",
-								onChange: (e) => handleChange("additionalInfo", e.target.value),
-								placeholder: "Room detailed description..."
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "border-t pt-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-								className: "font-semibold mb-4",
-								children: "Characteristics"
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "grid grid-cols-2 md:grid-cols-3 gap-4",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						})
+					})] })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "towers",
+					className: "space-y-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-between items-center",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "text-lg font-bold",
+							children: "Towers & Wings"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+							open: isAddTowerOpen,
+							onOpenChange: setIsAddTowerOpen,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+								asChild: true,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+									size: "sm",
+									className: "bg-trust-blue text-white",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "w-4 h-4 mr-2" }), " Add Tower"]
+								})
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Add New Tower/Wing" }) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "space-y-4 py-4",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Bed Type" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: formData.roomCharacteristics?.bedType,
-											onValueChange: (v) => handleCharacteristicChange("bedType", v),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "King",
-													children: "King"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Queen",
-													children: "Queen"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Double",
-													children: "Double"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Twin",
-													children: "Twin"
-												})
-											] })]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "View" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-											value: formData.roomCharacteristics?.view,
-											onValueChange: (v) => handleCharacteristicChange("view", v),
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Standard",
-													children: "Standard"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "City View",
-													children: "City View"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Sea View",
-													children: "Sea View"
-												}),
-												/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-													value: "Pool View",
-													children: "Pool View"
-												})
-											] })]
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Max Occupancy" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.roomCharacteristics?.maxOccupancy,
-											onChange: (e) => handleCharacteristicChange("maxOccupancy", parseInt(e.target.value))
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Size (Sq Ft)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											type: "number",
-											value: formData.roomCharacteristics?.sizeSqFt,
-											onChange: (e) => handleCharacteristicChange("sizeSqFt", parseInt(e.target.value))
-										})]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "flex items-center space-x-2 pt-8",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
-											id: "hasBalcony",
-											checked: formData.roomCharacteristics?.hasBalcony,
-											onCheckedChange: (c$1) => handleCharacteristicChange("hasBalcony", c$1)
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-											htmlFor: "hasBalcony",
-											children: "Has Balcony"
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tower Name" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											value: newTowerName,
+											onChange: (e) => setNewTowerName(e.target.value),
+											placeholder: "e.g. North Tower"
 										})]
 									})
-								]
-							})]
-						})
-					]
-				})]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "lg:col-span-1 h-fit",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Photo Gallery" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-					className: "space-y-4",
-					children: [
-						formData.gallery && formData.gallery.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Carousel, {
-							className: "w-full max-w-xs mx-auto",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselContent, { children: formData.gallery.map((img, index$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "p-1",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-										className: "flex aspect-square items-center justify-center p-0 overflow-hidden rounded-md",
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-											src: img,
-											alt: `Gallery ${index$1}`,
-											className: "w-full h-full object-cover"
-										})
-									}) })
-								}) }, index$1)) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselPrevious, {}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CarouselNext, {})
-							]
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "aspect-video bg-slate-100 flex items-center justify-center rounded-md text-slate-400",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-8 w-8" })
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "flex gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								placeholder: "Image URL",
-								value: newImageUrl,
-								onChange: (e) => setNewImageUrl(e.target.value)
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									onClick: () => setIsAddTowerOpen(false),
+									children: "Cancel"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									onClick: handleAddTower,
+									children: "Add"
+								})] })
+							] })]
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+						children: [hotelTowers.map((tower) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+							className: "pb-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+								className: "text-base",
+								children: tower.name
+							})
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex justify-between items-center mt-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								to: `/hotels/${hotel.id}/towers/${tower.id}`,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+									variant: "outline",
+									size: "sm",
+									children: "Manage Rooms"
+								})
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-								size: "icon",
-								onClick: addImage,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Upload, { className: "h-4 w-4" })
+								variant: "ghost",
+								size: "sm",
+								className: "text-red-500",
+								onClick: () => deleteTower(tower.id),
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "w-4 h-4" })
 							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "grid grid-cols-3 gap-2",
-							children: formData.gallery?.map((img, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "relative aspect-square rounded-md overflow-hidden group border",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-									src: img,
-									className: "w-full h-full object-cover"
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-									className: "absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white text-xs font-bold",
-									onClick: () => {
-										const newG = formData.gallery?.filter((_$1, idx) => idx !== i);
-										handleChange("gallery", newG);
-									},
-									children: "Remove"
-								})]
-							}, i))
-						})
-					]
-				})]
-			})]
+						}) })] }, tower.id)), hotelTowers.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-full text-center py-8 text-muted-foreground border border-dashed rounded-lg",
+							children: "No towers or wings defined."
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "rooms",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "All Rooms" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Rooms across all towers in this hotel." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
+						hotelId: hotel.id,
+						towerId: "none"
+					}) })] })
+				})
+			]
 		})]
+	});
+}
+function TowerDetails() {
+	const { id: hotelId, towerId } = useParams();
+	const navigate = useNavigate();
+	const { hotels: hotels$1, towers: towers$1 } = (0, import_react.useContext)(AppContext);
+	const hotel = hotels$1.find((h) => h.id === hotelId);
+	const tower = towers$1.find((t) => t.id === towerId);
+	if (!hotel || !tower) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 text-center",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-2xl font-bold mb-4",
+			children: "Tower Not Found"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+			onClick: () => navigate(`/hotels/${hotelId}`),
+			children: "Back to Hotel"
+		})]
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "p-6 flex flex-col gap-6 max-w-6xl mx-auto",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-4 bg-white p-4 rounded-lg border shadow-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				size: "icon",
+				onClick: () => navigate(`/hotels/${hotelId}`),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "h-4 w-4" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-2xl font-bold tracking-tight text-slate-900",
+				children: tower.name
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-sm text-slate-500",
+				children: hotel.name
+			})] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, { children: ["Rooms in ", tower.name] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Manage rooms specifically for this tower." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoomList, {
+			hotelId: hotel.id,
+			towerId: tower.id
+		}) })] })]
+	});
+}
+function HotelRoomDetails() {
+	const { hotelId, roomId } = useParams();
+	const navigate = useNavigate();
+	(0, import_react.useEffect)(() => {
+		if (roomId) navigate(`/properties/${roomId}`);
+		else navigate(`/hotels/${hotelId}`);
+	}, [
+		roomId,
+		hotelId,
+		navigate
+	]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "p-6 flex justify-center",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "text-muted-foreground",
+			children: "Redirecting to room details..."
+		})
 	});
 }
 function Users() {
@@ -54673,7 +53014,7 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		var ContextProvider = REACT_PROVIDER_TYPE;
 		var Element$1 = REACT_ELEMENT_TYPE;
 		var ForwardRef = REACT_FORWARD_REF_TYPE;
-		var Fragment$5 = REACT_FRAGMENT_TYPE;
+		var Fragment$4 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
 		var Portal$6 = REACT_PORTAL_TYPE;
@@ -54737,7 +53078,7 @@ var require_react_is_development$1 = /* @__PURE__ */ __commonJSMin(((exports) =>
 		exports.ContextProvider = ContextProvider;
 		exports.Element = Element$1;
 		exports.ForwardRef = ForwardRef;
-		exports.Fragment = Fragment$5;
+		exports.Fragment = Fragment$4;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
 		exports.Portal = Portal$6;
@@ -54786,7 +53127,7 @@ var import_isNaN$2 = /* @__PURE__ */ __toESM(require_isNaN());
 var import_get$5 = /* @__PURE__ */ __toESM(require_get());
 var import_isNumber = /* @__PURE__ */ __toESM(require_isNumber());
 var import_isNil$13 = /* @__PURE__ */ __toESM(require_isNil());
-var mathSign = function mathSign$2(value) {
+var mathSign = function mathSign$1(value) {
 	if (value === 0) return 0;
 	if (value > 0) return 1;
 	return -1;
@@ -54794,7 +53135,7 @@ var mathSign = function mathSign$2(value) {
 var isPercent = function isPercent$2(value) {
 	return (0, import_isString$2.default)(value) && value.indexOf("%") === value.length - 1;
 };
-var isNumber = function isNumber$5(value) {
+var isNumber = function isNumber$4(value) {
 	return (0, import_isNumber.default)(value) && !(0, import_isNaN$2.default)(value);
 };
 var isNullish = function isNullish$1(value) {
@@ -66357,7 +64698,7 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		var ContextProvider = REACT_PROVIDER_TYPE;
 		var Element$1 = REACT_ELEMENT_TYPE;
 		var ForwardRef = REACT_FORWARD_REF_TYPE;
-		var Fragment$5 = REACT_FRAGMENT_TYPE;
+		var Fragment$4 = REACT_FRAGMENT_TYPE;
 		var Lazy = REACT_LAZY_TYPE$1;
 		var Memo = REACT_MEMO_TYPE;
 		var Portal$6 = REACT_PORTAL_TYPE;
@@ -66414,7 +64755,7 @@ var require_react_is_development = /* @__PURE__ */ __commonJSMin(((exports) => {
 		exports.ContextProvider = ContextProvider;
 		exports.Element = Element$1;
 		exports.ForwardRef = ForwardRef;
-		exports.Fragment = Fragment$5;
+		exports.Fragment = Fragment$4;
 		exports.Lazy = Lazy;
 		exports.Memo = Memo;
 		exports.Portal = Portal$6;
@@ -76229,7 +74570,7 @@ var getAxisMapByAxes = function getAxisMapByAxes$1(props, _ref2) {
 	}, {});
 };
 var getAxisMapByItems = function getAxisMapByItems$1(props, _ref3) {
-	var graphicalItems = _ref3.graphicalItems, Axis$1 = _ref3.Axis, axisType = _ref3.axisType, axisIdKey = _ref3.axisIdKey, stackGroups = _ref3.stackGroups, dataStartIndex = _ref3.dataStartIndex, dataEndIndex = _ref3.dataEndIndex;
+	var graphicalItems = _ref3.graphicalItems, Axis = _ref3.Axis, axisType = _ref3.axisType, axisIdKey = _ref3.axisIdKey, stackGroups = _ref3.stackGroups, dataStartIndex = _ref3.dataStartIndex, dataEndIndex = _ref3.dataEndIndex;
 	var layout = props.layout, children = props.children;
 	var displayedData = getDisplayedData(props.data, {
 		graphicalItems,
@@ -76255,10 +74596,10 @@ var getAxisMapByItems = function getAxisMapByItems$1(props, _ref3) {
 					var itemAxisId = axisIdKey in item.props ? item.props[axisIdKey] : (_defaultProps4 = item.type.defaultProps) === null || _defaultProps4 === void 0 ? void 0 : _defaultProps4[axisIdKey];
 					var itemHide = "hide" in item.props ? item.props.hide : (_defaultProps5 = item.type.defaultProps) === null || _defaultProps5 === void 0 ? void 0 : _defaultProps5.hide;
 					return itemAxisId === axisId && !itemHide;
-				}), "number", layout), Axis$1.defaultProps.allowDataOverflow);
+				}), "number", layout), Axis.defaultProps.allowDataOverflow);
 				domain = detectReferenceElementsDomain(children, domain, axisId, axisType);
 			}
-			return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, axisId, _objectSpread(_objectSpread({ axisType }, Axis$1.defaultProps), {}, {
+			return _objectSpread(_objectSpread({}, result), {}, _defineProperty({}, axisId, _objectSpread(_objectSpread({ axisType }, Axis.defaultProps), {}, {
 				hide: true,
 				orientation: (0, import_get.default)(ORIENT_MAP, "".concat(axisType, ".").concat(index$1 % 2), null),
 				domain,
@@ -82232,4 +80573,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DeKUw4v0.js.map
+//# sourceMappingURL=index-DpmGyQXf.js.map

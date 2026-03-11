@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { PartnerPricing } from '@/components/partners/PartnerPricing'
 import { PartnerDocuments } from '@/components/partners/PartnerDocuments'
+import { PartnerProperties } from '@/components/partners/PartnerProperties'
 
 export default function PartnerDetails() {
   const { id } = useParams()
@@ -95,7 +96,9 @@ export default function PartnerDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl bg-white border h-auto p-1 mb-6">
+        <TabsList
+          className={`grid ${partner.entityType === 'company' ? 'grid-cols-5 max-w-3xl' : 'grid-cols-4 max-w-2xl'} w-full bg-white border h-auto p-1 mb-6`}
+        >
           <TabsTrigger
             value="overview"
             className="data-[state=active]:bg-slate-100 py-2"
@@ -116,6 +119,12 @@ export default function PartnerDetails() {
               Team / Staff
             </TabsTrigger>
           )}
+          <TabsTrigger
+            value="properties"
+            className="data-[state=active]:bg-slate-100 py-2"
+          >
+            Properties
+          </TabsTrigger>
           <TabsTrigger
             value="documents"
             className="data-[state=active]:bg-slate-100 py-2"
@@ -228,6 +237,14 @@ export default function PartnerDetails() {
             />
           </TabsContent>
         )}
+
+        <TabsContent value="properties">
+          <PartnerProperties
+            partner={partner}
+            onUpdate={handleUpdate}
+            canEdit={true}
+          />
+        </TabsContent>
 
         <TabsContent value="documents">
           <PartnerDocuments
