@@ -16890,7 +16890,7 @@ function HistoryRouter({ basename, children, history, unstable_useTransitions })
 }
 HistoryRouter.displayName = "unstable_HistoryRouter";
 var ABSOLUTE_URL_REGEX2 = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state: state$1, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
+var Link$1 = import_react.forwardRef(function LinkWithRef({ onClick, discover = "render", prefetch = "none", relative, reloadDocument, replace: replace2, state: state$1, target, to, preventScrollReset, viewTransition, unstable_defaultShouldRevalidate, ...rest }, forwardedRef) {
 	let { basename, unstable_useTransitions } = import_react.useContext(NavigationContext);
 	let isAbsolute = typeof to === "string" && ABSOLUTE_URL_REGEX2.test(to);
 	let parsed = parseToInfo(to, basename);
@@ -16922,7 +16922,7 @@ var Link = import_react.forwardRef(function LinkWithRef({ onClick, discover = "r
 	});
 	return shouldPrefetch && !isAbsolute ? /* @__PURE__ */ import_react.createElement(import_react.Fragment, null, link, /* @__PURE__ */ import_react.createElement(PrefetchPageLinks, { page: href })) : link;
 });
-Link.displayName = "Link";
+Link$1.displayName = "Link";
 var NavLink = import_react.forwardRef(function NavLinkWithRef({ "aria-current": ariaCurrentProp = "page", caseSensitive = false, className: classNameProp = "", end = false, style: styleProp, to, viewTransition, children, ...rest }, ref) {
 	let path$1 = useResolvedPath(to, { relative: rest.relative });
 	let location = useLocation();
@@ -16956,7 +16956,7 @@ var NavLink = import_react.forwardRef(function NavLinkWithRef({ "aria-current": 
 		isTransitioning ? "transitioning" : null
 	].filter(Boolean).join(" ");
 	let style = typeof styleProp === "function" ? styleProp(renderProps) : styleProp;
-	return /* @__PURE__ */ import_react.createElement(Link, {
+	return /* @__PURE__ */ import_react.createElement(Link$1, {
 		...rest,
 		"aria-current": ariaCurrent,
 		className,
@@ -19140,6 +19140,13 @@ var CircleArrowUp = createLucideIcon("circle-arrow-up", [
 		key: "1sbj14"
 	}]
 ]);
+var CircleCheckBig = createLucideIcon("circle-check-big", [["path", {
+	d: "M21.801 10A10 10 0 1 1 17 3.335",
+	key: "yps3ct"
+}], ["path", {
+	d: "m9 11 3 3L22 4",
+	key: "1pflzl"
+}]]);
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -19471,6 +19478,27 @@ var House = createLucideIcon("house", [["path", {
 	d: "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
 	key: "r6nss1"
 }]]);
+var Image = createLucideIcon("image", [
+	["rect", {
+		width: "18",
+		height: "18",
+		x: "3",
+		y: "3",
+		rx: "2",
+		ry: "2",
+		key: "1m3agn"
+	}],
+	["circle", {
+		cx: "9",
+		cy: "9",
+		r: "2",
+		key: "af1f0g"
+	}],
+	["path", {
+		d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21",
+		key: "1xmnt7"
+	}]
+]);
 var Info = createLucideIcon("info", [
 	["circle", {
 		cx: "12",
@@ -19547,6 +19575,13 @@ var LayoutGrid = createLucideIcon("layout-grid", [
 		key: "1bb6yr"
 	}]
 ]);
+var Link = createLucideIcon("link", [["path", {
+	d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
+	key: "1cjeqo"
+}], ["path", {
+	d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
+	key: "19qd67"
+}]]);
 var List = createLucideIcon("list", [
 	["path", {
 		d: "M3 5h.01",
@@ -19860,6 +19895,13 @@ var SquareCheckBig = createLucideIcon("square-check-big", [["path", {
 }], ["path", {
 	d: "m9 11 3 3L22 4",
 	key: "1pflzl"
+}]]);
+var SquarePen = createLucideIcon("square-pen", [["path", {
+	d: "M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7",
+	key: "1m0v6g"
+}], ["path", {
+	d: "M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z",
+	key: "ohrbg2"
 }]]);
 var Star = createLucideIcon("star", [["path", {
 	d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
@@ -27332,9 +27374,13 @@ function getHullPresorted(points) {
 	else return upperHull.concat(lowerHull);
 }
 var Provider = TooltipProvider$1;
+var Root3$1 = Tooltip$2;
+var Trigger$5 = TooltipTrigger$1;
 var Portal$5 = TooltipPortal;
 var Content2$5 = TooltipContent$1;
 var TooltipProvider = Provider;
+var Tooltip$1 = Root3$1;
+var TooltipTrigger = Trigger$5;
 var TooltipContent = import_react.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Portal$5, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content2$5, {
 	ref,
 	sideOffset,
@@ -34151,7 +34197,7 @@ function Index() {
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "text-xs text-slate-500 mt-0.5",
 									children: task.propertyName
-								})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+								})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 									to: "/tasks",
 									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 										size: "sm",
@@ -34291,7 +34337,7 @@ function NotFound() {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 				asChild: true,
 				className: "bg-trust-blue text-white",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 					to: "/",
 					children: "Go to Dashboard"
 				})
@@ -38384,7 +38430,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$55({ inst: {
+			cachedValue = useState$58({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -38398,7 +38444,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$25(function() {
+			useEffect$26(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -38421,7 +38467,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$55 = React$67.useState, useEffect$25 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$58 = React$67.useState, useEffect$26 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -38529,7 +38575,7 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	return loadingStatus;
 }
 var Root$3 = Avatar$1;
-var Image = AvatarImage$1;
+var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
 var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 	ref,
@@ -38537,12 +38583,12 @@ var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PUR
 	...props
 }));
 Avatar.displayName = Root$3.displayName;
-var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, {
+var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
 	...props
 }));
-AvatarImage.displayName = Image.displayName;
+AvatarImage.displayName = Image$1.displayName;
 var AvatarFallback = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Fallback, {
 	ref,
 	className: cn("flex h-full w-full items-center justify-center rounded-full bg-muted", className),
@@ -39169,7 +39215,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === activePortalItem.url || location.pathname === "/",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: activePortalItem.url,
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(activePortalItem.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39182,7 +39228,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === "/messages",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: "/messages",
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39194,7 +39240,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === "/financial",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: "/financial",
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DollarSign, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39207,7 +39253,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === "/messages",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: "/messages",
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39220,7 +39266,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === "/tasks",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: "/tasks",
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Wrench, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39232,7 +39278,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === "/messages",
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: "/messages",
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MessageSquare, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39249,7 +39295,7 @@ function AppSidebar() {
 						asChild: true,
 						isActive: location.pathname === item.url,
 						className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 							to: item.url,
 							className: "px-4 py-2.5",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39267,7 +39313,7 @@ function AppSidebar() {
 							asChild: true,
 							isActive: location.pathname === item.url,
 							className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 								to: item.url,
 								className: "px-4 py-2.5",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -39286,7 +39332,7 @@ function AppSidebar() {
 							asChild: true,
 							isActive: location.pathname === item.url,
 							className: "data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 								to: item.url,
 								className: "px-4 py-2.5",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(item.icon, { className: "h-4 w-4 mr-3" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -40782,7 +40828,7 @@ function Properties() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardFooter, {
 							className: "pt-4 border-t bg-white flex flex-col gap-2 z-10 relative",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 								to: `/properties/${property$2.id}`,
 								className: "w-full",
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
@@ -47960,7 +48006,7 @@ function OwnerStatement({ ownerId, properties: properties$1, ledgerEntries: ledg
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
 							className: "font-medium text-black",
-							children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
+							children: prop ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link$1, {
 								to: `/properties/${prop.id}`,
 								className: "flex items-center gap-2 hover:text-blue-600 hover:underline",
 								children: [prop.name, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ExternalLink, { className: "h-3 w-3 opacity-50" })]
@@ -48585,7 +48631,7 @@ function Partners() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-end gap-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 										to: `/partners/${partner?.id}`,
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 											variant: "outline",
@@ -50230,7 +50276,7 @@ function PartnerProperties({ partner }) {
 						variant: "ghost",
 						size: "sm",
 						asChild: true,
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 							to: `/properties/${p$1.id}`,
 							children: "View"
 						})
@@ -50908,7 +50954,7 @@ function Condominiums() {
 							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "flex justify-end gap-2",
 								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 										to: `/condominiums/${condo.id}`,
 										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
 											variant: "outline",
@@ -51710,7 +51756,7 @@ function RoomList({ hotelId, towerId }) {
 				size: "sm",
 				variant: "ghost",
 				asChild: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 					to: towerId !== "none" ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}` : `/hotels/${hotelId}/rooms/${room.id}`,
 					children: "View"
 				})
@@ -51993,7 +52039,7 @@ function HotelDetails() {
 							})
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "flex justify-between items-center mt-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link$1, {
 								to: `/hotels/${hotel.id}/towers/${tower.id}`,
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 									variant: "outline",
@@ -76756,64 +76802,999 @@ function Renewals() {
 		]
 	});
 }
-function PublicityAdmin() {
-	const { advertisements: advertisements$1, formatAppCurrency } = (0, import_react.useContext)(AppContext);
-	const { t } = useLanguageStore_default();
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: t("sidebar.publicity_admin")
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-			className: "text-muted-foreground",
-			children: "Manage platform advertisements and sponsors."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Ad Title" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Placement" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Link" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: t("common.status")
-						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [advertisements$1.map((ad) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
+var usePublicityStore = () => {
+	const context = (0, import_react.useContext)(AppContext);
+	if (!context) throw new Error("usePublicityStore must be used within AppProvider");
+	return {
+		advertisements: context.advertisements,
+		addAdvertisement: context.addAdvertisement,
+		updateAdvertisement: context.updateAdvertisement,
+		deleteAdvertisement: context.deleteAdvertisement,
+		advertisers: context.advertisers,
+		addAdvertiser: context.addAdvertiser,
+		updateAdvertiser: context.updateAdvertiser,
+		deleteAdvertiser: context.deleteAdvertiser,
+		adPricing: context.adPricing,
+		updateAdPricing: context.updateAdPricing
+	};
+};
+var usePublicityStore_default = usePublicityStore;
+function AdsManager() {
+	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement } = usePublicityStore_default();
+	const { partners: partners$1 } = usePartnerStore_default();
+	const { properties: properties$1 } = usePropertyStore_default();
+	const { addLedgerEntry, addInvoice, currency } = useFinancialStore_default();
+	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
+	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
+	const [editingId, setEditingId] = (0, import_react.useState)(null);
+	const initialFormState = {
+		title: "",
+		description: "",
+		imageUrl: "",
+		linkUrl: "",
+		active: true,
+		placement: "home_top",
+		partnerId: "none",
+		propertyId: "none",
+		price: 0,
+		baseCost: 0,
+		pmCommissionType: "percentage",
+		pmCommissionValue: 0,
+		finalPrice: 0,
+		startDate: "",
+		endDate: "",
+		status: "draft"
+	};
+	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
+	const filteredAds = advertisements$1.filter((a$1) => a$1.title.toLowerCase().includes(searchTerm.toLowerCase()));
+	const handleOpen = (ad) => {
+		if (ad) {
+			setEditingId(ad.id);
+			setFormData({
+				...ad,
+				propertyId: ad.propertyId || "none",
+				partnerId: ad.partnerId || "none"
+			});
+		} else {
+			setEditingId(null);
+			setFormData(initialFormState);
+		}
+		setIsOpen(true);
+	};
+	const handleSave = () => {
+		if (!formData.title || !formData.imageUrl) {
+			toast$2({
+				title: t("common.validation_error"),
+				description: t("publicity.ads_manager.validation_error") || "Please fill in all required fields.",
+				variant: "destructive"
+			});
+			return;
+		}
+		const pmValueCalculated$1 = formData.pmCommissionType === "percentage" ? (formData.baseCost || 0) * ((formData.pmCommissionValue || 0) / 100) : formData.pmCommissionValue || 0;
+		const finalPrice = (formData.baseCost || 0) + pmValueCalculated$1;
+		const payload = {
+			...formData,
+			finalPrice,
+			price: finalPrice,
+			status: formData.status || "draft",
+			propertyId: formData.propertyId === "none" ? void 0 : formData.propertyId,
+			partnerId: formData.partnerId === "none" ? void 0 : formData.partnerId
+		};
+		if (editingId) {
+			updateAdvertisement({
+				...payload,
+				id: editingId
+			});
+			toast$2({ title: t("publicity.ads_manager.update_success") || "Ad updated." });
+		} else {
+			addAdvertisement({
+				...payload,
+				id: `ad-${Date.now()}`,
+				createdAt: (/* @__PURE__ */ new Date()).toISOString()
+			});
+			toast$2({ title: t("publicity.ads_manager.add_success") || "Ad created." });
+		}
+		setIsOpen(false);
+	};
+	const handleDelete = (id) => {
+		if (confirm(t("publicity.ads_manager.delete_confirm") || "Are you sure you want to delete this ad?")) {
+			deleteAdvertisement(id);
+			toast$2({ title: t("publicity.ads_manager.delete_success") || "Ad deleted." });
+		}
+	};
+	const handleFinalize = (ad) => {
+		if (confirm("Finalize ad? This will record the expense for the property owner and generate an invoice for the partner.")) {
+			if (ad.propertyId && ad.propertyId !== "none" && ad.finalPrice && ad.finalPrice > 0) addLedgerEntry({
+				id: `ledg-ad-${Date.now()}`,
+				propertyId: ad.propertyId,
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				type: "expense",
+				category: "Marketing/Publicity",
+				amount: ad.finalPrice,
+				description: `Marketing Campaign: ${ad.title}`,
+				status: "pending"
+			});
+			if (ad.partnerId && ad.partnerId !== "none" && ad.baseCost && ad.baseCost > 0) addInvoice({
+				id: `inv-ad-${Date.now()}`,
+				description: `Ad Execution: ${ad.title}`,
+				amount: ad.baseCost,
+				status: "pending",
+				date: (/* @__PURE__ */ new Date()).toISOString(),
+				toId: ad.partnerId,
+				type: "generic"
+			});
+			updateAdvertisement({
+				...ad,
+				status: "finalized",
+				active: false
+			});
+			toast$2({ title: "Advertisement finalized and billed successfully." });
+		}
+	};
+	const pmValueCalculated = formData.pmCommissionType === "percentage" ? (formData.baseCost || 0) * ((formData.pmCommissionValue || 0) / 100) : formData.pmCommissionValue || 0;
+	const finalPriceCalculated = (formData.baseCost || 0) + pmValueCalculated;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row items-center justify-between pb-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("publicity.ads_manager.title") || "Campaigns & Ads" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex gap-2",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative w-64",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: t("publicity.ads_manager.search_placeholder") || "Search ads...",
+					value: searchTerm,
+					onChange: (e) => setSearchTerm(e.target.value),
+					className: "pl-8"
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				onClick: () => handleOpen(),
+				className: "gap-2 bg-trust-blue",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+					" ",
+					t("publicity.ads_manager.add_btn") || "New Campaign"
+				]
+			})]
+		})]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_ad_info") || "Ad Info" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Target / Partner" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_placement") || "Placement" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_validity") || "Validity" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Financials" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.ads_manager.table_status") || "Status" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+			className: "text-right",
+			children: t("common.actions") || "Actions"
+		})
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredAds.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+		colSpan: 7,
+		className: "text-center py-6 text-muted-foreground",
+		children: t("publicity.ads_manager.empty_state") || "No campaigns found."
+	}) }) : filteredAds.map((ad) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex items-center gap-3",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "h-10 w-16 bg-muted rounded overflow-hidden flex-shrink-0 border",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+					src: ad.imageUrl,
+					alt: ad.title,
+					className: "w-full h-full object-cover"
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "font-semibold",
+					children: ad.title
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
+					href: ad.linkUrl,
+					target: "_blank",
+					rel: "noreferrer",
+					className: "text-xs text-blue-600 flex items-center gap-1 hover:underline",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-3 w-3" }), " Link"]
+				})]
+			})]
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col text-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "font-medium text-slate-900",
+				children: ad.propertyId && ad.propertyId !== "none" ? properties$1.find((p$1) => p$1.id === ad.propertyId)?.name || "Unknown Property" : "Global"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "text-muted-foreground text-xs",
+				children: ad.partnerId && ad.partnerId !== "none" ? partners$1.find((p$1) => p$1.id === ad.partnerId)?.name || "No Partner" : "No Partner"
+			})]
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+			variant: "outline",
+			className: "capitalize",
+			children: ad.placement?.replace("_", " ") || "Global"
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col text-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: ad.startDate ? formatDate(ad.startDate, language) : "N/A" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+				className: "text-muted-foreground",
+				children: [
+					"to",
+					" ",
+					ad.endDate ? formatDate(ad.endDate, language) : "N/A"
+				]
+			})]
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col text-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "font-semibold text-slate-900",
+				children: formatCurrency(ad.finalPrice || ad.price || 0, currency)
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+				className: "text-muted-foreground text-xs",
+				children: ["Base: ", formatCurrency(ad.baseCost || 0, currency)]
+			})]
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: ad.status === "finalized" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+			variant: "outline",
+			className: "bg-slate-100 text-slate-700",
+			children: "Finalized"
+		}) : ad.active ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+			className: "bg-green-600 text-white border-transparent",
+			children: "Active"
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+			variant: "secondary",
+			children: "Draft/Inactive"
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+			className: "text-right whitespace-nowrap",
+			children: [
+				ad.status !== "finalized" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					onClick: () => handleFinalize(ad),
+					title: "Finalize & Bill",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheckBig, { className: "h-4 w-4 text-emerald-600" })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					onClick: () => handleOpen(ad),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					className: "text-red-500",
+					onClick: () => handleDelete(ad.id),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+				})
+			]
+		})
+	] }, ad.id)) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open: isOpen,
+		onOpenChange: setIsOpen,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-w-3xl",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("publicity.ads_manager.modal_edit") || "Edit Campaign" : t("publicity.ads_manager.modal_new") || "New Campaign" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: ad.title
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.ads_manager.label_title") || "Title" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									value: formData.title,
+									onChange: (e) => setFormData({
+										...formData,
+										title: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.ads_manager.label_placement") || "Placement" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.placement,
+									onValueChange: (v) => setFormData({
+										...formData,
+										placement: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "home_top",
+											children: "Home Top"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "home_bottom",
+											children: "Home Bottom"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "partner_page",
+											children: "Partner Page"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "tenant_page",
+											children: "Tenant Page"
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+											value: "performance",
+											children: "Performance Dashboard"
+										})
+									] })]
+								})]
+							})]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "capitalize",
-							children: ad.placement?.replace("_", " ") || "Global"
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Target Property" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.propertyId,
+									onValueChange: (v) => setFormData({
+										...formData,
+										propertyId: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Global / No Property" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "none",
+										children: "Global (No Property)"
+									}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: p$1.id,
+										children: p$1.name
+									}, p$1.id))] })]
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Executor Partner" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: formData.partnerId,
+									onValueChange: (v) => setFormData({
+										...formData,
+										partnerId: v
+									}),
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Partner" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: "none",
+										children: "None"
+									}), partners$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: p$1.id,
+										children: p$1.name
+									}, p$1.id))] })]
+								})]
+							})]
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-							href: ad.linkUrl,
-							target: "_blank",
-							rel: "noreferrer",
-							className: "text-blue-600 hover:underline line-clamp-1 max-w-[200px]",
-							children: ad.linkUrl
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: ad.active ? "default" : "secondary",
-								children: ad.active ? "Active" : "Inactive"
-							})
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-3 gap-4 border-t border-b py-4 my-2 border-slate-100",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Base Cost (Partner)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+										value: formData.baseCost || 0,
+										onChange: (v) => setFormData({
+											...formData,
+											baseCost: v
+										}),
+										currency
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "PM Commission" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: formData.pmCommissionType || "percentage",
+											onValueChange: (v) => setFormData({
+												...formData,
+												pmCommissionType: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+												className: "w-20",
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "percentage",
+												children: "%"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "fixed",
+												children: "$"
+											})] })]
+										}), formData.pmCommissionType === "fixed" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+											value: formData.pmCommissionValue || 0,
+											onChange: (v) => setFormData({
+												...formData,
+												pmCommissionValue: v
+											}),
+											currency
+										}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											type: "number",
+											value: formData.pmCommissionValue || 0,
+											onChange: (e) => setFormData({
+												...formData,
+												pmCommissionValue: Number(e.target.value)
+											}),
+											className: "w-full"
+										})]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "grid gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Final Price (Owner Pays)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "h-10 flex items-center px-3 border rounded-md bg-slate-50 font-bold text-slate-800",
+										children: formatCurrency(finalPriceCalculated, currency)
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid grid-cols-2 gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.ads_manager.label_start_date") || "Start Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: formData.startDate,
+									onChange: (e) => setFormData({
+										...formData,
+										startDate: e.target.value
+									})
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.ads_manager.label_end_date") || "End Date" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									type: "date",
+									value: formData.endDate,
+									onChange: (e) => setFormData({
+										...formData,
+										endDate: e.target.value
+									})
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image, { className: "h-4 w-4" }), " Image URL"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.imageUrl,
+								onChange: (e) => setFormData({
+									...formData,
+									imageUrl: e.target.value
+								}),
+								placeholder: "https://..."
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Label, {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, { className: "h-4 w-4" }), " Target Link URL"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.linkUrl,
+								onChange: (e) => setFormData({
+									...formData,
+									linkUrl: e.target.value
+								}),
+								placeholder: "https://..."
+							})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between border rounded-md p-4 mt-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "text-base",
+								children: "Active Status"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-muted-foreground",
+								children: "Is this campaign currently active?"
+							})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								checked: formData.active,
+								onCheckedChange: (c$1) => setFormData({
+									...formData,
+									active: c$1
+								})
+							})]
 						})
 					]
-				}, ad.id)), advertisements$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 4,
-					className: "text-center py-6 text-muted-foreground",
-					children: t("common.empty")
-				}) })] })] })
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "outline",
+					onClick: () => setIsOpen(false),
+					children: t("common.cancel")
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue",
+					children: t("publicity.ads_manager.save_ad") || "Save Campaign"
+				})] })
+			]
+		})
+	})] })] });
+}
+function AdvertiserList() {
+	const { advertisers, addAdvertiser, updateAdvertiser, deleteAdvertiser } = usePublicityStore_default();
+	const { t, language } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
+	const [searchTerm, setSearchTerm] = (0, import_react.useState)("");
+	const [editingId, setEditingId] = (0, import_react.useState)(null);
+	const [formData, setFormData] = (0, import_react.useState)({
+		name: "",
+		email: "",
+		phone: "",
+		address: ""
+	});
+	const filteredAdvertisers = advertisers.filter((a$1) => a$1.name.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.email.toLowerCase().includes(searchTerm.toLowerCase()));
+	const handleOpen = (advertiser) => {
+		if (advertiser) {
+			setEditingId(advertiser.id);
+			setFormData({ ...advertiser });
+		} else {
+			setEditingId(null);
+			setFormData({
+				name: "",
+				email: "",
+				phone: "",
+				address: ""
+			});
+		}
+		setIsOpen(true);
+	};
+	const handleSave = () => {
+		if (!formData.name || !formData.email) {
+			toast$2({
+				title: t("common.validation_error"),
+				description: t("publicity.advertiser_list.validation_error"),
+				variant: "destructive"
+			});
+			return;
+		}
+		if (editingId) {
+			updateAdvertiser({
+				...formData,
+				id: editingId
+			});
+			toast$2({ title: t("publicity.advertiser_list.update_success") });
+		} else {
+			addAdvertiser({
+				...formData,
+				id: `adv-${Date.now()}`,
+				createdAt: (/* @__PURE__ */ new Date()).toISOString()
+			});
+			toast$2({ title: t("publicity.advertiser_list.add_success") });
+		}
+		setIsOpen(false);
+	};
+	const handleDelete = (id) => {
+		if (confirm(t("publicity.advertiser_list.delete_confirm"))) {
+			deleteAdvertiser(id);
+			toast$2({ title: t("publicity.advertiser_list.delete_success") });
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row items-center justify-between pb-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("publicity.advertiser_list.title") }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex gap-2",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative w-64",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Search, { className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: t("publicity.advertiser_list.search_placeholder"),
+					value: searchTerm,
+					onChange: (e) => setSearchTerm(e.target.value),
+					className: "pl-8"
+				})]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+				onClick: () => handleOpen(),
+				className: "gap-2",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }),
+					" ",
+					t("publicity.advertiser_list.add_btn")
+				]
+			})]
+		})]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_company") }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_contact") }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_address") }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: t("publicity.advertiser_list.table_registered") }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+			className: "text-right",
+			children: t("common.actions")
+		})
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableBody, { children: filteredAdvertisers.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+		colSpan: 5,
+		className: "text-center py-6 text-muted-foreground",
+		children: t("publicity.advertiser_list.empty_state")
+	}) }) : filteredAdvertisers.map((adv) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			className: "font-medium",
+			children: adv.name
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-col text-sm",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: adv.email }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "text-muted-foreground",
+				children: adv.phone
+			})]
+		}) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: adv.address || "-" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: formatDate(adv.createdAt, language) }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+			className: "text-right",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "ghost",
+				size: "icon",
+				onClick: () => handleOpen(adv),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SquarePen, { className: "h-4 w-4" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "ghost",
+				size: "icon",
+				className: "text-red-500",
+				onClick: () => handleDelete(adv.id),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+			})]
+		})
+	] }, adv.id)) })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open: isOpen,
+		onOpenChange: setIsOpen,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: editingId ? t("publicity.advertiser_list.modal_edit") : t("publicity.advertiser_list.modal_new") }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4 py-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_company") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: formData.name,
+							onChange: (e) => setFormData({
+								...formData,
+								name: e.target.value
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-2 gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_email") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.email,
+								onChange: (e) => setFormData({
+									...formData,
+									email: e.target.value
+								})
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "grid gap-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_phone") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								value: formData.phone,
+								onChange: (e) => setFormData({
+									...formData,
+									phone: e.target.value
+								})
+							})]
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.advertiser_list.label_address") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							value: formData.address,
+							onChange: (e) => setFormData({
+								...formData,
+								address: e.target.value
+							})
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				variant: "outline",
+				onClick: () => setIsOpen(false),
+				children: t("common.cancel")
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+				onClick: handleSave,
+				children: t("common.save")
+			})] })
+		] })
+	})] })] });
+}
+function PricingConfig() {
+	const { adPricing, updateAdPricing } = usePublicityStore_default();
+	const currency = (0, import_react.useContext)(AppContext)?.currency || "USD";
+	const { t } = useLanguageStore_default();
+	const { toast: toast$2 } = useToast();
+	const [formData, setFormData] = (0, import_react.useState)({
+		weekly: 0,
+		biWeekly: 0,
+		monthly: 0,
+		placementModifiers: {
+			home_top: 0,
+			home_bottom: 0,
+			partner_page: 0,
+			tenant_page: 0,
+			pm_login: 0,
+			sidebar: 0,
+			footer: 0,
+			header: 0,
+			performance: 0
+		}
+	});
+	(0, import_react.useEffect)(() => {
+		if (adPricing) setFormData({
+			weekly: adPricing.weekly || 0,
+			biWeekly: adPricing.biWeekly || 0,
+			monthly: adPricing.monthly || 0,
+			placementModifiers: {
+				home_top: adPricing.placementModifiers?.home_top || 0,
+				home_bottom: adPricing.placementModifiers?.home_bottom || 0,
+				partner_page: adPricing.placementModifiers?.partner_page || 0,
+				tenant_page: adPricing.placementModifiers?.tenant_page || 0,
+				pm_login: adPricing.placementModifiers?.pm_login || 0,
+				sidebar: adPricing.placementModifiers?.sidebar || 0,
+				footer: adPricing.placementModifiers?.footer || 0,
+				header: adPricing.placementModifiers?.header || 0,
+				performance: adPricing.placementModifiers?.performance || 0
+			}
+		});
+	}, [adPricing]);
+	const handleSave = () => {
+		updateAdPricing(formData);
+		toast$2({
+			title: t("publicity.pricing_config.save_success_title"),
+			description: t("publicity.pricing_config.save_success_desc")
+		});
+	};
+	const updateModifier = (key, value) => {
+		setFormData((prev) => ({
+			...prev,
+			placementModifiers: {
+				...prev.placementModifiers,
+				[key]: value
+			}
+		}));
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "grid gap-6 md:grid-cols-2",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: t("publicity.pricing_config.title_base") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("publicity.pricing_config.desc_base") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+			className: "space-y-6",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "flex items-center gap-2",
+							children: t("publicity.pricing_config.label_weekly")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							value: formData.weekly,
+							onChange: (v) => setFormData({
+								...formData,
+								weekly: v
+							}),
+							currency
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.pricing_config.label_biweekly") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							value: formData.biWeekly,
+							onChange: (v) => setFormData({
+								...formData,
+								biWeekly: v
+							}),
+							currency
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: t("publicity.pricing_config.label_monthly") }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+							value: formData.monthly,
+							onChange: (v) => setFormData({
+								...formData,
+								monthly: v
+							}),
+							currency
+						})]
+					})
+				]
 			})
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+			className: "flex items-center justify-between",
+			children: [t("publicity.pricing_config.title_modifiers"), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tooltip$1, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipTrigger, {
+				asChild: true,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleQuestionMark, { className: "h-4 w-4 text-muted-foreground cursor-help" })
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "w-64",
+				children: t("publicity.pricing_config.tooltip_modifiers")
+			}) })] })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: t("publicity.pricing_config.desc_modifiers") })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+			className: "space-y-4",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid gap-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.home_top")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.home_top,
+								onChange: (v) => updateModifier("home_top", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.home_bottom")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.home_bottom,
+								onChange: (v) => updateModifier("home_bottom", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.partner_page")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.partner_page,
+								onChange: (v) => updateModifier("partner_page", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.tenant_page")
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.tenant_page,
+								onChange: (v) => updateModifier("tenant_page", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.pm_login") || "PM Login"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.pm_login,
+								onChange: (v) => updateModifier("pm_login", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.sidebar") || "Sidebar"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.sidebar,
+								onChange: (v) => updateModifier("sidebar", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.footer") || "Footer"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.footer,
+								onChange: (v) => updateModifier("footer", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.header") || "Header"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.header,
+								onChange: (v) => updateModifier("header", v),
+								currency
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "grid grid-cols-3 items-center gap-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "col-span-1 text-right text-muted-foreground",
+							children: t("publicity.ads_manager.placements.performance") || "Performance"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "col-span-2",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CurrencyInput, {
+								value: formData.placementModifiers.performance,
+								onChange: (v) => updateModifier("performance", v),
+								currency
+							})
+						})]
+					})
+				]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex justify-end pt-6",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleSave,
+					className: "bg-trust-blue gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "h-4 w-4" }),
+						" ",
+						t("publicity.pricing_config.save_btn")
+					]
+				})
+			})]
+		})] })]
+	});
+}
+function PublicityAdmin() {
+	const { t } = useLanguageStore_default();
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6 p-6 max-w-[1600px] mx-auto w-full",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-3xl font-bold tracking-tight text-slate-900",
+			children: t("sidebar.publicity_admin") || "Publicity Management"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "text-muted-foreground",
+			children: "Manage platform advertisements, marketing campaigns, and partner billing."
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "ads",
+			className: "w-full",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "mb-4 bg-white border",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "ads",
+							className: "data-[state=active]:bg-slate-100",
+							children: "Campaigns & Ads"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "advertisers",
+							className: "data-[state=active]:bg-slate-100",
+							children: "Advertisers"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+							value: "pricing",
+							className: "data-[state=active]:bg-slate-100",
+							children: "Pricing Rules"
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "ads",
+					className: "m-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AdsManager, {})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "advertisers",
+					className: "m-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AdvertiserList, {})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "pricing",
+					className: "m-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PricingConfig, {})
+				})
+			]
 		})]
 	});
 }
@@ -78343,23 +79324,6 @@ function useAdRotation(ads, displayCount = 2, rotationIntervalSeconds = 10) {
 	]);
 	return visibleAds;
 }
-var usePublicityStore = () => {
-	const context = (0, import_react.useContext)(AppContext);
-	if (!context) throw new Error("usePublicityStore must be used within AppProvider");
-	return {
-		advertisements: context.advertisements,
-		addAdvertisement: context.addAdvertisement,
-		updateAdvertisement: context.updateAdvertisement,
-		deleteAdvertisement: context.deleteAdvertisement,
-		advertisers: context.advertisers,
-		addAdvertiser: context.addAdvertiser,
-		updateAdvertiser: context.updateAdvertiser,
-		deleteAdvertiser: context.deleteAdvertiser,
-		adPricing: context.adPricing,
-		updateAdPricing: context.updateAdPricing
-	};
-};
-var usePublicityStore_default = usePublicityStore;
 function Performance() {
 	const { t, language } = useLanguageStore_default();
 	const { advertisements: advertisements$1 } = usePublicityStore_default();
@@ -80874,4 +81838,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-f0jnTzqy.js.map
+//# sourceMappingURL=index-DAbaHvJM.js.map

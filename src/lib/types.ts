@@ -1162,6 +1162,14 @@ export interface Advertisement {
   price?: number
   startDate?: string
   endDate?: string
+
+  partnerId?: string
+  propertyId?: string
+  baseCost?: number
+  pmCommissionType?: 'fixed' | 'percentage'
+  pmCommissionValue?: number
+  finalPrice?: number
+  status?: 'draft' | 'active' | 'finalized' | 'cancelled'
 }
 
 export interface Visit {

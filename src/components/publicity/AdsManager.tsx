@@ -34,10 +34,13 @@ import {
   Search,
   Link as LinkIcon,
   Image as ImageIcon,
+  CheckCircle,
 } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
+import usePartnerStore from '@/stores/usePartnerStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useFinancialStore from '@/stores/useFinancialStore'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { AppContext } from '@/stores/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { Advertisement } from '@/lib/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
@@ -46,13 +49,14 @@ import { CurrencyInput } from '@/components/ui/currency-input'
 export function AdsManager() {
   const {
     advertisements,
-    advertisers,
     addAdvertisement,
     updateAdvertisement,
     deleteAdvertisement,
   } = usePublicityStore()
-  const appContext = useContext(AppContext)
-  const currency = appContext?.currency || 'USD'
+  const { partners } = usePartnerStore()
+  const { properties } = usePropertyStore()
+  const { addLedgerEntry, addInvoice, currency } = useFinancialStore()
+
   const { t, language } = useLanguageStore()
   const { toast } = useToast()
 
@@ -67,10 +71,16 @@ export function AdsManager() {
     linkUrl: '',
     active: true,
     placement: 'home_top',
-    advertiserId: '',
+    partnerId: 'none',
+    propertyId: 'none',
     price: 0,
+    baseCost: 0,
+    pmCommissionType: 'percentage',
+    pmCommissionValue: 0,
+    finalPrice: 0,
     startDate: '',
     endDate: '',
+    status: 'draft',
   }
   const [formData, setFormData] =
     useState<Partial<Advertisement>>(initialFormState)
@@ -82,7 +92,11 @@ export function AdsManager() {
   const handleOpen = (ad?: Advertisement) => {
     if (ad) {
       setEditingId(ad.id)
-      setFormData({ ...ad })
+      setFormData({
+        ...ad,
+        propertyId: ad.propertyId || 'none',
+        partnerId: ad.partnerId || 'none',
+      })
     } else {
       setEditingId(null)
       setFormData(initialFormState)
@@ -91,85 +105,136 @@ export function AdsManager() {
   }
 
   const handleSave = () => {
-    if (!formData.title || !formData.imageUrl || !formData.advertiserId) {
+    if (!formData.title || !formData.imageUrl) {
       toast({
         title: t('common.validation_error'),
-        description: t('publicity.ads_manager.validation_error'),
+        description:
+          t('publicity.ads_manager.validation_error') ||
+          'Please fill in all required fields.',
         variant: 'destructive',
       })
       return
     }
 
+    const pmValueCalculated =
+      formData.pmCommissionType === 'percentage'
+        ? (formData.baseCost || 0) * ((formData.pmCommissionValue || 0) / 100)
+        : formData.pmCommissionValue || 0
+    const finalPrice = (formData.baseCost || 0) + pmValueCalculated
+
+    const payload = {
+      ...formData,
+      finalPrice,
+      price: finalPrice, // Keep backwards compatibility
+      status: formData.status || 'draft',
+      propertyId:
+        formData.propertyId === 'none' ? undefined : formData.propertyId,
+      partnerId: formData.partnerId === 'none' ? undefined : formData.partnerId,
+    }
+
     if (editingId) {
-      updateAdvertisement({ ...formData, id: editingId } as Advertisement)
-      toast({ title: t('publicity.ads_manager.update_success') })
+      updateAdvertisement({ ...payload, id: editingId } as Advertisement)
+      toast({
+        title: t('publicity.ads_manager.update_success') || 'Ad updated.',
+      })
     } else {
       addAdvertisement({
-        ...formData,
+        ...payload,
         id: `ad-${Date.now()}`,
         createdAt: new Date().toISOString(),
       } as Advertisement)
-      toast({ title: t('publicity.ads_manager.add_success') })
+      toast({ title: t('publicity.ads_manager.add_success') || 'Ad created.' })
     }
     setIsOpen(false)
   }
 
   const handleDelete = (id: string) => {
-    if (confirm(t('publicity.ads_manager.delete_confirm'))) {
+    if (
+      confirm(
+        t('publicity.ads_manager.delete_confirm') ||
+          'Are you sure you want to delete this ad?',
+      )
+    ) {
       deleteAdvertisement(id)
-      toast({ title: t('publicity.ads_manager.delete_success') })
+      toast({
+        title: t('publicity.ads_manager.delete_success') || 'Ad deleted.',
+      })
     }
   }
 
-  const getAdvertiserName = (id?: string) => {
-    if (!id) return t('publicity.ads_manager.unknown')
-    const adv = advertisers.find((a) => a.id === id)
-    return adv ? adv.name : t('publicity.ads_manager.unknown')
-  }
+  const handleFinalize = (ad: Advertisement) => {
+    if (
+      confirm(
+        'Finalize ad? This will record the expense for the property owner and generate an invoice for the partner.',
+      )
+    ) {
+      if (
+        ad.propertyId &&
+        ad.propertyId !== 'none' &&
+        ad.finalPrice &&
+        ad.finalPrice > 0
+      ) {
+        addLedgerEntry({
+          id: `ledg-ad-${Date.now()}`,
+          propertyId: ad.propertyId,
+          date: new Date().toISOString(),
+          type: 'expense',
+          category: 'Marketing/Publicity',
+          amount: ad.finalPrice,
+          description: `Marketing Campaign: ${ad.title}`,
+          status: 'pending',
+        })
+      }
 
-  const getPlacementTranslation = (placement: string) => {
-    switch (placement) {
-      case 'home_top':
-        return t('publicity.ads_manager.placements.home_top')
-      case 'home_bottom':
-        return t('publicity.ads_manager.placements.home_bottom')
-      case 'partner_page':
-        return t('publicity.ads_manager.placements.partner_page')
-      case 'tenant_page':
-        return t('publicity.ads_manager.placements.tenant_page')
-      case 'pm_login':
-        return t('publicity.ads_manager.placements.pm_login') || 'PM Login'
-      case 'sidebar':
-        return t('publicity.ads_manager.placements.sidebar') || 'Sidebar'
-      case 'footer':
-        return t('publicity.ads_manager.placements.footer') || 'Footer'
-      case 'header':
-        return t('publicity.ads_manager.placements.header') || 'Header'
-      case 'performance':
-        return (
-          t('publicity.ads_manager.placements.performance') || 'Performance'
-        )
-      default:
-        return placement.replace('_', ' ')
+      if (
+        ad.partnerId &&
+        ad.partnerId !== 'none' &&
+        ad.baseCost &&
+        ad.baseCost > 0
+      ) {
+        addInvoice({
+          id: `inv-ad-${Date.now()}`,
+          description: `Ad Execution: ${ad.title}`,
+          amount: ad.baseCost,
+          status: 'pending',
+          date: new Date().toISOString(),
+          toId: ad.partnerId,
+          type: 'generic',
+        })
+      }
+
+      updateAdvertisement({ ...ad, status: 'finalized', active: false })
+      toast({ title: 'Advertisement finalized and billed successfully.' })
     }
   }
+
+  const pmValueCalculated =
+    formData.pmCommissionType === 'percentage'
+      ? (formData.baseCost || 0) * ((formData.pmCommissionValue || 0) / 100)
+      : formData.pmCommissionValue || 0
+  const finalPriceCalculated = (formData.baseCost || 0) + pmValueCalculated
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle>{t('publicity.ads_manager.title')}</CardTitle>
+        <CardTitle>
+          {t('publicity.ads_manager.title') || 'Campaigns & Ads'}
+        </CardTitle>
         <div className="flex gap-2">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t('publicity.ads_manager.search_placeholder')}
+              placeholder={
+                t('publicity.ads_manager.search_placeholder') || 'Search ads...'
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-8"
             />
           </div>
           <Button onClick={() => handleOpen()} className="gap-2 bg-trust-blue">
-            <Plus className="h-4 w-4" /> {t('publicity.ads_manager.add_btn')}
+            <Plus className="h-4 w-4" />{' '}
+            {t('publicity.ads_manager.add_btn') || 'New Campaign'}
           </Button>
         </div>
       </CardHeader>
@@ -177,18 +242,22 @@ export function AdsManager() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('publicity.ads_manager.table_ad_info')}</TableHead>
               <TableHead>
-                {t('publicity.ads_manager.table_advertiser')}
+                {t('publicity.ads_manager.table_ad_info') || 'Ad Info'}
+              </TableHead>
+              <TableHead>Target / Partner</TableHead>
+              <TableHead>
+                {t('publicity.ads_manager.table_placement') || 'Placement'}
               </TableHead>
               <TableHead>
-                {t('publicity.ads_manager.table_placement')}
+                {t('publicity.ads_manager.table_validity') || 'Validity'}
               </TableHead>
-              <TableHead>{t('publicity.ads_manager.table_validity')}</TableHead>
-              <TableHead>{t('publicity.ads_manager.table_price')}</TableHead>
-              <TableHead>{t('publicity.ads_manager.table_status')}</TableHead>
+              <TableHead>Financials</TableHead>
+              <TableHead>
+                {t('publicity.ads_manager.table_status') || 'Status'}
+              </TableHead>
               <TableHead className="text-right">
-                {t('common.actions')}
+                {t('common.actions') || 'Actions'}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -199,7 +268,8 @@ export function AdsManager() {
                   colSpan={7}
                   className="text-center py-6 text-muted-foreground"
                 >
-                  {t('publicity.ads_manager.empty_state')}
+                  {t('publicity.ads_manager.empty_state') ||
+                    'No campaigns found.'}
                 </TableCell>
               </TableRow>
             ) : (
@@ -222,18 +292,30 @@ export function AdsManager() {
                           rel="noreferrer"
                           className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
                         >
-                          <LinkIcon className="h-3 w-3" />{' '}
-                          {t('publicity.ads_manager.link')}
+                          <LinkIcon className="h-3 w-3" /> Link
                         </a>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">
-                    {getAdvertiserName(ad.advertiserId)}
+                  <TableCell>
+                    <div className="flex flex-col text-sm">
+                      <span className="font-medium text-slate-900">
+                        {ad.propertyId && ad.propertyId !== 'none'
+                          ? properties.find((p) => p.id === ad.propertyId)
+                              ?.name || 'Unknown Property'
+                          : 'Global'}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {ad.partnerId && ad.partnerId !== 'none'
+                          ? partners.find((p) => p.id === ad.partnerId)?.name ||
+                            'No Partner'
+                          : 'No Partner'}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">
-                      {getPlacementTranslation(ad.placement || '')}
+                      {ad.placement?.replace('_', ' ') || 'Global'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -249,20 +331,46 @@ export function AdsManager() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold text-green-700">
-                    {formatCurrency(ad.price || 0, currency)}
+                  <TableCell>
+                    <div className="flex flex-col text-sm">
+                      <span className="font-semibold text-slate-900">
+                        {formatCurrency(
+                          ad.finalPrice || ad.price || 0,
+                          currency,
+                        )}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        Base: {formatCurrency(ad.baseCost || 0, currency)}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={ad.active ? 'default' : 'secondary'}
-                      className={ad.active ? 'bg-green-600' : ''}
-                    >
-                      {ad.active
-                        ? t('publicity.ads_manager.active')
-                        : t('publicity.ads_manager.inactive')}
-                    </Badge>
+                    {ad.status === 'finalized' ? (
+                      <Badge
+                        variant="outline"
+                        className="bg-slate-100 text-slate-700"
+                      >
+                        Finalized
+                      </Badge>
+                    ) : ad.active ? (
+                      <Badge className="bg-green-600 text-white border-transparent">
+                        Active
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">Draft/Inactive</Badge>
+                    )}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right whitespace-nowrap">
+                    {ad.status !== 'finalized' && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleFinalize(ad)}
+                        title="Finalize & Bill"
+                      >
+                        <CheckCircle className="h-4 w-4 text-emerald-600" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -286,18 +394,20 @@ export function AdsManager() {
         </Table>
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>
                 {editingId
-                  ? t('publicity.ads_manager.modal_edit')
-                  : t('publicity.ads_manager.modal_new')}
+                  ? t('publicity.ads_manager.modal_edit') || 'Edit Campaign'
+                  : t('publicity.ads_manager.modal_new') || 'New Campaign'}
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_title')}</Label>
+                  <Label>
+                    {t('publicity.ads_manager.label_title') || 'Title'}
+                  </Label>
                   <Input
                     value={formData.title}
                     onChange={(e) =>
@@ -306,34 +416,9 @@ export function AdsManager() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_advertiser')}</Label>
-                  <Select
-                    value={formData.advertiserId}
-                    onValueChange={(v) =>
-                      setFormData({ ...formData, advertiserId: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'publicity.ads_manager.select_advertiser',
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {advertisers.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_placement')}</Label>
+                  <Label>
+                    {t('publicity.ads_manager.label_placement') || 'Placement'}
+                  </Label>
                   <Select
                     value={formData.placement}
                     onValueChange={(v: any) =>
@@ -344,54 +429,126 @@ export function AdsManager() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="home_top">
-                        {t('publicity.ads_manager.placements.home_top')}
-                      </SelectItem>
-                      <SelectItem value="home_bottom">
-                        {t('publicity.ads_manager.placements.home_bottom')}
-                      </SelectItem>
-                      <SelectItem value="partner_page">
-                        {t('publicity.ads_manager.placements.partner_page')}
-                      </SelectItem>
-                      <SelectItem value="tenant_page">
-                        {t('publicity.ads_manager.placements.tenant_page')}
-                      </SelectItem>
-                      <SelectItem value="pm_login">
-                        {t('publicity.ads_manager.placements.pm_login') ||
-                          'PM Login'}
-                      </SelectItem>
-                      <SelectItem value="sidebar">
-                        {t('publicity.ads_manager.placements.sidebar') ||
-                          'Sidebar'}
-                      </SelectItem>
-                      <SelectItem value="footer">
-                        {t('publicity.ads_manager.placements.footer') ||
-                          'Footer'}
-                      </SelectItem>
-                      <SelectItem value="header">
-                        {t('publicity.ads_manager.placements.header') ||
-                          'Header'}
-                      </SelectItem>
+                      <SelectItem value="home_top">Home Top</SelectItem>
+                      <SelectItem value="home_bottom">Home Bottom</SelectItem>
+                      <SelectItem value="partner_page">Partner Page</SelectItem>
+                      <SelectItem value="tenant_page">Tenant Page</SelectItem>
                       <SelectItem value="performance">
-                        {t('publicity.ads_manager.placements.performance') ||
-                          'Performance'}
+                        Performance Dashboard
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_price')}</Label>
-                  <CurrencyInput
-                    value={formData.price}
-                    onChange={(v) => setFormData({ ...formData, price: v })}
-                    currency={currency}
-                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_start_date')}</Label>
+                  <Label>Target Property</Label>
+                  <Select
+                    value={formData.propertyId}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, propertyId: v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Global / No Property" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Global (No Property)</SelectItem>
+                      {properties.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Executor Partner</Label>
+                  <Select
+                    value={formData.partnerId}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, partnerId: v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Partner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {partners.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 border-t border-b py-4 my-2 border-slate-100">
+                <div className="grid gap-2">
+                  <Label>Base Cost (Partner)</Label>
+                  <CurrencyInput
+                    value={formData.baseCost || 0}
+                    onChange={(v) => setFormData({ ...formData, baseCost: v })}
+                    currency={currency}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>PM Commission</Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={formData.pmCommissionType || 'percentage'}
+                      onValueChange={(v: any) =>
+                        setFormData({ ...formData, pmCommissionType: v })
+                      }
+                    >
+                      <SelectTrigger className="w-20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="fixed">$</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {formData.pmCommissionType === 'fixed' ? (
+                      <CurrencyInput
+                        value={formData.pmCommissionValue || 0}
+                        onChange={(v) =>
+                          setFormData({ ...formData, pmCommissionValue: v })
+                        }
+                        currency={currency}
+                      />
+                    ) : (
+                      <Input
+                        type="number"
+                        value={formData.pmCommissionValue || 0}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            pmCommissionValue: Number(e.target.value),
+                          })
+                        }
+                        className="w-full"
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Final Price (Owner Pays)</Label>
+                  <div className="h-10 flex items-center px-3 border rounded-md bg-slate-50 font-bold text-slate-800">
+                    {formatCurrency(finalPriceCalculated, currency)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>
+                    {t('publicity.ads_manager.label_start_date') ||
+                      'Start Date'}
+                  </Label>
                   <Input
                     type="date"
                     value={formData.startDate}
@@ -401,7 +558,9 @@ export function AdsManager() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('publicity.ads_manager.label_end_date')}</Label>
+                  <Label>
+                    {t('publicity.ads_manager.label_end_date') || 'End Date'}
+                  </Label>
                   <Input
                     type="date"
                     value={formData.endDate}
@@ -414,22 +573,20 @@ export function AdsManager() {
 
               <div className="grid gap-2">
                 <Label className="flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4" />{' '}
-                  {t('publicity.ads_manager.label_image_url')}
+                  <ImageIcon className="h-4 w-4" /> Image URL
                 </Label>
                 <Input
                   value={formData.imageUrl}
                   onChange={(e) =>
                     setFormData({ ...formData, imageUrl: e.target.value })
                   }
-                  placeholder="https://img.usecurling.com/p/800/200?q=ad"
+                  placeholder="https://..."
                 />
               </div>
 
               <div className="grid gap-2">
                 <Label className="flex items-center gap-2">
-                  <LinkIcon className="h-4 w-4" />{' '}
-                  {t('publicity.ads_manager.label_target_link')}
+                  <LinkIcon className="h-4 w-4" /> Target Link URL
                 </Label>
                 <Input
                   value={formData.linkUrl}
@@ -442,11 +599,9 @@ export function AdsManager() {
 
               <div className="flex items-center justify-between border rounded-md p-4 mt-2">
                 <div>
-                  <Label className="text-base">
-                    {t('publicity.ads_manager.active_status')}
-                  </Label>
+                  <Label className="text-base">Active Status</Label>
                   <p className="text-sm text-muted-foreground">
-                    {t('publicity.ads_manager.active_status_desc')}
+                    Is this campaign currently active?
                   </p>
                 </div>
                 <Switch
@@ -462,7 +617,7 @@ export function AdsManager() {
                 {t('common.cancel')}
               </Button>
               <Button onClick={handleSave} className="bg-trust-blue">
-                {t('publicity.ads_manager.save_ad')}
+                {t('publicity.ads_manager.save_ad') || 'Save Campaign'}
               </Button>
             </DialogFooter>
           </DialogContent>
