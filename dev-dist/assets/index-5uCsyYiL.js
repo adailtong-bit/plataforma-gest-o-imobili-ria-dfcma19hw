@@ -31344,12 +31344,21 @@ const AppProvider = ({ children }) => {
 	const updateEmailTemplate = (t$1) => setEmailTemplates(emailTemplates$1.map((x$2) => x$2.id === t$1.id ? t$1 : x$2));
 	const deleteEmailTemplate = (id) => setEmailTemplates(emailTemplates$1.filter((x$2) => x$2.id !== id));
 	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m$1) => m$1.ownerId === currentUser.id), [allMessages, currentUser.id]);
-	const allUsers = (0, import_react.useMemo)(() => [
-		...users,
-		...owners$1,
-		...partners$1,
-		...tenants$1
-	], [
+	const allUsers = (0, import_react.useMemo)(() => {
+		const combinedList = [
+			...users,
+			...owners$1,
+			...partners$1,
+			...tenants$1
+		];
+		const uniqueUsers = [];
+		const seenIds = /* @__PURE__ */ new Set();
+		for (const item of combinedList) if (!seenIds.has(item.id)) {
+			seenIds.add(item.id);
+			uniqueUsers.push(item);
+		}
+		return uniqueUsers;
+	}, [
 		users,
 		owners$1,
 		partners$1,
@@ -82002,4 +82011,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-D7-t4FyF.js.map
+//# sourceMappingURL=index-5uCsyYiL.js.map

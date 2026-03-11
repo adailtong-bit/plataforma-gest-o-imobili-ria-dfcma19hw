@@ -915,10 +915,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     () => allMessages.filter((m) => m.ownerId === currentUser.id),
     [allMessages, currentUser.id],
   )
-  const allUsers = useMemo(
-    () => [...users, ...owners, ...partners, ...tenants],
-    [users, owners, partners, tenants],
-  )
+
+  // Deduplicate all users list to fix the key replication error.
+  const allUsers = useMemo(() => {
+    const combinedList = [...users, ...owners, ...partners, ...tenants]
+    const uniqueUsers: (User | Owner | Partner | Tenant)[] = []
+    const seenIds = new Set<string>()
+
+    for (const item of combinedList) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id)
+        uniqueUsers.push(item)
+      }
+    }
+
+    return uniqueUsers
+  }, [users, owners, partners, tenants])
 
   const updateRolePermissions = useCallback(
     (role: UserRole, resource: Resource, actions: Action[]) => {
