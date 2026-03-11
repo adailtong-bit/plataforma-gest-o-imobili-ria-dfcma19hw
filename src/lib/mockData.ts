@@ -105,14 +105,6 @@ export const systemUsers: User[] = [
     status: 'active',
     isFirstLogin: false,
   },
-  {
-    id: 'owner1',
-    name: 'John Investor',
-    email: 'john@investor.com',
-    role: 'property_owner',
-    status: 'active',
-    isFirstLogin: false,
-  },
 ]
 
 export const condominiums: Condominium[] = [

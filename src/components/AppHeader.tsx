@@ -201,7 +201,7 @@ export function AppHeader() {
             <div className="max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
               {demoUsers.map((u) => (
                 <DropdownMenuItem
-                  key={u.id}
+                  key={`demo-${u.id}`}
                   onClick={() => handleDemoUserChange(u.id)}
                   className={`flex items-center gap-2 cursor-pointer rounded-md ${currentUser?.id === u.id ? 'bg-blue-50 text-trust-blue' : ''}`}
                 >
@@ -238,7 +238,7 @@ export function AppHeader() {
                 <div className="max-h-[150px] overflow-y-auto custom-scrollbar pr-1">
                   {regularUsers.map((u) => (
                     <DropdownMenuItem
-                      key={u.id}
+                      key={`regular-${u.id}`}
                       onClick={() => handleDemoUserChange(u.id)}
                       className="flex items-center gap-2 cursor-pointer rounded-md"
                     >

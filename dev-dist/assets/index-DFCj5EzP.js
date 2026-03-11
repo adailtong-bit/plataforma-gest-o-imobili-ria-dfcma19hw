@@ -27466,32 +27466,21 @@ const defaultFinancialSettings = {
 	isProduction: false,
 	globalCurrency: "USD"
 };
-const systemUsers = [
-	{
-		id: "user1",
-		name: "Admin User",
-		email: "admin@corepm.com",
-		role: "platform_owner",
-		status: "active",
-		isFirstLogin: false
-	},
-	{
-		id: "user2",
-		name: "Property Manager",
-		email: "pm@corepm.com",
-		role: "software_tenant",
-		status: "active",
-		isFirstLogin: false
-	},
-	{
-		id: "owner1",
-		name: "John Investor",
-		email: "john@investor.com",
-		role: "property_owner",
-		status: "active",
-		isFirstLogin: false
-	}
-];
+const systemUsers = [{
+	id: "user1",
+	name: "Admin User",
+	email: "admin@corepm.com",
+	role: "platform_owner",
+	status: "active",
+	isFirstLogin: false
+}, {
+	id: "user2",
+	name: "Property Manager",
+	email: "pm@corepm.com",
+	role: "software_tenant",
+	status: "active",
+	isFirstLogin: false
+}];
 const condominiums = [{
 	id: "condo1",
 	name: "Sunset Villas",
@@ -30969,6 +30958,22 @@ var getRoleName = (role) => {
 		default: return "Unknown";
 	}
 };
+var getInitialUser = () => {
+	const savedId = localStorage.getItem("app_current_user_id");
+	const localTenants = localStorage.getItem("app_tenants") ? JSON.parse(localStorage.getItem("app_tenants")) : tenants;
+	const localOwners = localStorage.getItem("app_owners") ? JSON.parse(localStorage.getItem("app_owners")) : owners;
+	const allInitialUsers = [
+		...systemUsers,
+		...localOwners,
+		...partners,
+		...localTenants
+	];
+	if (savedId) {
+		const found = allInitialUsers.find((u$1) => u$1.id === savedId);
+		if (found) return found;
+	}
+	return systemUsers[0];
+};
 const AppProvider = ({ children }) => {
 	const [properties$1, setProperties] = (0, import_react.useState)(properties);
 	const [condominiums$1, setCondominiums] = (0, import_react.useState)(condominiums);
@@ -31038,9 +31043,9 @@ const AppProvider = ({ children }) => {
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
-	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(true);
+	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(!!localStorage.getItem("app_current_user_id"));
 	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(true);
-	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(systemUsers[0]);
+	const [currentUser, setCurrentUserObj] = (0, import_react.useState)(getInitialUser());
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
@@ -31080,15 +31085,22 @@ const AppProvider = ({ children }) => {
 		const user = allUsers.find((u$1) => u$1.email.toLowerCase() === email.toLowerCase());
 		if (user) {
 			setCurrentUserObj(user);
+			localStorage.setItem("app_current_user_id", user.id);
 			setIsAuthenticated(true);
 			return true;
 		}
 		return false;
 	};
-	const logout = () => setIsAuthenticated(false);
+	const logout = () => {
+		setIsAuthenticated(false);
+		localStorage.removeItem("app_current_user_id");
+	};
 	const setCurrentUser = (id) => {
 		const u$1 = allUsers.find((u$2) => u$2.id === id);
-		if (u$1) setCurrentUserObj(u$1);
+		if (u$1) {
+			setCurrentUserObj(u$1);
+			localStorage.setItem("app_current_user_id", u$1.id);
+		}
 	};
 	const addProperty = (p$1) => setProperties([...properties$1, p$1]);
 	const updateProperty = (p$1) => setProperties(properties$1.map((x$2) => x$2.id === p$1.id ? p$1 : x$2));
@@ -31375,6 +31387,7 @@ const AppProvider = ({ children }) => {
 	}, []);
 	const checkPermission = (0, import_react.useCallback)(async (user, resource, action) => {
 		if (!user || !user.role) return false;
+		if (user.role === "platform_owner") return true;
 		if (user.permissions && user.permissions.length > 0) {
 			const override = user.permissions.find((p$1) => p$1.resource === resource);
 			if (override) return override.actions.includes(action);
@@ -31387,6 +31400,7 @@ const AppProvider = ({ children }) => {
 	}, [rolePermissions]);
 	const hasPermissionSync = (0, import_react.useCallback)((user, resource, action) => {
 		if (!user || !user.role) return false;
+		if (user.role === "platform_owner") return true;
 		if (user.permissions && user.permissions.length > 0) {
 			const override = user.permissions.find((p$1) => p$1.resource === resource);
 			if (override) return override.actions.includes(action);
@@ -38803,7 +38817,7 @@ function AppHeader() {
 											children: "DEMO"
 										})
 									]
-								}, u$1.id))
+								}, `demo-${u$1.id}`))
 							}),
 							regularUsers.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
@@ -38832,7 +38846,7 @@ function AppHeader() {
 												children: t(`roles.${u$1.role}`) || u$1.role
 											})]
 										})]
-									}, u$1.id))
+									}, `regular-${u$1.id}`))
 								})
 							] }),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuSeparator, {}),
@@ -81398,7 +81412,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const allowed = currentUser ? ["platform_owner", "software_tenant"].includes(currentUser.role) ? true : hasPermissionSync(currentUser, resource, action) : false;
+	const isPlatformOwner = currentUser?.role === "platform_owner";
+	const allowed = currentUser ? isPlatformOwner ? true : ["software_tenant"].includes(currentUser.role) ? true : hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
 			if (![
@@ -82011,4 +82026,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-5uCsyYiL.js.map
+//# sourceMappingURL=index-DFCj5EzP.js.map

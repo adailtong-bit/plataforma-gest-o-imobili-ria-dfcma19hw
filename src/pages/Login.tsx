@@ -52,7 +52,6 @@ export default function Login() {
           {allUsers && allUsers.length > 0 ? (
             <div className="flex flex-col gap-2.5 max-h-[60vh] overflow-y-auto pr-1">
               {allUsers.map((user: any, index: number) => {
-                // Highly robust key generation to avoid list duplication errors
                 const uniqueKey = `${user.id || 'no-id'}-${user.email || 'no-email'}-${index}`
 
                 return (

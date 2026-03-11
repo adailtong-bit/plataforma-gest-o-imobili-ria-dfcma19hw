@@ -143,7 +143,10 @@ export const hasPermission = (
 ): boolean => {
   if (!user || !user.role) return false
 
-  if (['platform_owner', 'software_tenant'].includes(user.role)) return true
+  // Global bypass for platform_owner
+  if (user.role === 'platform_owner') return true
+
+  if (['software_tenant'].includes(user.role)) return true
 
   if (user.permissions && user.permissions.length > 0) {
     const override = user.permissions.find((p) => p.resource === resource)

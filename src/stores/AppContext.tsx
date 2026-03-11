@@ -346,6 +346,31 @@ const getRoleName = (role: UserRole) => {
   }
 }
 
+const getInitialUser = () => {
+  const savedId = localStorage.getItem('app_current_user_id')
+
+  // Need to gather from all possible sources since state is not yet initialized
+  const localTenants = localStorage.getItem('app_tenants')
+    ? JSON.parse(localStorage.getItem('app_tenants')!)
+    : initialTenants
+  const localOwners = localStorage.getItem('app_owners')
+    ? JSON.parse(localStorage.getItem('app_owners')!)
+    : initialOwners
+
+  const allInitialUsers = [
+    ...systemUsers,
+    ...localOwners,
+    ...initialPartners,
+    ...localTenants,
+  ]
+
+  if (savedId) {
+    const found = allInitialUsers.find((u) => u.id === savedId)
+    if (found) return found
+  }
+  return systemUsers[0]
+}
+
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [condominiums, setCondominiums] =
@@ -458,11 +483,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem('app_current_user_id'),
+  )
   const [isAuthLoading, setIsAuthLoading] = useState(true)
   const [currentUser, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant
-  >(systemUsers[0])
+  >(getInitialUser())
 
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -533,15 +560,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
     if (user) {
       setCurrentUserObj(user)
+      localStorage.setItem('app_current_user_id', user.id)
       setIsAuthenticated(true)
       return true
     }
     return false
   }
-  const logout = () => setIsAuthenticated(false)
+  const logout = () => {
+    setIsAuthenticated(false)
+    localStorage.removeItem('app_current_user_id')
+  }
   const setCurrentUser = (id: string) => {
     const u = allUsers.find((u) => u.id === id)
-    if (u) setCurrentUserObj(u)
+    if (u) {
+      setCurrentUserObj(u)
+      localStorage.setItem('app_current_user_id', u.id)
+    }
   }
   const addProperty = (p: Property) => setProperties([...properties, p])
   const updateProperty = (p: Property) =>
@@ -949,6 +983,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     async (user: User, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
+      // Global bypass for platform_owner
+      if (user.role === 'platform_owner') return true
+
       if (user.permissions && user.permissions.length > 0) {
         const override = user.permissions.find((p) => p.resource === resource)
         if (override) {
@@ -970,6 +1007,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const hasPermissionSync = useCallback(
     (user: User, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
+
+      // Global bypass for platform_owner
+      if (user.role === 'platform_owner') return true
 
       if (user.permissions && user.permissions.length > 0) {
         const override = user.permissions.find((p) => p.resource === resource)
