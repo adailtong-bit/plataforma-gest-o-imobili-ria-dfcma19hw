@@ -723,8 +723,42 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setBankStatements([...bankStatements, s])
   const addLedgerEntry = (e: LedgerEntry) =>
     setLedgerEntries([...ledgerEntries, e])
-  const updateLedgerEntry = (e: LedgerEntry) =>
-    setLedgerEntries(ledgerEntries.map((x) => (x.id === e.id ? e : x)))
+  const updateLedgerEntry = (e: LedgerEntry) => {
+    setLedgerEntries((prev) => {
+      const existing = prev.find((x) => x.id === e.id)
+      let updated = prev.map((x) => (x.id === e.id ? e : x))
+
+      if (
+        existing &&
+        existing.status !== 'cleared' &&
+        e.status === 'cleared' &&
+        e.isRecurring &&
+        !e.nextRecurrenceGenerated
+      ) {
+        const nextDate = new Date(e.date)
+        if (e.recurrenceFrequency === 'monthly') {
+          nextDate.setMonth(nextDate.getMonth() + 1)
+        } else if (e.recurrenceFrequency === 'yearly') {
+          nextDate.setFullYear(nextDate.getFullYear() + 1)
+        }
+
+        const nextEntry: LedgerEntry = {
+          ...e,
+          id: `ledg-rec-${Date.now()}`,
+          date: nextDate.toISOString(),
+          status: 'pending',
+          nextRecurrenceGenerated: false,
+        }
+
+        updated = updated.map((x) =>
+          x.id === e.id ? { ...x, nextRecurrenceGenerated: true } : x,
+        )
+        updated.push(nextEntry)
+      }
+
+      return updated
+    })
+  }
   const deleteLedgerEntry = (id: string) =>
     setLedgerEntries(ledgerEntries.filter((x) => x.id !== id))
   const addAuditLog = (l: any) =>

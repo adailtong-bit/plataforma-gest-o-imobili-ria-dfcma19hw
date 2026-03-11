@@ -19115,6 +19115,38 @@ var CircleAlert = createLucideIcon("circle-alert", [
 		key: "4dfq90"
 	}]
 ]);
+var CircleArrowDown = createLucideIcon("circle-arrow-down", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["path", {
+		d: "M12 8v8",
+		key: "napkw2"
+	}],
+	["path", {
+		d: "m8 12 4 4 4-4",
+		key: "k98ssh"
+	}]
+]);
+var CircleArrowUp = createLucideIcon("circle-arrow-up", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["path", {
+		d: "m16 12-4-4-4 4",
+		key: "177agl"
+	}],
+	["path", {
+		d: "M12 16V8",
+		key: "1sbj14"
+	}]
+]);
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -31167,7 +31199,30 @@ const AppProvider = ({ children }) => {
 	const updateFinancialSettings = (s$1) => setFinancialSettings(s$1);
 	const uploadBankStatement = (s$1) => setBankStatements([...bankStatements, s$1]);
 	const addLedgerEntry = (e) => setLedgerEntries([...ledgerEntries$1, e]);
-	const updateLedgerEntry = (e) => setLedgerEntries(ledgerEntries$1.map((x$2) => x$2.id === e.id ? e : x$2));
+	const updateLedgerEntry = (e) => {
+		setLedgerEntries((prev) => {
+			const existing = prev.find((x$2) => x$2.id === e.id);
+			let updated = prev.map((x$2) => x$2.id === e.id ? e : x$2);
+			if (existing && existing.status !== "cleared" && e.status === "cleared" && e.isRecurring && !e.nextRecurrenceGenerated) {
+				const nextDate = new Date(e.date);
+				if (e.recurrenceFrequency === "monthly") nextDate.setMonth(nextDate.getMonth() + 1);
+				else if (e.recurrenceFrequency === "yearly") nextDate.setFullYear(nextDate.getFullYear() + 1);
+				const nextEntry = {
+					...e,
+					id: `ledg-rec-${Date.now()}`,
+					date: nextDate.toISOString(),
+					status: "pending",
+					nextRecurrenceGenerated: false
+				};
+				updated = updated.map((x$2) => x$2.id === e.id ? {
+					...x$2,
+					nextRecurrenceGenerated: true
+				} : x$2);
+				updated.push(nextEntry);
+			}
+			return updated;
+		});
+	};
 	const deleteLedgerEntry = (id) => setLedgerEntries(ledgerEntries$1.filter((x$2) => x$2.id !== id));
 	const addAuditLog = (l) => setAuditLogs([...auditLogs$1, {
 		...l,
@@ -44775,199 +44830,846 @@ function Tasks() {
 		]
 	});
 }
+var SWITCH_NAME = "Switch";
+var [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
+var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
+var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeSwitch, name, checked: checkedProp, defaultChecked, required, disabled, value = "on", onCheckedChange, form, ...switchProps } = props;
+	const [button, setButton] = import_react.useState(null);
+	const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
+	const hasConsumerStoppedPropagationRef = import_react.useRef(false);
+	const isFormControl = button ? form || !!button.closest("form") : true;
+	const [checked, setChecked] = useControllableState({
+		prop: checkedProp,
+		defaultProp: defaultChecked ?? false,
+		onChange: onCheckedChange,
+		caller: SWITCH_NAME
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SwitchProvider, {
+		scope: __scopeSwitch,
+		checked,
+		disabled,
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+			type: "button",
+			role: "switch",
+			"aria-checked": checked,
+			"aria-required": required,
+			"data-state": getState$2(checked),
+			"data-disabled": disabled ? "" : void 0,
+			disabled,
+			value,
+			...switchProps,
+			ref: composedRefs,
+			onClick: composeEventHandlers(props.onClick, (event) => {
+				setChecked((prevChecked) => !prevChecked);
+				if (isFormControl) {
+					hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
+					if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
+				}
+			})
+		}), isFormControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SwitchBubbleInput, {
+			control: button,
+			bubbles: !hasConsumerStoppedPropagationRef.current,
+			name,
+			value,
+			checked,
+			required,
+			disabled,
+			form,
+			style: { transform: "translateX(-100%)" }
+		})]
+	});
+});
+Switch$1.displayName = SWITCH_NAME;
+var THUMB_NAME = "SwitchThumb";
+var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeSwitch, ...thumbProps } = props;
+	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		"data-state": getState$2(context.checked),
+		"data-disabled": context.disabled ? "" : void 0,
+		...thumbProps,
+		ref: forwardedRef
+	});
+});
+SwitchThumb.displayName = THUMB_NAME;
+var BUBBLE_INPUT_NAME$1 = "SwitchBubbleInput";
+var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, checked, bubbles = true, ...props }, forwardedRef) => {
+	const ref = import_react.useRef(null);
+	const composedRefs = useComposedRefs(ref, forwardedRef);
+	const prevChecked = usePrevious(checked);
+	const controlSize = useSize(control);
+	import_react.useEffect(() => {
+		const input = ref.current;
+		if (!input) return;
+		const inputProto = window.HTMLInputElement.prototype;
+		const setChecked = Object.getOwnPropertyDescriptor(inputProto, "checked").set;
+		if (prevChecked !== checked && setChecked) {
+			const event = new Event("click", { bubbles });
+			setChecked.call(input, checked);
+			input.dispatchEvent(event);
+		}
+	}, [
+		prevChecked,
+		checked,
+		bubbles
+	]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+		type: "checkbox",
+		"aria-hidden": true,
+		defaultChecked: checked,
+		...props,
+		tabIndex: -1,
+		ref: composedRefs,
+		style: {
+			...props.style,
+			...controlSize,
+			position: "absolute",
+			pointerEvents: "none",
+			opacity: 0,
+			margin: 0
+		}
+	});
+});
+SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
+function getState$2(checked) {
+	return checked ? "checked" : "unchecked";
+}
+var Root = Switch$1;
+var Thumb = SwitchThumb;
+var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+	className: cn("peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input", className),
+	...props,
+	ref,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Thumb, { className: cn("pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0") })
+}));
+Switch.displayName = Root.displayName;
 function Financial() {
-	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, formatAppCurrency } = (0, import_react.useContext)(AppContext);
+	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, formatAppCurrency, properties: properties$1, owners: owners$1 } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
+	const [viewMode, setViewMode] = (0, import_react.useState)("pm");
+	const [selectedOwnerId, setSelectedOwnerId] = (0, import_react.useState)("all");
+	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
 	const [isAddOpen, setIsAddOpen] = (0, import_react.useState)(false);
 	const [editingRecord, setEditingRecord] = (0, import_react.useState)(null);
+	const resetForm = () => {
+		setForm({
+			description: "",
+			amount: "",
+			type: "income",
+			date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+			propertyId: "none",
+			costType: "variable",
+			isRecurring: false,
+			recurrenceFrequency: "monthly",
+			status: "pending"
+		});
+	};
 	const [form, setForm] = (0, import_react.useState)({
 		description: "",
 		amount: "",
-		type: "income"
+		type: "income",
+		date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		propertyId: "none",
+		costType: "variable",
+		isRecurring: false,
+		recurrenceFrequency: "monthly",
+		status: "pending"
 	});
+	const filteredEntries = (0, import_react.useMemo)(() => {
+		return ledgerEntries$1.filter((entry) => {
+			if (viewMode === "pm") return true;
+			if (viewMode === "owner") {
+				if (selectedOwnerId === "all") return true;
+				return properties$1.find((p$1) => p$1.id === entry.propertyId)?.ownerId === selectedOwnerId;
+			}
+			if (viewMode === "property") {
+				if (selectedPropertyId === "all") return true;
+				return entry.propertyId === selectedPropertyId;
+			}
+			return true;
+		}).sort((a$1, b$1) => new Date(b$1.date).getTime() - new Date(a$1.date).getTime());
+	}, [
+		ledgerEntries$1,
+		viewMode,
+		selectedOwnerId,
+		selectedPropertyId,
+		properties$1
+	]);
+	const balances = (0, import_react.useMemo)(() => {
+		let income = 0;
+		let expense = 0;
+		let pendingIncome = 0;
+		let pendingExpense = 0;
+		filteredEntries.forEach((e) => {
+			if (e.status === "cleared") if (e.type === "income") income += e.amount;
+			else expense += e.amount;
+			else if (e.type === "income") pendingIncome += e.amount;
+			else pendingExpense += e.amount;
+		});
+		return {
+			currentBalance: income - expense,
+			income,
+			expense,
+			pendingIncome,
+			pendingExpense,
+			pendingBalance: pendingIncome - pendingExpense
+		};
+	}, [filteredEntries]);
 	const handleAdd = () => {
 		addLedgerEntry({
 			id: `ledg-${Date.now()}`,
 			description: form.description || "Nova transação",
 			amount: Number(form.amount) || 0,
 			type: form.type,
-			date: (/* @__PURE__ */ new Date()).toISOString(),
-			status: "cleared",
+			date: new Date(form.date).toISOString(),
+			status: form.status,
 			category: "other",
-			propertyId: ""
+			propertyId: form.propertyId === "none" ? "" : form.propertyId,
+			costType: form.costType,
+			isRecurring: form.isRecurring,
+			recurrenceFrequency: form.recurrenceFrequency,
+			nextRecurrenceGenerated: false
 		});
 		setIsAddOpen(false);
-		setForm({
-			description: "",
-			amount: "",
-			type: "income"
-		});
+		resetForm();
 		toast$2({ title: "Transação incluída com sucesso" });
 	};
 	const handleEdit = () => {
 		if (editingRecord) updateLedgerEntry({
 			...editingRecord,
 			description: form.description,
-			amount: Number(form.amount)
+			amount: Number(form.amount),
+			type: form.type,
+			date: new Date(form.date).toISOString(),
+			propertyId: form.propertyId === "none" ? "" : form.propertyId,
+			costType: form.costType,
+			isRecurring: form.isRecurring,
+			recurrenceFrequency: form.recurrenceFrequency,
+			status: form.status
 		});
 		setEditingRecord(null);
 		toast$2({ title: "Transação alterada com sucesso" });
+	};
+	const openEdit = (entry) => {
+		setEditingRecord(entry);
+		setForm({
+			description: entry.description,
+			amount: entry.amount.toString(),
+			type: entry.type,
+			date: entry.date.substring(0, 10),
+			propertyId: entry.propertyId || "none",
+			costType: entry.costType || "variable",
+			isRecurring: entry.isRecurring || false,
+			recurrenceFrequency: entry.recurrenceFrequency || "monthly",
+			status: entry.status || "pending"
+		});
 	};
 	const handleDelete = (id) => {
 		deleteLedgerEntry(id);
 		toast$2({ title: "Transação excluída com sucesso" });
 	};
+	const markAsPaid = (entry) => {
+		updateLedgerEntry({
+			...entry,
+			status: "cleared",
+			paymentDate: (/* @__PURE__ */ new Date()).toISOString()
+		});
+		toast$2({ title: "Transação marcada como paga" });
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col gap-6 p-6",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "flex justify-between items-center",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
-				className: "text-3xl font-bold tracking-tight text-slate-900",
-				children: t("sidebar.financial") || "Financeiro"
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-				className: "text-muted-foreground",
-				children: "Gerencie as transações financeiras da plataforma."
-			})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-				open: isAddOpen,
-				onOpenChange: setIsAddOpen,
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-					asChild: true,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						className: "bg-trust-blue gap-2 text-white",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir"]
-					})
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Transação" }) }),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-4 py-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							placeholder: "Descrição",
-							value: form.description,
-							onChange: (e) => setForm({
-								...form,
-								description: e.target.value
-							})
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-							type: "number",
-							placeholder: "Valor",
-							value: form.amount,
-							onChange: (e) => setForm({
-								...form,
-								amount: e.target.value
-							})
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-						onClick: handleAdd,
-						children: "Salvar"
-					}) })
-				] })]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
-			className: "border-slate-200 shadow-sm bg-white",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
-				className: "p-0 overflow-auto",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
-					className: "bg-slate-50",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Descrição" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Tipo" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Valor"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Ações"
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "text-3xl font-bold tracking-tight text-slate-900",
+					children: t("sidebar.financial") || "Financeiro"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-muted-foreground",
+					children: "Gestão de contas correntes, custos fixos e variáveis."
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+					open: isAddOpen,
+					onOpenChange: (val) => {
+						if (val) resetForm();
+						setIsAddOpen(val);
+					},
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+						asChild: true,
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							className: "bg-trust-blue gap-2 text-white",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), " Incluir Lançamento"]
 						})
-					] })
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [ledgerEntries$1.map((entry) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
-					className: "hover:bg-slate-50",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "font-medium text-slate-900",
-							children: entry.description
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(entry.date), "dd/MM/yyyy") }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-							variant: entry.type === "income" ? "default" : "destructive",
-							children: entry.type === "income" ? "Receita" : "Despesa"
-						}) }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: formatAppCurrency(entry.amount)
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							className: "text-right",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex justify-end gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-									open: editingRecord?.id === entry.id,
-									onOpenChange: (open) => !open && setEditingRecord(null),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-										asChild: true,
-										children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-											variant: "outline",
-											size: "sm",
-											onClick: () => {
-												setEditingRecord(entry);
-												setForm({
-													description: entry.description,
-													amount: entry.amount.toString(),
-													type: entry.type
-												});
-											},
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4 mr-2" }), " Alterar"]
-										})
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Transação" }) }),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-											className: "space-y-4 py-4",
-											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-												placeholder: "Descrição",
-												value: form.description,
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+						className: "max-w-2xl",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Incluir Transação" }) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-4 py-4",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tipo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.type,
+												onValueChange: (v) => setForm({
+													...form,
+													type: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "income",
+													children: "Receita"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "expense",
+													children: "Despesa"
+												})] })]
+											})]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+												type: "date",
+												value: form.date,
 												onChange: (e) => setForm({
 													...form,
-													description: e.target.value
+													date: e.target.value
 												})
-											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											})]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Descrição" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+											placeholder: "Ex: Conta de Luz, Aluguel...",
+											value: form.description,
+											onChange: (e) => setForm({
+												...form,
+												description: e.target.value
+											})
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid grid-cols-2 gap-4",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Valor" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
 												type: "number",
-												placeholder: "Valor",
+												placeholder: "0.00",
 												value: form.amount,
 												onChange: (e) => setForm({
 													...form,
 													amount: e.target.value
 												})
 											})]
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-											onClick: handleEdit,
-											children: "Salvar"
-										}) })
-									] })]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-										variant: "destructive",
-										size: "sm",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 mr-2" }), " Excluir"]
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+											className: "grid gap-2",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Propriedade (Opcional)" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.propertyId,
+												onValueChange: (v) => setForm({
+													...form,
+													propertyId: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Geral" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "none",
+													children: "Geral (PM)"
+												}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: p$1.id,
+													children: p$1.name
+												}, p$1.id))] })]
+											})]
+										})]
+									}),
+									form.type === "expense" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Categoria de Custo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: form.costType,
+											onValueChange: (v) => setForm({
+												...form,
+												costType: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "fixed",
+												children: "Custo Fixo (Condomínio, Água, Luz)"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "variable",
+												children: "Custo Variável (Limpeza, Manutenção)"
+											})] })]
+										})]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex items-center space-x-2 pt-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+											checked: form.isRecurring,
+											onCheckedChange: (v) => setForm({
+												...form,
+												isRecurring: v
+											})
+										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "É uma despesa/receita recorrente?" })]
+									}),
+									form.isRecurring && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Frequência de Repetição" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+												value: form.recurrenceFrequency,
+												onValueChange: (v) => setForm({
+													...form,
+													recurrenceFrequency: v
+												}),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "monthly",
+													children: "Mensalmente"
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+													value: "yearly",
+													children: "Anualmente"
+												})] })]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+												className: "text-xs text-muted-foreground mt-1",
+												children: "Ao marcar este item como \"Pago\", o sistema irá gerar automaticamente o lançamento do próximo mês/ano."
+											})
+										]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "grid gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status Inicial" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+											value: form.status,
+											onValueChange: (v) => setForm({
+												...form,
+												status: v
+											}),
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "pending",
+												children: "Pendente"
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+												value: "cleared",
+												children: "Pago/Recebido"
+											})] })]
+										})]
 									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Transação" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
-									onClick: () => handleDelete(entry.id),
-									children: "Excluir"
-								})] })] })] })]
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+								onClick: handleAdd,
+								children: "Salvar Lançamento"
+							}) })
+						]
+					})]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "pb-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-lg",
+						children: "Painel de Saldos e Relatórios"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Visualize o saldo da conta corrente filtrado pela sua preferência." })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-col gap-4 mb-6",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Tabs, {
+							value: viewMode,
+							onValueChange: (v) => {
+								setViewMode(v);
+								setSelectedOwnerId("all");
+								setSelectedPropertyId("all");
+							},
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+								className: "grid w-full grid-cols-3 md:w-[400px]",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+										value: "pm",
+										className: "gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "w-4 h-4" }), " PM (Geral)"]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+										value: "owner",
+										className: "gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "w-4 h-4" }), " Proprietário"]
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsTrigger, {
+										value: "property",
+										className: "gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Building, { className: "w-4 h-4" }), " Propriedade"]
+									})
+								]
+							})
+						}),
+						viewMode === "owner" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-full md:w-[300px]",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: selectedOwnerId,
+								onValueChange: setSelectedOwnerId,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione o Proprietário" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "all",
+									children: "Todos os Proprietários"
+								}), owners$1.map((o) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: o.id,
+									children: o.name
+								}, o.id))] })]
+							})
+						}),
+						viewMode === "property" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "w-full md:w-[300px]",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: selectedPropertyId,
+								onValueChange: setSelectedPropertyId,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione a Propriedade" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: "all",
+									children: "Todas as Propriedades"
+								}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: p$1.id,
+									children: p$1.name
+								}, p$1.id))] })]
 							})
 						})
 					]
-				}, entry.id)), ledgerEntries$1.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-					colSpan: 5,
-					className: "text-center py-6 text-muted-foreground",
-					children: "Nenhuma transação encontrada."
-				}) })] })] })
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid grid-cols-1 md:grid-cols-3 gap-6",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+							className: cn("border-2", balances.currentBalance >= 0 ? "border-green-100 bg-green-50/50" : "border-red-100 bg-red-50/50"),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "pt-6",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-sm font-medium text-slate-600 mb-1",
+										children: "Saldo Atual (Conta Corrente)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: cn("text-3xl font-bold", balances.currentBalance >= 0 ? "text-green-700" : "text-red-700"),
+										children: formatAppCurrency(balances.currentBalance)
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-xs text-slate-500 mt-2",
+										children: "Apenas transações pagas/recebidas"
+									})
+								]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+							className: "border-slate-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "pt-6",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-sm font-medium text-slate-600 mb-1",
+										children: "Total Receitas (Pagas)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-2xl font-bold text-slate-900",
+										children: formatAppCurrency(balances.income)
+									}),
+									balances.pendingIncome > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "text-xs text-blue-600 mt-2",
+										children: [
+											"+",
+											formatAppCurrency(balances.pendingIncome),
+											" pendentes"
+										]
+									})
+								]
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+							className: "border-slate-100",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+								className: "pt-6",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-sm font-medium text-slate-600 mb-1",
+										children: "Total Despesas (Pagas)"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+										className: "text-2xl font-bold text-slate-900",
+										children: formatAppCurrency(balances.expense)
+									}),
+									balances.pendingExpense > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "text-xs text-orange-600 mt-2",
+										children: [
+											"+",
+											formatAppCurrency(balances.pendingExpense),
+											" pendentes"
+										]
+									})
+								]
+							})
+						})
+					]
+				})] })]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, {
+					className: "pb-2 border-b",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
+						className: "text-lg",
+						children: "Extrato de Lançamentos"
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0 overflow-auto",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-slate-50",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Descrição" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Tipo / Categoria" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: "Valor"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+								className: "text-right",
+								children: "Ações"
+							})
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredEntries.map((entry) => {
+						const isIncome = entry.type === "income";
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+							className: "hover:bg-slate-50",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: format(new Date(entry.date), "dd/MM/yyyy") }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "font-medium text-slate-900",
+											children: entry.description
+										}),
+										entry.propertyId && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											className: "text-xs text-slate-500",
+											children: properties$1.find((p$1) => p$1.id === entry.propertyId)?.name || "Propriedade Excluída"
+										}),
+										entry.isRecurring && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+											className: "text-xs text-blue-600 flex items-center gap-1 mt-1",
+											children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "w-3 h-3" }), entry.recurrenceFrequency === "monthly" ? "Mensal" : "Anual"]
+										})
+									]
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-col gap-1 items-start",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+										variant: isIncome ? "default" : "destructive",
+										className: isIncome ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-red-100 text-red-800 hover:bg-red-100",
+										children: [isIncome ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleArrowUp, { className: "w-3 h-3 mr-1" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleArrowDown, { className: "w-3 h-3 mr-1" }), isIncome ? "Receita" : "Despesa"]
+									}), !isIncome && entry.costType && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+										variant: "outline",
+										className: "text-xs border-slate-300",
+										children: entry.costType === "fixed" ? "Custo Fixo" : "Custo Variável"
+									})]
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: entry.status === "cleared" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+									className: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "w-3 h-3 mr-1" }), " Pago"]
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Badge, {
+									variant: "secondary",
+									className: "bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "w-3 h-3 mr-1" }), " Pendente"]
+								}) }),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+									className: cn("text-right font-bold", isIncome ? "text-green-600" : "text-red-600"),
+									children: [isIncome ? "+" : "-", formatAppCurrency(entry.amount)]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+									className: "text-right",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex justify-end gap-2 items-center",
+										children: [
+											entry.status !== "cleared" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+												variant: "outline",
+												size: "sm",
+												className: "h-8 border-green-200 text-green-700 hover:bg-green-50",
+												onClick: () => markAsPaid(entry),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleCheck, { className: "h-4 w-4 mr-1" }), " Pagar"]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+												open: editingRecord?.id === entry.id,
+												onOpenChange: (open) => !open && setEditingRecord(null),
+												children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+													asChild: true,
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+														variant: "ghost",
+														size: "icon",
+														className: "h-8 w-8 text-slate-500 hover:text-blue-600",
+														onClick: () => openEdit(entry),
+														children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pencil, { className: "h-4 w-4" })
+													})
+												}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+													className: "max-w-2xl",
+													children: [
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Alterar Transação" }) }),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+															className: "grid gap-4 py-4",
+															children: [
+																/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid grid-cols-2 gap-4",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																		className: "grid gap-2",
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Tipo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																			value: form.type,
+																			onValueChange: (v) => setForm({
+																				...form,
+																				type: v
+																			}),
+																			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																				value: "income",
+																				children: "Receita"
+																			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																				value: "expense",
+																				children: "Despesa"
+																			})] })]
+																		})]
+																	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																		className: "grid gap-2",
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Data" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																			type: "date",
+																			value: form.date,
+																			onChange: (e) => setForm({
+																				...form,
+																				date: e.target.value
+																			})
+																		})]
+																	})]
+																}),
+																/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid gap-2",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Descrição" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																		value: form.description,
+																		onChange: (e) => setForm({
+																			...form,
+																			description: e.target.value
+																		})
+																	})]
+																}),
+																/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid grid-cols-2 gap-4",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																		className: "grid gap-2",
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Valor" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+																			type: "number",
+																			value: form.amount,
+																			onChange: (e) => setForm({
+																				...form,
+																				amount: e.target.value
+																			})
+																		})]
+																	}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																		className: "grid gap-2",
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Propriedade" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																			value: form.propertyId,
+																			onValueChange: (v) => setForm({
+																				...form,
+																				propertyId: v
+																			}),
+																			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																				value: "none",
+																				children: "Geral (PM)"
+																			}), properties$1.map((p$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																				value: p$1.id,
+																				children: p$1.name
+																			}, p$1.id))] })]
+																		})]
+																	})]
+																}),
+																form.type === "expense" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid gap-2",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Categoria de Custo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																		value: form.costType,
+																		onValueChange: (v) => setForm({
+																			...form,
+																			costType: v
+																		}),
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "fixed",
+																			children: "Custo Fixo"
+																		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "variable",
+																			children: "Custo Variável"
+																		})] })]
+																	})]
+																}),
+																/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "flex items-center space-x-2 pt-2",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+																		checked: form.isRecurring,
+																		onCheckedChange: (v) => setForm({
+																			...form,
+																			isRecurring: v
+																		})
+																	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "É uma despesa/receita recorrente?" })]
+																}),
+																form.isRecurring && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid gap-2",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Frequência" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																		value: form.recurrenceFrequency,
+																		onValueChange: (v) => setForm({
+																			...form,
+																			recurrenceFrequency: v
+																		}),
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "monthly",
+																			children: "Mensal"
+																		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "yearly",
+																			children: "Anual"
+																		})] })]
+																	})]
+																}),
+																/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+																	className: "grid gap-2",
+																	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, { children: "Status" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+																		value: form.status,
+																		onValueChange: (v) => setForm({
+																			...form,
+																			status: v
+																		}),
+																		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "pending",
+																			children: "Pendente"
+																		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+																			value: "cleared",
+																			children: "Pago/Recebido"
+																		})] })]
+																	})]
+																})
+															]
+														}),
+														/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+															onClick: handleEdit,
+															children: "Salvar Alterações"
+														}) })
+													]
+												})]
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialog, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTrigger, {
+												asChild: true,
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													variant: "ghost",
+													size: "icon",
+													className: "h-8 w-8 text-slate-500 hover:text-red-600",
+													children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+												})
+											}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogTitle, { children: "Excluir Transação" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogDescription, { children: "Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(AlertDialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogCancel, { children: "Cancelar" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDialogAction, {
+												className: "bg-red-600 hover:bg-red-700",
+												onClick: () => handleDelete(entry.id),
+												children: "Excluir"
+											})] })] })] })
+										]
+									})
+								})
+							]
+						}, entry.id);
+					}), filteredEntries.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 6,
+						className: "text-center py-12 text-muted-foreground",
+						children: "Nenhuma transação encontrada para os filtros selecionados."
+					}) })] })] })
+				})]
 			})
-		})]
+		]
 	});
 }
 function InvoiceViewer({ open, onOpenChange, invoice }) {
@@ -45458,120 +46160,6 @@ function Messages() {
 		})]
 	});
 }
-var SWITCH_NAME = "Switch";
-var [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
-var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
-var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeSwitch, name, checked: checkedProp, defaultChecked, required, disabled, value = "on", onCheckedChange, form, ...switchProps } = props;
-	const [button, setButton] = import_react.useState(null);
-	const composedRefs = useComposedRefs(forwardedRef, (node) => setButton(node));
-	const hasConsumerStoppedPropagationRef = import_react.useRef(false);
-	const isFormControl = button ? form || !!button.closest("form") : true;
-	const [checked, setChecked] = useControllableState({
-		prop: checkedProp,
-		defaultProp: defaultChecked ?? false,
-		onChange: onCheckedChange,
-		caller: SWITCH_NAME
-	});
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SwitchProvider, {
-		scope: __scopeSwitch,
-		checked,
-		disabled,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
-			type: "button",
-			role: "switch",
-			"aria-checked": checked,
-			"aria-required": required,
-			"data-state": getState$2(checked),
-			"data-disabled": disabled ? "" : void 0,
-			disabled,
-			value,
-			...switchProps,
-			ref: composedRefs,
-			onClick: composeEventHandlers(props.onClick, (event) => {
-				setChecked((prevChecked) => !prevChecked);
-				if (isFormControl) {
-					hasConsumerStoppedPropagationRef.current = event.isPropagationStopped();
-					if (!hasConsumerStoppedPropagationRef.current) event.stopPropagation();
-				}
-			})
-		}), isFormControl && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SwitchBubbleInput, {
-			control: button,
-			bubbles: !hasConsumerStoppedPropagationRef.current,
-			name,
-			value,
-			checked,
-			required,
-			disabled,
-			form,
-			style: { transform: "translateX(-100%)" }
-		})]
-	});
-});
-Switch$1.displayName = SWITCH_NAME;
-var THUMB_NAME = "SwitchThumb";
-var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
-	const { __scopeSwitch, ...thumbProps } = props;
-	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
-		"data-state": getState$2(context.checked),
-		"data-disabled": context.disabled ? "" : void 0,
-		...thumbProps,
-		ref: forwardedRef
-	});
-});
-SwitchThumb.displayName = THUMB_NAME;
-var BUBBLE_INPUT_NAME$1 = "SwitchBubbleInput";
-var SwitchBubbleInput = import_react.forwardRef(({ __scopeSwitch, control, checked, bubbles = true, ...props }, forwardedRef) => {
-	const ref = import_react.useRef(null);
-	const composedRefs = useComposedRefs(ref, forwardedRef);
-	const prevChecked = usePrevious(checked);
-	const controlSize = useSize(control);
-	import_react.useEffect(() => {
-		const input = ref.current;
-		if (!input) return;
-		const inputProto = window.HTMLInputElement.prototype;
-		const setChecked = Object.getOwnPropertyDescriptor(inputProto, "checked").set;
-		if (prevChecked !== checked && setChecked) {
-			const event = new Event("click", { bubbles });
-			setChecked.call(input, checked);
-			input.dispatchEvent(event);
-		}
-	}, [
-		prevChecked,
-		checked,
-		bubbles
-	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-		type: "checkbox",
-		"aria-hidden": true,
-		defaultChecked: checked,
-		...props,
-		tabIndex: -1,
-		ref: composedRefs,
-		style: {
-			...props.style,
-			...controlSize,
-			position: "absolute",
-			pointerEvents: "none",
-			opacity: 0,
-			margin: 0
-		}
-	});
-});
-SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
-function getState$2(checked) {
-	return checked ? "checked" : "unchecked";
-}
-var Root = Switch$1;
-var Thumb = SwitchThumb;
-var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
-	className: cn("peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input", className),
-	...props,
-	ref,
-	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Thumb, { className: cn("pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0") })
-}));
-Switch.displayName = Root.displayName;
 function SubscriptionSettings() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 		className: "border-slate-200 shadow-sm bg-white",
@@ -81644,4 +82232,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DD5H2OFw.js.map
+//# sourceMappingURL=index-DeKUw4v0.js.map

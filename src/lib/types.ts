@@ -965,6 +965,10 @@ export interface LedgerEntry {
   status: 'pending' | 'cleared' | 'void' | 'overdue' | 'unpaid'
   attachments?: { name: string; url: string }[]
   payee?: string
+  costType?: 'fixed' | 'variable'
+  isRecurring?: boolean
+  recurrenceFrequency?: 'monthly' | 'yearly'
+  nextRecurrenceGenerated?: boolean
 }
 
 export interface AuditLog {
