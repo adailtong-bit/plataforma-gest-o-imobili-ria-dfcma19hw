@@ -82,7 +82,13 @@ export function RequirePermission({
     : false
 
   useEffect(() => {
-    if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
+    if (
+      !isAuthLoading &&
+      isAuthenticated &&
+      !allowed &&
+      !hasAlerted &&
+      !isPlatformOwner
+    ) {
       const isPortalUser = [
         'tenant',
         'property_owner',
@@ -109,6 +115,7 @@ export function RequirePermission({
     toast,
     t,
     currentUser,
+    isPlatformOwner,
   ])
 
   if (isAuthLoading) {
@@ -124,6 +131,11 @@ export function RequirePermission({
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  // Platform Owner Bypass Logic: Guaranteed access for the platform_owner role
+  if (isPlatformOwner) {
+    return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
   }
 
   if (!allowed) {

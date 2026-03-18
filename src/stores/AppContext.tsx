@@ -501,10 +501,32 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let isMounted = true
+
+    const initializeSession = async () => {
+      setIsAuthLoading(true)
+
+      // Simulating session validation and data hydration delay
+      // to prevent premature redirects by RequirePermission and avoid race conditions
+      await new Promise((resolve) => setTimeout(resolve, 300))
+
+      if (!isMounted) return
+
+      const savedId = localStorage.getItem('app_current_user_id')
+      if (savedId) {
+        setIsAuthenticated(true)
+      } else {
+        setIsAuthenticated(false)
+      }
+
       setIsAuthLoading(false)
-    }, 150)
-    return () => clearTimeout(timer)
+    }
+
+    initializeSession()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const setLanguage = (lang: Language) => {

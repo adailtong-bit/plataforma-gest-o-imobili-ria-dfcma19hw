@@ -31059,10 +31059,19 @@ const AppProvider = ({ children }) => {
 	const [rolePermissions, setRolePermissions] = (0, import_react.useState)(DEFAULT_PERMISSIONS_MATRIX);
 	const { toast: toast$2 } = useToast();
 	(0, import_react.useEffect)(() => {
-		const timer = setTimeout(() => {
+		let isMounted = true;
+		const initializeSession = async () => {
+			setIsAuthLoading(true);
+			await new Promise((resolve) => setTimeout(resolve, 300));
+			if (!isMounted) return;
+			if (localStorage.getItem("app_current_user_id")) setIsAuthenticated(true);
+			else setIsAuthenticated(false);
 			setIsAuthLoading(false);
-		}, 150);
-		return () => clearTimeout(timer);
+		};
+		initializeSession();
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 	const setLanguage = (lang) => {
 		setLanguageState(lang);
@@ -81288,7 +81297,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const isSoftwareTenant = currentUser?.role === "software_tenant";
 	const allowed = currentUser ? isPlatformOwner || isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
-		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted) {
+		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted && !isPlatformOwner) {
 			if (![
 				"tenant",
 				"property_owner",
@@ -81310,7 +81319,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 		hasAlerted,
 		toast$2,
 		t,
-		currentUser
+		currentUser,
+		isPlatformOwner
 	]);
 	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
@@ -81324,6 +81334,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 		state: { from: location },
 		replace: true
 	});
+	if (isPlatformOwner) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
 	if (!allowed) {
 		if (currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee") {
 			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
@@ -81899,4 +81910,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-BbyoSHXY.js.map
+//# sourceMappingURL=index-DOvr7pao.js.map
