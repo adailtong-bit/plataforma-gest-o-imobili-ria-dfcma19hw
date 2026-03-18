@@ -73,52 +73,12 @@ export function RequirePermission({
 
   // DEVELOPER / PLATFORM OWNER BYPASS - Absolute Top Level Priority
   // Role Isolation: the developer account bypasses everything inherently.
-  const isDeveloperBypass = currentUser?.role === 'platform_owner'
+  const isDeveloperBypass =
+    currentUser?.role === 'platform_owner' ||
+    currentUser?.role === 'admin' ||
+    currentUser?.role === 'super_admin'
+
   const isSoftwareTenant = currentUser?.role === 'software_tenant'
-
-  const allowed = isDeveloperBypass
-    ? true
-    : isSoftwareTenant
-      ? true
-      : hasPermissionSync(currentUser as User, resource, action)
-
-  useEffect(() => {
-    if (
-      !isAuthLoading &&
-      isAuthenticated &&
-      currentUser &&
-      !isDeveloperBypass
-    ) {
-      if (!allowed && !hasAlerted) {
-        const isPortalUser = [
-          'tenant',
-          'property_owner',
-          'partner',
-          'partner_employee',
-        ].includes(currentUser?.role || '')
-
-        if (!isPortalUser) {
-          toast({
-            title: t('common.access_denied') || 'Access Denied',
-            description:
-              t('common.access_denied_desc') ||
-              'You do not have permission to view this page.',
-            variant: 'destructive',
-          })
-          setHasAlerted(true)
-        }
-      }
-    }
-  }, [
-    allowed,
-    hasAlerted,
-    toast,
-    t,
-    currentUser,
-    isAuthLoading,
-    isAuthenticated,
-    isDeveloperBypass,
-  ])
 
   // 1. Developer Absolute Access Override
   if (isDeveloperBypass) {
@@ -141,6 +101,48 @@ export function RequirePermission({
   if (!isAuthenticated || !currentUser) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
+
+  const allowed = isSoftwareTenant
+    ? true
+    : hasPermissionSync(currentUser as User, resource, action)
+
+  useEffect(() => {
+    if (
+      !allowed &&
+      !hasAlerted &&
+      !isDeveloperBypass &&
+      !isAuthLoading &&
+      isAuthenticated &&
+      currentUser
+    ) {
+      const isPortalUser = [
+        'tenant',
+        'property_owner',
+        'partner',
+        'partner_employee',
+      ].includes(currentUser?.role || '')
+
+      if (!isPortalUser) {
+        toast({
+          title: t('common.access_denied') || 'Access Denied',
+          description:
+            t('common.access_denied_desc') ||
+            'You do not have permission to view this page.',
+          variant: 'destructive',
+        })
+        setHasAlerted(true)
+      }
+    }
+  }, [
+    allowed,
+    hasAlerted,
+    toast,
+    t,
+    currentUser,
+    isAuthLoading,
+    isAuthenticated,
+    isDeveloperBypass,
+  ])
 
   // 4. Block access if not allowed
   if (!allowed) {

@@ -483,15 +483,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [currentUserObj, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant | null
-  >(getInitialUser())
+  >(() => getInitialUser())
 
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem('app_current_user_id') && !!currentUserObj,
-  )
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const user = getInitialUser()
+    return !!localStorage.getItem('app_current_user_id') && !!user
+  })
 
-  const [isAuthLoading, setIsAuthLoading] = useState(
-    currentUserObj?.role !== 'platform_owner',
-  )
+  const [isAuthLoading, setIsAuthLoading] = useState(() => {
+    const user = getInitialUser()
+    if (!user) return false
+    return user.role !== 'platform_owner'
+  })
 
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -717,6 +720,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setCurrentUserObj(user)
       localStorage.setItem('app_current_user_id', user.id)
       setIsAuthenticated(true)
+      setIsAuthLoading(false)
       return true
     }
     return false
@@ -724,6 +728,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setIsAuthenticated(false)
+    setIsAuthLoading(false)
     localStorage.removeItem('app_current_user_id')
     setCurrentUserObj(null)
   }
@@ -733,6 +738,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (u) {
       setCurrentUserObj(u)
       localStorage.setItem('app_current_user_id', u.id)
+      setIsAuthenticated(true)
+      setIsAuthLoading(false)
     }
   }
 

@@ -31046,9 +31046,16 @@ const AppProvider = ({ children }) => {
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
-	const [currentUserObj, setCurrentUserObj] = (0, import_react.useState)(getInitialUser());
-	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(!!localStorage.getItem("app_current_user_id") && !!currentUserObj);
-	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(currentUserObj?.role !== "platform_owner");
+	const [currentUserObj, setCurrentUserObj] = (0, import_react.useState)(() => getInitialUser());
+	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(() => {
+		const user = getInitialUser();
+		return !!localStorage.getItem("app_current_user_id") && !!user;
+	});
+	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(() => {
+		const user = getInitialUser();
+		if (!user) return false;
+		return user.role !== "platform_owner";
+	});
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
@@ -31171,12 +31178,14 @@ const AppProvider = ({ children }) => {
 			setCurrentUserObj(user);
 			localStorage.setItem("app_current_user_id", user.id);
 			setIsAuthenticated(true);
+			setIsAuthLoading(false);
 			return true;
 		}
 		return false;
 	};
 	const logout = () => {
 		setIsAuthenticated(false);
+		setIsAuthLoading(false);
 		localStorage.removeItem("app_current_user_id");
 		setCurrentUserObj(null);
 	};
@@ -31185,6 +31194,8 @@ const AppProvider = ({ children }) => {
 		if (u) {
 			setCurrentUserObj(u);
 			localStorage.setItem("app_current_user_id", u.id);
+			setIsAuthenticated(true);
+			setIsAuthLoading(false);
 		}
 	};
 	const addProperty = (p) => setProperties((prev) => [...prev, attachOrg(p)]);
@@ -81304,37 +81315,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const isDeveloperBypass = currentUser?.role === "platform_owner";
+	const isDeveloperBypass = currentUser?.role === "platform_owner" || currentUser?.role === "admin" || currentUser?.role === "super_admin";
 	const isSoftwareTenant = currentUser?.role === "software_tenant";
-	const allowed = isDeveloperBypass ? true : isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action);
-	(0, import_react.useEffect)(() => {
-		if (!isAuthLoading && isAuthenticated && currentUser && !isDeveloperBypass) {
-			if (!allowed && !hasAlerted) {
-				if (![
-					"tenant",
-					"property_owner",
-					"partner",
-					"partner_employee"
-				].includes(currentUser?.role || "")) {
-					toast$2({
-						title: t("common.access_denied") || "Access Denied",
-						description: t("common.access_denied_desc") || "You do not have permission to view this page.",
-						variant: "destructive"
-					});
-					setHasAlerted(true);
-				}
-			}
-		}
-	}, [
-		allowed,
-		hasAlerted,
-		toast$2,
-		t,
-		currentUser,
-		isAuthLoading,
-		isAuthenticated,
-		isDeveloperBypass
-	]);
 	if (isDeveloperBypass) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
 	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
@@ -81348,6 +81330,33 @@ function RequirePermission({ children, resource, action = "view" }) {
 		state: { from: location },
 		replace: true
 	});
+	const allowed = isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action);
+	(0, import_react.useEffect)(() => {
+		if (!allowed && !hasAlerted && !isDeveloperBypass && !isAuthLoading && isAuthenticated && currentUser) {
+			if (![
+				"tenant",
+				"property_owner",
+				"partner",
+				"partner_employee"
+			].includes(currentUser?.role || "")) {
+				toast$2({
+					title: t("common.access_denied") || "Access Denied",
+					description: t("common.access_denied_desc") || "You do not have permission to view this page.",
+					variant: "destructive"
+				});
+				setHasAlerted(true);
+			}
+		}
+	}, [
+		allowed,
+		hasAlerted,
+		toast$2,
+		t,
+		currentUser,
+		isAuthLoading,
+		isAuthenticated,
+		isDeveloperBypass
+	]);
 	if (!allowed) {
 		if ([
 			"tenant",
@@ -81928,4 +81937,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-vHUSXfzc.js.map
+//# sourceMappingURL=index-D6ZfiObd.js.map
