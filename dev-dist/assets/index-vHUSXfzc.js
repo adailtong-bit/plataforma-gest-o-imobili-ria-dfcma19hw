@@ -81304,7 +81304,38 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	if (currentUser?.role === "platform_owner") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
+	const isDeveloperBypass = currentUser?.role === "platform_owner";
+	const isSoftwareTenant = currentUser?.role === "software_tenant";
+	const allowed = isDeveloperBypass ? true : isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action);
+	(0, import_react.useEffect)(() => {
+		if (!isAuthLoading && isAuthenticated && currentUser && !isDeveloperBypass) {
+			if (!allowed && !hasAlerted) {
+				if (![
+					"tenant",
+					"property_owner",
+					"partner",
+					"partner_employee"
+				].includes(currentUser?.role || "")) {
+					toast$2({
+						title: t("common.access_denied") || "Access Denied",
+						description: t("common.access_denied_desc") || "You do not have permission to view this page.",
+						variant: "destructive"
+					});
+					setHasAlerted(true);
+				}
+			}
+		}
+	}, [
+		allowed,
+		hasAlerted,
+		toast$2,
+		t,
+		currentUser,
+		isAuthLoading,
+		isAuthenticated,
+		isDeveloperBypass
+	]);
+	if (isDeveloperBypass) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
 	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
@@ -81317,30 +81348,6 @@ function RequirePermission({ children, resource, action = "view" }) {
 		state: { from: location },
 		replace: true
 	});
-	const allowed = currentUser?.role === "software_tenant" ? true : hasPermissionSync(currentUser, resource, action);
-	(0, import_react.useEffect)(() => {
-		if (!allowed && !hasAlerted) {
-			if (![
-				"tenant",
-				"property_owner",
-				"partner",
-				"partner_employee"
-			].includes(currentUser?.role || "")) {
-				toast$2({
-					title: t("common.access_denied") || "Access Denied",
-					description: t("common.access_denied_desc") || "You do not have permission to view this page.",
-					variant: "destructive"
-				});
-				setHasAlerted(true);
-			}
-		}
-	}, [
-		allowed,
-		hasAlerted,
-		toast$2,
-		t,
-		currentUser
-	]);
 	if (!allowed) {
 		if ([
 			"tenant",
@@ -81921,4 +81928,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-D8f-NsGH.js.map
+//# sourceMappingURL=index-vHUSXfzc.js.map
