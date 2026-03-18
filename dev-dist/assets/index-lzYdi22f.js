@@ -39459,6 +39459,7 @@ function NavUser({ user }) {
 		logout();
 		navigate("/login");
 	};
+	if (!user) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SidebarMenuItem, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DropdownMenu, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DropdownMenuTrigger, {
 		asChild: true,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarMenuButton, {
@@ -39468,8 +39469,8 @@ function NavUser({ user }) {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
 					className: "h-8 w-8 rounded-lg border border-slate-700",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
-						src: user.avatar,
-						alt: user.name
+						src: user.avatar || void 0,
+						alt: user.name || "User"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
 						className: "rounded-lg bg-slate-800 text-slate-300",
 						children: user.name?.charAt(0) || "U"
@@ -39479,10 +39480,10 @@ function NavUser({ user }) {
 					className: "grid flex-1 text-left text-sm leading-tight",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "truncate font-semibold text-slate-200",
-						children: user.name
+						children: user.name || "User"
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 						className: "truncate text-xs text-slate-500",
-						children: user.email
+						children: user.email || ""
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronsUpDown, { className: "ml-auto size-4 text-slate-500" })
@@ -39501,8 +39502,8 @@ function NavUser({ user }) {
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Avatar, {
 						className: "h-8 w-8 rounded-lg",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarImage, {
-							src: user.avatar,
-							alt: user.name
+							src: user.avatar || void 0,
+							alt: user.name || "User"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AvatarFallback, {
 							className: "rounded-lg bg-slate-100 text-slate-900",
 							children: user.name?.charAt(0) || "U"
@@ -39511,10 +39512,10 @@ function NavUser({ user }) {
 						className: "grid flex-1 text-left text-sm leading-tight",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "truncate font-semibold",
-							children: user.name
+							children: user.name || "User"
 						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							className: "truncate text-xs text-slate-500",
-							children: user.email
+							children: user.email || ""
 						})]
 					})]
 				})
@@ -83097,4 +83098,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-Cu5MeQSN.js.map
+//# sourceMappingURL=index-lzYdi22f.js.map
