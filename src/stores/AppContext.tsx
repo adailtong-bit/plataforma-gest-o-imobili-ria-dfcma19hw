@@ -326,6 +326,20 @@ interface AppContextType {
   addMessageTemplate: (t: MessageTemplate) => void
   updateMessageTemplate: (t: MessageTemplate) => void
   deleteMessageTemplate: (id: string) => void
+
+  seedDatabase: (
+    data: Partial<{
+      users: User[]
+      properties: Property[]
+      owners: Owner[]
+      partners: Partner[]
+      tenants: Tenant[]
+      bookings: Booking[]
+      tasks: Task[]
+      ledgerEntries: LedgerEntry[]
+      invoices: Invoice[]
+    }>,
+  ) => void
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -520,7 +534,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const initializeSession = async () => {
       const initialUser = getInitialUser()
 
-      // Absolute Priority: Developer bypasses the loading delay completely
       if (initialUser?.role === 'platform_owner') {
         if (isMounted) {
           setCurrentUserObj(initialUser)
@@ -531,9 +544,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (isMounted) setIsAuthLoading(true)
-
-      // Simulating session validation and data hydration delay
-      // to prevent premature redirects by RequirePermission and avoid race conditions
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       if (!isMounted) return
@@ -602,7 +612,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [currency],
   )
 
-  // Data Isolation Helper
   const filterByOrg = useCallback(
     <T extends { organizationId?: string }>(items: T[]): T[] => {
       if (!currentUserObj) return []
@@ -632,7 +641,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [currentUserObj],
   )
 
-  // Scoped Data
   const scopedProperties = useMemo(
     () => filterByOrg(properties),
     [properties, filterByOrg],
@@ -751,7 +759,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // Mutators wrapped with attachOrg
   const addProperty = (p: Property) =>
     setProperties((prev) => [...prev, attachOrg(p)])
   const updateProperty = (p: Property) =>
@@ -1342,6 +1349,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [scopedWorkflows, executeWorkflow],
   )
 
+  const seedDatabase = useCallback((data: any) => {
+    if (data.users?.length) setUsers((prev) => [...prev, ...data.users])
+    if (data.properties?.length)
+      setProperties((prev) => [...prev, ...data.properties])
+    if (data.owners?.length) setOwners((prev) => [...prev, ...data.owners])
+    if (data.partners?.length)
+      setPartners((prev) => [...prev, ...data.partners])
+    if (data.tenants?.length) setTenants((prev) => [...prev, ...data.tenants])
+    if (data.bookings?.length)
+      setBookings((prev) => [...prev, ...data.bookings])
+    if (data.tasks?.length) setTasks((prev) => [...prev, ...data.tasks])
+    if (data.ledgerEntries?.length)
+      setLedgerEntries((prev) => [...prev, ...data.ledgerEntries])
+    if (data.invoices?.length)
+      setFinancials((prev) => ({
+        ...prev,
+        invoices: [...prev.invoices, ...data.invoices],
+      }))
+  }, [])
+
   return (
     <AppContext.Provider
       value={{
@@ -1526,6 +1553,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         deleteEmailTemplate,
         runWorkflows,
         executeWorkflow,
+        seedDatabase,
       }}
     >
       {children}

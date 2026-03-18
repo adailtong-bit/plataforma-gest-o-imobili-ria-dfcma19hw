@@ -1293,6 +1293,9 @@ video {
 .max-w-\[350px\] {
   max-width: 350px;
 }
+.max-w-\[400px\] {
+  max-width: 400px;
+}
 .max-w-\[75\%\] {
   max-width: 75%;
 }
@@ -2426,6 +2429,10 @@ video {
 .text-amber-400 {
   --tw-text-opacity: 1;
   color: rgb(251 191 36 / var(--tw-text-opacity, 1));
+}
+.text-amber-500 {
+  --tw-text-opacity: 1;
+  color: rgb(245 158 11 / var(--tw-text-opacity, 1));
 }
 .text-amber-600 {
   --tw-text-opacity: 1;

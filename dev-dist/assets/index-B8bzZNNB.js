@@ -17615,7 +17615,7 @@ function createContext2(rootComponentName, defaultContext) {
 	}
 	return [Provider$2, useContext2];
 }
-function createContextScope(scopeName, createContextScopeDeps = []) {
+function createContextScope$1(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
 	function createContext3(rootComponentName, defaultContext) {
 		const BaseContext = import_react.createContext(defaultContext);
@@ -17769,7 +17769,7 @@ function getElementRef$2(element) {
 }
 function createCollection(name) {
 	const PROVIDER_NAME$2 = name + "CollectionProvider";
-	const [createCollectionContext, createCollectionScope$4] = createContextScope(PROVIDER_NAME$2);
+	const [createCollectionContext, createCollectionScope$4] = createContextScope$1(PROVIDER_NAME$2);
 	const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(PROVIDER_NAME$2, {
 		collectionRef: { current: null },
 		itemMap: /* @__PURE__ */ new Map()
@@ -17837,7 +17837,7 @@ function createCollection(name) {
 		createCollectionScope$4
 	];
 }
-var Primitive = [
+var Primitive$1 = [
 	"a",
 	"button",
 	"div",
@@ -17971,7 +17971,7 @@ var DismissableLayer = import_react.forwardRef((props, forwardedRef) => {
 		document.addEventListener(CONTEXT_UPDATE, handleUpdate);
 		return () => document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
 	}, []);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...layerProps,
 		ref: composedRefs,
 		style: {
@@ -17998,7 +17998,7 @@ var DismissableLayerBranch = import_react.forwardRef((props, forwardedRef) => {
 			};
 		}
 	}, [context.branches]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...props,
 		ref: composedRefs
 	});
@@ -18064,7 +18064,7 @@ function handleAndDispatchCustomEvent$1(name, handler, detail, { discrete }) {
 	if (discrete) dispatchDiscreteCustomEvent(target, event);
 	else target.dispatchEvent(event);
 }
-var Root$10 = DismissableLayer;
+var Root$11 = DismissableLayer;
 var Branch = DismissableLayerBranch;
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
 var import_react_dom$6 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
@@ -18074,7 +18074,7 @@ var Portal = import_react.forwardRef((props, forwardedRef) => {
 	const [mounted, setMounted] = import_react.useState(false);
 	useLayoutEffect2(() => setMounted(true), []);
 	const container = containerProp || mounted && globalThis?.document?.body;
-	return container ? import_react_dom$6.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return container ? import_react_dom$6.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...portalProps,
 		ref: forwardedRef
 	}), container) : null;
@@ -18245,7 +18245,7 @@ var VISUALLY_HIDDEN_STYLES = Object.freeze({
 });
 var NAME$3 = "VisuallyHidden";
 var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		...props,
 		ref: forwardedRef,
 		style: {
@@ -18255,11 +18255,11 @@ var VisuallyHidden$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 VisuallyHidden$1.displayName = NAME$3;
-var Root$9 = VisuallyHidden$1;
+var Root$10 = VisuallyHidden$1;
 var import_react_dom$5 = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 var PROVIDER_NAME$1 = "ToastProvider";
 var [Collection$3, useCollection$3, createCollectionScope$3] = createCollection("Toast");
-var [createToastContext, createToastScope] = createContextScope("Toast", [createCollectionScope$3]);
+var [createToastContext, createToastScope] = createContextScope$1("Toast", [createCollectionScope$3]);
 var [ToastProviderProvider, useToastProviderContext] = createToastContext(PROVIDER_NAME$1);
 var ToastProvider$1 = (props) => {
 	const { __scopeToast, label = "Notification", duration = 5e3, swipeDirection = "right", swipeThreshold = 50, children } = props;
@@ -18395,7 +18395,7 @@ var ToastViewport$1 = import_react.forwardRef((props, forwardedRef) => {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.Slot, {
 				scope: __scopeToast,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.ol, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.ol, {
 					tabIndex: -1,
 					...viewportProps,
 					ref: composedRefs
@@ -18554,13 +18554,13 @@ var ToastImpl = import_react.forwardRef((props, forwardedRef) => {
 		onClose: handleClose,
 		children: import_react_dom$5.createPortal(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$3.ItemSlot, {
 			scope: __scopeToast,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$11, {
 				asChild: true,
 				onEscapeKeyDown: composeEventHandlers(onEscapeKeyDown, () => {
 					if (!context.isFocusedToastEscapeKeyDownRef.current) handleClose();
 					context.isFocusedToastEscapeKeyDownRef.current = false;
 				}),
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.li, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.li, {
 					tabIndex: 0,
 					"data-state": open ? "open" : "closed",
 					"data-swipe-direction": context.swipeDirection,
@@ -18660,7 +18660,7 @@ var ToastAnnounce = (props) => {
 var TITLE_NAME$2 = "ToastTitle";
 var ToastTitle$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeToast, ...titleProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...titleProps,
 		ref: forwardedRef
 	});
@@ -18669,7 +18669,7 @@ ToastTitle$1.displayName = TITLE_NAME$2;
 var DESCRIPTION_NAME$2 = "ToastDescription";
 var ToastDescription$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeToast, ...descriptionProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...descriptionProps,
 		ref: forwardedRef
 	});
@@ -18698,7 +18698,7 @@ var ToastClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	const interactiveContext = useToastInteractiveContext(CLOSE_NAME$1, __scopeToast);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ToastAnnounceExclude, {
 		asChild: true,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			...closeProps,
 			ref: forwardedRef,
@@ -18709,7 +18709,7 @@ var ToastClose$1 = import_react.forwardRef((props, forwardedRef) => {
 ToastClose$1.displayName = CLOSE_NAME$1;
 var ToastAnnounceExclude = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeToast, altText, ...announceExcludeProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		"data-radix-toast-announce-exclude": "",
 		"data-radix-toast-announce-alt": altText || void 0,
 		...announceExcludeProps,
@@ -20337,12 +20337,12 @@ var lengthUnitRegex = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|
 var colorFunctionRegex = /^(rgba?|hsla?|hwb|(ok)?(lab|lch))\(.+\)$/;
 var shadowRegex = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/;
 var imageRegex = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/;
-var isLength$4 = (value) => isNumber$3(value) || stringLengths.has(value) || fractionRegex.test(value);
+var isLength$4 = (value) => isNumber$4(value) || stringLengths.has(value) || fractionRegex.test(value);
 var isArbitraryLength = (value) => getIsArbitraryValue(value, "length", isLengthOnly);
-var isNumber$3 = (value) => Boolean(value) && !Number.isNaN(Number(value));
-var isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber$3);
+var isNumber$4 = (value) => Boolean(value) && !Number.isNaN(Number(value));
+var isArbitraryNumber = (value) => getIsArbitraryValue(value, "number", isNumber$4);
 var isInteger = (value) => Boolean(value) && Number.isInteger(Number(value));
-var isPercent$1 = (value) => value.endsWith("%") && isNumber$3(value.slice(0, -1));
+var isPercent$1 = (value) => value.endsWith("%") && isNumber$4(value.slice(0, -1));
 var isArbitraryValue = (value) => arbitraryValueRegex.test(value);
 var isTshirtSize = (value) => tshirtUnitRegex.test(value);
 var sizeLabels = /* @__PURE__ */ new Set([
@@ -20419,7 +20419,7 @@ var getDefaultConfig = () => {
 	];
 	const getNumberWithAutoAndArbitrary = () => [
 		"auto",
-		isNumber$3,
+		isNumber$4,
 		isArbitraryValue
 	];
 	const getPositions = () => [
@@ -20482,7 +20482,7 @@ var getDefaultConfig = () => {
 		"right",
 		"column"
 	];
-	const getNumberAndArbitrary = () => [isNumber$3, isArbitraryValue];
+	const getNumberAndArbitrary = () => [isNumber$4, isArbitraryValue];
 	return {
 		cacheSize: 500,
 		separator: ":",
@@ -20871,7 +20871,7 @@ var getDefaultConfig = () => {
 			] }],
 			"line-clamp": [{ "line-clamp": [
 				"none",
-				isNumber$3,
+				isNumber$4,
 				isArbitraryNumber
 			] }],
 			leading: [{ leading: [
@@ -24507,10 +24507,10 @@ var Observer = class {
 			if (typeof id !== "string" && typeof id !== "number") return { unwrap };
 			else return Object.assign(id, { unwrap });
 		};
-		this.custom = (jsx$30, data) => {
+		this.custom = (jsx$31, data) => {
 			const id = (data == null ? void 0 : data.id) || toastsCounter++;
 			this.create({
-				jsx: jsx$30(id),
+				jsx: jsx$31(id),
 				id,
 				...data
 			});
@@ -26635,7 +26635,7 @@ var arrow = (options$1, deps) => ({
 var NAME$2 = "Arrow";
 var Arrow$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { children, width = 10, height = 5, ...arrowProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.svg, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.svg, {
 		...arrowProps,
 		ref: forwardedRef,
 		width,
@@ -26646,7 +26646,7 @@ var Arrow$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Arrow$1.displayName = NAME$2;
-var Root$8 = Arrow$1;
+var Root$9 = Arrow$1;
 function useSize(element) {
 	const [size$3, setSize] = import_react.useState(void 0);
 	useLayoutEffect2(() => {
@@ -26682,7 +26682,7 @@ function useSize(element) {
 	return size$3;
 }
 var POPPER_NAME = "Popper";
-var [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
+var [createPopperContext, createPopperScope] = createContextScope$1(POPPER_NAME);
 var [PopperProvider, usePopperContext] = createPopperContext(POPPER_NAME);
 var Popper = (props) => {
 	const { __scopePopper, children } = props;
@@ -26707,7 +26707,7 @@ var PopperAnchor = import_react.forwardRef((props, forwardedRef) => {
 		anchorRef.current = virtualRef?.current || ref.current;
 		if (previousAnchor !== anchorRef.current) context.onAnchorChange(anchorRef.current);
 	});
-	return virtualRef ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return virtualRef ? null : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...anchorProps,
 		ref: composedRefs
 	});
@@ -26817,7 +26817,7 @@ var PopperContent = import_react.forwardRef((props, forwardedRef) => {
 			arrowX,
 			arrowY,
 			shouldHideArrow: cannotCenterArrow,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 				"data-side": placedSide,
 				"data-align": placedAlign,
 				...contentProps,
@@ -26863,7 +26863,7 @@ var PopperArrow = import_react.forwardRef(function PopperArrow2(props, forwarded
 			}[contentContext.placedSide],
 			visibility: contentContext.shouldHideArrow ? "hidden" : void 0
 		},
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$8, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
 			...arrowProps,
 			ref: forwardedRef,
 			style: {
@@ -26922,7 +26922,7 @@ var Root2$5 = Popper;
 var Anchor = PopperAnchor;
 var Content$2 = PopperContent;
 var Arrow = PopperArrow;
-var [createTooltipContext, createTooltipScope] = createContextScope("Tooltip", [createPopperScope]);
+var [createTooltipContext, createTooltipScope] = createContextScope$1("Tooltip", [createPopperScope]);
 var usePopperScope$2 = createPopperScope();
 var PROVIDER_NAME = "TooltipProvider";
 var DEFAULT_DELAY_DURATION = 700;
@@ -27060,7 +27060,7 @@ var TooltipTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor, {
 		asChild: true,
 		...popperScope,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			"aria-describedby": context.open ? context.contentId : void 0,
 			"data-state": context.stateAttribute,
 			...triggerProps,
@@ -27245,7 +27245,7 @@ var TooltipContentImpl = import_react.forwardRef((props, forwardedRef) => {
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Slottable$1, { children }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VisuallyHiddenContentContextProvider, {
 				scope: __scopeTooltip,
 				isInside: true,
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$9, {
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$10, {
 					id: context.contentId,
 					role: "tooltip",
 					children: ariaLabel || children
@@ -31619,6 +31619,20 @@ const AppProvider = ({ children }) => {
 			executeWorkflow(wf);
 		});
 	}, [scopedWorkflows, executeWorkflow]);
+	const seedDatabase = (0, import_react.useCallback)((data) => {
+		if (data.users?.length) setUsers((prev) => [...prev, ...data.users]);
+		if (data.properties?.length) setProperties((prev) => [...prev, ...data.properties]);
+		if (data.owners?.length) setOwners((prev) => [...prev, ...data.owners]);
+		if (data.partners?.length) setPartners((prev) => [...prev, ...data.partners]);
+		if (data.tenants?.length) setTenants((prev) => [...prev, ...data.tenants]);
+		if (data.bookings?.length) setBookings((prev) => [...prev, ...data.bookings]);
+		if (data.tasks?.length) setTasks((prev) => [...prev, ...data.tasks]);
+		if (data.ledgerEntries?.length) setLedgerEntries((prev) => [...prev, ...data.ledgerEntries]);
+		if (data.invoices?.length) setFinancials((prev) => ({
+			...prev,
+			invoices: [...prev.invoices, ...data.invoices]
+		}));
+	}, []);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppContext.Provider, {
 		value: {
 			properties: scopedProperties,
@@ -31801,7 +31815,8 @@ const AppProvider = ({ children }) => {
 			updateEmailTemplate,
 			deleteEmailTemplate,
 			runWorkflows,
-			executeWorkflow
+			executeWorkflow,
+			seedDatabase
 		},
 		children
 	});
@@ -32454,7 +32469,7 @@ function PreviousMonthButton(props) {
 	const { components } = useDayPicker();
 	return import_react.createElement(components.Button, { ...props });
 }
-function Root$7(props) {
+function Root$8(props) {
 	const { rootRef, ...rest } = props;
 	return import_react.createElement("div", {
 		...rest,
@@ -32506,7 +32521,7 @@ var custom_components_exports = /* @__PURE__ */ __export({
 	NextMonthButton: () => NextMonthButton,
 	Option: () => Option,
 	PreviousMonthButton: () => PreviousMonthButton,
-	Root: () => Root$7,
+	Root: () => Root$8,
 	Select: () => Select$2,
 	Week: () => Week,
 	WeekNumber: () => WeekNumber,
@@ -34545,7 +34560,7 @@ var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
 });
 Input.displayName = "Input";
 require_react_dom();
-var Primitive$1 = [
+var Primitive = [
 	"a",
 	"button",
 	"div",
@@ -34591,7 +34606,7 @@ var Separator$3 = import_react.forwardRef((props, forwardedRef) => {
 		"aria-orientation": ariaOrientation,
 		role: "separator"
 	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
 		"data-orientation": orientation,
 		...semanticProps,
 		...domProps,
@@ -34602,15 +34617,15 @@ Separator$3.displayName = NAME$1;
 function isValidOrientation(orientation) {
 	return ORIENTATIONS.includes(orientation);
 }
-var Root$6 = Separator$3;
-var Separator$2 = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
+var Root$7 = Separator$3;
+var Separator$2 = import_react.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$7, {
 	ref,
 	decorative,
 	orientation,
 	className: cn("shrink-0 bg-border", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className),
 	...props
 }));
-Separator$2.displayName = Root$6.displayName;
+Separator$2.displayName = Root$7.displayName;
 var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
 var AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
 var EVENT_OPTIONS$1 = {
@@ -34722,7 +34737,7 @@ var FocusScope = import_react.forwardRef((props, forwardedRef) => {
 		trapped,
 		focusScope.paused
 	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		tabIndex: -1,
 		...scopeProps,
 		ref: composedRefs,
@@ -35514,7 +35529,7 @@ var hideOthers = function(originalTarget, parentNode, markerName) {
 	return applyAttributeToOthers(targets, activeParentNode, markerName, "aria-hidden");
 };
 var DIALOG_NAME = "Dialog";
-var [createDialogContext, createDialogScope] = createContextScope(DIALOG_NAME);
+var [createDialogContext, createDialogScope] = createContextScope$1(DIALOG_NAME);
 var [DialogProvider, useDialogContext] = createDialogContext(DIALOG_NAME);
 var Dialog$1 = (props) => {
 	const { __scopeDialog, children, open: openProp, defaultOpen, onOpenChange, modal = true } = props;
@@ -35546,7 +35561,7 @@ var DialogTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...triggerProps } = props;
 	const context = useDialogContext(TRIGGER_NAME$5, __scopeDialog);
 	const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 		type: "button",
 		"aria-haspopup": "dialog",
 		"aria-expanded": context.open,
@@ -35599,7 +35614,7 @@ var DialogOverlayImpl = import_react.forwardRef((props, forwardedRef) => {
 		as: Slot$3,
 		allowPinchZoom: true,
 		shards: [context.contentRef],
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			"data-state": getState$3(context.open),
 			...overlayProps,
 			ref: forwardedRef,
@@ -35713,7 +35728,7 @@ var TITLE_NAME$1 = "DialogTitle";
 var DialogTitle$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...titleProps } = props;
 	const context = useDialogContext(TITLE_NAME$1, __scopeDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.h2, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.h2, {
 		id: context.titleId,
 		...titleProps,
 		ref: forwardedRef
@@ -35724,7 +35739,7 @@ var DESCRIPTION_NAME$1 = "DialogDescription";
 var DialogDescription$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...descriptionProps } = props;
 	const context = useDialogContext(DESCRIPTION_NAME$1, __scopeDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.p, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.p, {
 		id: context.descriptionId,
 		...descriptionProps,
 		ref: forwardedRef
@@ -35735,7 +35750,7 @@ var CLOSE_NAME = "DialogClose";
 var DialogClose$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDialog, ...closeProps } = props;
 	const context = useDialogContext(CLOSE_NAME, __scopeDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 		type: "button",
 		...closeProps,
 		ref: forwardedRef,
@@ -35781,7 +35796,7 @@ var DescriptionWarning$1 = ({ contentRef, descriptionId }) => {
 	]);
 	return null;
 };
-var Root$5 = Dialog$1;
+var Root$6 = Dialog$1;
 var Trigger$3 = DialogTrigger$1;
 var Portal$3 = DialogPortal$1;
 var Overlay = DialogOverlay$1;
@@ -35789,7 +35804,7 @@ var Content$1 = DialogContent$1;
 var Title = DialogTitle$1;
 var Description = DialogDescription$1;
 var Close = DialogClose$1;
-var Sheet = Root$5;
+var Sheet = Root$6;
 var SheetPortal = Portal$3;
 var SheetOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
 	className: cn("fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
@@ -36209,7 +36224,7 @@ var EVENT_OPTIONS = {
 };
 var GROUP_NAME$3 = "RovingFocusGroup";
 var [Collection$2, useCollection$2, createCollectionScope$2] = createCollection(GROUP_NAME$3);
-var [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope(GROUP_NAME$3, [createCollectionScope$2]);
+var [createRovingFocusGroupContext, createRovingFocusGroupScope] = createContextScope$1(GROUP_NAME$3, [createCollectionScope$2]);
 var [RovingFocusProvider, useRovingFocusContext] = createRovingFocusGroupContext(GROUP_NAME$3);
 var RovingFocusGroup = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection$2.Provider, {
@@ -36257,7 +36272,7 @@ var RovingFocusGroupImpl = import_react.forwardRef((props, forwardedRef) => {
 		onItemShiftTab: import_react.useCallback(() => setIsTabbingBackOut(true), []),
 		onFocusableItemAdd: import_react.useCallback(() => setFocusableItemsCount((prevCount) => prevCount + 1), []),
 		onFocusableItemRemove: import_react.useCallback(() => setFocusableItemsCount((prevCount) => prevCount - 1), []),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			tabIndex: isTabbingBackOut || focusableItemsCount === 0 ? -1 : 0,
 			"data-orientation": orientation,
 			...groupProps,
@@ -36313,7 +36328,7 @@ var RovingFocusGroupItem = import_react.forwardRef((props, forwardedRef) => {
 		id,
 		focusable,
 		active,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 			tabIndex: isCurrentTabStop ? 0 : -1,
 			"data-orientation": context.orientation,
 			...itemProps,
@@ -36382,7 +36397,7 @@ function focusFirst$1(candidates, preventScroll = false) {
 function wrapArray$2(array, startIndex) {
 	return array.map((_$1, index$1) => array[(startIndex + index$1) % array.length]);
 }
-var Root$4 = RovingFocusGroup;
+var Root$5 = RovingFocusGroup;
 var Item$1 = RovingFocusGroupItem;
 var SELECTION_KEYS$1 = ["Enter", " "];
 var FIRST_KEYS = [
@@ -36406,7 +36421,7 @@ var SUB_CLOSE_KEYS = {
 };
 var MENU_NAME = "Menu";
 var [Collection$1, useCollection$1, createCollectionScope$1] = createCollection(MENU_NAME);
-var [createMenuContext, createMenuScope] = createContextScope(MENU_NAME, [
+var [createMenuContext, createMenuScope] = createContextScope$1(MENU_NAME, [
 	createCollectionScope$1,
 	createPopperScope,
 	createRovingFocusGroupScope
@@ -36624,7 +36639,7 @@ var MenuContentImpl = import_react.forwardRef((props, forwardedRef) => {
 					onFocusOutside,
 					onInteractOutside,
 					onDismiss,
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 						asChild: true,
 						...rovingFocusGroupScope,
 						dir: rootContext.dir,
@@ -36690,7 +36705,7 @@ MenuContent.displayName = CONTENT_NAME$4;
 var GROUP_NAME$2 = "MenuGroup";
 var MenuGroup = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...groupProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		role: "group",
 		...groupProps,
 		ref: forwardedRef
@@ -36700,7 +36715,7 @@ MenuGroup.displayName = GROUP_NAME$2;
 var LABEL_NAME$2 = "MenuLabel";
 var MenuLabel = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...labelProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...labelProps,
 		ref: forwardedRef
 	});
@@ -36771,7 +36786,7 @@ var MenuItemImpl = import_react.forwardRef((props, forwardedRef) => {
 			asChild: true,
 			...rovingFocusGroupScope,
 			focusable: !disabled,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 				role: "menuitem",
 				"data-highlighted": isFocused ? "" : void 0,
 				"aria-disabled": disabled || void 0,
@@ -36854,7 +36869,7 @@ var MenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const indicatorContext = useItemIndicatorContext(ITEM_INDICATOR_NAME$1, __scopeMenu);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isIndeterminate$1(indicatorContext.checked) || indicatorContext.checked === true,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 			...itemIndicatorProps,
 			ref: forwardedRef,
 			"data-state": getCheckedState(indicatorContext.checked)
@@ -36865,7 +36880,7 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME$1;
 var SEPARATOR_NAME$2 = "MenuSeparator";
 var MenuSeparator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeMenu, ...separatorProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		role: "separator",
 		"aria-orientation": "horizontal",
 		...separatorProps,
@@ -37141,7 +37156,7 @@ var Arrow2 = MenuArrow;
 var SubTrigger = MenuSubTrigger;
 var SubContent = MenuSubContent;
 var DROPDOWN_MENU_NAME = "DropdownMenu";
-var [createDropdownMenuContext, createDropdownMenuScope] = createContextScope(DROPDOWN_MENU_NAME, [createMenuScope]);
+var [createDropdownMenuContext, createDropdownMenuScope] = createContextScope$1(DROPDOWN_MENU_NAME, [createMenuScope]);
 var useMenuScope = createMenuScope();
 var [DropdownMenuProvider, useDropdownMenuContext] = createDropdownMenuContext(DROPDOWN_MENU_NAME);
 var DropdownMenu$1 = (props) => {
@@ -37182,7 +37197,7 @@ var DropdownMenuTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor2, {
 		asChild: true,
 		...menuScope,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			id: context.triggerId,
 			"aria-haspopup": "menu",
@@ -37323,7 +37338,7 @@ var DropdownMenuRadioItem$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 DropdownMenuRadioItem$1.displayName = RADIO_ITEM_NAME;
-var INDICATOR_NAME$2 = "DropdownMenuItemIndicator";
+var INDICATOR_NAME$3 = "DropdownMenuItemIndicator";
 var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...itemIndicatorProps } = props;
 	const menuScope = useMenuScope(__scopeDropdownMenu);
@@ -37333,7 +37348,7 @@ var DropdownMenuItemIndicator = import_react.forwardRef((props, forwardedRef) =>
 		ref: forwardedRef
 	});
 });
-DropdownMenuItemIndicator.displayName = INDICATOR_NAME$2;
+DropdownMenuItemIndicator.displayName = INDICATOR_NAME$3;
 var SEPARATOR_NAME$1 = "DropdownMenuSeparator";
 var DropdownMenuSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeDropdownMenu, ...separatorProps } = props;
@@ -37517,7 +37532,7 @@ var OPEN_KEYS = [
 var SELECTION_KEYS = [" ", "Enter"];
 var SELECT_NAME = "Select";
 var [Collection, useCollection, createCollectionScope] = createCollection(SELECT_NAME);
-var [createSelectContext, createSelectScope] = createContextScope(SELECT_NAME, [createCollectionScope, createPopperScope]);
+var [createSelectContext, createSelectScope] = createContextScope$1(SELECT_NAME, [createCollectionScope, createPopperScope]);
 var usePopperScope = createPopperScope();
 var [SelectProvider, useSelectContext] = createSelectContext(SELECT_NAME);
 var [SelectNativeOptionsProvider, useSelectNativeOptionsContext] = createSelectContext(SELECT_NAME);
@@ -37622,7 +37637,7 @@ var SelectTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Anchor, {
 		asChild: true,
 		...popperScope,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			role: "combobox",
 			"aria-controls": context.contentId,
@@ -37672,7 +37687,7 @@ var SelectValue$1 = import_react.forwardRef((props, forwardedRef) => {
 	useLayoutEffect2(() => {
 		onValueNodeHasChildrenChange(hasChildren);
 	}, [onValueNodeHasChildrenChange, hasChildren]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		...valueProps,
 		ref: composedRefs,
 		style: { pointerEvents: "none" },
@@ -37683,7 +37698,7 @@ SelectValue$1.displayName = VALUE_NAME;
 var ICON_NAME = "SelectIcon";
 var SelectIcon = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, children, ...iconProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		"aria-hidden": true,
 		...iconProps,
 		ref: forwardedRef,
@@ -38028,7 +38043,7 @@ var SelectItemAlignedPosition = import_react.forwardRef((props, forwardedRef) =>
 				position: "fixed",
 				zIndex: contentZIndex
 			},
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 				...popperProps,
 				ref: composedRefs,
 				style: {
@@ -38076,7 +38091,7 @@ var SelectViewport = import_react.forwardRef((props, forwardedRef) => {
 		nonce
 	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Collection.Slot, {
 		scope: __scopeSelect,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			"data-radix-select-viewport": "",
 			role: "presentation",
 			...viewportProps,
@@ -38123,7 +38138,7 @@ var SelectGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectGroupContextProvider, {
 		scope: __scopeSelect,
 		id: groupId,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			role: "group",
 			"aria-labelledby": groupId,
 			...groupProps,
@@ -38136,7 +38151,7 @@ var LABEL_NAME = "SelectLabel";
 var SelectLabel$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, ...labelProps } = props;
 	const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		id: groupContext.id,
 		...labelProps,
 		ref: forwardedRef
@@ -38176,7 +38191,7 @@ var SelectItem$1 = import_react.forwardRef((props, forwardedRef) => {
 			value,
 			disabled,
 			textValue,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 				role: "option",
 				"aria-labelledby": textId,
 				"data-highlighted": isFocused ? "" : void 0,
@@ -38244,7 +38259,7 @@ var SelectItemText = import_react.forwardRef((props, forwardedRef) => {
 		onNativeOptionRemove,
 		nativeOption
 	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		id: itemContext.textId,
 		...itemTextProps,
 		ref: composedRefs
@@ -38254,7 +38269,7 @@ SelectItemText.displayName = ITEM_TEXT_NAME;
 var ITEM_INDICATOR_NAME = "SelectItemIndicator";
 var SelectItemIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, ...itemIndicatorProps } = props;
-	return useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect).isSelected ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect).isSelected ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		"aria-hidden": true,
 		...itemIndicatorProps,
 		ref: forwardedRef
@@ -38333,7 +38348,7 @@ var SelectScrollButtonImpl = import_react.forwardRef((props, forwardedRef) => {
 	useLayoutEffect2(() => {
 		getItems().find((item) => item.ref.current === document.activeElement)?.ref.current?.scrollIntoView({ block: "nearest" });
 	}, [getItems]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		"aria-hidden": true,
 		...scrollIndicatorProps,
 		ref: forwardedRef,
@@ -38356,7 +38371,7 @@ var SelectScrollButtonImpl = import_react.forwardRef((props, forwardedRef) => {
 var SEPARATOR_NAME = "SelectSeparator";
 var SelectSeparator$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSelect, ...separatorProps } = props;
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		"aria-hidden": true,
 		...separatorProps,
 		ref: forwardedRef
@@ -38392,7 +38407,7 @@ var SelectBubbleInput = import_react.forwardRef(({ __scopeSelect, value, ...prop
 			select.dispatchEvent(event);
 		}
 	}, [prevValue, value]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.select, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.select, {
 		...props,
 		style: {
 			...VISUALLY_HIDDEN_STYLES,
@@ -38522,7 +38537,7 @@ var SelectSeparator = import_react.forwardRef(({ className, ...props }, ref) => 
 	...props
 }));
 SelectSeparator.displayName = Separator.displayName;
-function createContextScope$1(scopeName, createContextScopeDeps = []) {
+function createContextScope(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
 	function createContext3(rootComponentName, defaultContext) {
 		const BaseContext = import_react.createContext(defaultContext);
@@ -38606,7 +38621,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$60({ inst: {
+			cachedValue = useState$61({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -38643,7 +38658,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$60 = React$67.useState, useEffect$27 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$61 = React$67.useState, useEffect$27 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -38658,7 +38673,7 @@ function subscribe() {
 	return () => {};
 }
 var AVATAR_NAME = "Avatar";
-var [createAvatarContext, createAvatarScope] = createContextScope$1(AVATAR_NAME);
+var [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 var [AvatarProvider, useAvatarContext] = createAvatarContext(AVATAR_NAME);
 var Avatar$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeAvatar, ...avatarProps } = props;
@@ -38667,7 +38682,7 @@ var Avatar$1 = import_react.forwardRef((props, forwardedRef) => {
 		scope: __scopeAvatar,
 		imageLoadingStatus,
 		onImageLoadingStatusChange: setImageLoadingStatus,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
 			...avatarProps,
 			ref: forwardedRef
 		})
@@ -38686,7 +38701,7 @@ var AvatarImage$1 = import_react.forwardRef((props, forwardedRef) => {
 	useLayoutEffect2(() => {
 		if (imageLoadingStatus !== "idle") handleLoadingStatusChange(imageLoadingStatus);
 	}, [imageLoadingStatus, handleLoadingStatusChange]);
-	return imageLoadingStatus === "loaded" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.img, {
+	return imageLoadingStatus === "loaded" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.img, {
 		...imageProps,
 		ref: forwardedRef,
 		src
@@ -38704,7 +38719,7 @@ var AvatarFallback$1 = import_react.forwardRef((props, forwardedRef) => {
 			return () => window.clearTimeout(timerId);
 		}
 	}, [delayMs]);
-	return canRender && context.imageLoadingStatus !== "loaded" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
+	return canRender && context.imageLoadingStatus !== "loaded" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
 		...fallbackProps,
 		ref: forwardedRef
 	}) : null;
@@ -38750,15 +38765,15 @@ function useImageLoadingStatus(src, { referrerPolicy, crossOrigin }) {
 	]);
 	return loadingStatus;
 }
-var Root$3 = Avatar$1;
+var Root$4 = Avatar$1;
 var Image$1 = AvatarImage$1;
 var Fallback = AvatarFallback$1;
-var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
+var Avatar = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
 	ref,
 	className: cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className),
 	...props
 }));
-Avatar.displayName = Root$3.displayName;
+Avatar.displayName = Root$4.displayName;
 var AvatarImage = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Image$1, {
 	ref,
 	className: cn("aspect-square h-full w-full", className),
@@ -39665,7 +39680,7 @@ const VisuallyHidden = import_react.forwardRef(({ className, ...props }, ref) =>
 	});
 });
 VisuallyHidden.displayName = "VisuallyHidden";
-var Dialog = Root$5;
+var Dialog = Root$6;
 var DialogTrigger = Trigger$3;
 var DialogPortal = Portal$3;
 var DialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Overlay, {
@@ -39715,7 +39730,7 @@ var DialogDescription = import_react.forwardRef(({ className, ...props }, ref) =
 DialogDescription.displayName = Description.displayName;
 var NAME = "Label";
 var Label$2 = import_react.forwardRef((props, forwardedRef) => {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.label, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.label, {
 		...props,
 		ref: forwardedRef,
 		onMouseDown: (event) => {
@@ -39726,21 +39741,21 @@ var Label$2 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Label$2.displayName = NAME;
-var Root$2 = Label$2;
+var Root$3 = Label$2;
 var labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-black");
-var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$2, {
+var Label = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$3, {
 	ref,
 	className: cn(labelVariants(), className),
 	...props
 }));
-Label.displayName = Root$2.displayName;
+Label.displayName = Root$3.displayName;
 var ROOT_NAME = "AlertDialog";
-var [createAlertDialogContext, createAlertDialogScope] = createContextScope(ROOT_NAME, [createDialogScope]);
+var [createAlertDialogContext, createAlertDialogScope] = createContextScope$1(ROOT_NAME, [createDialogScope]);
 var useDialogScope = createDialogScope();
 var AlertDialog$1 = (props) => {
 	const { __scopeAlertDialog, ...alertDialogProps } = props;
 	const dialogScope = useDialogScope(__scopeAlertDialog);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$6, {
 		...dialogScope,
 		...alertDialogProps,
 		modal: true
@@ -39930,7 +39945,7 @@ var AlertDialogCancel = import_react.forwardRef(({ className, ...props }, ref) =
 }));
 AlertDialogCancel.displayName = Cancel.displayName;
 var RADIO_NAME = "Radio";
-var [createRadioContext, createRadioScope] = createContextScope(RADIO_NAME);
+var [createRadioContext, createRadioScope] = createContextScope$1(RADIO_NAME);
 var [RadioProvider, useRadioContext] = createRadioContext(RADIO_NAME);
 var Radio = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeRadio, name, checked = false, required, disabled, value = "on", onCheck, form, ...radioProps } = props;
@@ -39942,7 +39957,7 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 		scope: __scopeRadio,
 		checked,
 		disabled,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			role: "radio",
 			"aria-checked": checked,
@@ -39973,13 +39988,13 @@ var Radio = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Radio.displayName = RADIO_NAME;
-var INDICATOR_NAME$1 = "RadioIndicator";
+var INDICATOR_NAME$2 = "RadioIndicator";
 var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeRadio, forceMount, ...indicatorProps } = props;
-	const context = useRadioContext(INDICATOR_NAME$1, __scopeRadio);
+	const context = useRadioContext(INDICATOR_NAME$2, __scopeRadio);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || context.checked,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 			"data-state": getState$2(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
@@ -39987,7 +40002,7 @@ var RadioIndicator = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-RadioIndicator.displayName = INDICATOR_NAME$1;
+RadioIndicator.displayName = INDICATOR_NAME$2;
 var BUBBLE_INPUT_NAME$2 = "RadioBubbleInput";
 var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked, bubbles = true, ...props }, forwardedRef) => {
 	const ref = import_react.useRef(null);
@@ -40009,7 +40024,7 @@ var RadioBubbleInput = import_react.forwardRef(({ __scopeRadio, control, checked
 		checked,
 		bubbles
 	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.input, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.input, {
 		type: "radio",
 		"aria-hidden": true,
 		defaultChecked: checked,
@@ -40037,7 +40052,7 @@ var ARROW_KEYS = [
 	"ArrowRight"
 ];
 var RADIO_GROUP_NAME = "RadioGroup";
-var [createRadioGroupContext, createRadioGroupScope] = createContextScope(RADIO_GROUP_NAME, [createRovingFocusGroupScope, createRadioScope]);
+var [createRadioGroupContext, createRadioGroupScope] = createContextScope$1(RADIO_GROUP_NAME, [createRovingFocusGroupScope, createRadioScope]);
 var useRovingFocusGroupScope$1 = createRovingFocusGroupScope();
 var useRadioScope = createRadioScope();
 var [RadioGroupProvider, useRadioGroupContext] = createRadioGroupContext(RADIO_GROUP_NAME);
@@ -40058,13 +40073,13 @@ var RadioGroup$1 = import_react.forwardRef((props, forwardedRef) => {
 		disabled,
 		value,
 		onValueChange: setValue,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 			asChild: true,
 			...rovingFocusGroupScope,
 			orientation,
 			dir: direction,
 			loop,
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 				role: "radiogroup",
 				"aria-required": required,
 				"aria-orientation": orientation,
@@ -40136,7 +40151,7 @@ var RadioGroupIndicator = import_react.forwardRef((props, forwardedRef) => {
 RadioGroupIndicator.displayName = INDICATOR_NAME2;
 var Root2$1 = RadioGroup$1;
 var Item2 = RadioGroupItem$1;
-var Indicator = RadioGroupIndicator;
+var Indicator$1 = RadioGroupIndicator;
 var RadioGroup = import_react.forwardRef(({ className, ...props }, ref) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root2$1, {
 		className: cn("grid gap-2", className),
@@ -40150,7 +40165,7 @@ var RadioGroupItem = import_react.forwardRef(({ className, ...props }, ref) => {
 		ref,
 		className: cn("aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50", className),
 		...props,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Indicator, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Indicator$1, {
 			className: "flex items-center justify-center",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Circle, { className: "h-2.5 w-2.5 fill-current text-current" })
 		})
@@ -41113,7 +41128,7 @@ function Skeleton({ className, ...props }) {
 	});
 }
 var TABS_NAME = "Tabs";
-var [createTabsContext, createTabsScope] = createContextScope(TABS_NAME, [createRovingFocusGroupScope]);
+var [createTabsContext, createTabsScope] = createContextScope$1(TABS_NAME, [createRovingFocusGroupScope]);
 var useRovingFocusGroupScope = createRovingFocusGroupScope();
 var [TabsProvider, useTabsContext] = createTabsContext(TABS_NAME);
 var Tabs$1 = import_react.forwardRef((props, forwardedRef) => {
@@ -41133,7 +41148,7 @@ var Tabs$1 = import_react.forwardRef((props, forwardedRef) => {
 		orientation,
 		dir: direction,
 		activationMode,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			dir: direction,
 			"data-orientation": orientation,
 			...tabsProps,
@@ -41147,13 +41162,13 @@ var TabsList$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeTabs, loop = true, ...listProps } = props;
 	const context = useTabsContext(TAB_LIST_NAME, __scopeTabs);
 	const rovingFocusGroupScope = useRovingFocusGroupScope(__scopeTabs);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$4, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$5, {
 		asChild: true,
 		...rovingFocusGroupScope,
 		orientation: context.orientation,
 		dir: context.dir,
 		loop,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			role: "tablist",
 			"aria-orientation": context.orientation,
 			...listProps,
@@ -41175,7 +41190,7 @@ var TabsTrigger$1 = import_react.forwardRef((props, forwardedRef) => {
 		...rovingFocusGroupScope,
 		focusable: !disabled,
 		active: isSelected,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			role: "tab",
 			"aria-selected": isSelected,
@@ -41215,7 +41230,7 @@ var TabsContent$1 = import_react.forwardRef((props, forwardedRef) => {
 	}, []);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isSelected,
-		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: ({ present }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			"data-state": isSelected ? "active" : "inactive",
 			"data-orientation": context.orientation,
 			role: "tabpanel",
@@ -42569,7 +42584,7 @@ function useStateMachine(initialState, machine) {
 	}, initialState);
 }
 var SCROLL_AREA_NAME = "ScrollArea";
-var [createScrollAreaContext, createScrollAreaScope] = createContextScope(SCROLL_AREA_NAME);
+var [createScrollAreaContext, createScrollAreaScope] = createContextScope$1(SCROLL_AREA_NAME);
 var [ScrollAreaProvider, useScrollAreaContext] = createScrollAreaContext(SCROLL_AREA_NAME);
 var ScrollArea$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeScrollArea, type = "hover", dir, scrollHideDelay = 600, ...scrollAreaProps } = props;
@@ -42604,7 +42619,7 @@ var ScrollArea$1 = import_react.forwardRef((props, forwardedRef) => {
 		onScrollbarYEnabledChange: setScrollbarYEnabled,
 		onCornerWidthChange: setCornerWidth,
 		onCornerHeightChange: setCornerHeight,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			dir: direction,
 			...scrollAreaProps,
 			ref: composedRefs,
@@ -42626,7 +42641,7 @@ var ScrollAreaViewport = import_react.forwardRef((props, forwardedRef) => {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("style", {
 		dangerouslySetInnerHTML: { __html: `[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}` },
 		nonce
-	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		"data-radix-scroll-area-viewport": "",
 		...viewportProps,
 		ref: composedRefs,
@@ -42993,7 +43008,7 @@ var ScrollAreaScrollbarImpl = import_react.forwardRef((props, forwardedRef) => {
 		onThumbPointerUp: useCallbackRef(onThumbPointerUp),
 		onThumbPositionChange: handleThumbPositionChange,
 		onThumbPointerDown: useCallbackRef(onThumbPointerDown),
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 			...scrollbarProps,
 			ref: composeRefs$1,
 			style: {
@@ -43065,7 +43080,7 @@ var ScrollAreaThumbImpl = import_react.forwardRef((props, forwardedRef) => {
 		debounceScrollEnd,
 		onThumbPositionChange
 	]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		"data-state": scrollbarContext.hasThumb ? "visible" : "hidden",
 		...thumbProps,
 		ref: composedRef,
@@ -43113,7 +43128,7 @@ var ScrollAreaCornerImpl = import_react.forwardRef((props, forwardedRef) => {
 		context.onCornerWidthChange(width2);
 		setWidth(width2);
 	});
-	return hasSize ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+	return hasSize ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.div, {
 		...cornerProps,
 		ref: forwardedRef,
 		style: {
@@ -43215,10 +43230,10 @@ function useResizeObserver(element, onResize) {
 		}
 	}, [element, handleResize]);
 }
-var Root$1 = ScrollArea$1;
+var Root$2 = ScrollArea$1;
 var Viewport = ScrollAreaViewport;
 var Corner = ScrollAreaCorner;
-var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root$1, {
+var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Root$2, {
 	ref,
 	className: cn("relative overflow-hidden", className),
 	...props,
@@ -43231,7 +43246,7 @@ var ScrollArea = import_react.forwardRef(({ className, children, ...props }, ref
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Corner, {})
 	]
 }));
-ScrollArea.displayName = Root$1.displayName;
+ScrollArea.displayName = Root$2.displayName;
 var ScrollBar = import_react.forwardRef(({ className, orientation = "vertical", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScrollAreaScrollbar, {
 	ref,
 	orientation,
@@ -45136,7 +45151,7 @@ function Tasks() {
 	});
 }
 var SWITCH_NAME = "Switch";
-var [createSwitchContext, createSwitchScope] = createContextScope(SWITCH_NAME);
+var [createSwitchContext, createSwitchScope] = createContextScope$1(SWITCH_NAME);
 var [SwitchProvider, useSwitchContext] = createSwitchContext(SWITCH_NAME);
 var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSwitch, name, checked: checkedProp, defaultChecked, required, disabled, value = "on", onCheckedChange, form, ...switchProps } = props;
@@ -45154,7 +45169,7 @@ var Switch$1 = import_react.forwardRef((props, forwardedRef) => {
 		scope: __scopeSwitch,
 		checked,
 		disabled,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 			type: "button",
 			role: "switch",
 			"aria-checked": checked,
@@ -45190,7 +45205,7 @@ var THUMB_NAME = "SwitchThumb";
 var SwitchThumb = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeSwitch, ...thumbProps } = props;
 	const context = useSwitchContext(THUMB_NAME, __scopeSwitch);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 		"data-state": getState$1(context.checked),
 		"data-disabled": context.disabled ? "" : void 0,
 		...thumbProps,
@@ -45240,15 +45255,15 @@ SwitchBubbleInput.displayName = BUBBLE_INPUT_NAME$1;
 function getState$1(checked) {
 	return checked ? "checked" : "unchecked";
 }
-var Root = Switch$1;
+var Root$1 = Switch$1;
 var Thumb = SwitchThumb;
-var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+var Switch = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root$1, {
 	className: cn("peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input", className),
 	...props,
 	ref,
 	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Thumb, { className: cn("pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0") })
 }));
-Switch.displayName = Root.displayName;
+Switch.displayName = Root$1.displayName;
 function Financial() {
 	const { ledgerEntries: ledgerEntries$1, addLedgerEntry, updateLedgerEntry, deleteLedgerEntry, formatAppCurrency, properties: properties$1, owners: owners$1 } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
@@ -51474,7 +51489,7 @@ function HotelRoomDetails() {
 	});
 }
 var CHECKBOX_NAME = "Checkbox";
-var [createCheckboxContext, createCheckboxScope] = createContextScope(CHECKBOX_NAME);
+var [createCheckboxContext, createCheckboxScope] = createContextScope$1(CHECKBOX_NAME);
 var [CheckboxProviderImpl, useCheckboxContext] = createCheckboxContext(CHECKBOX_NAME);
 function CheckboxProvider(props) {
 	const { __scopeCheckbox, checked: checkedProp, children, defaultChecked, disabled, form, name, onCheckedChange, required, value = "on", internal_do_not_use_render } = props;
@@ -51523,7 +51538,7 @@ var CheckboxTrigger = import_react.forwardRef(({ __scopeCheckbox, onKeyDown, onC
 			return () => form.removeEventListener("reset", reset);
 		}
 	}, [control, setChecked]);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.button, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.button, {
 		type: "button",
 		role: "checkbox",
 		"aria-checked": isIndeterminate(checked) ? "mixed" : checked,
@@ -51567,13 +51582,13 @@ var Checkbox$1 = import_react.forwardRef((props, forwardedRef) => {
 	});
 });
 Checkbox$1.displayName = CHECKBOX_NAME;
-var INDICATOR_NAME = "CheckboxIndicator";
+var INDICATOR_NAME$1 = "CheckboxIndicator";
 var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 	const { __scopeCheckbox, forceMount, ...indicatorProps } = props;
-	const context = useCheckboxContext(INDICATOR_NAME, __scopeCheckbox);
+	const context = useCheckboxContext(INDICATOR_NAME$1, __scopeCheckbox);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Presence, {
 		present: forceMount || isIndeterminate(context.checked) || context.checked === true,
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.span, {
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.span, {
 			"data-state": getState(context.checked),
 			"data-disabled": context.disabled ? "" : void 0,
 			...indicatorProps,
@@ -51585,7 +51600,7 @@ var CheckboxIndicator = import_react.forwardRef((props, forwardedRef) => {
 		})
 	});
 });
-CheckboxIndicator.displayName = INDICATOR_NAME;
+CheckboxIndicator.displayName = INDICATOR_NAME$1;
 var BUBBLE_INPUT_NAME = "CheckboxBubbleInput";
 var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }, forwardedRef) => {
 	const { control, hasConsumerStoppedPropagationRef, checked, defaultChecked, required, disabled, name, value, form, bubbleInput, setBubbleInput } = useCheckboxContext(BUBBLE_INPUT_NAME, __scopeCheckbox);
@@ -51611,7 +51626,7 @@ var CheckboxBubbleInput = import_react.forwardRef(({ __scopeCheckbox, ...props }
 		hasConsumerStoppedPropagationRef
 	]);
 	const defaultCheckedRef = import_react.useRef(isIndeterminate(checked) ? false : checked);
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.input, {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive$1.input, {
 		type: "checkbox",
 		"aria-hidden": true,
 		defaultChecked: defaultChecked ?? defaultCheckedRef.current,
@@ -53333,15 +53348,15 @@ var require_react_is$1 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 var require_isNumber = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	var baseGetTag$5 = require__baseGetTag(), isObjectLike$6 = require_isObjectLike();
 	var numberTag$2 = "[object Number]";
-	function isNumber$2(value) {
+	function isNumber$3(value) {
 		return typeof value == "number" || isObjectLike$6(value) && baseGetTag$5(value) == numberTag$2;
 	}
-	module.exports = isNumber$2;
+	module.exports = isNumber$3;
 }));
 var require_isNaN = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	var isNumber$1 = require_isNumber();
+	var isNumber$2 = require_isNumber();
 	function isNaN$1(value) {
-		return isNumber$1(value) && value != +value;
+		return isNumber$2(value) && value != +value;
 	}
 	module.exports = isNaN$1;
 }));
@@ -53358,14 +53373,14 @@ var mathSign = function mathSign$1(value) {
 var isPercent = function isPercent$2(value) {
 	return (0, import_isString$2.default)(value) && value.indexOf("%") === value.length - 1;
 };
-var isNumber = function isNumber$4(value) {
+var isNumber$1 = function isNumber$5(value) {
 	return (0, import_isNumber.default)(value) && !(0, import_isNaN$2.default)(value);
 };
 var isNullish = function isNullish$1(value) {
 	return (0, import_isNil$13.default)(value);
 };
 var isNumOrStr = function isNumOrStr$1(value) {
-	return isNumber(value) || (0, import_isString$2.default)(value);
+	return isNumber$1(value) || (0, import_isString$2.default)(value);
 };
 var idCounter = 0;
 var uniqueId = function uniqueId$1(prefix$2) {
@@ -53375,7 +53390,7 @@ var uniqueId = function uniqueId$1(prefix$2) {
 var getPercentValue = function getPercentValue$1(percent, totalValue) {
 	var defaultValue = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 0;
 	var validate = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : false;
-	if (!isNumber(percent) && !(0, import_isString$2.default)(percent)) return defaultValue;
+	if (!isNumber$1(percent) && !(0, import_isString$2.default)(percent)) return defaultValue;
 	var value;
 	if (isPercent(percent)) {
 		var index$1 = percent.indexOf("%");
@@ -53400,7 +53415,7 @@ var hasDuplicate = function hasDuplicate$1(ary) {
 	return false;
 };
 var interpolateNumber = function interpolateNumber$2(numberA, numberB) {
-	if (isNumber(numberA) && isNumber(numberB)) return function(t) {
+	if (isNumber$1(numberA) && isNumber$1(numberB)) return function(t) {
 		return numberA + t * (numberB - numberA);
 	};
 	return function() {
@@ -53443,7 +53458,7 @@ var getLinearRegression = function getLinearRegression$1(data) {
 	};
 };
 var compareValues = function compareValues$1(a$1, b$1) {
-	if (isNumber(a$1) && isNumber(b$1)) return a$1 - b$1;
+	if (isNumber$1(a$1) && isNumber$1(b$1)) return a$1 - b$1;
 	if ((0, import_isString$2.default)(a$1) && (0, import_isString$2.default)(b$1)) return a$1.localeCompare(b$1);
 	if (a$1 instanceof Date && b$1 instanceof Date) return a$1.getTime() - b$1.getTime();
 	return String(a$1).localeCompare(String(b$1));
@@ -54060,7 +54075,7 @@ function findChildByType(children, type) {
 var validateWidthHeight = function validateWidthHeight$1(el) {
 	if (!el || !el.props) return false;
 	var _el$props = el.props, width = _el$props.width, height = _el$props.height;
-	if (!isNumber(width) || width <= 0 || !isNumber(height) || height <= 0) return false;
+	if (!isNumber$1(width) || width <= 0 || !isNumber$1(height) || height <= 0) return false;
 	return true;
 };
 var SVG_TAGS = [
@@ -56654,7 +56669,7 @@ var Legend = /* @__PURE__ */ function(_PureComponent) {
 		key: "getWithHeight",
 		value: function getWithHeight(item, chartWidth) {
 			var layout = _objectSpread$38(_objectSpread$38({}, this.defaultProps), item.props).layout;
-			if (layout === "vertical" && isNumber(item.props.height)) return { height: item.props.height };
+			if (layout === "vertical" && isNumber$1(item.props.height)) return { height: item.props.height };
 			if (layout === "horizontal") return { width: item.props.width || chartWidth };
 			return null;
 		}
@@ -57126,11 +57141,11 @@ var CSS_CLASS_PREFIX = "recharts-tooltip-wrapper";
 var TOOLTIP_HIDDEN = { visibility: "hidden" };
 function getTooltipCSSClassName(_ref) {
 	var coordinate = _ref.coordinate, translateX = _ref.translateX, translateY = _ref.translateY;
-	return clsx_default(CSS_CLASS_PREFIX, _defineProperty$42(_defineProperty$42(_defineProperty$42(_defineProperty$42({}, "".concat(CSS_CLASS_PREFIX, "-right"), isNumber(translateX) && coordinate && isNumber(coordinate.x) && translateX >= coordinate.x), "".concat(CSS_CLASS_PREFIX, "-left"), isNumber(translateX) && coordinate && isNumber(coordinate.x) && translateX < coordinate.x), "".concat(CSS_CLASS_PREFIX, "-bottom"), isNumber(translateY) && coordinate && isNumber(coordinate.y) && translateY >= coordinate.y), "".concat(CSS_CLASS_PREFIX, "-top"), isNumber(translateY) && coordinate && isNumber(coordinate.y) && translateY < coordinate.y));
+	return clsx_default(CSS_CLASS_PREFIX, _defineProperty$42(_defineProperty$42(_defineProperty$42(_defineProperty$42({}, "".concat(CSS_CLASS_PREFIX, "-right"), isNumber$1(translateX) && coordinate && isNumber$1(coordinate.x) && translateX >= coordinate.x), "".concat(CSS_CLASS_PREFIX, "-left"), isNumber$1(translateX) && coordinate && isNumber$1(coordinate.x) && translateX < coordinate.x), "".concat(CSS_CLASS_PREFIX, "-bottom"), isNumber$1(translateY) && coordinate && isNumber$1(coordinate.y) && translateY >= coordinate.y), "".concat(CSS_CLASS_PREFIX, "-top"), isNumber$1(translateY) && coordinate && isNumber$1(coordinate.y) && translateY < coordinate.y));
 }
 function getTooltipTranslateXY(_ref2) {
 	var allowEscapeViewBox = _ref2.allowEscapeViewBox, coordinate = _ref2.coordinate, key = _ref2.key, offsetTopLeft = _ref2.offsetTopLeft, position = _ref2.position, reverseDirection = _ref2.reverseDirection, tooltipDimension = _ref2.tooltipDimension, viewBox = _ref2.viewBox, viewBoxDimension = _ref2.viewBoxDimension;
-	if (position && isNumber(position[key])) return position[key];
+	if (position && isNumber$1(position[key])) return position[key];
 	var negative = coordinate[key] - tooltipDimension - offsetTopLeft;
 	var positive = coordinate[key] + offsetTopLeft;
 	if (allowEscapeViewBox[key]) return reverseDirection[key] ? negative : positive;
@@ -58414,7 +58429,7 @@ var calculateWordWidths = function calculateWordWidths$1(_ref) {
 };
 var calculateWordsByLines = function calculateWordsByLines$1(_ref2, initialWordsWithComputedWith, spaceWidth, lineWidth, scaleToFit) {
 	var maxLines = _ref2.maxLines, children = _ref2.children, style = _ref2.style, breakAll = _ref2.breakAll;
-	var shouldLimitLines = isNumber(maxLines);
+	var shouldLimitLines = isNumber$1(maxLines);
 	var text = children;
 	var calculate = function calculate$1() {
 		return (arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : []).reduce(function(result$1, _ref3) {
@@ -58516,8 +58531,8 @@ var Text = function Text$1(_ref5) {
 	]);
 	var dx = props.dx, dy = props.dy, angle = props.angle, className = props.className, breakAll = props.breakAll, textProps = _objectWithoutProperties$16(props, _excluded2$7);
 	if (!isNumOrStr(propsX) || !isNumOrStr(propsY)) return null;
-	var x$2 = propsX + (isNumber(dx) ? dx : 0);
-	var y$1 = propsY + (isNumber(dy) ? dy : 0);
+	var x$2 = propsX + (isNumber$1(dx) ? dx : 0);
+	var y$1 = propsY + (isNumber$1(dy) ? dy : 0);
 	var startDy;
 	switch (verticalAnchor) {
 		case "start":
@@ -58534,7 +58549,7 @@ var Text = function Text$1(_ref5) {
 	if (scaleToFit) {
 		var lineWidth = wordsByLines[0].width;
 		var width = props.width;
-		transforms.push("scale(".concat((isNumber(width) ? width / lineWidth : 1) / lineWidth, ")"));
+		transforms.push("scale(".concat((isNumber$1(width) ? width / lineWidth : 1) / lineWidth, ")"));
 	}
 	if (angle) transforms.push("rotate(".concat(angle, ", ").concat(x$2, ", ").concat(y$1, ")"));
 	if (transforms.length) textProps.transform = transforms.join(" ");
@@ -63079,7 +63094,7 @@ function getDomainOfDataByKey(data, key, type, filterNil) {
 	});
 	if (type === "number") {
 		var domain = flattenData.filter(function(entry) {
-			return isNumber(entry) || parseFloat(entry);
+			return isNumber$1(entry) || parseFloat(entry);
 		});
 		return domain.length ? [(0, import_min.default)(domain), (0, import_max$1.default)(domain)] : [Infinity, -Infinity];
 	}
@@ -63266,8 +63281,8 @@ var appendOffsetOfLegend = function appendOffsetOfLegend$1(offset$3, _unused, pr
 	if (legendProps) {
 		var _ref4 = legendBox || {}, boxWidth = _ref4.width, boxHeight = _ref4.height;
 		var align = legendProps.align, verticalAlign = legendProps.verticalAlign, layout = legendProps.layout;
-		if ((layout === "vertical" || layout === "horizontal" && verticalAlign === "middle") && align !== "center" && isNumber(offset$3[align])) return _objectSpread$31(_objectSpread$31({}, offset$3), {}, _defineProperty$35({}, align, offset$3[align] + (boxWidth || 0)));
-		if ((layout === "horizontal" || layout === "vertical" && align === "center") && verticalAlign !== "middle" && isNumber(offset$3[verticalAlign])) return _objectSpread$31(_objectSpread$31({}, offset$3), {}, _defineProperty$35({}, verticalAlign, offset$3[verticalAlign] + (boxHeight || 0)));
+		if ((layout === "vertical" || layout === "horizontal" && verticalAlign === "middle") && align !== "center" && isNumber$1(offset$3[align])) return _objectSpread$31(_objectSpread$31({}, offset$3), {}, _defineProperty$35({}, align, offset$3[align] + (boxWidth || 0)));
+		if ((layout === "horizontal" || layout === "vertical" && align === "center") && verticalAlign !== "middle" && isNumber$1(offset$3[verticalAlign])) return _objectSpread$31(_objectSpread$31({}, offset$3), {}, _defineProperty$35({}, verticalAlign, offset$3[verticalAlign] + (boxHeight || 0)));
 	}
 	return offset$3;
 };
@@ -63456,12 +63471,12 @@ var findPositionOfBar = function findPositionOfBar$1(barPosition, child) {
 	return null;
 };
 var truncateByDomain = function truncateByDomain$1(value, domain) {
-	if (!domain || domain.length !== 2 || !isNumber(domain[0]) || !isNumber(domain[1])) return value;
+	if (!domain || domain.length !== 2 || !isNumber$1(domain[0]) || !isNumber$1(domain[1])) return value;
 	var minValue = Math.min(domain[0], domain[1]);
 	var maxValue = Math.max(domain[0], domain[1]);
 	var result = [value[0], value[1]];
-	if (!isNumber(value[0]) || value[0] < minValue) result[0] = minValue;
-	if (!isNumber(value[1]) || value[1] > maxValue) result[1] = maxValue;
+	if (!isNumber$1(value[0]) || value[0] < minValue) result[0] = minValue;
+	if (!isNumber$1(value[1]) || value[1] > maxValue) result[1] = maxValue;
 	if (result[0] > maxValue) result[0] = maxValue;
 	if (result[1] < minValue) result[1] = minValue;
 	return result;
@@ -63619,7 +63634,7 @@ var getStackedDataOfItem = function getStackedDataOfItem$1(item, stackGroups) {
 };
 var getDomainOfSingle = function getDomainOfSingle$1(data) {
 	return data.reduce(function(result, entry) {
-		return [(0, import_min.default)(entry.concat([result[0]]).filter(isNumber)), (0, import_max$1.default)(entry.concat([result[1]]).filter(isNumber))];
+		return [(0, import_min.default)(entry.concat([result[0]]).filter(isNumber$1)), (0, import_max$1.default)(entry.concat([result[1]]).filter(isNumber$1))];
 	}, [Infinity, -Infinity]);
 };
 var getDomainOfStackGroups = function getDomainOfStackGroups$1(stackGroups, startIndex, endIndex) {
@@ -63639,13 +63654,13 @@ var parseSpecifiedDomain = function parseSpecifiedDomain$1(specifiedDomain, data
 	if ((0, import_isFunction$19.default)(specifiedDomain)) return specifiedDomain(dataDomain, allowDataOverflow);
 	if (!Array.isArray(specifiedDomain)) return dataDomain;
 	var domain = [];
-	if (isNumber(specifiedDomain[0])) domain[0] = allowDataOverflow ? specifiedDomain[0] : Math.min(specifiedDomain[0], dataDomain[0]);
+	if (isNumber$1(specifiedDomain[0])) domain[0] = allowDataOverflow ? specifiedDomain[0] : Math.min(specifiedDomain[0], dataDomain[0]);
 	else if (MIN_VALUE_REG.test(specifiedDomain[0])) {
 		var value = +MIN_VALUE_REG.exec(specifiedDomain[0])[1];
 		domain[0] = dataDomain[0] - value;
 	} else if ((0, import_isFunction$19.default)(specifiedDomain[0])) domain[0] = specifiedDomain[0](dataDomain[0]);
 	else domain[0] = dataDomain[0];
-	if (isNumber(specifiedDomain[1])) domain[1] = allowDataOverflow ? specifiedDomain[1] : Math.max(specifiedDomain[1], dataDomain[1]);
+	if (isNumber$1(specifiedDomain[1])) domain[1] = allowDataOverflow ? specifiedDomain[1] : Math.max(specifiedDomain[1], dataDomain[1]);
 	else if (MAX_VALUE_REG.test(specifiedDomain[1])) {
 		var _value = +MAX_VALUE_REG.exec(specifiedDomain[1])[1];
 		domain[1] = dataDomain[1] + _value;
@@ -64223,7 +64238,7 @@ var getAttrsOfCartesianLabel = function getAttrsOfCartesianLabel$1(props) {
 		textAnchor: horizontalEnd,
 		verticalAnchor: verticalEnd
 	}, sizeAttrs);
-	if ((0, import_isObject$1.default)(position) && (isNumber(position.x) || isPercent(position.x)) && (isNumber(position.y) || isPercent(position.y))) return _objectSpread$29({
+	if ((0, import_isObject$1.default)(position) && (isNumber$1(position.x) || isPercent(position.x)) && (isNumber$1(position.y) || isPercent(position.y))) return _objectSpread$29({
 		x: x$2 + getPercentValue(position.x, width),
 		y: y$1 + getPercentValue(position.y, height),
 		textAnchor: "end",
@@ -64237,7 +64252,7 @@ var getAttrsOfCartesianLabel = function getAttrsOfCartesianLabel$1(props) {
 	}, sizeAttrs);
 };
 var isPolar = function isPolar$1(viewBox) {
-	return "cx" in viewBox && isNumber(viewBox.cx);
+	return "cx" in viewBox && isNumber$1(viewBox.cx);
 };
 function Label$1(_ref4) {
 	var _ref4$offset = _ref4.offset, offset$3 = _ref4$offset === void 0 ? 5 : _ref4$offset, restProps = _objectWithoutProperties$14(_ref4, _excluded$14);
@@ -64260,27 +64275,27 @@ Label$1.displayName = "Label";
 var parseViewBox = function parseViewBox$1(props) {
 	var cx$1 = props.cx, cy = props.cy, angle = props.angle, startAngle = props.startAngle, endAngle = props.endAngle, r$1 = props.r, radius = props.radius, innerRadius = props.innerRadius, outerRadius = props.outerRadius, x$2 = props.x, y$1 = props.y, top = props.top, left = props.left, width = props.width, height = props.height, clockWise = props.clockWise, labelViewBox = props.labelViewBox;
 	if (labelViewBox) return labelViewBox;
-	if (isNumber(width) && isNumber(height)) {
-		if (isNumber(x$2) && isNumber(y$1)) return {
+	if (isNumber$1(width) && isNumber$1(height)) {
+		if (isNumber$1(x$2) && isNumber$1(y$1)) return {
 			x: x$2,
 			y: y$1,
 			width,
 			height
 		};
-		if (isNumber(top) && isNumber(left)) return {
+		if (isNumber$1(top) && isNumber$1(left)) return {
 			x: top,
 			y: left,
 			width,
 			height
 		};
 	}
-	if (isNumber(x$2) && isNumber(y$1)) return {
+	if (isNumber$1(x$2) && isNumber$1(y$1)) return {
 		x: x$2,
 		y: y$1,
 		width: 0,
 		height: 0
 	};
-	if (isNumber(cx$1) && isNumber(cy)) return {
+	if (isNumber$1(cx$1) && isNumber$1(cy)) return {
 		cx: cx$1,
 		cy,
 		startAngle: startAngle || angle || 0,
@@ -64838,8 +64853,8 @@ var getPath$1 = function getPath$2(_ref) {
 		lineFunction.defined(defined).curve(curveFactory);
 		return lineFunction(areaPoints);
 	}
-	if (layout === "vertical" && isNumber(baseLine)) lineFunction = area_default().y(getY).x1(getX).x0(baseLine);
-	else if (isNumber(baseLine)) lineFunction = area_default().x(getX).y1(getY).y0(baseLine);
+	if (layout === "vertical" && isNumber$1(baseLine)) lineFunction = area_default().y(getY).x1(getX).x0(baseLine);
+	else if (isNumber$1(baseLine)) lineFunction = area_default().x(getX).y1(getY).y0(baseLine);
 	else lineFunction = line_default().x(getX).y(getY);
 	lineFunction.defined(defined).curve(curveFactory);
 	return lineFunction(formatPoints);
@@ -67212,7 +67227,7 @@ var Cross = function Cross$1(_ref) {
 		width,
 		height
 	}, rest);
-	if (!isNumber(x$2) || !isNumber(y$1) || !isNumber(width) || !isNumber(height) || !isNumber(top) || !isNumber(left)) return null;
+	if (!isNumber$1(x$2) || !isNumber$1(y$1) || !isNumber$1(width) || !isNumber$1(height) || !isNumber$1(top) || !isNumber$1(left)) return null;
 	return /* @__PURE__ */ import_react.createElement("path", _extends$19({}, filterProps(props, true), {
 		className: clsx_default("recharts-cross", className),
 		d: getPath(x$2, y$1, width, height, top, left)
@@ -68499,7 +68514,7 @@ var Pie = /* @__PURE__ */ function(_PureComponent) {
 				var _this5 = this;
 				var _this$props5 = this.props, hide$3 = _this$props5.hide, sectors = _this$props5.sectors, className = _this$props5.className, label = _this$props5.label, cx$1 = _this$props5.cx, cy = _this$props5.cy, innerRadius = _this$props5.innerRadius, outerRadius = _this$props5.outerRadius, isAnimationActive = _this$props5.isAnimationActive;
 				var isAnimationFinished = this.state.isAnimationFinished;
-				if (hide$3 || !sectors || !sectors.length || !isNumber(cx$1) || !isNumber(cy) || !isNumber(innerRadius) || !isNumber(outerRadius)) return null;
+				if (hide$3 || !sectors || !sectors.length || !isNumber$1(cx$1) || !isNumber$1(cy) || !isNumber$1(innerRadius) || !isNumber$1(outerRadius)) return null;
 				var layerClass = clsx_default("recharts-pie", className);
 				return /* @__PURE__ */ import_react.createElement(Layer, {
 					tabIndex: this.props.rootTabIndex,
@@ -68648,7 +68663,7 @@ _defineProperty$20(Pie, "getComposedData", function(_ref4) {
 	var realTotalAngle = absDeltaAngle - notZeroItemCount * minAngle - totalPadingAngle;
 	var sum = pieData.reduce(function(result, entry) {
 		var val = getValueByDataKey(entry, realDataKey, 0);
-		return result + (isNumber(val) ? val : 0);
+		return result + (isNumber$1(val) ? val : 0);
 	}, 0);
 	var sectors;
 	if (sum > 0) {
@@ -68656,7 +68671,7 @@ _defineProperty$20(Pie, "getComposedData", function(_ref4) {
 		sectors = pieData.map(function(entry, i) {
 			var val = getValueByDataKey(entry, realDataKey, 0);
 			var name = getValueByDataKey(entry, nameKey, i);
-			var percent = (isNumber(val) ? val : 0) / sum;
+			var percent = (isNumber$1(val) ? val : 0) / sum;
 			var tempStartAngle;
 			if (i) tempStartAngle = prev.endAngle + mathSign(deltaAngle) * paddingAngle * (val !== 0 ? 1 : 0);
 			else tempStartAngle = startAngle;
@@ -69263,7 +69278,7 @@ var Brush = /* @__PURE__ */ function(_PureComponent) {
 			value: function render() {
 				var _this$props11 = this.props, data = _this$props11.data, className = _this$props11.className, children = _this$props11.children, x$2 = _this$props11.x, y$1 = _this$props11.y, width = _this$props11.width, height = _this$props11.height, alwaysShowText = _this$props11.alwaysShowText;
 				var _this$state5 = this.state, startX = _this$state5.startX, endX = _this$state5.endX, isTextActive = _this$state5.isTextActive, isSlideMoving = _this$state5.isSlideMoving, isTravellerMoving = _this$state5.isTravellerMoving, isTravellerFocused = _this$state5.isTravellerFocused;
-				if (!data || !data.length || !isNumber(x$2) || !isNumber(y$1) || !isNumber(width) || !isNumber(height) || width <= 0 || height <= 0) return null;
+				if (!data || !data.length || !isNumber$1(x$2) || !isNumber$1(y$1) || !isNumber$1(width) || !isNumber$1(height) || width <= 0 || height <= 0) return null;
 				var layerClass = clsx_default("recharts-brush", className);
 				var isPanoramic = import_react.Children.count(children) === 1;
 				var style = generatePrefixStyle("userSelect", "none");
@@ -69585,7 +69600,7 @@ var minPointSizeCallback = function minPointSizeCallback$1(minPointSize) {
 	var defaultValue = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
 	return function(value, index$1) {
 		if (typeof minPointSize === "number") return minPointSize;
-		var isValueNumberOrNil = isNumber(value) || isNullish(value);
+		var isValueNumberOrNil = isNumber$1(value) || isNullish(value);
 		if (isValueNumberOrNil) return minPointSize(value, index$1);
 		!isValueNumberOrNil && invariant(false, "minPointSize callback function received a value with type of ".concat(_typeof$18(value), ". Currently only numbers or null/undefined are supported."));
 		return defaultValue;
@@ -71265,7 +71280,7 @@ function getTicksStart(sign$1, boundaries, getTickSize, ticks$1, minTickGap, pre
 function getTicks(props, fontSize, letterSpacing) {
 	var tick = props.tick, ticks$1 = props.ticks, viewBox = props.viewBox, minTickGap = props.minTickGap, orientation = props.orientation, interval = props.interval, tickFormatter = props.tickFormatter, unit$1 = props.unit, angle = props.angle;
 	if (!ticks$1 || !ticks$1.length || !tick) return [];
-	if (isNumber(interval) || Global.isSsr) return getNumberIntervalTicks(ticks$1, typeof interval === "number" && isNumber(interval) ? interval : 0);
+	if (isNumber$1(interval) || Global.isSsr) return getNumberIntervalTicks(ticks$1, typeof interval === "number" && isNumber$1(interval) ? interval : 0);
 	var candidates = [];
 	var sizeKey = orientation === "top" || orientation === "bottom" ? "width" : "height";
 	var unitSize = unit$1 && sizeKey === "width" ? getStringSize(unit$1, {
@@ -71486,7 +71501,7 @@ var CartesianAxis = /* @__PURE__ */ function(_Component) {
 				var x1, x2, y1, y2, tx, ty;
 				var sign$1 = mirror ? -1 : 1;
 				var finalTickSize = data.tickSize || tickSize;
-				var tickCoord = isNumber(data.tickCoord) ? data.tickCoord : data.coordinate;
+				var tickCoord = isNumber$1(data.tickCoord) ? data.tickCoord : data.coordinate;
 				switch (orientation) {
 					case "top":
 						x1 = x2 = data.coordinate;
@@ -71943,15 +71958,15 @@ function CartesianGrid(props) {
 		horizontalFill: (_props$horizontalFill = props.horizontalFill) !== null && _props$horizontalFill !== void 0 ? _props$horizontalFill : defaultProps.horizontalFill,
 		vertical: (_props$vertical3 = props.vertical) !== null && _props$vertical3 !== void 0 ? _props$vertical3 : defaultProps.vertical,
 		verticalFill: (_props$verticalFill = props.verticalFill) !== null && _props$verticalFill !== void 0 ? _props$verticalFill : defaultProps.verticalFill,
-		x: isNumber(props.x) ? props.x : offset$3.left,
-		y: isNumber(props.y) ? props.y : offset$3.top,
-		width: isNumber(props.width) ? props.width : offset$3.width,
-		height: isNumber(props.height) ? props.height : offset$3.height
+		x: isNumber$1(props.x) ? props.x : offset$3.left,
+		y: isNumber$1(props.y) ? props.y : offset$3.top,
+		width: isNumber$1(props.width) ? props.width : offset$3.width,
+		height: isNumber$1(props.height) ? props.height : offset$3.height
 	});
 	var x$2 = propsIncludingDefaults.x, y$1 = propsIncludingDefaults.y, width = propsIncludingDefaults.width, height = propsIncludingDefaults.height, syncWithTicks = propsIncludingDefaults.syncWithTicks, horizontalValues = propsIncludingDefaults.horizontalValues, verticalValues = propsIncludingDefaults.verticalValues;
 	var xAxis = useArbitraryXAxis();
 	var yAxis = useYAxisWithFiniteDomainOrRandom();
-	if (!isNumber(width) || width <= 0 || !isNumber(height) || height <= 0 || !isNumber(x$2) || x$2 !== +x$2 || !isNumber(y$1) || y$1 !== +y$1) return null;
+	if (!isNumber$1(width) || width <= 0 || !isNumber$1(height) || height <= 0 || !isNumber$1(x$2) || x$2 !== +x$2 || !isNumber$1(y$1) || y$1 !== +y$1) return null;
 	var verticalCoordinatesGenerator = propsIncludingDefaults.verticalCoordinatesGenerator || defaultVerticalCoordinatesGenerator;
 	var horizontalCoordinatesGenerator = propsIncludingDefaults.horizontalCoordinatesGenerator || defaultHorizontalCoordinatesGenerator;
 	var horizontalPoints = propsIncludingDefaults.horizontalPoints, verticalPoints = propsIncludingDefaults.verticalPoints;
@@ -72744,11 +72759,11 @@ var Area = /* @__PURE__ */ function(_PureComponent) {
 				var maxY = (0, import_max.default)(points.map(function(entry) {
 					return entry.y || 0;
 				}));
-				if (isNumber(baseLine) && typeof baseLine === "number") maxY = Math.max(baseLine, maxY);
+				if (isNumber$1(baseLine) && typeof baseLine === "number") maxY = Math.max(baseLine, maxY);
 				else if (baseLine && Array.isArray(baseLine) && baseLine.length) maxY = Math.max((0, import_max.default)(baseLine.map(function(entry) {
 					return entry.y || 0;
 				})), maxY);
-				if (isNumber(maxY)) return /* @__PURE__ */ import_react.createElement("rect", {
+				if (isNumber$1(maxY)) return /* @__PURE__ */ import_react.createElement("rect", {
 					x: startX < endX ? startX : startX - width,
 					y: 0,
 					width,
@@ -72767,11 +72782,11 @@ var Area = /* @__PURE__ */ function(_PureComponent) {
 				var maxX = (0, import_max.default)(points.map(function(entry) {
 					return entry.x || 0;
 				}));
-				if (isNumber(baseLine) && typeof baseLine === "number") maxX = Math.max(baseLine, maxX);
+				if (isNumber$1(baseLine) && typeof baseLine === "number") maxX = Math.max(baseLine, maxX);
 				else if (baseLine && Array.isArray(baseLine) && baseLine.length) maxX = Math.max((0, import_max.default)(baseLine.map(function(entry) {
 					return entry.x || 0;
 				})), maxX);
-				if (isNumber(maxX)) return /* @__PURE__ */ import_react.createElement("rect", {
+				if (isNumber$1(maxX)) return /* @__PURE__ */ import_react.createElement("rect", {
 					x: 0,
 					y: startY < endY ? startY : startY - height,
 					width: maxX + (strokeWidth ? parseInt("".concat(strokeWidth), 10) : 1),
@@ -72852,7 +72867,7 @@ var Area = /* @__PURE__ */ function(_PureComponent) {
 							return entry;
 						});
 						var stepBaseLine;
-						if (isNumber(baseLine) && typeof baseLine === "number") stepBaseLine = interpolateNumber(prevBaseLine, baseLine)(t);
+						if (isNumber$1(baseLine) && typeof baseLine === "number") stepBaseLine = interpolateNumber(prevBaseLine, baseLine)(t);
 						else if ((0, import_isNil$2.default)(baseLine) || (0, import_isNaN.default)(baseLine)) stepBaseLine = interpolateNumber(prevBaseLine, 0)(t);
 						else stepBaseLine = baseLine.map(function(entry, index$1) {
 							var prevPointIndex = Math.floor(index$1 * prevPointsDiffFactor);
@@ -72955,7 +72970,7 @@ _defineProperty$7(Area, "getBaseValue", function(props, item, xAxis, yAxis) {
 	var layout = props.layout, chartBaseValue = props.baseValue;
 	var itemBaseValue = item.props.baseValue;
 	var baseValue = itemBaseValue !== null && itemBaseValue !== void 0 ? itemBaseValue : chartBaseValue;
-	if (isNumber(baseValue) && typeof baseValue === "number") return baseValue;
+	if (isNumber$1(baseValue) && typeof baseValue === "number") return baseValue;
 	var numericAxis = layout === "horizontal" ? yAxis : xAxis;
 	var domain = numericAxis.scale.domain();
 	if (numericAxis.type === "number") {
@@ -73963,7 +73978,7 @@ var detectReferenceElementsDomain = function detectReferenceElementsDomain$1(chi
 	var valueKey = axisType[0];
 	var finalDomain = domain;
 	if (elements.length) finalDomain = elements.reduce(function(result, el) {
-		if (el.props[idKey] === axisId && ifOverflowMatches(el.props, "extendDomain") && isNumber(el.props[valueKey])) {
+		if (el.props[idKey] === axisId && ifOverflowMatches(el.props, "extendDomain") && isNumber$1(el.props[valueKey])) {
 			var value = el.props[valueKey];
 			return [Math.min(result[0], value), Math.max(result[1], value)];
 		}
@@ -73973,7 +73988,7 @@ var detectReferenceElementsDomain = function detectReferenceElementsDomain$1(chi
 		var key1 = "".concat(valueKey, "1");
 		var key2 = "".concat(valueKey, "2");
 		finalDomain = areas.reduce(function(result, el) {
-			if (el.props[idKey] === axisId && ifOverflowMatches(el.props, "extendDomain") && isNumber(el.props[key1]) && isNumber(el.props[key2])) {
+			if (el.props[idKey] === axisId && ifOverflowMatches(el.props, "extendDomain") && isNumber$1(el.props[key1]) && isNumber$1(el.props[key2])) {
 				var value1 = el.props[key1];
 				var value2 = el.props[key2];
 				return [Math.min(result[0], value1, value2), Math.max(result[1], value1, value2)];
@@ -73982,7 +73997,7 @@ var detectReferenceElementsDomain = function detectReferenceElementsDomain$1(chi
 		}, finalDomain);
 	}
 	if (specifiedTicks && specifiedTicks.length) finalDomain = specifiedTicks.reduce(function(result, tick) {
-		if (isNumber(tick)) return [Math.min(result[0], tick), Math.max(result[1], tick)];
+		if (isNumber$1(tick)) return [Math.min(result[0], tick), Math.max(result[1], tick)];
 		return result;
 	}, finalDomain);
 	return finalDomain;
@@ -74244,7 +74259,7 @@ function isDomainSpecifiedByUser(domain, allowDataOverflow, axisType) {
 	if (axisType === "number" && allowDataOverflow === true && Array.isArray(domain)) {
 		var domainStart = domain === null || domain === void 0 ? void 0 : domain[0];
 		var domainEnd = domain === null || domain === void 0 ? void 0 : domain[1];
-		if (!!domainStart && !!domainEnd && isNumber(domainStart) && isNumber(domainEnd)) return true;
+		if (!!domainStart && !!domainEnd && isNumber$1(domainStart) && isNumber$1(domainEnd)) return true;
 	}
 	return false;
 }
@@ -74670,7 +74685,7 @@ var getDisplayedData = function getDisplayedData$1(data, _ref) {
 		return result;
 	}, []);
 	if (itemsData.length > 0) return itemsData;
-	if (data && data.length && isNumber(dataStartIndex) && isNumber(dataEndIndex)) return data.slice(dataStartIndex, dataEndIndex + 1);
+	if (data && data.length && isNumber$1(dataStartIndex) && isNumber$1(dataEndIndex)) return data.slice(dataStartIndex, dataEndIndex + 1);
 	return [];
 };
 function getDefaultDomainByAxisType(axisType) {
@@ -75354,9 +75369,9 @@ var generateCategoricalChart = function generateCategoricalChart$1(_ref6) {
 					key: element.key || "_recharts-brush",
 					onChange: combineEventHandlers(_this.handleBrushChange, element.props.onChange),
 					data,
-					x: isNumber(element.props.x) ? element.props.x : offset$3.left,
-					y: isNumber(element.props.y) ? element.props.y : offset$3.top + offset$3.height + offset$3.brushBottom - (margin.bottom || 0),
-					width: isNumber(element.props.width) ? element.props.width : offset$3.width,
+					x: isNumber$1(element.props.x) ? element.props.x : offset$3.left,
+					y: isNumber$1(element.props.y) ? element.props.y : offset$3.top + offset$3.height + offset$3.brushBottom - (margin.bottom || 0),
+					width: isNumber$1(element.props.width) ? element.props.width : offset$3.width,
 					startIndex: dataStartIndex,
 					endIndex: dataEndIndex,
 					updateId: "brush-".concat(updateId)
@@ -78256,8 +78271,290 @@ function AuditPanel() {
 		]
 	});
 }
+var PROGRESS_NAME = "Progress";
+var DEFAULT_MAX = 100;
+var [createProgressContext, createProgressScope] = createContextScope(PROGRESS_NAME);
+var [ProgressProvider, useProgressContext] = createProgressContext(PROGRESS_NAME);
+var Progress$1 = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeProgress, value: valueProp = null, max: maxProp, getValueLabel = defaultGetValueLabel, ...progressProps } = props;
+	if ((maxProp || maxProp === 0) && !isValidMaxNumber(maxProp)) console.error(getInvalidMaxError(`${maxProp}`, "Progress"));
+	const max$6 = isValidMaxNumber(maxProp) ? maxProp : DEFAULT_MAX;
+	if (valueProp !== null && !isValidValueNumber(valueProp, max$6)) console.error(getInvalidValueError(`${valueProp}`, "Progress"));
+	const value = isValidValueNumber(valueProp, max$6) ? valueProp : null;
+	const valueLabel = isNumber(value) ? getValueLabel(value, max$6) : void 0;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ProgressProvider, {
+		scope: __scopeProgress,
+		value,
+		max: max$6,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+			"aria-valuemax": max$6,
+			"aria-valuemin": 0,
+			"aria-valuenow": isNumber(value) ? value : void 0,
+			"aria-valuetext": valueLabel,
+			role: "progressbar",
+			"data-state": getProgressState(value, max$6),
+			"data-value": value ?? void 0,
+			"data-max": max$6,
+			...progressProps,
+			ref: forwardedRef
+		})
+	});
+});
+Progress$1.displayName = PROGRESS_NAME;
+var INDICATOR_NAME = "ProgressIndicator";
+var ProgressIndicator = import_react.forwardRef((props, forwardedRef) => {
+	const { __scopeProgress, ...indicatorProps } = props;
+	const context = useProgressContext(INDICATOR_NAME, __scopeProgress);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Primitive.div, {
+		"data-state": getProgressState(context.value, context.max),
+		"data-value": context.value ?? void 0,
+		"data-max": context.max,
+		...indicatorProps,
+		ref: forwardedRef
+	});
+});
+ProgressIndicator.displayName = INDICATOR_NAME;
+function defaultGetValueLabel(value, max$6) {
+	return `${Math.round(value / max$6 * 100)}%`;
+}
+function getProgressState(value, maxValue) {
+	return value == null ? "indeterminate" : value === maxValue ? "complete" : "loading";
+}
+function isNumber(value) {
+	return typeof value === "number";
+}
+function isValidMaxNumber(max$6) {
+	return isNumber(max$6) && !isNaN(max$6) && max$6 > 0;
+}
+function isValidValueNumber(value, max$6) {
+	return isNumber(value) && !isNaN(value) && value <= max$6 && value >= 0;
+}
+function getInvalidMaxError(propValue, componentName) {
+	return `Invalid prop \`max\` of value \`${propValue}\` supplied to \`${componentName}\`. Only numbers greater than 0 are valid max values. Defaulting to \`${DEFAULT_MAX}\`.`;
+}
+function getInvalidValueError(propValue, componentName) {
+	return `Invalid prop \`value\` of value \`${propValue}\` supplied to \`${componentName}\`. The \`value\` prop must be:
+  - a positive number
+  - less than the value passed to \`max\` (or ${DEFAULT_MAX} if no \`max\` prop is set)
+  - \`null\` or \`undefined\` if the progress is indeterminate.
+
+Defaulting to \`null\`.`;
+}
+var Root = Progress$1;
+var Indicator = ProgressIndicator;
+var Progress = import_react.forwardRef(({ className, value, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Root, {
+	ref,
+	className: cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className),
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Indicator, {
+		className: "h-full w-full flex-1 bg-primary transition-all",
+		style: { transform: `translateX(-${100 - (value || 0)}%)` }
+	})
+}));
+Progress.displayName = Root.displayName;
+function generateSeederData() {
+	const data = {
+		users: [],
+		properties: [],
+		owners: [],
+		partners: [],
+		tenants: [],
+		bookings: [],
+		tasks: [],
+		ledgerEntries: [],
+		invoices: []
+	};
+	[{
+		id: "org_seed_1",
+		name: "Stellar Management",
+		email: "admin@stellar.com"
+	}, {
+		id: "org_seed_2",
+		name: "Horizon Properties",
+		email: "admin@horizon.com"
+	}].forEach((pm) => {
+		data.users.push({
+			id: `u_${pm.id}_admin`,
+			name: pm.name,
+			email: pm.email,
+			role: "software_tenant",
+			organizationId: pm.id,
+			isFirstLogin: false,
+			status: "active",
+			companyName: pm.name
+		});
+		for (let i = 0; i < 5; i++) {
+			data.users.push({
+				id: `u_${pm.id}_team_${i}`,
+				name: `Staff ${i} ${pm.name}`,
+				email: `staff${i}@${pm.id}.com`,
+				role: "internal_user",
+				organizationId: pm.id,
+				isFirstLogin: false,
+				status: "active"
+			});
+			data.owners.push({
+				id: `o_${pm.id}_${i}`,
+				name: `Owner ${i} ${pm.name}`,
+				email: `o${i}@${pm.id}.com`,
+				phone: `555-010${i}`,
+				role: "property_owner",
+				status: "active",
+				organizationId: pm.id
+			});
+			data.partners.push({
+				id: `p_${pm.id}_${i}`,
+				name: `Partner ${i} ${pm.name}`,
+				type: i % 2 === 0 ? "cleaning" : "maintenance",
+				email: `p${i}@${pm.id}.com`,
+				phone: `555-020${i}`,
+				role: "partner",
+				status: "active",
+				organizationId: pm.id
+			});
+			data.tenants.push({
+				id: `t_${pm.id}_${i}`,
+				name: `Tenant ${i} ${pm.name}`,
+				email: `t${i}@${pm.id}.com`,
+				phone: `555-030${i}`,
+				role: "tenant",
+				status: "active",
+				rentValue: 2e3 + i * 100,
+				leaseEnd: new Date(Date.now() + 864e5 * 180).toISOString(),
+				organizationId: pm.id
+			});
+		}
+		for (let i = 0; i < 10; i++) {
+			const isStr = i < 5;
+			const pid = `prop_${pm.id}_${i}`;
+			const ownerId = `o_${pm.id}_${i % 5}`;
+			const partnerId = `p_${pm.id}_${i % 5}`;
+			data.properties.push({
+				id: pid,
+				name: `${isStr ? "Vacation Home" : "Residential Apt"} ${i + 1}`,
+				address: `100${i} Simulation St`,
+				city: "Orlando",
+				state: "FL",
+				zipCode: "32801",
+				country: "US",
+				type: isStr ? "House" : "Apartment",
+				profileType: isStr ? "short_term" : "long_term",
+				community: "Simulated Heights",
+				status: "rented",
+				bedrooms: 3 + i % 2,
+				bathrooms: 2,
+				guests: 6,
+				ownerId,
+				image: `https://img.usecurling.com/p/400/300?q=${isStr ? "house" : "apartment"}&seed=${i + pm.id.length}`,
+				organizationId: pm.id,
+				listingPrice: isStr ? 250 : 2e3
+			});
+			if (isStr) for (let b$1 = 0; b$1 < 15; b$1++) {
+				const bid = `bkg_${pid}_${b$1}`;
+				const amt = 150 + b$1 * 10;
+				data.bookings.push({
+					id: bid,
+					propertyId: pid,
+					propertyName: `Vacation Home ${i + 1}`,
+					guestName: `Guest ${b$1}`,
+					guestEmail: `g${b$1}@sim.com`,
+					checkIn: (/* @__PURE__ */ new Date(Date.now() - b$1 * 864e5 * 7)).toISOString(),
+					checkOut: (/* @__PURE__ */ new Date(Date.now() - b$1 * 864e5 * 5)).toISOString(),
+					status: "checked_out",
+					totalAmount: amt,
+					paid: true,
+					platform: "airbnb",
+					organizationId: pm.id
+				});
+				data.invoices.push({
+					id: `inv_${bid}`,
+					description: `Booking ${bid}`,
+					amount: amt,
+					status: "paid",
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					propertyId: pid,
+					bookingId: bid,
+					organizationId: pm.id
+				});
+				data.ledgerEntries.push({
+					id: `le_${bid}`,
+					propertyId: pid,
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					type: "income",
+					category: "Booking",
+					amount: amt,
+					description: "Booking payment",
+					status: "cleared",
+					organizationId: pm.id
+				});
+			}
+			else {
+				const tid = `t_${pm.id}_${i % 5}`;
+				for (let m = 0; m < 15; m++) {
+					const rId = `inv_r_${pid}_${m}`;
+					const rAmt = 2e3 + i % 3 * 100;
+					data.invoices.push({
+						id: rId,
+						description: `Rent Month ${m + 1}`,
+						amount: rAmt,
+						status: "paid",
+						date: (/* @__PURE__ */ new Date(Date.now() - m * 864e5 * 30)).toISOString(),
+						propertyId: pid,
+						toId: tid,
+						organizationId: pm.id
+					});
+					data.ledgerEntries.push({
+						id: `le_r_${rId}`,
+						propertyId: pid,
+						date: (/* @__PURE__ */ new Date(Date.now() - m * 864e5 * 30)).toISOString(),
+						type: "income",
+						category: "Rent",
+						amount: rAmt,
+						description: "Monthly Rent",
+						status: "cleared",
+						organizationId: pm.id
+					});
+				}
+			}
+			for (let t = 0; t < 10; t++) {
+				const tskId = `task_${pid}_${t}`;
+				const cost = 50 + t * 10;
+				data.tasks.push({
+					id: tskId,
+					title: `Routine Work ${t + 1}`,
+					propertyId: pid,
+					propertyName: `Prop ${i + 1}`,
+					status: "completed",
+					type: t % 2 === 0 ? "maintenance" : "cleaning",
+					assignee: `Partner ${i % 5}`,
+					assigneeId: partnerId,
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					priority: "medium",
+					price: cost,
+					organizationId: pm.id
+				});
+				data.ledgerEntries.push({
+					id: `le_t_${tskId}`,
+					propertyId: pid,
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					type: "expense",
+					category: t % 2 === 0 ? "Maintenance" : "Cleaning",
+					amount: cost,
+					description: "Routine service cost",
+					status: "cleared",
+					organizationId: pm.id
+				});
+			}
+		}
+	});
+	return data;
+}
 function EnvironmentManager() {
 	const { simulationMode, setSimulationMode, simulationRole, setSimulationRole, currentUser } = useAuthStore_default();
+	const seedDatabase = (0, import_react.useContext)(AppContext)?.seedDatabase;
+	const { toast: toast$2 } = useToast();
+	const [isGenerating, setIsGenerating] = (0, import_react.useState)(false);
+	const [progress, setProgress] = (0, import_react.useState)(0);
 	const roles = [
 		"software_tenant",
 		"internal_user",
@@ -78276,73 +78573,166 @@ function EnvironmentManager() {
 			})]
 		})
 	});
+	const handleGenerate = async () => {
+		if (!seedDatabase) return;
+		setIsGenerating(true);
+		setProgress(10);
+		await new Promise((r$1) => setTimeout(r$1, 600));
+		setProgress(40);
+		const data = generateSeederData();
+		await new Promise((r$1) => setTimeout(r$1, 600));
+		setProgress(80);
+		seedDatabase(data);
+		await new Promise((r$1) => setTimeout(r$1, 400));
+		setProgress(100);
+		toast$2({
+			title: "Simulation Data Generated",
+			description: "Successfully injected thousands of records across all PM entities."
+		});
+		setTimeout(() => {
+			setIsGenerating(false);
+			setProgress(0);
+		}, 1500);
+	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col gap-6 p-6 max-w-4xl mx-auto",
+		className: "flex flex-col gap-6 p-6 max-w-5xl mx-auto",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 			className: "text-3xl font-bold tracking-tight text-slate-900",
-			children: "Environment Management"
+			children: "Environment & Data Factory"
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "text-muted-foreground",
-			children: "Manage bypass logic and simulate user roles for testing."
-		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "grid gap-6",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "border-slate-200",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-					className: "pb-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-						className: "flex items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-indigo-600" }), "Developer Bypass"]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "By default, the platform owner ignores all RequirePermission restrictions. You can toggle this off (Simulation Mode ON) to test the app as a regular user." })]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between p-4 bg-slate-50 border rounded-lg",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-0.5",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-							className: "text-base font-bold",
-							children: "Simulation Mode"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-slate-500",
-							children: simulationMode ? "Bypass is OFF. You are subject to UI restrictions." : "Bypass is ON. You have 100% autonomy."
+			children: "Manage bypass logic, simulate user roles, and populate realistic test data."
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Tabs, {
+			defaultValue: "simulation",
+			className: "w-full",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsList, {
+					className: "mb-6 grid w-full grid-cols-2 max-w-[400px]",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "simulation",
+						children: "Developer Bypass"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsTrigger, {
+						value: "data-factory",
+						children: "Data Factory"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+					value: "simulation",
+					className: "space-y-6 m-0",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "pb-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-indigo-600" }), "Developer Bypass"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "By default, the platform owner ignores all RequirePermission restrictions. You can toggle this off (Simulation Mode ON) to test the app as a regular user." })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between p-4 bg-slate-50 border rounded-lg",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-0.5",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+									className: "text-base font-bold",
+									children: "Simulation Mode"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-sm text-slate-500",
+									children: simulationMode ? "Bypass is OFF. You are subject to UI restrictions." : "Bypass is ON. You have 100% autonomy."
+								})]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+								checked: simulationMode,
+								onCheckedChange: (checked) => {
+									setSimulationMode(checked);
+									if (checked && !simulationRole) setSimulationRole("tenant");
+								}
+							})]
+						}) })]
+					}), simulationMode && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-orange-200 bg-orange-50/50 shadow-sm animate-in fade-in slide-in-from-top-4",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "pb-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+								className: "flex items-center gap-2 text-orange-800",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TestTube, { className: "h-5 w-5" }), "Simulate Role"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+								className: "text-orange-700/80",
+								children: "Select which role you want to simulate. Your permissions will immediately match this role."
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "max-w-sm space-y-3",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+								className: "font-semibold text-orange-900",
+								children: "Target Role"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+								value: simulationRole || "",
+								onValueChange: (val) => setSimulationRole(val),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+									className: "bg-white border-orange-200",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a role..." })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+									value: role,
+									className: "capitalize",
+									children: role.replace("_", " ")
+								}, role)) })]
+							})]
+						}) })]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
+					value: "data-factory",
+					className: "m-0",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+						className: "border-slate-200 shadow-sm bg-white",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+							className: "pb-4 border-b",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+								className: "flex items-center gap-2 text-xl",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Database, { className: "h-6 w-6 text-trust-blue" }), "Administrative Data Seeder"]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Populate the system with realistic records across all modules (Properties, Owners, Partners, Financials, Bookings, etc.) to thoroughly test reporting and data isolation." })]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+							className: "pt-6 space-y-6",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-4 border rounded-lg bg-slate-50 flex flex-col gap-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "font-bold text-slate-900 flex items-center gap-2",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Zap, { className: "h-4 w-4 text-amber-500" }), "Generation Scope"]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+										className: "text-sm text-slate-600 space-y-1 ml-6 list-disc",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "2 Distinct PM Organizations" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "20+ Properties (Mixed STR & LTR)" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Owners, Partners & Staff Teams" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Active Tenants & Guest Bookings" }),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "400+ Financial Transactions" })
+										]
+									})]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "p-4 border rounded-lg bg-slate-50 flex flex-col justify-center items-center text-center",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "text-sm font-medium text-slate-700 mb-4",
+										children: "Ready to spin up the simulation?"
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+										onClick: handleGenerate,
+										disabled: isGenerating,
+										className: "w-full bg-trust-blue hover:bg-blue-700 text-white font-bold h-12",
+										children: isGenerating ? "Generating..." : "Generate Mock Dataset"
+									})]
+								})]
+							}), isGenerating && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "space-y-2 animate-in fade-in",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex justify-between text-sm font-medium text-slate-600",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Injecting Records..." }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [progress, "%"] })]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Progress, {
+									value: progress,
+									className: "h-2"
+								})]
+							})]
 						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
-						checked: simulationMode,
-						onCheckedChange: (checked) => {
-							setSimulationMode(checked);
-							if (checked && !simulationRole) setSimulationRole("tenant");
-						}
-					})]
-				}) })]
-			}), simulationMode && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-				className: "border-orange-200 bg-orange-50/50 shadow-sm animate-in fade-in slide-in-from-top-4",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-					className: "pb-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-						className: "flex items-center gap-2 text-orange-800",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TestTube, { className: "h-5 w-5" }), "Simulate Role"]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
-						className: "text-orange-700/80",
-						children: "Select which role you want to simulate. Your permissions will immediately match this role."
-					})]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "max-w-sm space-y-3",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
-						className: "font-semibold text-orange-900",
-						children: "Target Role"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-						value: simulationRole || "",
-						onValueChange: (val) => setSimulationRole(val),
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
-							className: "bg-white border-orange-200",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a role..." })
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-							value: role,
-							className: "capitalize",
-							children: role.replace("_", " ")
-						}, role)) })]
-					})]
-				}) })]
-			})]
+					})
+				})
+			]
 		})]
 	});
 }
@@ -82238,4 +82628,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-cgjvCTKH.js.map
+//# sourceMappingURL=index-B8bzZNNB.js.map
