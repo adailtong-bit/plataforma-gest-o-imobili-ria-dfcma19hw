@@ -81316,21 +81316,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
 	const isDeveloperBypass = currentUser?.role === "platform_owner" || currentUser?.role === "admin" || currentUser?.role === "super_admin";
-	const isSoftwareTenant = currentUser?.role === "software_tenant";
-	if (isDeveloperBypass) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
-	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-			className: "text-xl font-medium text-slate-700",
-			children: "Verifying access..."
-		})]
-	});
-	if (!isAuthenticated || !currentUser) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
-		to: "/login",
-		state: { from: location },
-		replace: true
-	});
-	const allowed = isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action);
+	const allowed = currentUser?.role === "software_tenant" ? true : currentUser ? hasPermissionSync(currentUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
 		if (!allowed && !hasAlerted && !isDeveloperBypass && !isAuthLoading && isAuthenticated && currentUser) {
 			if (![
@@ -81357,6 +81343,19 @@ function RequirePermission({ children, resource, action = "view" }) {
 		isAuthenticated,
 		isDeveloperBypass
 	]);
+	if (isDeveloperBypass) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
+	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-xl font-medium text-slate-700",
+			children: "Verifying access..."
+		})]
+	});
+	if (!isAuthenticated || !currentUser) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+		to: "/login",
+		state: { from: location },
+		replace: true
+	});
 	if (!allowed) {
 		if ([
 			"tenant",
@@ -81937,4 +81936,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-D6ZfiObd.js.map
+//# sourceMappingURL=index-C7MMO_5a.js.map

@@ -80,31 +80,11 @@ export function RequirePermission({
 
   const isSoftwareTenant = currentUser?.role === 'software_tenant'
 
-  // 1. Developer Absolute Access Override
-  if (isDeveloperBypass) {
-    return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
-  }
-
-  // 2. Loading State Integrity -> Wait for session if not Developer
-  if (isAuthLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
-        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <h2 className="text-xl font-medium text-slate-700">
-          Verifying access...
-        </h2>
-      </div>
-    )
-  }
-
-  // 3. Not Authenticated -> Redirect to Login
-  if (!isAuthenticated || !currentUser) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-
   const allowed = isSoftwareTenant
     ? true
-    : hasPermissionSync(currentUser as User, resource, action)
+    : currentUser
+      ? hasPermissionSync(currentUser as User, resource, action)
+      : false
 
   useEffect(() => {
     if (
@@ -143,6 +123,28 @@ export function RequirePermission({
     isAuthenticated,
     isDeveloperBypass,
   ])
+
+  // 1. Developer Absolute Access Override
+  if (isDeveloperBypass) {
+    return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
+  }
+
+  // 2. Loading State Integrity -> Wait for session if not Developer
+  if (isAuthLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        <h2 className="text-xl font-medium text-slate-700">
+          Verifying access...
+        </h2>
+      </div>
+    )
+  }
+
+  // 3. Not Authenticated -> Redirect to Login
+  if (!isAuthenticated || !currentUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
 
   // 4. Block access if not allowed
   if (!allowed) {
