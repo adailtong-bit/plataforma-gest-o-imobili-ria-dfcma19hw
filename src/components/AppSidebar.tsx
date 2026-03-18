@@ -33,6 +33,8 @@ import {
   MapPin,
   Hotel,
   MoonStar,
+  MonitorPlay,
+  ShieldCheck,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
@@ -42,7 +44,7 @@ import { NavUser } from '@/components/NavUser'
 
 export function AppSidebar() {
   const location = useLocation()
-  const { currentUser, checkPermission, hasPermissionSync } = useAuthStore()
+  const { currentUser, hasPermissionSync } = useAuthStore()
   const { t } = useLanguageStore()
 
   const getTitle = (key: string, fallback: string) => {
@@ -244,6 +246,20 @@ export function AppSidebar() {
       icon: Zap,
       resource: 'automation',
     },
+    {
+      title: getTitle('sidebar.audit_panel', 'Audit Panel'),
+      url: '/admin/audit',
+      icon: ShieldCheck,
+      resource: 'audit_logs',
+      roles: ['platform_owner'],
+    },
+    {
+      title: getTitle('sidebar.environment', 'Environment'),
+      url: '/admin/environment',
+      icon: MonitorPlay,
+      resource: 'settings',
+      roles: ['platform_owner'],
+    },
   ]
 
   const portalItems = [
@@ -285,15 +301,30 @@ export function AppSidebar() {
     hasPermissionSync(currentUser as any, item.resource as any, 'view'),
   )
 
-  const filteredSystem = systemItems.filter((item) =>
-    hasPermissionSync(currentUser as any, item.resource as any, 'view'),
-  )
+  const filteredSystem = systemItems.filter((item) => {
+    if (item.roles && currentUser?.role === 'platform_owner') {
+      return true
+    }
+    const hasPerm = hasPermissionSync(
+      currentUser as any,
+      item.resource as any,
+      'view',
+    )
+    if (
+      item.roles &&
+      (!currentUser || !item.roles.includes(currentUser.role))
+    ) {
+      return false
+    }
+    return hasPerm
+  })
 
-  const isPortalUser =
-    currentUser?.role === 'tenant' ||
-    currentUser?.role === 'property_owner' ||
-    currentUser?.role === 'partner' ||
-    currentUser?.role === 'partner_employee'
+  const isPortalUser = [
+    'tenant',
+    'property_owner',
+    'partner',
+    'partner_employee',
+  ].includes(currentUser?.role || '')
 
   const activePortalItem = portalItems.find(
     (item) => item.role === currentUser?.role,

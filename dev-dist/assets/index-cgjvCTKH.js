@@ -19650,6 +19650,28 @@ var MessageSquare = createLucideIcon("message-square", [["path", {
 	d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
 	key: "18887p"
 }]]);
+var MonitorPlay = createLucideIcon("monitor-play", [
+	["path", {
+		d: "M15.033 9.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56V7.648a.645.645 0 0 1 .967-.56z",
+		key: "vbtd3f"
+	}],
+	["path", {
+		d: "M12 17v4",
+		key: "1riwvh"
+	}],
+	["path", {
+		d: "M8 21h8",
+		key: "1ev6f3"
+	}],
+	["rect", {
+		x: "2",
+		y: "3",
+		width: "20",
+		height: "14",
+		rx: "2",
+		key: "x3v2xh"
+	}]
+]);
 var MoonStar = createLucideIcon("moon-star", [
 	["path", {
 		d: "M18 5h4",
@@ -19899,6 +19921,20 @@ var Tag = createLucideIcon("tag", [["path", {
 	fill: "currentColor",
 	key: "kqv944"
 }]]);
+var TestTube = createLucideIcon("test-tube", [
+	["path", {
+		d: "M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5c-1.4 0-2.5-1.1-2.5-2.5V2",
+		key: "125lnx"
+	}],
+	["path", {
+		d: "M8.5 2h7",
+		key: "csnxdl"
+	}],
+	["path", {
+		d: "M14.5 16h-5",
+		key: "1ox875"
+	}]
+]);
 var Trash2 = createLucideIcon("trash-2", [
 	["path", {
 		d: "M10 11v6",
@@ -27679,9 +27715,28 @@ const messages = [{
 	history: [],
 	organizationId: "org_acme"
 }];
+const auditLogs = [{
+	id: "al1",
+	timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+	userId: "user1",
+	userName: "Platform Admin",
+	action: "login",
+	entity: "Authentication",
+	details: "User logged into the system.",
+	organizationId: "sys"
+}, {
+	id: "al2",
+	timestamp: (/* @__PURE__ */ new Date(Date.now() - 36e5)).toISOString(),
+	userId: "user2",
+	userName: "Acme Property Management",
+	action: "update",
+	entity: "Property",
+	entityId: "p1",
+	details: "Updated listing price for Villa 101.",
+	organizationId: "org_acme"
+}];
 const defaultPaymentIntegrations = [];
 const mockBankStatements = [];
-const auditLogs = [];
 const genericServiceRates = [];
 const notifications = [];
 const advertisements = [];
@@ -31046,6 +31101,8 @@ const AppProvider = ({ children }) => {
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
+	const [simulationMode, setSimulationMode] = (0, import_react.useState)(false);
+	const [simulationRole, setSimulationRole] = (0, import_react.useState)(null);
 	const [currentUserObj, setCurrentUserObj] = (0, import_react.useState)(() => getInitialUser());
 	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(() => {
 		const user = getInitialUser();
@@ -31620,6 +31677,10 @@ const AppProvider = ({ children }) => {
 			updateRolePermissions,
 			checkPermission,
 			hasPermissionSync,
+			simulationMode,
+			setSimulationMode,
+			simulationRole,
+			setSimulationRole,
 			setLanguage,
 			setSelectedPropertyId,
 			t,
@@ -34355,7 +34416,11 @@ var useAuthStore = () => {
 		checkPermission: context.checkPermission,
 		rolePermissions: context.rolePermissions,
 		updateRolePermissions: context.updateRolePermissions,
-		hasPermissionSync: context.hasPermissionSync
+		hasPermissionSync: context.hasPermissionSync,
+		simulationMode: context.simulationMode,
+		setSimulationMode: context.setSimulationMode,
+		simulationRole: context.simulationRole,
+		setSimulationRole: context.setSimulationRole
 	};
 };
 var useAuthStore_default = useAuthStore;
@@ -38541,7 +38606,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$59({ inst: {
+			cachedValue = useState$60({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -38578,7 +38643,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$59 = React$67.useState, useEffect$27 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$67 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$60 = React$67.useState, useEffect$27 = React$67.useEffect, useLayoutEffect$2 = React$67.useLayoutEffect, useDebugValue = React$67.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$67.useSyncExternalStore ? React$67.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -39069,7 +39134,7 @@ function NavUser({ user }) {
 }
 function AppSidebar() {
 	const location = useLocation();
-	const { currentUser, checkPermission, hasPermissionSync } = useAuthStore_default();
+	const { currentUser, hasPermissionSync } = useAuthStore_default();
 	const { t } = useLanguageStore_default();
 	const getTitle = (key, fallback) => {
 		const text = t(key);
@@ -39266,6 +39331,20 @@ function AppSidebar() {
 			url: "/admin/automation",
 			icon: Zap,
 			resource: "automation"
+		},
+		{
+			title: getTitle("sidebar.audit_panel", "Audit Panel"),
+			url: "/admin/audit",
+			icon: ShieldCheck,
+			resource: "audit_logs",
+			roles: ["platform_owner"]
+		},
+		{
+			title: getTitle("sidebar.environment", "Environment"),
+			url: "/admin/environment",
+			icon: MonitorPlay,
+			resource: "settings",
+			roles: ["platform_owner"]
 		}
 	];
 	const portalItems = [
@@ -39300,8 +39379,18 @@ function AppSidebar() {
 	];
 	const filteredMain = mainNavItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
 	const filteredOps = operationsItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
-	const filteredSystem = systemItems.filter((item) => hasPermissionSync(currentUser, item.resource, "view"));
-	const isPortalUser = currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee";
+	const filteredSystem = systemItems.filter((item) => {
+		if (item.roles && currentUser?.role === "platform_owner") return true;
+		const hasPerm = hasPermissionSync(currentUser, item.resource, "view");
+		if (item.roles && (!currentUser || !item.roles.includes(currentUser.role))) return false;
+		return hasPerm;
+	});
+	const isPortalUser = [
+		"tenant",
+		"property_owner",
+		"partner",
+		"partner_employee"
+	].includes(currentUser?.role || "");
 	const activePortalItem = portalItems.find((item) => item.role === currentUser?.role);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Sidebar, {
 		className: "bg-slate-900 border-r-slate-800 text-slate-300",
@@ -39463,12 +39552,37 @@ function AppSidebar() {
 	});
 }
 function DashboardLayout() {
+	const { simulationMode, simulationRole, setSimulationMode } = useAuthStore_default();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TooltipProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarProvider, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppSidebar, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SidebarInset, {
-		className: "flex flex-col min-h-screen bg-slate-50",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppHeader, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
-			className: "flex-1 p-6 overflow-auto",
-			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
-		})]
+		className: "flex flex-col min-h-screen bg-slate-50 relative",
+		children: [
+			simulationMode && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "bg-orange-500 text-white px-4 py-2 flex items-center justify-center gap-4 text-sm font-medium z-50 shadow-md",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-4 w-4" }),
+						"Simulation Mode Active: Testing as",
+						" ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "capitalize",
+							children: simulationRole?.replace("_", " ")
+						})
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					size: "sm",
+					variant: "ghost",
+					className: "h-6 text-white hover:text-white/80 hover:bg-orange-600 px-2 py-0 border border-white/20",
+					onClick: () => setSimulationMode(false),
+					children: "Turn Off Bypass"
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AppHeader, {}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", {
+				className: "flex-1 p-6 overflow-auto",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
+			})
+		]
 	})] }) });
 }
 function CurrencyInput({ value, onChange, currency = "USD", locale: locale$2 = "en-US", className, ...props }) {
@@ -78066,6 +78180,172 @@ function Automation() {
 		})]
 	});
 }
+function AuditPanel() {
+	const { auditLogs: auditLogs$1 } = (0, import_react.useContext)(AppContext);
+	const [search, setSearch] = (0, import_react.useState)("");
+	const filteredLogs = auditLogs$1.filter((log$1) => log$1.userName.toLowerCase().includes(search.toLowerCase()) || log$1.action.toLowerCase().includes(search.toLowerCase()) || log$1.entity.toLowerCase().includes(search.toLowerCase())).sort((a$1, b$1) => new Date(b$1.timestamp).getTime() - new Date(a$1.timestamp).getTime());
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6 p-6 max-w-6xl mx-auto",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "text-3xl font-bold tracking-tight text-slate-900",
+				children: "Audit Panel"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-muted-foreground",
+				children: "Monitor all platform activities in real-time."
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "flex items-center gap-4",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+					placeholder: "Search by user, action, or module...",
+					value: search,
+					onChange: (e) => setSearch(e.target.value),
+					className: "max-w-sm bg-white"
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, {
+				className: "border-slate-200 shadow-sm bg-white",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, {
+					className: "p-0 overflow-auto",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, {
+						className: "bg-slate-50",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "User" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Action" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Module / Entity" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Details" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Timestamp" }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Status" })
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [filteredLogs.map((log$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, {
+						className: "hover:bg-slate-50",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "font-medium text-slate-900",
+								children: log$1.userName
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "capitalize",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+									variant: "outline",
+									children: log$1.action
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: log$1.entity }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-muted-foreground text-xs max-w-xs truncate",
+								children: log$1.details || "-"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+								className: "text-sm whitespace-nowrap",
+								children: format(new Date(log$1.timestamp), "MMM dd, yyyy HH:mm:ss")
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+								variant: "secondary",
+								className: "bg-green-100 text-green-800 hover:bg-green-200",
+								children: "Success"
+							}) })
+						]
+					}, log$1.id)), filteredLogs.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+						colSpan: 6,
+						className: "text-center py-6 text-muted-foreground",
+						children: "No activity logs found."
+					}) })] })] })
+				})
+			})
+		]
+	});
+}
+function EnvironmentManager() {
+	const { simulationMode, setSimulationMode, simulationRole, setSimulationRole, currentUser } = useAuthStore_default();
+	const roles = [
+		"software_tenant",
+		"internal_user",
+		"property_owner",
+		"partner",
+		"partner_employee",
+		"tenant"
+	];
+	if (currentUser?.role !== "platform_owner") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+		className: "p-6",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "bg-red-50 p-4 rounded-md flex items-center gap-3 text-red-800",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TriangleAlert, { className: "h-5 w-5" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "font-bold",
+				children: "Access Denied. Platform Owner only."
+			})]
+		})
+	});
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col gap-6 p-6 max-w-4xl mx-auto",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "text-3xl font-bold tracking-tight text-slate-900",
+			children: "Environment Management"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "text-muted-foreground",
+			children: "Manage bypass logic and simulate user roles for testing."
+		})] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "grid gap-6",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-slate-200",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "pb-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+						className: "flex items-center gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shield, { className: "h-5 w-5 text-indigo-600" }), "Developer Bypass"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "By default, the platform owner ignores all RequirePermission restrictions. You can toggle this off (Simulation Mode ON) to test the app as a regular user." })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center justify-between p-4 bg-slate-50 border rounded-lg",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-0.5",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+							className: "text-base font-bold",
+							children: "Simulation Mode"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm text-slate-500",
+							children: simulationMode ? "Bypass is OFF. You are subject to UI restrictions." : "Bypass is ON. You have 100% autonomy."
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Switch, {
+						checked: simulationMode,
+						onCheckedChange: (checked) => {
+							setSimulationMode(checked);
+							if (checked && !simulationRole) setSimulationRole("tenant");
+						}
+					})]
+				}) })]
+			}), simulationMode && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "border-orange-200 bg-orange-50/50 shadow-sm animate-in fade-in slide-in-from-top-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+					className: "pb-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+						className: "flex items-center gap-2 text-orange-800",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TestTube, { className: "h-5 w-5" }), "Simulate Role"]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, {
+						className: "text-orange-700/80",
+						children: "Select which role you want to simulate. Your permissions will immediately match this role."
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "max-w-sm space-y-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label, {
+						className: "font-semibold text-orange-900",
+						children: "Target Role"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: simulationRole || "",
+						onValueChange: (val) => setSimulationRole(val),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+							className: "bg-white border-orange-200",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select a role..." })
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+							value: role,
+							className: "capitalize",
+							children: role.replace("_", " ")
+						}, role)) })]
+					})]
+				}) })]
+			})]
+		})]
+	});
+}
 function ShortTerm() {
 	const { bookings: bookings$1, properties: properties$1, promotions: promotions$1, formatAppCurrency, addBooking, updateBooking, deleteBooking } = (0, import_react.useContext)(AppContext);
 	const { t } = useLanguageStore_default();
@@ -81309,22 +81589,28 @@ var PermissionErrorBoundary = class extends import_react.Component {
 		return this.props.children;
 	}
 };
-function RequirePermission({ children, resource, action = "view" }) {
-	const { currentUser, isAuthenticated, hasPermissionSync, isAuthLoading } = useAuthStore_default();
+function RequirePermission({ children, resource, action = "view", ignoreSimulation = false }) {
+	const { currentUser, isAuthenticated, hasPermissionSync, isAuthLoading, simulationMode, simulationRole } = useAuthStore_default();
 	const location = useLocation();
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const isDeveloperBypass = currentUser?.role === "platform_owner" || currentUser?.role === "admin" || currentUser?.role === "super_admin";
-	const allowed = currentUser?.role === "software_tenant" ? true : currentUser ? hasPermissionSync(currentUser, resource, action) : false;
+	const isDeveloperBypass = (currentUser?.role === "platform_owner" || currentUser?.role === "admin" || currentUser?.role === "super_admin") && (!simulationMode || ignoreSimulation);
+	const effectiveUser = simulationMode && simulationRole && !ignoreSimulation ? {
+		...currentUser,
+		role: simulationRole,
+		permissions: []
+	} : currentUser;
+	const isSoftwareTenant = effectiveUser?.role === "software_tenant";
+	const allowed = isDeveloperBypass ? true : isSoftwareTenant ? true : effectiveUser ? hasPermissionSync(effectiveUser, resource, action) : false;
 	(0, import_react.useEffect)(() => {
-		if (!allowed && !hasAlerted && !isDeveloperBypass && !isAuthLoading && isAuthenticated && currentUser) {
+		if (!allowed && !hasAlerted && !isDeveloperBypass && !isAuthLoading && isAuthenticated && effectiveUser) {
 			if (![
 				"tenant",
 				"property_owner",
 				"partner",
 				"partner_employee"
-			].includes(currentUser?.role || "")) {
+			].includes(effectiveUser?.role || "")) {
 				toast$2({
 					title: t("common.access_denied") || "Access Denied",
 					description: t("common.access_denied_desc") || "You do not have permission to view this page.",
@@ -81338,7 +81624,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 		hasAlerted,
 		toast$2,
 		t,
-		currentUser,
+		effectiveUser,
 		isAuthLoading,
 		isAuthenticated,
 		isDeveloperBypass
@@ -81351,7 +81637,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 			children: "Verifying access..."
 		})]
 	});
-	if (!isAuthenticated || !currentUser) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+	if (!isAuthenticated || !effectiveUser) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 		to: "/login",
 		state: { from: location },
 		replace: true
@@ -81362,8 +81648,8 @@ function RequirePermission({ children, resource, action = "view" }) {
 			"property_owner",
 			"partner",
 			"partner_employee"
-		].includes(currentUser?.role || "")) {
-			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
+		].includes(effectiveUser?.role || "")) {
+			const portalPath = effectiveUser.role === "property_owner" ? "/portal/owner" : effectiveUser.role === "partner" || effectiveUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
 			if (!location.pathname.startsWith(portalPath)) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 				to: portalPath,
 				replace: true
@@ -81403,7 +81689,7 @@ function RequirePermission({ children, resource, action = "view" }) {
 						resource,
 						" | Role:",
 						" ",
-						currentUser ? t(`roles.${currentUser.role}`) || currentUser.role : "Unknown"
+						effectiveUser ? t(`roles.${effectiveUser.role}`) || effectiveUser.role : "Unknown"
 					]
 				})
 			]
@@ -81902,6 +82188,22 @@ var App = () => {
 								})
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/admin/audit",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "audit_logs",
+									ignoreSimulation: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuditPanel, {})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
+								path: "/admin/environment",
+								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
+									resource: "audit_logs",
+									ignoreSimulation: true,
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EnvironmentManager, {})
+								})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Route, {
 								path: "/portal/tenant",
 								element: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RequirePermission, {
 									resource: "portal",
@@ -81936,4 +82238,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-C7MMO_5a.js.map
+//# sourceMappingURL=index-cgjvCTKH.js.map

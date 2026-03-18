@@ -56,35 +56,49 @@ interface RequirePermissionProps {
   children: JSX.Element
   resource: Resource
   action?: Action
+  ignoreSimulation?: boolean
 }
 
 export function RequirePermission({
   children,
   resource,
   action = 'view',
+  ignoreSimulation = false,
 }: RequirePermissionProps) {
-  const { currentUser, isAuthenticated, hasPermissionSync, isAuthLoading } =
-    useAuthStore()
+  const {
+    currentUser,
+    isAuthenticated,
+    hasPermissionSync,
+    isAuthLoading,
+    simulationMode,
+    simulationRole,
+  } = useAuthStore()
   const location = useLocation()
   const { toast } = useToast()
   const { t } = useLanguageStore()
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  // DEVELOPER / PLATFORM OWNER BYPASS - Absolute Top Level Priority
-  // Role Isolation: the developer account bypasses everything inherently.
   const isDeveloperBypass =
-    currentUser?.role === 'platform_owner' ||
-    currentUser?.role === 'admin' ||
-    currentUser?.role === 'super_admin'
+    (currentUser?.role === 'platform_owner' ||
+      currentUser?.role === 'admin' ||
+      currentUser?.role === 'super_admin') &&
+    (!simulationMode || ignoreSimulation)
 
-  const isSoftwareTenant = currentUser?.role === 'software_tenant'
+  const effectiveUser =
+    simulationMode && simulationRole && !ignoreSimulation
+      ? ({ ...currentUser, role: simulationRole, permissions: [] } as User)
+      : (currentUser as User)
 
-  const allowed = isSoftwareTenant
+  const isSoftwareTenant = effectiveUser?.role === 'software_tenant'
+
+  const allowed = isDeveloperBypass
     ? true
-    : currentUser
-      ? hasPermissionSync(currentUser as User, resource, action)
-      : false
+    : isSoftwareTenant
+      ? true
+      : effectiveUser
+        ? hasPermissionSync(effectiveUser, resource, action)
+        : false
 
   useEffect(() => {
     if (
@@ -93,14 +107,14 @@ export function RequirePermission({
       !isDeveloperBypass &&
       !isAuthLoading &&
       isAuthenticated &&
-      currentUser
+      effectiveUser
     ) {
       const isPortalUser = [
         'tenant',
         'property_owner',
         'partner',
         'partner_employee',
-      ].includes(currentUser?.role || '')
+      ].includes(effectiveUser?.role || '')
 
       if (!isPortalUser) {
         toast({
@@ -118,18 +132,16 @@ export function RequirePermission({
     hasAlerted,
     toast,
     t,
-    currentUser,
+    effectiveUser,
     isAuthLoading,
     isAuthenticated,
     isDeveloperBypass,
   ])
 
-  // 1. Developer Absolute Access Override
   if (isDeveloperBypass) {
     return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
   }
 
-  // 2. Loading State Integrity -> Wait for session if not Developer
   if (isAuthLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
@@ -141,26 +153,24 @@ export function RequirePermission({
     )
   }
 
-  // 3. Not Authenticated -> Redirect to Login
-  if (!isAuthenticated || !currentUser) {
+  if (!isAuthenticated || !effectiveUser) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  // 4. Block access if not allowed
   if (!allowed) {
     const isPortalUser = [
       'tenant',
       'property_owner',
       'partner',
       'partner_employee',
-    ].includes(currentUser?.role || '')
+    ].includes(effectiveUser?.role || '')
 
     if (isPortalUser) {
       const portalPath =
-        currentUser.role === 'property_owner'
+        effectiveUser.role === 'property_owner'
           ? '/portal/owner'
-          : currentUser.role === 'partner' ||
-              currentUser.role === 'partner_employee'
+          : effectiveUser.role === 'partner' ||
+              effectiveUser.role === 'partner_employee'
             ? '/portal/partner'
             : '/portal/tenant'
 
@@ -194,8 +204,8 @@ export function RequirePermission({
         </div>
         <p className="text-xs text-muted-foreground mt-8">
           Resource: {resource} | Role:{' '}
-          {currentUser
-            ? t(`roles.${currentUser.role}`) || currentUser.role
+          {effectiveUser
+            ? t(`roles.${effectiveUser.role}`) || effectiveUser.role
             : 'Unknown'}
         </p>
       </div>

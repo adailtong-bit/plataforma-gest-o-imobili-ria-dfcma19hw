@@ -39,6 +39,8 @@ import PublicityAdmin from '@/pages/admin/PublicityAdmin'
 import MigrationHub from '@/pages/admin/MigrationHub'
 import Analytics from '@/pages/admin/Analytics'
 import Automation from '@/pages/admin/Automation'
+import AuditPanel from '@/pages/admin/AuditPanel'
+import EnvironmentManager from '@/pages/admin/EnvironmentManager'
 import ShortTerm from '@/pages/ShortTerm'
 import Reports from '@/pages/Reports'
 import Visits from '@/pages/Visits'
@@ -424,6 +426,22 @@ const App = () => {
                   element={
                     <RequirePermission resource="automation">
                       <Automation />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/admin/audit"
+                  element={
+                    <RequirePermission resource="audit_logs" ignoreSimulation>
+                      <AuditPanel />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="/admin/environment"
+                  element={
+                    <RequirePermission resource="audit_logs" ignoreSimulation>
+                      <EnvironmentManager />
                     </RequirePermission>
                   }
                 />

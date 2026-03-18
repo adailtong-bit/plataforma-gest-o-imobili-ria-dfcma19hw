@@ -17,6 +17,10 @@ const useAuthStore = () => {
     rolePermissions: context.rolePermissions,
     updateRolePermissions: context.updateRolePermissions,
     hasPermissionSync: context.hasPermissionSync,
+    simulationMode: context.simulationMode,
+    setSimulationMode: context.setSimulationMode,
+    simulationRole: context.simulationRole,
+    setSimulationRole: context.setSimulationRole,
   }
 }
 

@@ -176,6 +176,11 @@ interface AppContextType {
   ) => Promise<boolean>
   hasPermissionSync: (user: User, resource: Resource, action: Action) => boolean
 
+  simulationMode: boolean
+  setSimulationMode: (mode: boolean) => void
+  simulationRole: UserRole | null
+  setSimulationRole: (role: UserRole | null) => void
+
   setLanguage: (lang: Language) => void
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
@@ -480,6 +485,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
+
+  const [simulationMode, setSimulationMode] = useState(false)
+  const [simulationRole, setSimulationRole] = useState<UserRole | null>(null)
 
   const [currentUserObj, setCurrentUserObj] = useState<
     User | Owner | Partner | Tenant | null
@@ -1393,6 +1401,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateRolePermissions,
         checkPermission,
         hasPermissionSync,
+        simulationMode,
+        setSimulationMode,
+        simulationRole,
+        setSimulationRole,
         setLanguage,
         setSelectedPropertyId,
         t,

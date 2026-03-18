@@ -316,9 +316,32 @@ export const messages: Message[] = [
   },
 ]
 
+export const auditLogs: AuditLog[] = [
+  {
+    id: 'al1',
+    timestamp: new Date().toISOString(),
+    userId: 'user1',
+    userName: 'Platform Admin',
+    action: 'login',
+    entity: 'Authentication',
+    details: 'User logged into the system.',
+    organizationId: 'sys',
+  },
+  {
+    id: 'al2',
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+    userId: 'user2',
+    userName: 'Acme Property Management',
+    action: 'update',
+    entity: 'Property',
+    entityId: 'p1',
+    details: 'Updated listing price for Villa 101.',
+    organizationId: 'org_acme',
+  },
+]
+
 export const defaultPaymentIntegrations: PaymentIntegration[] = []
 export const mockBankStatements: BankStatement[] = []
-export const auditLogs: AuditLog[] = []
 export const genericServiceRates: ServiceRate[] = []
 export const notifications: Notification[] = []
 export const advertisements: Advertisement[] = []
