@@ -335,9 +335,11 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 pt-6 pb-2 shrink-0">
         <Logo className="w-32 mx-auto text-white mb-2" />
         <div className="text-center mt-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
-            {t(`roles.${currentUser?.role}`) || currentUser?.role}
-          </span>
+          {currentUser && (
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
+              {t(`roles.${currentUser.role}`) || currentUser.role}
+            </span>
+          )}
         </div>
       </SidebarHeader>
 
@@ -369,7 +371,7 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 )}
                 {/* Specific items for Owners */}
-                {currentUser.role === 'property_owner' && (
+                {currentUser?.role === 'property_owner' && (
                   <>
                     <SidebarMenuItem>
                       <SidebarMenuButton
@@ -402,7 +404,7 @@ export function AppSidebar() {
                   </>
                 )}
                 {/* Specific items for Tenants */}
-                {currentUser.role === 'tenant' && (
+                {currentUser?.role === 'tenant' && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -419,8 +421,8 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 )}
                 {/* Specific items for Partners */}
-                {(currentUser.role === 'partner' ||
-                  currentUser.role === 'partner_employee') && (
+                {(currentUser?.role === 'partner' ||
+                  currentUser?.role === 'partner_employee') && (
                   <>
                     <SidebarMenuItem>
                       <SidebarMenuButton

@@ -27,7 +27,7 @@ import { usePrivacyStore } from '@/stores/usePrivacyStore'
 
 export function AppHeader() {
   const { language, setLanguage, t } = useLanguageStore()
-  const { currentUser, allUsers, setCurrentUser } = useAuthStore()
+  const { currentUser, allUsers, setCurrentUser, logout } = useAuthStore()
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
   const { selectedPropertyId, setSelectedPropertyId, properties } =
@@ -175,10 +175,10 @@ export function AppHeader() {
               <Avatar className="h-9 w-9">
                 <AvatarImage
                   src={currentUser?.avatar}
-                  alt={currentUser?.name}
+                  alt={currentUser?.name || 'User'}
                 />
                 <AvatarFallback className="bg-trust-blue text-white text-xs">
-                  {currentUser?.name?.charAt(0)}
+                  {currentUser?.name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -187,10 +187,12 @@ export function AppHeader() {
             <DropdownMenuLabel className="font-normal border-b pb-2 mb-2">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-bold leading-none text-slate-900">
-                  {currentUser?.name}
+                  {currentUser?.name || 'Guest'}
                 </p>
                 <p className="text-xs leading-none text-slate-500 font-medium">
-                  {t(`roles.${currentUser?.role}`) || currentUser?.role}
+                  {currentUser
+                    ? t(`roles.${currentUser.role}`) || currentUser.role
+                    : ''}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -263,6 +265,7 @@ export function AppHeader() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
+                logout()
                 navigate('/login')
               }}
               className="text-red-600 focus:bg-red-50 focus:text-red-700 font-medium cursor-pointer"
