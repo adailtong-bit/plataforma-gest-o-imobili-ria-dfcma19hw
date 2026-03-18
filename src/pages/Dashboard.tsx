@@ -1,6 +1,17 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { useContext } from 'react'
+import { AppContext } from '@/stores/AppContext'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Dashboard() {
+  const { properties, tenants, financials } = useContext(AppContext)!
+
+  const totalRevenue = financials.invoices
+    .filter((i) => i.status === 'paid')
+    .reduce((acc, i) => acc + i.amount, 0)
+
+  const activeTenants = tenants.filter((t) => t.status === 'active').length
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -12,7 +23,9 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(totalRevenue)}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -22,7 +35,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{properties.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -32,7 +45,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
+            <div className="text-2xl font-bold">{activeTenants}</div>
           </CardContent>
         </Card>
       </div>

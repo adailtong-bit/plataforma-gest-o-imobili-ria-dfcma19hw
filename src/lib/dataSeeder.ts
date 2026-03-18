@@ -25,22 +25,70 @@ export function generateSeederData() {
 
   const pms = [
     {
-      id: 'org_seed_1',
-      name: 'Stellar Management',
-      email: 'admin@stellar.com',
+      id: `org_seed_${Date.now()}_1`,
+      name: 'Simulated Horizon Management',
+      email: 'admin@simhorizon.com',
     },
     {
-      id: 'org_seed_2',
-      name: 'Horizon Properties',
-      email: 'admin@horizon.com',
+      id: `org_seed_${Date.now()}_2`,
+      name: 'Simulated Stellar Properties',
+      email: 'admin@simstellar.com',
     },
   ]
 
-  pms.forEach((pm) => {
+  const firstNames = [
+    'Emma',
+    'Liam',
+    'Olivia',
+    'Noah',
+    'Ava',
+    'Oliver',
+    'Sophia',
+    'Elijah',
+    'Isabella',
+    'James',
+    'Mia',
+    'William',
+    'Charlotte',
+    'Benjamin',
+    'Amelia',
+    'Lucas',
+    'Harper',
+    'Henry',
+    'Evelyn',
+    'Theodore',
+  ]
+  const lastNames = [
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
+  ]
+
+  const getRandomName = (seed: number) =>
+    `${firstNames[seed % firstNames.length]} ${lastNames[(seed * 3) % lastNames.length]}`
+
+  pms.forEach((pm, pmIdx) => {
     // 1. PM Admin
     data.users.push({
       id: `u_${pm.id}_admin`,
-      name: pm.name,
+      name: `${pm.name} Admin`,
       email: pm.email,
       role: 'software_tenant',
       organizationId: pm.id,
@@ -49,7 +97,7 @@ export function generateSeederData() {
       companyName: pm.name,
     })
 
-    // 2. Team, Owners, Partners, Tenants (5 each)
+    // 2. Team, Owners, Partners, Tenants (10 each)
     for (let i = 0; i < 5; i++) {
       data.users.push({
         id: `u_${pm.id}_team_${i}`,
@@ -60,49 +108,65 @@ export function generateSeederData() {
         isFirstLogin: false,
         status: 'active',
       })
+    }
+
+    for (let i = 0; i < 10; i++) {
       data.owners.push({
         id: `o_${pm.id}_${i}`,
-        name: `Owner ${i} ${pm.name}`,
-        email: `o${i}@${pm.id}.com`,
+        name: getRandomName(pmIdx * 100 + i),
+        email: `owner${i}@${pm.id}.com`,
         phone: `555-010${i}`,
         role: 'property_owner',
         status: 'active',
         organizationId: pm.id,
       })
+
       data.partners.push({
         id: `p_${pm.id}_${i}`,
-        name: `Partner ${i} ${pm.name}`,
+        name: `${i % 2 === 0 ? 'Cleaning' : 'Maintenance'} Crew ${i} - ${pm.name}`,
         type: i % 2 === 0 ? 'cleaning' : 'maintenance',
-        email: `p${i}@${pm.id}.com`,
+        email: `partner${i}@${pm.id}.com`,
         phone: `555-020${i}`,
         role: 'partner',
         status: 'active',
         organizationId: pm.id,
       })
+
+      const leaseStart = new Date()
+      leaseStart.setMonth(leaseStart.getMonth() - (12 + (i % 6)))
+      const leaseEnd = new Date(leaseStart)
+      leaseEnd.setFullYear(leaseEnd.getFullYear() + 1)
+
       data.tenants.push({
         id: `t_${pm.id}_${i}`,
-        name: `Tenant ${i} ${pm.name}`,
-        email: `t${i}@${pm.id}.com`,
+        name: getRandomName(pmIdx * 200 + i),
+        email: `tenant${i}@${pm.id}.com`,
         phone: `555-030${i}`,
         role: 'tenant',
         status: 'active',
-        rentValue: 2000 + i * 100,
-        leaseEnd: new Date(Date.now() + 86400000 * 180).toISOString(),
+        rentValue: 1500 + i * 150,
+        leaseStart: leaseStart.toISOString(),
+        leaseEnd: leaseEnd.toISOString(),
         organizationId: pm.id,
+        negotiationStatus:
+          leaseEnd.getTime() < Date.now() + 60 * 86400000
+            ? 'negotiating'
+            : undefined,
+        suggestedRenewalPrice: 1500 + i * 150 + 100,
       })
     }
 
-    // 3. Properties & Transactions (10 properties per PM, 25+ movements each)
-    for (let i = 0; i < 10; i++) {
-      const isStr = i < 5
+    // 3. Properties & Transactions (20 properties per PM, 25+ movements each)
+    for (let i = 0; i < 20; i++) {
+      const isStr = i < 10
       const pid = `prop_${pm.id}_${i}`
-      const ownerId = `o_${pm.id}_${i % 5}`
-      const partnerId = `p_${pm.id}_${i % 5}`
+      const ownerId = `o_${pm.id}_${i % 10}`
+      const partnerId = `p_${pm.id}_${i % 10}`
 
       data.properties.push({
         id: pid,
-        name: `${isStr ? 'Vacation Home' : 'Residential Apt'} ${i + 1}`,
-        address: `100${i} Simulation St`,
+        name: `${isStr ? 'Vacation Villa' : 'Residential Apt'} ${i + 1}`,
+        address: `100${i} Simulation Blvd`,
         city: 'Orlando',
         state: 'FL',
         zipCode: '32801',
@@ -110,33 +174,40 @@ export function generateSeederData() {
         type: isStr ? 'House' : 'Apartment',
         profileType: isStr ? 'short_term' : 'long_term',
         community: 'Simulated Heights',
-        status: 'rented',
-        bedrooms: 3 + (i % 2),
+        status: isStr ? 'available' : 'rented',
+        bedrooms: 3 + (i % 3),
         bathrooms: 2,
-        guests: 6,
+        guests: 6 + (i % 2) * 2,
         ownerId,
         image: `https://img.usecurling.com/p/400/300?q=${isStr ? 'house' : 'apartment'}&seed=${i + pm.id.length}`,
         organizationId: pm.id,
         listingPrice: isStr ? 250 : 2000,
       })
 
-      // Revenue Generation (15 transactions)
+      // Revenue Generation (Short-Term)
       if (isStr) {
-        for (let b = 0; b < 15; b++) {
+        for (let b = 0; b < 10; b++) {
           const bid = `bkg_${pid}_${b}`
-          const amt = 150 + b * 10
+          const amt = 250 * (3 + (b % 4)) // random nights
+
+          const checkIn = new Date()
+          checkIn.setDate(checkIn.getDate() - (b * 14 + 5))
+          const checkOut = new Date(checkIn)
+          checkOut.setDate(checkOut.getDate() + (3 + (b % 4)))
+
           data.bookings.push({
             id: bid,
             propertyId: pid,
-            propertyName: `Vacation Home ${i + 1}`,
-            guestName: `Guest ${b}`,
-            guestEmail: `g${b}@sim.com`,
-            checkIn: new Date(Date.now() - b * 86400000 * 7).toISOString(),
-            checkOut: new Date(Date.now() - b * 86400000 * 5).toISOString(),
+            propertyName: `Vacation Villa ${i + 1}`,
+            guestName: getRandomName(pmIdx * 300 + i * 10 + b),
+            guestEmail: `guest_${pmIdx}_${i}_${b}@sim.com`,
+            checkIn: checkIn.toISOString(),
+            checkOut: checkOut.toISOString(),
             status: 'checked_out',
             totalAmount: amt,
+            baseAmount: amt,
             paid: true,
-            platform: 'airbnb',
+            platform: ['airbnb', 'vrbo', 'direct', 'booking.com'][b % 4] as any,
             organizationId: pm.id,
           })
           data.invoices.push({
@@ -144,15 +215,16 @@ export function generateSeederData() {
             description: `Booking ${bid}`,
             amount: amt,
             status: 'paid',
-            date: new Date().toISOString(),
+            date: checkIn.toISOString(),
             propertyId: pid,
             bookingId: bid,
+            type: 'generic',
             organizationId: pm.id,
           })
           data.ledgerEntries.push({
             id: `le_${bid}`,
             propertyId: pid,
-            date: new Date().toISOString(),
+            date: checkIn.toISOString(),
             type: 'income',
             category: 'Booking',
             amount: amt,
@@ -162,60 +234,70 @@ export function generateSeederData() {
           })
         }
       } else {
-        const tid = `t_${pm.id}_${i % 5}`
-        for (let m = 0; m < 15; m++) {
+        // Revenue Generation (Long-Term)
+        const tenant = data.tenants[i % 10]
+        for (let m = 0; m < 12; m++) {
           const rId = `inv_r_${pid}_${m}`
-          const rAmt = 2000 + (i % 3) * 100
+          const rAmt = tenant.rentValue
+          const d = new Date()
+          d.setMonth(d.getMonth() - m)
+
           data.invoices.push({
             id: rId,
-            description: `Rent Month ${m + 1}`,
+            description: `Rent Month ${d.toLocaleString('default', { month: 'short' })}`,
             amount: rAmt,
             status: 'paid',
-            date: new Date(Date.now() - m * 86400000 * 30).toISOString(),
+            date: d.toISOString(),
             propertyId: pid,
-            toId: tid,
+            toId: tenant.id,
+            type: 'generic',
             organizationId: pm.id,
           })
           data.ledgerEntries.push({
             id: `le_r_${rId}`,
             propertyId: pid,
-            date: new Date(Date.now() - m * 86400000 * 30).toISOString(),
+            date: d.toISOString(),
             type: 'income',
             category: 'Rent',
             amount: rAmt,
-            description: 'Monthly Rent',
+            description: `Monthly Rent - ${tenant.name}`,
             status: 'cleared',
             organizationId: pm.id,
           })
         }
       }
 
-      // Expenses Generation (10 transactions)
+      // Expenses & Tasks Generation (10 transactions)
       for (let t = 0; t < 10; t++) {
         const tskId = `task_${pid}_${t}`
-        const cost = 50 + t * 10
+        const isCleaning = t % 2 === 0
+        const cost = isCleaning ? 150 : 350 + t * 20
+        const d = new Date()
+        d.setDate(d.getDate() - t * 15)
+
         data.tasks.push({
           id: tskId,
-          title: `Routine Work ${t + 1}`,
+          title: `${isCleaning ? 'Routine Cleaning' : 'Maintenance Repair'} ${t + 1}`,
           propertyId: pid,
           propertyName: `Prop ${i + 1}`,
           status: 'completed',
-          type: t % 2 === 0 ? 'maintenance' : 'cleaning',
-          assignee: `Partner ${i % 5}`,
+          type: isCleaning ? 'cleaning' : 'maintenance',
+          assignee: `Partner ${i % 10}`,
           assigneeId: partnerId,
-          date: new Date().toISOString(),
-          priority: 'medium',
+          date: d.toISOString(),
+          priority: isCleaning ? 'medium' : 'high',
           price: cost,
+          laborCost: cost * 0.7,
           organizationId: pm.id,
         })
         data.ledgerEntries.push({
           id: `le_t_${tskId}`,
           propertyId: pid,
-          date: new Date().toISOString(),
+          date: d.toISOString(),
           type: 'expense',
-          category: t % 2 === 0 ? 'Maintenance' : 'Cleaning',
+          category: isCleaning ? 'Cleaning' : 'Maintenance',
           amount: cost,
-          description: 'Routine service cost',
+          description: `Service cost - ${isCleaning ? 'Cleaning' : 'Maintenance'}`,
           status: 'cleared',
           organizationId: pm.id,
         })

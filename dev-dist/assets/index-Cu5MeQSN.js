@@ -27447,340 +27447,738 @@ var CardFooter = import_react.forwardRef(({ className, ...props }, ref) => /* @_
 	...props
 }));
 CardFooter.displayName = "CardFooter";
-const mockAdvertisers = [{
-	id: "adv1",
-	name: "Home Services LLC",
-	email: "contact@homeservices.com",
-	phone: "555-1234",
-	address: "123 Main St",
-	createdAt: "2023-01-01T00:00:00Z"
-}, {
-	id: "adv2",
-	name: "Orlando Cleaners",
-	email: "sales@orlandoclean.com",
-	phone: "555-5678",
-	address: "456 Oak Ave",
-	createdAt: "2023-02-15T00:00:00Z"
-}];
-const mockAdPricing = {
-	weekly: 50,
-	biWeekly: 90,
-	monthly: 150,
-	placementModifiers: {
-		home_top: 20,
-		home_bottom: 10,
-		partner_page: 5,
-		tenant_page: 15,
-		performance: 25
-	}
-};
-const defaultFinancialSettings = {
-	companyName: "COREPM Inc",
-	ein: "12-3456789",
-	bankName: "Chase",
-	routingNumber: "122000248",
-	accountNumber: "1234567890",
-	gatewayProvider: "stripe",
-	gateways: {
-		stripe: { enabled: true },
-		paypal: { enabled: false },
-		mercadoPago: { enabled: false }
-	},
-	isProduction: false,
-	globalCurrency: "USD"
-};
-const systemUsers = [
-	{
+var generated = (() => {
+	const systemUsers$1 = [{
 		id: "user1",
 		name: "Platform Admin",
 		email: "admin@corepm.com",
 		role: "platform_owner",
 		status: "active",
 		isFirstLogin: false
-	},
-	{
-		id: "user2",
-		name: "Acme Property Management",
-		email: "pm@corepm.com",
-		role: "software_tenant",
-		organizationId: "org_acme",
-		status: "active",
-		isFirstLogin: false
-	},
-	{
-		id: "user3",
-		name: "Staff Member (Acme)",
-		email: "staff@corepm.com",
-		role: "internal_user",
-		organizationId: "org_acme",
-		status: "active",
-		isFirstLogin: false,
-		permissions: [{
-			resource: "properties",
-			actions: [
-				"view",
-				"create",
-				"edit",
-				"delete"
-			]
-		}, {
-			resource: "dashboard",
-			actions: ["view"]
-		}]
-	}
-];
-const condominiums = [{
-	id: "condo1",
-	name: "Sunset Villas",
-	address: "123 Sunset Blvd",
-	city: "Orlando",
-	state: "FL",
-	country: "US",
-	managerName: "Mike Johnson",
-	managerPhone: "+1 555-0192",
-	accessCredentials: {
-		gate: "1234",
-		poolCode: "9988"
-	},
-	organizationId: "org_acme"
-}];
-const hotels = [{
-	id: "hotel1",
-	name: "Grand Resort Orlando",
-	address: "1000 Resort Way",
-	city: "Orlando",
-	state: "FL",
-	zipCode: "32819",
-	country: "US",
-	managerName: "Sarah Resort",
-	towers: ["t1", "t2"],
-	organizationId: "org_acme"
-}];
-const towers = [{
-	id: "t1",
-	hotelId: "hotel1",
-	name: "North Tower",
-	floors: 15,
-	organizationId: "org_acme"
-}, {
-	id: "t2",
-	hotelId: "hotel1",
-	name: "South Tower",
-	floors: 12,
-	organizationId: "org_acme"
-}];
-const properties = [{
-	id: "p1",
-	name: "Villa 101 - Sunset Resort",
-	address: "101 Resort Way",
-	city: "Orlando",
-	state: "FL",
-	zipCode: "32819",
-	country: "US",
-	type: "House",
-	profileType: "short_term",
-	community: "Sunset Villas",
-	condominiumId: "condo1",
-	status: "available",
-	bedrooms: 4,
-	bathrooms: 3,
-	guests: 8,
-	ownerId: "owner1",
-	image: "https://img.usecurling.com/p/600/400?q=villa",
-	listingPrice: 250,
-	hoaValue: 400,
-	organizationId: "org_acme"
-}, {
-	id: "p2",
-	name: "Room 501 - Grand Resort",
-	address: "1000 Resort Way",
-	city: "Orlando",
-	state: "FL",
-	zipCode: "32819",
-	country: "US",
-	type: "Hotel Room",
-	profileType: "short_term",
-	community: "Grand Resort Orlando",
-	hotelId: "hotel1",
-	towerId: "t1",
-	roomNumber: "501",
-	status: "occupied",
-	bedrooms: 1,
-	bathrooms: 1,
-	guests: 2,
-	ownerId: "owner1",
-	image: "https://img.usecurling.com/p/600/400?q=hotel%20room",
-	listingPrice: 150,
-	hoaValue: 0,
-	organizationId: "org_acme"
-}];
-const tenants = [{
-	id: "t1",
-	name: "Alice Smith",
-	email: "alice@example.com",
-	phone: "555-0101",
-	status: "active",
-	role: "tenant",
-	rentValue: 2e3,
-	leaseEnd: "2024-12-31",
-	organizationId: "org_acme"
-}];
-const owners = [{
-	id: "owner1",
-	name: "John Investor",
-	email: "john@investor.com",
-	phone: "555-0202",
-	status: "active",
-	role: "property_owner",
-	organizationId: "org_acme"
-}];
-const partners = [{
-	id: "partner1",
-	name: "Elite Cleaning",
-	type: "cleaning",
-	email: "contact@eliteclean.com",
-	phone: "555-0303",
-	status: "active",
-	role: "partner",
-	organizationId: "org_acme"
-}];
-const tasks = [{
-	id: "task1",
-	title: "Post-Checkout Cleaning",
-	propertyId: "p1",
-	propertyName: "Villa 101 - Sunset Resort",
-	status: "pending",
-	type: "cleaning",
-	assignee: "Elite Cleaning",
-	assigneeId: "partner1",
-	date: (/* @__PURE__ */ new Date()).toISOString(),
-	priority: "high",
-	organizationId: "org_acme"
-}];
-const ledgerEntries = [{
-	id: "le1",
-	propertyId: "p1",
-	date: (/* @__PURE__ */ new Date()).toISOString(),
-	type: "income",
-	category: "Rent",
-	amount: 2500,
-	description: "Monthly Rent - Alice",
-	status: "cleared",
-	organizationId: "org_acme"
-}];
-const financials = {
-	revenue: [
+	}];
+	const properties$1 = [];
+	const condominiums$1 = [];
+	const hotels$1 = [];
+	const towers$1 = [];
+	const tenants$1 = [];
+	const owners$1 = [];
+	const partners$1 = [];
+	const tasks$1 = [];
+	const ledgerEntries$1 = [];
+	const invoices = [];
+	const payments = [];
+	const bookings$1 = [];
+	const auditLogs$1 = [];
+	const messages$1 = [];
+	const genericServiceRates$1 = [];
+	const notifications$1 = [];
+	const advertisements$1 = [];
+	const advertisers$1 = [];
+	const adPricing$1 = {
+		weekly: 50,
+		biWeekly: 90,
+		monthly: 150,
+		placementModifiers: {
+			home_top: 20,
+			home_bottom: 10,
+			partner_page: 5,
+			tenant_page: 15,
+			performance: 25
+		}
+	};
+	const calendarBlocks$1 = [];
+	const messageTemplates$1 = [];
+	const serviceCategories$1 = [];
+	const visits$1 = [];
+	const workflows$1 = [];
+	const tourSteps$1 = [];
+	const guestServices$1 = [];
+	const posItems$1 = [];
+	const posTransactions$1 = [];
+	const promotions$1 = [];
+	const campaigns$1 = [];
+	const serviceOrders$1 = [];
+	const feedbacks$1 = [];
+	const channelMappings$1 = [];
+	const marketingWorkflows$1 = [];
+	const emailTemplates$1 = [];
+	const automationRules$1 = [];
+	const mockBankStatements$1 = [];
+	const defaultPaymentIntegrations$1 = [];
+	const defaultFinancialSettings$1 = {
+		companyName: "COREPM Inc",
+		ein: "12-3456789",
+		bankName: "Chase",
+		routingNumber: "122000248",
+		accountNumber: "1234567890",
+		gatewayProvider: "stripe",
+		gateways: {
+			stripe: { enabled: true },
+			paypal: { enabled: false },
+			mercadoPago: { enabled: false }
+		},
+		isProduction: false,
+		globalCurrency: "USD"
+	};
+	const marketAnalysisData$1 = { marketTrends: [
 		{
 			month: "Jan",
-			value: 5e3
+			rate: 120,
+			occupancy: 65
 		},
 		{
 			month: "Feb",
-			value: 5500
+			rate: 130,
+			occupancy: 70
 		},
 		{
 			month: "Mar",
-			value: 6e3
-		}
-	],
-	expenses: [
-		{
-			category: "Maintenance",
-			value: 1200,
-			fill: "#ef4444"
+			rate: 145,
+			occupancy: 80
 		},
 		{
-			category: "Cleaning",
-			value: 800,
-			fill: "#3b82f6"
+			month: "Apr",
+			rate: 160,
+			occupancy: 85
 		},
 		{
-			category: "Taxes",
-			value: 400,
-			fill: "#eab308"
+			month: "May",
+			rate: 180,
+			occupancy: 90
+		},
+		{
+			month: "Jun",
+			rate: 200,
+			occupancy: 95
 		}
-	],
-	invoices: [],
-	payments: []
-};
-const messages = [{
-	id: "m1",
-	contact: "Alice Smith",
-	contactId: "t1",
-	ownerId: "user1",
-	lastMessage: "Thanks for the quick fix!",
-	time: (/* @__PURE__ */ new Date()).toISOString(),
-	unread: 0,
-	avatar: "",
-	history: [],
-	organizationId: "org_acme"
-}];
-const auditLogs = [{
-	id: "al1",
-	timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-	userId: "user1",
-	userName: "Platform Admin",
-	action: "login",
-	entity: "Authentication",
-	details: "User logged into the system.",
-	organizationId: "sys"
-}, {
-	id: "al2",
-	timestamp: (/* @__PURE__ */ new Date(Date.now() - 36e5)).toISOString(),
-	userId: "user2",
-	userName: "Acme Property Management",
-	action: "update",
-	entity: "Property",
-	entityId: "p1",
-	details: "Updated listing price for Villa 101.",
-	organizationId: "org_acme"
-}];
-const defaultPaymentIntegrations = [];
-const mockBankStatements = [];
-const genericServiceRates = [];
-const notifications = [];
-const advertisements = [];
-const bookings = [];
-const calendarBlocks = [];
-const messageTemplates = [];
-const serviceCategories = [];
-const visits = [];
-const workflows = [];
-const tourSteps = [];
-const guestServices = [];
-const posItems = [];
-const posTransactions = [];
-const promotions = [];
-const campaigns = [];
-const serviceOrders = [];
-const feedbacks = [];
-const channelMappings = [];
-const marketingWorkflows = [];
-const emailTemplates = [];
-const automationRules = [{
-	id: "rule1",
-	type: "auto_generate_invoice",
-	enabled: true,
-	event: "task_completion",
-	organizationId: "org_acme"
-}];
-const marketAnalysisData = { marketTrends: [
-	{
-		month: "Jan",
-		rate: 120,
-		occupancy: 65
-	},
-	{
-		month: "Feb",
-		rate: 130,
-		occupancy: 70
-	},
-	{
-		month: "Mar",
-		rate: 145,
-		occupancy: 80
-	}
-] };
+	] };
+	const orgs = [{
+		id: "org_acme",
+		name: "Acme Property Management",
+		domain: "acme.com"
+	}, {
+		id: "org_stellar",
+		name: "Stellar Management",
+		domain: "stellar.com"
+	}];
+	const firstNames = [
+		"John",
+		"Jane",
+		"Michael",
+		"Emily",
+		"David",
+		"Sarah",
+		"Robert",
+		"Jessica",
+		"William",
+		"Ashley",
+		"James",
+		"Mary",
+		"Richard",
+		"Patricia"
+	];
+	const lastNames = [
+		"Smith",
+		"Johnson",
+		"Williams",
+		"Brown",
+		"Jones",
+		"Miller",
+		"Davis",
+		"Garcia",
+		"Rodriguez",
+		"Wilson",
+		"Martinez",
+		"Anderson"
+	];
+	const getRandomName = (seed) => `${firstNames[seed % firstNames.length]} ${lastNames[seed * 3 % lastNames.length]}`;
+	const getAvatar = (seed) => `https://img.usecurling.com/ppl/thumbnail?seed=${seed}`;
+	advertisers$1.push({
+		id: "adv1",
+		name: "Home Services LLC",
+		email: "contact@homeservices.com",
+		phone: "555-1234",
+		address: "123 Main St",
+		createdAt: (/* @__PURE__ */ new Date()).toISOString()
+	}, {
+		id: "adv2",
+		name: "Orlando Cleaners",
+		email: "sales@orlandoclean.com",
+		phone: "555-5678",
+		address: "456 Oak Ave",
+		createdAt: (/* @__PURE__ */ new Date()).toISOString()
+	});
+	advertisements$1.push({
+		id: "ad1",
+		title: "Premium Cleaning Tools",
+		imageUrl: "https://img.usecurling.com/p/400/200?q=cleaning",
+		linkUrl: "#",
+		active: true,
+		placement: "performance",
+		createdAt: (/* @__PURE__ */ new Date()).toISOString()
+	});
+	serviceCategories$1.push({
+		id: "sc_clean",
+		name: "Cleaning",
+		color: "#3b82f6"
+	}, {
+		id: "sc_maint",
+		name: "Maintenance",
+		color: "#ef4444"
+	});
+	guestServices$1.push({
+		id: "gs1",
+		name: "Airport Transfer",
+		description: "One-way transfer",
+		price: 50,
+		category: "transport",
+		active: true
+	}, {
+		id: "gs2",
+		name: "Massage",
+		description: "1-hour relaxing massage",
+		price: 100,
+		category: "spa",
+		active: true
+	});
+	posItems$1.push({
+		id: "pos1",
+		name: "Water Bottle",
+		price: 3,
+		category: "minibar",
+		active: true
+	}, {
+		id: "pos2",
+		name: "Snack Pack",
+		price: 5,
+		category: "minibar",
+		active: true
+	});
+	workflows$1.push({
+		id: "wf1",
+		name: "Check-out Cleaning",
+		description: "Auto create cleaning task on checkout",
+		trigger: "after_checkout",
+		active: true,
+		steps: [{
+			id: "wfs1",
+			name: "Create Task",
+			role: "partner",
+			actionType: "task"
+		}]
+	});
+	automationRules$1.push({
+		id: "ar1",
+		type: "auto_generate_invoice",
+		enabled: true,
+		event: "task_completion"
+	});
+	orgs.forEach((org, orgIdx) => {
+		systemUsers$1.push({
+			id: `u_${org.id}_admin`,
+			name: `${org.name} Admin`,
+			email: `admin@${org.domain}`,
+			role: "software_tenant",
+			organizationId: org.id,
+			status: "active",
+			isFirstLogin: false,
+			companyName: org.name
+		});
+		for (let i = 0; i < 3; i++) systemUsers$1.push({
+			id: `u_${org.id}_staff_${i}`,
+			name: `Staff ${i + 1} (${org.name})`,
+			email: `staff${i + 1}@${org.domain}`,
+			role: "internal_user",
+			organizationId: org.id,
+			status: "active",
+			isFirstLogin: false,
+			permissions: [{
+				resource: "dashboard",
+				actions: ["view"]
+			}, {
+				resource: "properties",
+				actions: [
+					"view",
+					"create",
+					"edit",
+					"delete"
+				]
+			}]
+		});
+		condominiums$1.push({
+			id: `condo_${org.id}_1`,
+			name: `Sunset Villas ${org.name}`,
+			address: "123 Sunset Blvd",
+			city: "Orlando",
+			state: "FL",
+			country: "US",
+			managerName: "Mike Manager",
+			managerPhone: "555-0001",
+			accessCredentials: {
+				gate: "1234",
+				poolCode: "9988"
+			},
+			organizationId: org.id
+		});
+		hotels$1.push({
+			id: `hotel_${org.id}_1`,
+			name: `Grand Resort ${org.name}`,
+			address: "100 Resort Way",
+			city: "Orlando",
+			state: "FL",
+			zipCode: "32819",
+			country: "US",
+			managerName: "Sarah Resort",
+			towers: [`t_${org.id}_1`],
+			organizationId: org.id
+		});
+		towers$1.push({
+			id: `t_${org.id}_1`,
+			hotelId: `hotel_${org.id}_1`,
+			name: "North Tower",
+			floors: 15,
+			organizationId: org.id
+		});
+		for (let i = 0; i < 5; i++) owners$1.push({
+			id: `o_${org.id}_${i}`,
+			name: getRandomName(orgIdx * 10 + i),
+			email: `owner${i}@example.com`,
+			phone: "555-" + (1e3 + i),
+			status: "active",
+			role: "property_owner",
+			organizationId: org.id,
+			avatar: getAvatar(orgIdx * 10 + i)
+		});
+		for (let i = 0; i < 3; i++) partners$1.push({
+			id: `p_${org.id}_${i}`,
+			name: `${i % 2 === 0 ? "Elite Cleaning" : "Quick Maintenance"} ${org.name}`,
+			type: i % 2 === 0 ? "cleaning" : "maintenance",
+			email: `partner${i}@example.com`,
+			phone: "555-" + (2e3 + i),
+			status: "active",
+			role: "partner",
+			organizationId: org.id,
+			entityType: "company",
+			employees: [{
+				id: `pe_${org.id}_${i}_1`,
+				name: "Emp 1",
+				role: "Staff",
+				status: "active"
+			}, {
+				id: `pe_${org.id}_${i}_2`,
+				name: "Emp 2",
+				role: "Staff",
+				status: "active"
+			}]
+		});
+		for (let i = 0; i < 15; i++) {
+			const leaseEndDate = /* @__PURE__ */ new Date();
+			leaseEndDate.setDate(leaseEndDate.getDate() + (i * 15 - 60));
+			tenants$1.push({
+				id: `t_${org.id}_${i}`,
+				name: getRandomName(orgIdx * 20 + i),
+				email: `tenant${i}@example.com`,
+				phone: "555-" + (3e3 + i),
+				status: "active",
+				role: "tenant",
+				rentValue: 1500 + i * 100,
+				leaseEnd: leaseEndDate.toISOString(),
+				organizationId: org.id,
+				negotiationStatus: leaseEndDate.getTime() < Date.now() + 60 * 864e5 ? "negotiating" : void 0,
+				suggestedRenewalPrice: 1600 + i * 100
+			});
+		}
+		for (let i = 0; i < 20; i++) {
+			const isStr = i < 10;
+			const pid = `p_${org.id}_${i}`;
+			const ownerId = `o_${org.id}_${i % 5}`;
+			properties$1.push({
+				id: pid,
+				name: `${isStr ? "Vacation Home" : "Apt"} ${i + 1} - ${org.name}`,
+				address: `100${i} Main St`,
+				city: "Orlando",
+				state: "FL",
+				zipCode: "32819",
+				country: "US",
+				type: isStr ? "House" : "Apartment",
+				profileType: isStr ? "short_term" : "long_term",
+				community: isStr ? `Sunset Villas ${org.name}` : "Downtown",
+				condominiumId: isStr ? `condo_${org.id}_1` : void 0,
+				status: isStr ? "available" : "rented",
+				bedrooms: 2 + i % 3,
+				bathrooms: 1 + i % 2,
+				guests: 4 + i % 4 * 2,
+				ownerId,
+				image: `https://img.usecurling.com/p/600/400?q=${isStr ? "vacation%20home" : "apartment"}&seed=${orgIdx * 20 + i}`,
+				listingPrice: isStr ? 200 + i * 10 : 2e3 + i * 100,
+				hoaValue: 300,
+				organizationId: org.id
+			});
+			if (!isStr) {
+				const tenant = tenants$1[i % 15];
+				tenant.propertyId = pid;
+				for (let m = 0; m < 6; m++) {
+					const d = /* @__PURE__ */ new Date();
+					d.setMonth(d.getMonth() - m);
+					const rentAmt = tenant.rentValue;
+					ledgerEntries$1.push({
+						id: `le_rent_${pid}_${m}`,
+						propertyId: pid,
+						date: d.toISOString(),
+						type: "income",
+						category: "Rent",
+						amount: rentAmt,
+						description: `Rent payment - ${tenant.name}`,
+						status: "cleared",
+						organizationId: org.id
+					});
+					invoices.push({
+						id: `inv_rent_${pid}_${m}`,
+						description: `Rent - ${d.toLocaleString("default", { month: "long" })}`,
+						amount: rentAmt,
+						status: "paid",
+						date: d.toISOString(),
+						propertyId: pid,
+						toId: tenant.id,
+						type: "generic",
+						organizationId: org.id
+					});
+				}
+			}
+			if (isStr) {
+				for (let b$1 = 0; b$1 < 5; b$1++) {
+					const checkIn = /* @__PURE__ */ new Date();
+					checkIn.setDate(checkIn.getDate() - (b$1 * 15 + 10));
+					const checkOut = new Date(checkIn);
+					checkOut.setDate(checkOut.getDate() + 5);
+					const bid = `bkg_past_${pid}_${b$1}`;
+					const amount = 1e3 + b$1 * 50;
+					bookings$1.push({
+						id: bid,
+						propertyId: pid,
+						propertyName: `${isStr ? "Vacation Home" : "Apt"} ${i + 1}`,
+						guestName: getRandomName(orgIdx * 100 + i * 5 + b$1),
+						guestEmail: `guest${b$1}@example.com`,
+						checkIn: checkIn.toISOString(),
+						checkOut: checkOut.toISOString(),
+						status: "checked_out",
+						totalAmount: amount,
+						baseAmount: amount,
+						paid: true,
+						platform: [
+							"airbnb",
+							"vrbo",
+							"direct",
+							"booking.com"
+						][b$1 % 4],
+						organizationId: org.id
+					});
+					feedbacks$1.push({
+						id: `fb_${bid}`,
+						bookingId: bid,
+						propertyId: pid,
+						guestName: getRandomName(orgIdx * 100 + i * 5 + b$1),
+						rating: 4 + b$1 % 2,
+						comment: "Great stay, very clean and comfortable. Will definitely return!",
+						date: checkOut.toISOString(),
+						status: "reviewed",
+						organizationId: org.id
+					});
+					ledgerEntries$1.push({
+						id: `le_bkg_${bid}`,
+						propertyId: pid,
+						date: checkIn.toISOString(),
+						type: "income",
+						category: "Booking",
+						amount,
+						description: `Booking payout - ${bid}`,
+						status: "cleared",
+						organizationId: org.id
+					});
+					invoices.push({
+						id: `inv_bkg_${bid}`,
+						description: `Booking Invoice ${bid}`,
+						amount,
+						status: "paid",
+						date: checkIn.toISOString(),
+						propertyId: pid,
+						bookingId: bid,
+						type: "generic",
+						organizationId: org.id
+					});
+				}
+				const currentCheckIn = /* @__PURE__ */ new Date();
+				currentCheckIn.setDate(currentCheckIn.getDate() - 1);
+				const currentCheckOut = new Date(currentCheckIn);
+				currentCheckOut.setDate(currentCheckOut.getDate() + 4);
+				bookings$1.push({
+					id: `bkg_cur_${pid}`,
+					propertyId: pid,
+					propertyName: `Vacation Home ${i + 1}`,
+					guestName: getRandomName(orgIdx * 100 + i * 5 + 5),
+					guestEmail: `guestcur@example.com`,
+					checkIn: currentCheckIn.toISOString(),
+					checkOut: currentCheckOut.toISOString(),
+					status: "checked_in",
+					totalAmount: 1200,
+					baseAmount: 1200,
+					paid: true,
+					platform: "airbnb",
+					organizationId: org.id
+				});
+				for (let b$1 = 0; b$1 < 2; b$1++) {
+					const futureCheckIn = /* @__PURE__ */ new Date();
+					futureCheckIn.setDate(futureCheckIn.getDate() + (b$1 * 10 + 10));
+					const futureCheckOut = new Date(futureCheckIn);
+					futureCheckOut.setDate(futureCheckOut.getDate() + 5);
+					bookings$1.push({
+						id: `bkg_fut_${pid}_${b$1}`,
+						propertyId: pid,
+						propertyName: `Vacation Home ${i + 1}`,
+						guestName: getRandomName(orgIdx * 100 + i * 5 + 6 + b$1),
+						guestEmail: `guestfut${b$1}@example.com`,
+						checkIn: futureCheckIn.toISOString(),
+						checkOut: futureCheckOut.toISOString(),
+						status: "confirmed",
+						totalAmount: 1300,
+						baseAmount: 1300,
+						paid: false,
+						platform: "direct",
+						organizationId: org.id
+					});
+				}
+				const cancCheckIn = /* @__PURE__ */ new Date();
+				cancCheckIn.setDate(cancCheckIn.getDate() + 20);
+				const cancCheckOut = new Date(cancCheckIn);
+				cancCheckOut.setDate(cancCheckOut.getDate() + 3);
+				bookings$1.push({
+					id: `bkg_canc_${pid}`,
+					propertyId: pid,
+					propertyName: `Vacation Home ${i + 1}`,
+					guestName: getRandomName(orgIdx * 100 + i * 5 + 8),
+					guestEmail: `guestcanc@example.com`,
+					checkIn: cancCheckIn.toISOString(),
+					checkOut: cancCheckOut.toISOString(),
+					status: "cancelled",
+					totalAmount: 500,
+					baseAmount: 500,
+					paid: false,
+					platform: "vrbo",
+					organizationId: org.id
+				});
+			}
+			for (let t = 0; t < 4; t++) {
+				const type = t % 2 === 0 ? "cleaning" : "maintenance";
+				const partnerId = `p_${org.id}_${t % 2 === 0 ? 0 : 1}`;
+				const partnerName = partners$1.find((p) => p.id === partnerId)?.name || "Partner";
+				const status = [
+					"completed",
+					"pending",
+					"in_progress",
+					"pending_approval"
+				][t];
+				tasks$1.push({
+					id: `tsk_${pid}_${t}`,
+					title: `${type === "cleaning" ? "Post-checkout Cleaning" : "AC Repair"} - ${pid}`,
+					propertyId: pid,
+					propertyName: `Property ${i + 1}`,
+					status,
+					approvalStatus: status === "pending_approval" ? "owner_pending" : void 0,
+					type,
+					assignee: partnerName,
+					assigneeId: partnerId,
+					date: new Date(Date.now() + (t * 2 - 4) * 864e5).toISOString(),
+					priority: t % 3 === 0 ? "high" : "medium",
+					price: 150 + t * 20,
+					laborCost: 100 + t * 10,
+					organizationId: org.id
+				});
+				if (status === "completed") ledgerEntries$1.push({
+					id: `le_tsk_${pid}_${t}`,
+					propertyId: pid,
+					date: (/* @__PURE__ */ new Date()).toISOString(),
+					type: "expense",
+					category: type === "cleaning" ? "Cleaning" : "Maintenance",
+					amount: 150 + t * 20,
+					description: `Service cost - ${type}`,
+					status: "cleared",
+					organizationId: org.id
+				});
+			}
+		}
+		for (let i = 0; i < 5; i++) visits$1.push({
+			id: `v_${org.id}_${i}`,
+			propertyId: `p_${org.id}_${i}`,
+			propertyName: `Vacation Home ${i + 1}`,
+			clientName: getRandomName(orgIdx * 50 + i),
+			date: new Date(Date.now() + i * 864e5).toISOString(),
+			status: i % 2 === 0 ? "completed" : "scheduled",
+			reason: "showing",
+			organizationId: org.id
+		});
+		for (let i = 0; i < 5; i++) messages$1.push({
+			id: `msg_${org.id}_${i}`,
+			contact: getRandomName(orgIdx * 60 + i),
+			contactId: `t_${org.id}_${i}`,
+			ownerId: `u_${org.id}_admin`,
+			lastMessage: "Is the maintenance done?",
+			time: (/* @__PURE__ */ new Date()).toISOString(),
+			unread: i % 2,
+			avatar: getAvatar(orgIdx * 60 + i),
+			history: [
+				{
+					id: "h1",
+					text: "Hi, I need help with the AC.",
+					senderId: `t_${org.id}_${i}`,
+					timestamp: (/* @__PURE__ */ new Date(Date.now() - 864e5)).toISOString()
+				},
+				{
+					id: "h2",
+					text: "We will send someone today.",
+					senderId: `u_${org.id}_admin`,
+					timestamp: (/* @__PURE__ */ new Date(Date.now() - 4e7)).toISOString()
+				},
+				{
+					id: "h3",
+					text: "Is the maintenance done?",
+					senderId: `t_${org.id}_${i}`,
+					timestamp: (/* @__PURE__ */ new Date()).toISOString()
+				}
+			],
+			organizationId: org.id
+		});
+		for (let i = 0; i < 50; i++) auditLogs$1.push({
+			id: `al_${org.id}_${i}`,
+			timestamp: (/* @__PURE__ */ new Date(Date.now() - i * 36e5)).toISOString(),
+			userId: `u_${org.id}_admin`,
+			userName: `${org.name} Admin`,
+			action: i % 3 === 0 ? "login" : i % 2 === 0 ? "update" : "create",
+			entity: i % 3 === 0 ? "Auth" : i % 2 === 0 ? "Property" : "Task",
+			details: `User performed action ${i} successfully.`,
+			organizationId: org.id
+		});
+		promotions$1.push({
+			id: `promo_${org.id}`,
+			code: "SUMMER20",
+			type: "percentage",
+			value: 20,
+			startDate: (/* @__PURE__ */ new Date()).toISOString(),
+			endDate: new Date(Date.now() + 30 * 864e5).toISOString(),
+			active: true,
+			usageCount: 5,
+			targetType: "all",
+			organizationId: org.id
+		});
+		campaigns$1.push({
+			id: `camp_${org.id}`,
+			name: "Summer Deal",
+			status: "active",
+			startDate: (/* @__PURE__ */ new Date()).toISOString(),
+			endDate: new Date(Date.now() + 30 * 864e5).toISOString(),
+			promotions: [`promo_${org.id}`],
+			targetAudience: "all",
+			discountValue: 20,
+			discountType: "percentage",
+			organizationId: org.id
+		});
+	});
+	return {
+		systemUsers: systemUsers$1,
+		properties: properties$1,
+		condominiums: condominiums$1,
+		hotels: hotels$1,
+		towers: towers$1,
+		tenants: tenants$1,
+		owners: owners$1,
+		partners: partners$1,
+		tasks: tasks$1,
+		ledgerEntries: ledgerEntries$1,
+		financials: {
+			revenue: [
+				{
+					month: "Jan",
+					value: 15e3
+				},
+				{
+					month: "Feb",
+					value: 18e3
+				},
+				{
+					month: "Mar",
+					value: 22e3
+				},
+				{
+					month: "Apr",
+					value: 21e3
+				},
+				{
+					month: "May",
+					value: 25e3
+				},
+				{
+					month: "Jun",
+					value: 28e3
+				}
+			],
+			expenses: [
+				{
+					category: "Maintenance",
+					value: 4500,
+					fill: "#ef4444"
+				},
+				{
+					category: "Cleaning",
+					value: 3200,
+					fill: "#3b82f6"
+				},
+				{
+					category: "Taxes",
+					value: 1500,
+					fill: "#eab308"
+				},
+				{
+					category: "Utilities",
+					value: 2100,
+					fill: "#8b5cf6"
+				}
+			],
+			invoices,
+			payments
+		},
+		bookings: bookings$1,
+		auditLogs: auditLogs$1,
+		messages: messages$1,
+		genericServiceRates: genericServiceRates$1,
+		notifications: notifications$1,
+		advertisements: advertisements$1,
+		advertisers: advertisers$1,
+		adPricing: adPricing$1,
+		calendarBlocks: calendarBlocks$1,
+		messageTemplates: messageTemplates$1,
+		serviceCategories: serviceCategories$1,
+		visits: visits$1,
+		workflows: workflows$1,
+		tourSteps: tourSteps$1,
+		guestServices: guestServices$1,
+		posItems: posItems$1,
+		posTransactions: posTransactions$1,
+		promotions: promotions$1,
+		campaigns: campaigns$1,
+		serviceOrders: serviceOrders$1,
+		feedbacks: feedbacks$1,
+		channelMappings: channelMappings$1,
+		marketingWorkflows: marketingWorkflows$1,
+		emailTemplates: emailTemplates$1,
+		automationRules: automationRules$1,
+		mockBankStatements: mockBankStatements$1,
+		defaultPaymentIntegrations: defaultPaymentIntegrations$1,
+		defaultFinancialSettings: defaultFinancialSettings$1,
+		marketAnalysisData: marketAnalysisData$1
+	};
+})();
+const { systemUsers, properties, condominiums, hotels, towers, tenants, owners, partners, tasks, ledgerEntries, financials, bookings, auditLogs, messages, genericServiceRates, notifications, advertisements, advertisers, adPricing, calendarBlocks, messageTemplates, serviceCategories, visits, workflows, tourSteps, guestServices, posItems, posTransactions, promotions, campaigns, serviceOrders, feedbacks, channelMappings, marketingWorkflows, emailTemplates, automationRules, mockBankStatements, defaultPaymentIntegrations, defaultFinancialSettings, marketAnalysisData } = generated;
+const mockAdvertisers = generated.advertisers;
+const mockAdPricing = generated.adPricing;
 const tutorialModules = [{
 	key: "dashboard_overview",
 	title: "Dashboard Overview",
@@ -31080,8 +31478,8 @@ const AppProvider = ({ children }) => {
 	const [serviceCategories$1, setServiceCategories] = (0, import_react.useState)(serviceCategories);
 	const [notifications$1, setNotifications] = (0, import_react.useState)(notifications);
 	const [advertisements$1, setAdvertisements] = (0, import_react.useState)(advertisements);
-	const [advertisers, setAdvertisers] = (0, import_react.useState)(mockAdvertisers);
-	const [adPricing, setAdPricingState] = (0, import_react.useState)(mockAdPricing);
+	const [advertisers$1, setAdvertisers] = (0, import_react.useState)(mockAdvertisers);
+	const [adPricing$1, setAdPricingState] = (0, import_react.useState)(mockAdPricing);
 	const [typingStatus, setTypingStatus] = (0, import_react.useState)({});
 	const [language, setLanguageState] = (0, import_react.useState)(() => {
 		return localStorage.getItem("app_language") || "en";
@@ -31664,8 +32062,8 @@ const AppProvider = ({ children }) => {
 			serviceCategories: serviceCategories$1,
 			notifications: notifications$1,
 			advertisements: advertisements$1,
-			advertisers,
-			adPricing,
+			advertisers: advertisers$1,
+			adPricing: adPricing$1,
 			language,
 			currency,
 			typingStatus,
@@ -76875,7 +77273,7 @@ var usePublicityStore = () => {
 };
 var usePublicityStore_default = usePublicityStore;
 function AdsManager() {
-	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement, advertisers } = usePublicityStore_default();
+	const { advertisements: advertisements$1, addAdvertisement, updateAdvertisement, deleteAdvertisement, advertisers: advertisers$1 } = usePublicityStore_default();
 	const { partners: partners$1 } = usePartnerStore_default();
 	const { properties: properties$1 } = usePropertyStore_default();
 	const { addLedgerEntry, addInvoice, currency } = useFinancialStore_default();
@@ -76909,7 +77307,7 @@ function AdsManager() {
 		const finalAmt = ad.finalPrice || ad.price || 0;
 		if (finalAmt > 0) {
 			if (ad.advertiserId && ad.advertiserId !== "none") {
-				const advertiser = advertisers.find((a$1) => a$1.id === ad.advertiserId);
+				const advertiser = advertisers$1.find((a$1) => a$1.id === ad.advertiserId);
 				addInvoice({
 					id: `inv-adv-${Date.now()}-${Math.floor(Math.random() * 1e3)}`,
 					description: `Advertisement Expiration: ${ad.title}`,
@@ -77096,7 +77494,7 @@ function AdsManager() {
 			className: "flex flex-col text-sm",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 				className: "font-medium text-slate-900",
-				children: ad.advertiserId && ad.advertiserId !== "none" ? advertisers.find((a$1) => a$1.id === ad.advertiserId)?.name || "Unknown Advertiser" : ad.propertyId && ad.propertyId !== "none" ? properties$1.find((p) => p.id === ad.propertyId)?.name || "Unknown Property" : "Global"
+				children: ad.advertiserId && ad.advertiserId !== "none" ? advertisers$1.find((a$1) => a$1.id === ad.advertiserId)?.name || "Unknown Advertiser" : ad.propertyId && ad.propertyId !== "none" ? properties$1.find((p) => p.id === ad.propertyId)?.name || "Unknown Property" : "Global"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 				className: "text-muted-foreground text-xs",
 				children: ad.advertiserId && ad.advertiserId !== "none" ? "External Advertiser" : ad.partnerId && ad.partnerId !== "none" ? partners$1.find((p) => p.id === ad.partnerId)?.name || "No Partner" : "No Partner"
@@ -77268,7 +77666,7 @@ function AdsManager() {
 										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Select Advertiser" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: "none",
 											children: "Internal Campaign"
-										}), advertisers.map((a$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										}), advertisers$1.map((a$1) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
 											value: a$1.id,
 											children: a$1.name
 										}, a$1.id))] })]
@@ -77421,7 +77819,7 @@ function AdsManager() {
 	})] })] });
 }
 function AdvertiserList() {
-	const { advertisers, addAdvertiser, updateAdvertiser, deleteAdvertiser } = usePublicityStore_default();
+	const { advertisers: advertisers$1, addAdvertiser, updateAdvertiser, deleteAdvertiser } = usePublicityStore_default();
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
 	const [isOpen, setIsOpen] = (0, import_react.useState)(false);
@@ -77439,7 +77837,7 @@ function AdvertiserList() {
 		billingContactPhone: ""
 	};
 	const [formData, setFormData] = (0, import_react.useState)(initialFormState);
-	const filteredAdvertisers = advertisers.filter((a$1) => a$1.name.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.email.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.legalName?.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.taxId?.toLowerCase().includes(searchTerm.toLowerCase()));
+	const filteredAdvertisers = advertisers$1.filter((a$1) => a$1.name.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.email.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.legalName?.toLowerCase().includes(searchTerm.toLowerCase()) || a$1.taxId?.toLowerCase().includes(searchTerm.toLowerCase()));
 	const handleOpen = (advertiser) => {
 		if (advertiser) {
 			setEditingId(advertiser.id);
@@ -77709,7 +78107,7 @@ function AdvertiserList() {
 	})] })] });
 }
 function PricingConfig() {
-	const { adPricing, updateAdPricing } = usePublicityStore_default();
+	const { adPricing: adPricing$1, updateAdPricing } = usePublicityStore_default();
 	const currency = (0, import_react.useContext)(AppContext)?.currency || "USD";
 	const { t } = useLanguageStore_default();
 	const { toast: toast$2 } = useToast();
@@ -77730,23 +78128,23 @@ function PricingConfig() {
 		}
 	});
 	(0, import_react.useEffect)(() => {
-		if (adPricing) setFormData({
-			weekly: adPricing.weekly || 0,
-			biWeekly: adPricing.biWeekly || 0,
-			monthly: adPricing.monthly || 0,
+		if (adPricing$1) setFormData({
+			weekly: adPricing$1.weekly || 0,
+			biWeekly: adPricing$1.biWeekly || 0,
+			monthly: adPricing$1.monthly || 0,
 			placementModifiers: {
-				home_top: adPricing.placementModifiers?.home_top || 0,
-				home_bottom: adPricing.placementModifiers?.home_bottom || 0,
-				partner_page: adPricing.placementModifiers?.partner_page || 0,
-				tenant_page: adPricing.placementModifiers?.tenant_page || 0,
-				pm_login: adPricing.placementModifiers?.pm_login || 0,
-				sidebar: adPricing.placementModifiers?.sidebar || 0,
-				footer: adPricing.placementModifiers?.footer || 0,
-				header: adPricing.placementModifiers?.header || 0,
-				performance: adPricing.placementModifiers?.performance || 0
+				home_top: adPricing$1.placementModifiers?.home_top || 0,
+				home_bottom: adPricing$1.placementModifiers?.home_bottom || 0,
+				partner_page: adPricing$1.placementModifiers?.partner_page || 0,
+				tenant_page: adPricing$1.placementModifiers?.tenant_page || 0,
+				pm_login: adPricing$1.placementModifiers?.pm_login || 0,
+				sidebar: adPricing$1.placementModifiers?.sidebar || 0,
+				footer: adPricing$1.placementModifiers?.footer || 0,
+				header: adPricing$1.placementModifiers?.header || 0,
+				performance: adPricing$1.placementModifiers?.performance || 0
 			}
 		});
-	}, [adPricing]);
+	}, [adPricing$1]);
 	const handleSave = () => {
 		updateAdPricing(formData);
 		toast$2({
@@ -78364,18 +78762,64 @@ function generateSeederData() {
 		ledgerEntries: [],
 		invoices: []
 	};
-	[{
-		id: "org_seed_1",
-		name: "Stellar Management",
-		email: "admin@stellar.com"
+	const pms = [{
+		id: `org_seed_${Date.now()}_1`,
+		name: "Simulated Horizon Management",
+		email: "admin@simhorizon.com"
 	}, {
-		id: "org_seed_2",
-		name: "Horizon Properties",
-		email: "admin@horizon.com"
-	}].forEach((pm) => {
+		id: `org_seed_${Date.now()}_2`,
+		name: "Simulated Stellar Properties",
+		email: "admin@simstellar.com"
+	}];
+	const firstNames = [
+		"Emma",
+		"Liam",
+		"Olivia",
+		"Noah",
+		"Ava",
+		"Oliver",
+		"Sophia",
+		"Elijah",
+		"Isabella",
+		"James",
+		"Mia",
+		"William",
+		"Charlotte",
+		"Benjamin",
+		"Amelia",
+		"Lucas",
+		"Harper",
+		"Henry",
+		"Evelyn",
+		"Theodore"
+	];
+	const lastNames = [
+		"Smith",
+		"Johnson",
+		"Williams",
+		"Brown",
+		"Jones",
+		"Garcia",
+		"Miller",
+		"Davis",
+		"Rodriguez",
+		"Martinez",
+		"Hernandez",
+		"Lopez",
+		"Gonzalez",
+		"Wilson",
+		"Anderson",
+		"Thomas",
+		"Taylor",
+		"Moore",
+		"Jackson",
+		"Martin"
+	];
+	const getRandomName = (seed) => `${firstNames[seed % firstNames.length]} ${lastNames[seed * 3 % lastNames.length]}`;
+	pms.forEach((pm, pmIdx) => {
 		data.users.push({
 			id: `u_${pm.id}_admin`,
-			name: pm.name,
+			name: `${pm.name} Admin`,
 			email: pm.email,
 			role: "software_tenant",
 			organizationId: pm.id,
@@ -78383,20 +78827,20 @@ function generateSeederData() {
 			status: "active",
 			companyName: pm.name
 		});
-		for (let i = 0; i < 5; i++) {
-			data.users.push({
-				id: `u_${pm.id}_team_${i}`,
-				name: `Staff ${i} ${pm.name}`,
-				email: `staff${i}@${pm.id}.com`,
-				role: "internal_user",
-				organizationId: pm.id,
-				isFirstLogin: false,
-				status: "active"
-			});
+		for (let i = 0; i < 5; i++) data.users.push({
+			id: `u_${pm.id}_team_${i}`,
+			name: `Staff ${i} ${pm.name}`,
+			email: `staff${i}@${pm.id}.com`,
+			role: "internal_user",
+			organizationId: pm.id,
+			isFirstLogin: false,
+			status: "active"
+		});
+		for (let i = 0; i < 10; i++) {
 			data.owners.push({
 				id: `o_${pm.id}_${i}`,
-				name: `Owner ${i} ${pm.name}`,
-				email: `o${i}@${pm.id}.com`,
+				name: getRandomName(pmIdx * 100 + i),
+				email: `owner${i}@${pm.id}.com`,
 				phone: `555-010${i}`,
 				role: "property_owner",
 				status: "active",
@@ -78404,35 +78848,42 @@ function generateSeederData() {
 			});
 			data.partners.push({
 				id: `p_${pm.id}_${i}`,
-				name: `Partner ${i} ${pm.name}`,
+				name: `${i % 2 === 0 ? "Cleaning" : "Maintenance"} Crew ${i} - ${pm.name}`,
 				type: i % 2 === 0 ? "cleaning" : "maintenance",
-				email: `p${i}@${pm.id}.com`,
+				email: `partner${i}@${pm.id}.com`,
 				phone: `555-020${i}`,
 				role: "partner",
 				status: "active",
 				organizationId: pm.id
 			});
+			const leaseStart = /* @__PURE__ */ new Date();
+			leaseStart.setMonth(leaseStart.getMonth() - (12 + i % 6));
+			const leaseEnd = new Date(leaseStart);
+			leaseEnd.setFullYear(leaseEnd.getFullYear() + 1);
 			data.tenants.push({
 				id: `t_${pm.id}_${i}`,
-				name: `Tenant ${i} ${pm.name}`,
-				email: `t${i}@${pm.id}.com`,
+				name: getRandomName(pmIdx * 200 + i),
+				email: `tenant${i}@${pm.id}.com`,
 				phone: `555-030${i}`,
 				role: "tenant",
 				status: "active",
-				rentValue: 2e3 + i * 100,
-				leaseEnd: new Date(Date.now() + 864e5 * 180).toISOString(),
-				organizationId: pm.id
+				rentValue: 1500 + i * 150,
+				leaseStart: leaseStart.toISOString(),
+				leaseEnd: leaseEnd.toISOString(),
+				organizationId: pm.id,
+				negotiationStatus: leaseEnd.getTime() < Date.now() + 60 * 864e5 ? "negotiating" : void 0,
+				suggestedRenewalPrice: 1500 + i * 150 + 100
 			});
 		}
-		for (let i = 0; i < 10; i++) {
-			const isStr = i < 5;
+		for (let i = 0; i < 20; i++) {
+			const isStr = i < 10;
 			const pid = `prop_${pm.id}_${i}`;
-			const ownerId = `o_${pm.id}_${i % 5}`;
-			const partnerId = `p_${pm.id}_${i % 5}`;
+			const ownerId = `o_${pm.id}_${i % 10}`;
+			const partnerId = `p_${pm.id}_${i % 10}`;
 			data.properties.push({
 				id: pid,
-				name: `${isStr ? "Vacation Home" : "Residential Apt"} ${i + 1}`,
-				address: `100${i} Simulation St`,
+				name: `${isStr ? "Vacation Villa" : "Residential Apt"} ${i + 1}`,
+				address: `100${i} Simulation Blvd`,
 				city: "Orlando",
 				state: "FL",
 				zipCode: "32801",
@@ -78440,30 +78891,40 @@ function generateSeederData() {
 				type: isStr ? "House" : "Apartment",
 				profileType: isStr ? "short_term" : "long_term",
 				community: "Simulated Heights",
-				status: "rented",
-				bedrooms: 3 + i % 2,
+				status: isStr ? "available" : "rented",
+				bedrooms: 3 + i % 3,
 				bathrooms: 2,
-				guests: 6,
+				guests: 6 + i % 2 * 2,
 				ownerId,
 				image: `https://img.usecurling.com/p/400/300?q=${isStr ? "house" : "apartment"}&seed=${i + pm.id.length}`,
 				organizationId: pm.id,
 				listingPrice: isStr ? 250 : 2e3
 			});
-			if (isStr) for (let b$1 = 0; b$1 < 15; b$1++) {
+			if (isStr) for (let b$1 = 0; b$1 < 10; b$1++) {
 				const bid = `bkg_${pid}_${b$1}`;
-				const amt = 150 + b$1 * 10;
+				const amt = 250 * (3 + b$1 % 4);
+				const checkIn = /* @__PURE__ */ new Date();
+				checkIn.setDate(checkIn.getDate() - (b$1 * 14 + 5));
+				const checkOut = new Date(checkIn);
+				checkOut.setDate(checkOut.getDate() + (3 + b$1 % 4));
 				data.bookings.push({
 					id: bid,
 					propertyId: pid,
-					propertyName: `Vacation Home ${i + 1}`,
-					guestName: `Guest ${b$1}`,
-					guestEmail: `g${b$1}@sim.com`,
-					checkIn: (/* @__PURE__ */ new Date(Date.now() - b$1 * 864e5 * 7)).toISOString(),
-					checkOut: (/* @__PURE__ */ new Date(Date.now() - b$1 * 864e5 * 5)).toISOString(),
+					propertyName: `Vacation Villa ${i + 1}`,
+					guestName: getRandomName(pmIdx * 300 + i * 10 + b$1),
+					guestEmail: `guest_${pmIdx}_${i}_${b$1}@sim.com`,
+					checkIn: checkIn.toISOString(),
+					checkOut: checkOut.toISOString(),
 					status: "checked_out",
 					totalAmount: amt,
+					baseAmount: amt,
 					paid: true,
-					platform: "airbnb",
+					platform: [
+						"airbnb",
+						"vrbo",
+						"direct",
+						"booking.com"
+					][b$1 % 4],
 					organizationId: pm.id
 				});
 				data.invoices.push({
@@ -78471,15 +78932,16 @@ function generateSeederData() {
 					description: `Booking ${bid}`,
 					amount: amt,
 					status: "paid",
-					date: (/* @__PURE__ */ new Date()).toISOString(),
+					date: checkIn.toISOString(),
 					propertyId: pid,
 					bookingId: bid,
+					type: "generic",
 					organizationId: pm.id
 				});
 				data.ledgerEntries.push({
 					id: `le_${bid}`,
 					propertyId: pid,
-					date: (/* @__PURE__ */ new Date()).toISOString(),
+					date: checkIn.toISOString(),
 					type: "income",
 					category: "Booking",
 					amount: amt,
@@ -78489,28 +78951,31 @@ function generateSeederData() {
 				});
 			}
 			else {
-				const tid = `t_${pm.id}_${i % 5}`;
-				for (let m = 0; m < 15; m++) {
+				const tenant = data.tenants[i % 10];
+				for (let m = 0; m < 12; m++) {
 					const rId = `inv_r_${pid}_${m}`;
-					const rAmt = 2e3 + i % 3 * 100;
+					const rAmt = tenant.rentValue;
+					const d = /* @__PURE__ */ new Date();
+					d.setMonth(d.getMonth() - m);
 					data.invoices.push({
 						id: rId,
-						description: `Rent Month ${m + 1}`,
+						description: `Rent Month ${d.toLocaleString("default", { month: "short" })}`,
 						amount: rAmt,
 						status: "paid",
-						date: (/* @__PURE__ */ new Date(Date.now() - m * 864e5 * 30)).toISOString(),
+						date: d.toISOString(),
 						propertyId: pid,
-						toId: tid,
+						toId: tenant.id,
+						type: "generic",
 						organizationId: pm.id
 					});
 					data.ledgerEntries.push({
 						id: `le_r_${rId}`,
 						propertyId: pid,
-						date: (/* @__PURE__ */ new Date(Date.now() - m * 864e5 * 30)).toISOString(),
+						date: d.toISOString(),
 						type: "income",
 						category: "Rent",
 						amount: rAmt,
-						description: "Monthly Rent",
+						description: `Monthly Rent - ${tenant.name}`,
 						status: "cleared",
 						organizationId: pm.id
 					});
@@ -78518,29 +78983,33 @@ function generateSeederData() {
 			}
 			for (let t = 0; t < 10; t++) {
 				const tskId = `task_${pid}_${t}`;
-				const cost = 50 + t * 10;
+				const isCleaning = t % 2 === 0;
+				const cost = isCleaning ? 150 : 350 + t * 20;
+				const d = /* @__PURE__ */ new Date();
+				d.setDate(d.getDate() - t * 15);
 				data.tasks.push({
 					id: tskId,
-					title: `Routine Work ${t + 1}`,
+					title: `${isCleaning ? "Routine Cleaning" : "Maintenance Repair"} ${t + 1}`,
 					propertyId: pid,
 					propertyName: `Prop ${i + 1}`,
 					status: "completed",
-					type: t % 2 === 0 ? "maintenance" : "cleaning",
-					assignee: `Partner ${i % 5}`,
+					type: isCleaning ? "cleaning" : "maintenance",
+					assignee: `Partner ${i % 10}`,
 					assigneeId: partnerId,
-					date: (/* @__PURE__ */ new Date()).toISOString(),
-					priority: "medium",
+					date: d.toISOString(),
+					priority: isCleaning ? "medium" : "high",
 					price: cost,
+					laborCost: cost * .7,
 					organizationId: pm.id
 				});
 				data.ledgerEntries.push({
 					id: `le_t_${tskId}`,
 					propertyId: pid,
-					date: (/* @__PURE__ */ new Date()).toISOString(),
+					date: d.toISOString(),
 					type: "expense",
-					category: t % 2 === 0 ? "Maintenance" : "Cleaning",
+					category: isCleaning ? "Cleaning" : "Maintenance",
 					amount: cost,
-					description: "Routine service cost",
+					description: `Service cost - ${isCleaning ? "Cleaning" : "Maintenance"}`,
 					status: "cleared",
 					organizationId: pm.id
 				});
@@ -82628,4 +83097,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-B8bzZNNB.js.map
+//# sourceMappingURL=index-Cu5MeQSN.js.map
