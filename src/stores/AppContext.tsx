@@ -122,7 +122,7 @@ interface AppContextType {
   messageTemplates: MessageTemplate[]
   automationRules: AutomationRule[]
   workflows: Workflow[]
-  currentUser: User | Owner | Partner | Tenant
+  currentUser: User | Owner | Partner | Tenant | null
   allUsers: (User | Owner | Partner | Tenant)[]
   users: User[]
   isAuthenticated: boolean
@@ -348,6 +348,7 @@ const getRoleName = (role: UserRole) => {
 
 const getInitialUser = () => {
   const savedId = localStorage.getItem('app_current_user_id')
+  if (!savedId) return null
 
   const localTenants = localStorage.getItem('app_tenants')
     ? JSON.parse(localStorage.getItem('app_tenants')!)
@@ -363,11 +364,8 @@ const getInitialUser = () => {
     ...localTenants,
   ]
 
-  if (savedId) {
-    const found = allInitialUsers.find((u) => u.id === savedId)
-    if (found) return found
-  }
-  return systemUsers[0]
+  const found = allInitialUsers.find((u) => u.id === savedId)
+  return found || null
 }
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
@@ -482,13 +480,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('all')
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem('app_current_user_id'),
-  )
-  const [isAuthLoading, setIsAuthLoading] = useState(true)
+
   const [currentUserObj, setCurrentUserObj] = useState<
-    User | Owner | Partner | Tenant
+    User | Owner | Partner | Tenant | null
   >(getInitialUser())
+
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem('app_current_user_id') && !!currentUserObj,
+  )
+
+  const [isAuthLoading, setIsAuthLoading] = useState(
+    currentUserObj?.role !== 'platform_owner',
+  )
 
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -504,7 +507,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     let isMounted = true
 
     const initializeSession = async () => {
-      setIsAuthLoading(true)
+      const initialUser = getInitialUser()
+
+      // Absolute Priority: Developer bypasses the loading delay completely
+      if (initialUser?.role === 'platform_owner') {
+        if (isMounted) {
+          setCurrentUserObj(initialUser)
+          setIsAuthenticated(true)
+          setIsAuthLoading(false)
+        }
+        return
+      }
+
+      if (isMounted) setIsAuthLoading(true)
 
       // Simulating session validation and data hydration delay
       // to prevent premature redirects by RequirePermission and avoid race conditions
@@ -512,10 +527,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       if (!isMounted) return
 
-      const savedId = localStorage.getItem('app_current_user_id')
-      if (savedId) {
+      if (initialUser) {
+        setCurrentUserObj(initialUser)
         setIsAuthenticated(true)
       } else {
+        setCurrentUserObj(null)
         setIsAuthenticated(false)
       }
 
@@ -689,8 +705,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [users, owners, partners, tenants, filterByOrg])
 
   const visibleMessages = useMemo(
-    () => allMessages.filter((m) => m.ownerId === currentUserObj.id),
-    [allMessages, currentUserObj.id],
+    () => allMessages.filter((m) => m.ownerId === currentUserObj?.id),
+    [allMessages, currentUserObj?.id],
   )
 
   const login = (email: string) => {
@@ -709,6 +725,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setIsAuthenticated(false)
     localStorage.removeItem('app_current_user_id')
+    setCurrentUserObj(null)
   }
 
   const setCurrentUser = (id: string) => {
@@ -1086,7 +1103,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 {
                   id: `hist_${Date.now()}`,
                   text,
-                  senderId: currentUserObj.id,
+                  senderId: currentUserObj?.id || 'system',
                   timestamp: new Date().toISOString(),
                   read: true,
                 },
@@ -1141,19 +1158,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const checkPermission = useCallback(
-    async (user: User, resource: Resource, action: Action) => {
+    async (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
       if (user.role === 'platform_owner') return true
 
       if (user.permissions && user.permissions.length > 0) {
-        const override = user.permissions.find((p) => p.resource === resource)
+        const override = user.permissions.find(
+          (p: Permission) => p.resource === resource,
+        )
         if (override) {
           return override.actions.includes(action)
         }
       }
 
-      const rolePerms = rolePermissions[user.role]
+      const rolePerms = rolePermissions[user.role as UserRole]
       if (!rolePerms) return false
 
       const resourcePerms = rolePerms[resource]
@@ -1165,19 +1184,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const hasPermissionSync = useCallback(
-    (user: User, resource: Resource, action: Action) => {
+    (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
       if (user.role === 'platform_owner') return true
 
       if (user.permissions && user.permissions.length > 0) {
-        const override = user.permissions.find((p) => p.resource === resource)
+        const override = user.permissions.find(
+          (p: Permission) => p.resource === resource,
+        )
         if (override) {
           return override.actions.includes(action)
         }
       }
 
-      const rolePerms = rolePermissions[user.role]
+      const rolePerms = rolePermissions[user.role as UserRole]
       if (!rolePerms) return false
 
       const resourcePerms = rolePerms[resource]
@@ -1261,7 +1282,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               assignedRole: assignedRole,
               source: 'automation',
               backToBack: isBackToBack,
-              createdBy: currentUserObj.id,
+              createdBy: currentUserObj?.id || 'system',
             })
 
             setTasks((prev) => [...prev, newTask])

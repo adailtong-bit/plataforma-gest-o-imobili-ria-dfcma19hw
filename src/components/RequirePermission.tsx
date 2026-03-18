@@ -71,24 +71,40 @@ export function RequirePermission({
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  // Safely evaluate permissions ensuring currentUser exists
-  const isPlatformOwner = currentUser?.role === 'platform_owner'
-  const isSoftwareTenant = currentUser?.role === 'software_tenant'
+  // DEVELOPER / PLATFORM OWNER BYPASS - Absolute Top Level Priority
+  // Role Isolation: the developer account bypasses everything inherently.
+  const isDeveloperBypass = currentUser?.role === 'platform_owner'
 
-  const allowed = currentUser
-    ? isPlatformOwner || isSoftwareTenant
-      ? true
-      : hasPermissionSync(currentUser as User, resource, action)
-    : false
+  // 1. Developer Absolute Access Override
+  if (isDeveloperBypass) {
+    return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
+  }
+
+  // 2. Loading State Integrity -> Wait for session if not Developer
+  if (isAuthLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        <h2 className="text-xl font-medium text-slate-700">
+          Verifying access...
+        </h2>
+      </div>
+    )
+  }
+
+  // 3. Not Authenticated -> Redirect to Login
+  if (!isAuthenticated || !currentUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  // 4. Normal Permission Checks
+  const isSoftwareTenant = currentUser?.role === 'software_tenant'
+  const allowed = isSoftwareTenant
+    ? true
+    : hasPermissionSync(currentUser as User, resource, action)
 
   useEffect(() => {
-    if (
-      !isAuthLoading &&
-      isAuthenticated &&
-      !allowed &&
-      !hasAlerted &&
-      !isPlatformOwner
-    ) {
+    if (!allowed && !hasAlerted) {
       const isPortalUser = [
         'tenant',
         'property_owner',
@@ -107,45 +123,16 @@ export function RequirePermission({
         setHasAlerted(true)
       }
     }
-  }, [
-    isAuthLoading,
-    isAuthenticated,
-    allowed,
-    hasAlerted,
-    toast,
-    t,
-    currentUser,
-    isPlatformOwner,
-  ])
-
-  if (isAuthLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
-        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <h2 className="text-xl font-medium text-slate-700">
-          Verifying access...
-        </h2>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-
-  // Platform Owner Bypass Logic: Guaranteed access for the platform_owner role
-  if (isPlatformOwner) {
-    return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
-  }
+  }, [allowed, hasAlerted, toast, t, currentUser])
 
   if (!allowed) {
-    const isPortalUser =
-      currentUser?.role === 'tenant' ||
-      currentUser?.role === 'property_owner' ||
-      currentUser?.role === 'partner' ||
-      currentUser?.role === 'partner_employee'
+    const isPortalUser = [
+      'tenant',
+      'property_owner',
+      'partner',
+      'partner_employee',
+    ].includes(currentUser?.role || '')
 
-    // Properly redirect portal users even if they try to hit the root or unauthorized pages
     if (isPortalUser) {
       const portalPath =
         currentUser.role === 'property_owner'

@@ -30967,19 +30967,15 @@ var getRoleName = (role) => {
 };
 var getInitialUser = () => {
 	const savedId = localStorage.getItem("app_current_user_id");
+	if (!savedId) return null;
 	const localTenants = localStorage.getItem("app_tenants") ? JSON.parse(localStorage.getItem("app_tenants")) : tenants;
 	const localOwners = localStorage.getItem("app_owners") ? JSON.parse(localStorage.getItem("app_owners")) : owners;
-	const allInitialUsers = [
+	return [
 		...systemUsers,
 		...localOwners,
 		...partners,
 		...localTenants
-	];
-	if (savedId) {
-		const found = allInitialUsers.find((u) => u.id === savedId);
-		if (found) return found;
-	}
-	return systemUsers[0];
+	].find((u) => u.id === savedId) || null;
 };
 const AppProvider = ({ children }) => {
 	const [properties$1, setProperties] = (0, import_react.useState)(properties);
@@ -31050,9 +31046,9 @@ const AppProvider = ({ children }) => {
 	const [marketingWorkflows$1, setMarketingWorkflows] = (0, import_react.useState)(marketingWorkflows);
 	const [emailTemplates$1, setEmailTemplates] = (0, import_react.useState)(emailTemplates);
 	const [selectedPropertyId, setSelectedPropertyId] = (0, import_react.useState)("all");
-	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(!!localStorage.getItem("app_current_user_id"));
-	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(true);
 	const [currentUserObj, setCurrentUserObj] = (0, import_react.useState)(getInitialUser());
+	const [isAuthenticated, setIsAuthenticated] = (0, import_react.useState)(!!localStorage.getItem("app_current_user_id") && !!currentUserObj);
+	const [isAuthLoading, setIsAuthLoading] = (0, import_react.useState)(currentUserObj?.role !== "platform_owner");
 	const [isTourOpen, setIsTourOpen] = (0, import_react.useState)(false);
 	const [currentStepIndex, setCurrentStepIndex] = (0, import_react.useState)(0);
 	const [activeVideo, setActiveVideo] = (0, import_react.useState)(null);
@@ -31061,11 +31057,25 @@ const AppProvider = ({ children }) => {
 	(0, import_react.useEffect)(() => {
 		let isMounted = true;
 		const initializeSession = async () => {
-			setIsAuthLoading(true);
+			const initialUser = getInitialUser();
+			if (initialUser?.role === "platform_owner") {
+				if (isMounted) {
+					setCurrentUserObj(initialUser);
+					setIsAuthenticated(true);
+					setIsAuthLoading(false);
+				}
+				return;
+			}
+			if (isMounted) setIsAuthLoading(true);
 			await new Promise((resolve) => setTimeout(resolve, 300));
 			if (!isMounted) return;
-			if (localStorage.getItem("app_current_user_id")) setIsAuthenticated(true);
-			else setIsAuthenticated(false);
+			if (initialUser) {
+				setCurrentUserObj(initialUser);
+				setIsAuthenticated(true);
+			} else {
+				setCurrentUserObj(null);
+				setIsAuthenticated(false);
+			}
 			setIsAuthLoading(false);
 		};
 		initializeSession();
@@ -31154,7 +31164,7 @@ const AppProvider = ({ children }) => {
 		tenants$1,
 		filterByOrg
 	]);
-	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m) => m.ownerId === currentUserObj.id), [allMessages, currentUserObj.id]);
+	const visibleMessages = (0, import_react.useMemo)(() => allMessages.filter((m) => m.ownerId === currentUserObj?.id), [allMessages, currentUserObj?.id]);
 	const login = (email) => {
 		const user = allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
 		if (user) {
@@ -31168,6 +31178,7 @@ const AppProvider = ({ children }) => {
 	const logout = () => {
 		setIsAuthenticated(false);
 		localStorage.removeItem("app_current_user_id");
+		setCurrentUserObj(null);
 	};
 	const setCurrentUser = (id) => {
 		const u = allUsers.find((u$1) => u$1.id === id);
@@ -31405,7 +31416,7 @@ const AppProvider = ({ children }) => {
 			history: [...m.history, {
 				id: `hist_${Date.now()}`,
 				text,
-				senderId: currentUserObj.id,
+				senderId: currentUserObj?.id || "system",
 				timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 				read: true
 			}]
@@ -31507,7 +31518,7 @@ const AppProvider = ({ children }) => {
 						assignedRole,
 						source: "automation",
 						backToBack: isBackToBack,
-						createdBy: currentUserObj.id
+						createdBy: currentUserObj?.id || "system"
 					});
 					setTasks((prev) => [...prev, newTask]);
 					tasksCreated++;
@@ -81293,11 +81304,22 @@ function RequirePermission({ children, resource, action = "view" }) {
 	const { toast: toast$2 } = useToast();
 	const { t } = useLanguageStore_default();
 	const [hasAlerted, setHasAlerted] = (0, import_react.useState)(false);
-	const isPlatformOwner = currentUser?.role === "platform_owner";
-	const isSoftwareTenant = currentUser?.role === "software_tenant";
-	const allowed = currentUser ? isPlatformOwner || isSoftwareTenant ? true : hasPermissionSync(currentUser, resource, action) : false;
+	if (currentUser?.role === "platform_owner") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
+	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "text-xl font-medium text-slate-700",
+			children: "Verifying access..."
+		})]
+	});
+	if (!isAuthenticated || !currentUser) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
+		to: "/login",
+		state: { from: location },
+		replace: true
+	});
+	const allowed = currentUser?.role === "software_tenant" ? true : hasPermissionSync(currentUser, resource, action);
 	(0, import_react.useEffect)(() => {
-		if (!isAuthLoading && isAuthenticated && !allowed && !hasAlerted && !isPlatformOwner) {
+		if (!allowed && !hasAlerted) {
 			if (![
 				"tenant",
 				"property_owner",
@@ -81313,30 +81335,19 @@ function RequirePermission({ children, resource, action = "view" }) {
 			}
 		}
 	}, [
-		isAuthLoading,
-		isAuthenticated,
 		allowed,
 		hasAlerted,
 		toast$2,
 		t,
-		currentUser,
-		isPlatformOwner
+		currentUser
 	]);
-	if (isAuthLoading) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "h-12 w-12 text-primary animate-spin" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
-			className: "text-xl font-medium text-slate-700",
-			children: "Verifying access..."
-		})]
-	});
-	if (!isAuthenticated) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
-		to: "/login",
-		state: { from: location },
-		replace: true
-	});
-	if (isPlatformOwner) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PermissionErrorBoundary, { children });
 	if (!allowed) {
-		if (currentUser?.role === "tenant" || currentUser?.role === "property_owner" || currentUser?.role === "partner" || currentUser?.role === "partner_employee") {
+		if ([
+			"tenant",
+			"property_owner",
+			"partner",
+			"partner_employee"
+		].includes(currentUser?.role || "")) {
 			const portalPath = currentUser.role === "property_owner" ? "/portal/owner" : currentUser.role === "partner" || currentUser.role === "partner_employee" ? "/portal/partner" : "/portal/tenant";
 			if (!location.pathname.startsWith(portalPath)) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Navigate, {
 				to: portalPath,
@@ -81910,4 +81921,4 @@ var App = () => {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}) }));
 
-//# sourceMappingURL=index-DOvr7pao.js.map
+//# sourceMappingURL=index-D8f-NsGH.js.map
