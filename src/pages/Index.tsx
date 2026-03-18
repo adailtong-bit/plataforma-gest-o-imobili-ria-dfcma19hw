@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Link, Navigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
+import useAuthStore from '@/stores/useAuthStore'
 import { formatCurrency } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { Badge } from '@/components/ui/badge'
@@ -16,20 +17,20 @@ import {
 import { Button } from '@/components/ui/button'
 
 export default function Index() {
-  const { properties, bookings, tasks, financials, currency, currentUser } =
+  const { properties, bookings, tasks, financials, currency } =
     useContext(AppContext)!
+  const { currentUser, simulationMode, simulationRole } = useAuthStore()
 
-  // Route portals based on user role to ensure absolute data isolation
-  if (currentUser?.role === 'property_owner') {
+  const effectiveRole =
+    simulationMode && simulationRole ? simulationRole : currentUser?.role
+
+  if (effectiveRole === 'property_owner') {
     return <Navigate to="/portal/owner" replace />
   }
-  if (
-    currentUser?.role === 'partner' ||
-    currentUser?.role === 'partner_employee'
-  ) {
+  if (effectiveRole === 'partner' || effectiveRole === 'partner_employee') {
     return <Navigate to="/portal/partner" replace />
   }
-  if (currentUser?.role === 'tenant') {
+  if (effectiveRole === 'tenant') {
     return <Navigate to="/portal/tenant" replace />
   }
 
@@ -37,7 +38,6 @@ export default function Index() {
     .filter((i) => i.status === 'paid')
     .reduce((acc, i) => acc + i.amount, 0)
 
-  // KPI calculations
   const occupancy =
     bookings.length > 0
       ? Math.min(

@@ -1,16 +1,30 @@
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
+import useAuthStore from '@/stores/useAuthStore'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
 import { OwnerTasks } from '@/components/owners/OwnerTasks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Building2, ClipboardList } from 'lucide-react'
 
 export default function OwnerPortal() {
-  const { currentUser, properties, tasks } = useContext(AppContext)!
+  const { properties, tasks } = useContext(AppContext)!
+  const { currentUser, allUsers, simulationMode, simulationRole } =
+    useAuthStore()
 
   if (!currentUser) return null
 
-  const ownerProperties = properties.filter((p) => p.ownerId === currentUser.id)
+  let targetUserId = currentUser.id
+  let displayName = currentUser.name
+
+  if (simulationMode && simulationRole === 'property_owner') {
+    const firstOwner = allUsers.find((u) => u.role === 'property_owner')
+    if (firstOwner) {
+      targetUserId = firstOwner.id
+      displayName = `[Simulated] ${firstOwner.name}`
+    }
+  }
+
+  const ownerProperties = properties.filter((p) => p.ownerId === targetUserId)
   const pendingTasks = tasks.filter(
     (t) =>
       ownerProperties.map((op) => op.id).includes(t.propertyId) &&
@@ -22,7 +36,7 @@ export default function OwnerPortal() {
     <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Welcome, {currentUser.name}
+          Welcome, {displayName}
         </h1>
         <p className="text-muted-foreground">Owner Asset Portal</p>
       </div>
@@ -56,8 +70,8 @@ export default function OwnerPortal() {
         </Card>
       </div>
 
-      <OwnerProperties ownerId={currentUser.id} properties={properties} />
-      <OwnerTasks ownerId={currentUser.id} properties={properties} />
+      <OwnerProperties ownerId={targetUserId} properties={properties} />
+      <OwnerTasks ownerId={targetUserId} properties={properties} />
     </div>
   )
 }

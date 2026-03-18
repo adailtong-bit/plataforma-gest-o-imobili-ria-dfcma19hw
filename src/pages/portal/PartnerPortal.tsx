@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
+import useAuthStore from '@/stores/useAuthStore'
 import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -7,22 +8,41 @@ import { Link } from 'react-router-dom'
 import { ClipboardList, Users } from 'lucide-react'
 
 export default function PartnerPortal() {
-  const { currentUser, partners, updatePartner, tasks } =
-    useContext(AppContext)!
+  const { partners, updatePartner, tasks } = useContext(AppContext)!
+  const { currentUser, allUsers, simulationMode, simulationRole } =
+    useAuthStore()
 
   if (!currentUser) return null
 
-  // Determine if it's a partner company admin or an employee
-  const isEmployee = currentUser.role === 'partner_employee'
+  let targetUserId = currentUser.id
+  let targetUserRole = currentUser.role
+  let displayName = currentUser.name
+
+  if (
+    simulationMode &&
+    (simulationRole === 'partner' || simulationRole === 'partner_employee')
+  ) {
+    const firstPartner = allUsers.find((u) => u.role === simulationRole)
+    if (firstPartner) {
+      targetUserId = firstPartner.id
+      targetUserRole = firstPartner.role
+      displayName = `[Simulated] ${firstPartner.name}`
+    } else {
+      targetUserRole = simulationRole as any
+    }
+  }
+
+  const isEmployee = targetUserRole === 'partner_employee'
   const partnerId = isEmployee
-    ? (currentUser as any).parentPartnerId
-    : currentUser.id
+    ? (allUsers.find((u) => u.id === targetUserId) as any)?.parentPartnerId ||
+      targetUserId
+    : targetUserId
+
   const partner = partners.find((p) => p.id === partnerId)
 
-  // Partner specific stats
   const partnerTasks = tasks.filter((t) =>
     isEmployee
-      ? t.partnerEmployeeId === currentUser.id
+      ? t.partnerEmployeeId === targetUserId
       : t.assigneeId === partnerId,
   )
   const pendingTasks = partnerTasks.filter(
@@ -33,7 +53,7 @@ export default function PartnerPortal() {
     <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Partner Portal
+          Welcome, {displayName}
         </h1>
         <p className="text-muted-foreground">
           Manage your operations and team.

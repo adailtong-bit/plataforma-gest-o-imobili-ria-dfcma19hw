@@ -20,7 +20,7 @@ import { Logo } from '@/components/Logo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Login() {
-  const { login, allUsers, isAuthenticated } = useAuthStore()
+  const { login, allUsers, isAuthenticated, isAuthLoading } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
@@ -32,10 +32,10 @@ export default function Login() {
   const from = location.state?.from?.pathname || '/'
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isAuthLoading) {
       navigate(from, { replace: true })
     }
-  }, [isAuthenticated, navigate, from])
+  }, [isAuthenticated, isAuthLoading, navigate, from])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,8 +48,6 @@ export default function Login() {
       return
     }
 
-    // In a real app we'd verify the password here.
-    // For this prototype, we'll log in the user if the email is found.
     const success = login(email)
     if (success) {
       toast({ title: 'Success', description: 'Logged in successfully' })
@@ -106,7 +104,6 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen w-full flex-col lg:flex-row bg-slate-50">
-      {/* Left Panel - Branding */}
       <div className="hidden lg:flex w-1/2 bg-slate-900 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20">
           <img
@@ -129,7 +126,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-[400px] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex flex-col space-y-2 text-center lg:text-left">
@@ -210,8 +206,9 @@ export default function Login() {
                 <Button
                   type="submit"
                   className="w-full h-11 bg-trust-blue hover:bg-blue-700 text-base shadow-sm"
+                  disabled={isAuthLoading}
                 >
-                  Sign In
+                  {isAuthLoading ? 'Signing In...' : 'Sign In'}
                 </Button>
 
                 <p className="text-center text-xs text-slate-500 mt-4">

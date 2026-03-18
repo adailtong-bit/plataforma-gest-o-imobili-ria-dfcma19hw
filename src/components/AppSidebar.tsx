@@ -44,7 +44,8 @@ import { NavUser } from '@/components/NavUser'
 
 export function AppSidebar() {
   const location = useLocation()
-  const { currentUser, hasPermissionSync } = useAuthStore()
+  const { currentUser, hasPermissionSync, simulationMode, simulationRole } =
+    useAuthStore()
   const { t } = useLanguageStore()
 
   const getTitle = (key: string, fallback: string) => {
@@ -52,6 +53,13 @@ export function AppSidebar() {
     if (!text || text === key || text.includes('.')) return fallback
     return text
   }
+
+  const effectiveRole =
+    simulationMode && simulationRole ? simulationRole : currentUser?.role
+  const effectiveUser =
+    simulationMode && simulationRole && currentUser
+      ? ({ ...currentUser, role: simulationRole, permissions: [] } as any)
+      : (currentUser as any)
 
   const mainNavItems = [
     {
@@ -294,25 +302,25 @@ export function AppSidebar() {
   ]
 
   const filteredMain = mainNavItems.filter((item) =>
-    hasPermissionSync(currentUser as any, item.resource as any, 'view'),
+    hasPermissionSync(effectiveUser, item.resource as any, 'view'),
   )
 
   const filteredOps = operationsItems.filter((item) =>
-    hasPermissionSync(currentUser as any, item.resource as any, 'view'),
+    hasPermissionSync(effectiveUser, item.resource as any, 'view'),
   )
 
   const filteredSystem = systemItems.filter((item) => {
-    if (item.roles && currentUser?.role === 'platform_owner') {
+    if (item.roles && effectiveUser?.role === 'platform_owner') {
       return true
     }
     const hasPerm = hasPermissionSync(
-      currentUser as any,
+      effectiveUser,
       item.resource as any,
       'view',
     )
     if (
       item.roles &&
-      (!currentUser || !item.roles.includes(currentUser.role))
+      (!effectiveUser || !item.roles.includes(effectiveUser.role))
     ) {
       return false
     }
@@ -324,10 +332,10 @@ export function AppSidebar() {
     'property_owner',
     'partner',
     'partner_employee',
-  ].includes(currentUser?.role || '')
+  ].includes(effectiveRole || '')
 
   const activePortalItem = portalItems.find(
-    (item) => item.role === currentUser?.role,
+    (item) => item.role === effectiveRole,
   )
 
   return (
@@ -337,7 +345,7 @@ export function AppSidebar() {
         <div className="text-center mt-2">
           {currentUser && (
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
-              {t(`roles.${currentUser.role}`) || currentUser.role}
+              {t(`roles.${effectiveRole}`) || effectiveRole}
             </span>
           )}
         </div>
@@ -370,8 +378,7 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                {/* Specific items for Owners */}
-                {currentUser?.role === 'property_owner' && (
+                {effectiveRole === 'property_owner' && (
                   <>
                     <SidebarMenuItem>
                       <SidebarMenuButton
@@ -403,8 +410,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                   </>
                 )}
-                {/* Specific items for Tenants */}
-                {currentUser?.role === 'tenant' && (
+                {effectiveRole === 'tenant' && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       asChild
@@ -420,9 +426,8 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                {/* Specific items for Partners */}
-                {(currentUser?.role === 'partner' ||
-                  currentUser?.role === 'partner_employee') && (
+                {(effectiveRole === 'partner' ||
+                  effectiveRole === 'partner_employee') && (
                   <>
                     <SidebarMenuItem>
                       <SidebarMenuButton

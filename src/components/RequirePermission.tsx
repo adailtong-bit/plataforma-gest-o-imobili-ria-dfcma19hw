@@ -86,7 +86,7 @@ export function RequirePermission({
     (!simulationMode || ignoreSimulation)
 
   const effectiveUser =
-    simulationMode && simulationRole && !ignoreSimulation
+    simulationMode && simulationRole && !ignoreSimulation && currentUser
       ? ({ ...currentUser, role: simulationRole, permissions: [] } as User)
       : (currentUser as User)
 

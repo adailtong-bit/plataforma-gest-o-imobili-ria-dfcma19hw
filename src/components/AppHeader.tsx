@@ -27,22 +27,32 @@ import { usePrivacyStore } from '@/stores/usePrivacyStore'
 
 export function AppHeader() {
   const { language, setLanguage, t } = useLanguageStore()
-  const { currentUser, allUsers, setCurrentUser, logout } = useAuthStore()
+  const {
+    currentUser,
+    allUsers,
+    setCurrentUser,
+    logout,
+    simulationMode,
+    simulationRole,
+  } = useAuthStore()
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
   const { selectedPropertyId, setSelectedPropertyId, properties } =
     usePropertyStore()
   const { isPrivate, togglePrivacy } = usePrivacyStore()
 
+  const effectiveRole =
+    simulationMode && simulationRole ? simulationRole : currentUser?.role
+
   const handleDemoUserChange = (userId: string) => {
     setCurrentUser(userId)
-    navigate('/') // Reset to dashboard to avoid permission errors on current page
+    navigate('/')
   }
 
-  // Filter properties based on role
   const accessibleProperties = properties.filter((p) => {
-    if (currentUser?.role === 'property_owner') {
-      return p.ownerId === currentUser.id
+    if (effectiveRole === 'property_owner') {
+      if (simulationMode) return true
+      return p.ownerId === currentUser?.id
     }
     return true
   })
@@ -57,7 +67,7 @@ export function AppHeader() {
     'property_owner',
     'partner',
     'partner_employee',
-  ].includes(currentUser?.role || '')
+  ].includes(effectiveRole || '')
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-6 shadow-sm shrink-0">
@@ -79,7 +89,6 @@ export function AppHeader() {
       {isMobile && <div className="flex-1" />}
 
       <div className="flex items-center gap-3 ml-auto shrink-0">
-        {/* Privacy Toggle */}
         <Button
           variant="ghost"
           size="icon"
@@ -92,7 +101,6 @@ export function AppHeader() {
           <ShieldAlert className="h-4 w-4" />
         </Button>
 
-        {/* Global Property Filter - Only for Managers/Admins */}
         {!isPortalUser && (
           <div className="hidden md:block w-[200px]">
             <Select
@@ -165,7 +173,6 @@ export function AppHeader() {
           <HelpCircle className="h-5 w-5" />
         </Button>
 
-        {/* User Switcher (For Demo purposes) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
