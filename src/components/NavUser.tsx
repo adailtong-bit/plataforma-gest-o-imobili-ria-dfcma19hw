@@ -49,19 +49,19 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg border border-slate-700">
                 <AvatarImage
-                  src={user.avatar || undefined}
-                  alt={user.name || 'User'}
+                  src={user?.avatar || undefined}
+                  alt={user?.name || 'User'}
                 />
                 <AvatarFallback className="rounded-lg bg-slate-800 text-slate-300">
-                  {user.name?.charAt(0) || 'U'}
+                  {user?.name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold text-slate-200">
-                  {user.name || 'User'}
+                  {user?.name || 'User'}
                 </span>
                 <span className="truncate text-xs text-slate-500">
-                  {user.email || ''}
+                  {user?.email || ''}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4 text-slate-500" />
@@ -77,19 +77,19 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={user.avatar || undefined}
-                    alt={user.name || 'User'}
+                    src={user?.avatar || undefined}
+                    alt={user?.name || 'User'}
                   />
                   <AvatarFallback className="rounded-lg bg-slate-100 text-slate-900">
-                    {user.name?.charAt(0) || 'U'}
+                    {user?.name?.charAt(0) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {user.name || 'User'}
+                    {user?.name || 'User'}
                   </span>
                   <span className="truncate text-xs text-slate-500">
-                    {user.email || ''}
+                    {user?.email || ''}
                   </span>
                 </div>
               </div>

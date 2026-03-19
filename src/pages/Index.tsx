@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import useAuthStore from '@/stores/useAuthStore'
@@ -13,25 +13,53 @@ import {
   TrendingUp,
   Calendar as CalendarIcon,
   CheckSquare,
+  Shield,
+  Briefcase,
+  Users,
+  Building,
+  ArrowRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function Index() {
   const { properties, bookings, tasks, financials, currency } =
     useContext(AppContext)!
-  const { currentUser, simulationMode, simulationRole } = useAuthStore()
+  const {
+    currentUser,
+    simulationMode,
+    simulationRole,
+    setSimulationMode,
+    setSimulationRole,
+  } = useAuthStore()
+  const navigate = useNavigate()
 
-  const effectiveRole =
-    simulationMode && simulationRole ? simulationRole : currentUser?.role
+  const isRealAdmin =
+    currentUser?.role === 'platform_owner' ||
+    currentUser?.role === 'software_tenant' ||
+    currentUser?.role === 'internal_user'
 
-  if (effectiveRole === 'property_owner') {
-    return <Navigate to="/portal/owner" replace />
+  if (!isRealAdmin && !simulationMode) {
+    if (currentUser?.role === 'property_owner')
+      return <Navigate to="/portal/owner" replace />
+    if (
+      currentUser?.role === 'partner' ||
+      currentUser?.role === 'partner_employee'
+    )
+      return <Navigate to="/portal/partner" replace />
+    if (currentUser?.role === 'tenant')
+      return <Navigate to="/portal/tenant" replace />
   }
-  if (effectiveRole === 'partner' || effectiveRole === 'partner_employee') {
-    return <Navigate to="/portal/partner" replace />
-  }
-  if (effectiveRole === 'tenant') {
-    return <Navigate to="/portal/tenant" replace />
+
+  const handleSimulate = (role: string, path: string) => {
+    if (role === 'admin') {
+      setSimulationMode(false)
+      setSimulationRole(null)
+      navigate('/')
+    } else {
+      setSimulationMode(true)
+      setSimulationRole(role as any)
+      navigate(path)
+    }
   }
 
   const totalRevenue = financials.invoices
@@ -61,6 +89,123 @@ export default function Index() {
           Dashboard
         </h1>
       </div>
+
+      {isRealAdmin && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">
+            Role Simulation & Access Points
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-md ${!simulationMode ? 'ring-2 ring-trust-blue bg-blue-50/50' : 'bg-white border-slate-200'}`}
+              onClick={() => handleSimulate('admin', '/')}
+            >
+              <CardContent className="p-6 flex flex-col items-center text-center gap-3">
+                <div
+                  className={`p-3 rounded-full ${!simulationMode ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  <Shield className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Administrator</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Full platform access
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2 group text-trust-blue"
+                >
+                  Access{' '}
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-md ${simulationMode && simulationRole === 'property_owner' ? 'ring-2 ring-trust-blue bg-blue-50/50' : 'bg-white border-slate-200'}`}
+              onClick={() => handleSimulate('property_owner', '/portal/owner')}
+            >
+              <CardContent className="p-6 flex flex-col items-center text-center gap-3">
+                <div
+                  className={`p-3 rounded-full ${simulationMode && simulationRole === 'property_owner' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  <Briefcase className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Owner Portal</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Asset & financial view
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2 group text-trust-blue"
+                >
+                  Access{' '}
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-md ${simulationMode && simulationRole === 'partner' ? 'ring-2 ring-trust-blue bg-blue-50/50' : 'bg-white border-slate-200'}`}
+              onClick={() => handleSimulate('partner', '/portal/partner')}
+            >
+              <CardContent className="p-6 flex flex-col items-center text-center gap-3">
+                <div
+                  className={`p-3 rounded-full ${simulationMode && simulationRole === 'partner' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  <Building className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Partner Portal</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Service & tasks view
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2 group text-trust-blue"
+                >
+                  Access{' '}
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-md ${simulationMode && simulationRole === 'tenant' ? 'ring-2 ring-trust-blue bg-blue-50/50' : 'bg-white border-slate-200'}`}
+              onClick={() => handleSimulate('tenant', '/portal/tenant')}
+            >
+              <CardContent className="p-6 flex flex-col items-center text-center gap-3">
+                <div
+                  className={`p-3 rounded-full ${simulationMode && simulationRole === 'tenant' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Tenant Portal</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Lease & payments view
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2 group text-trust-blue"
+                >
+                  Access{' '}
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-white border-slate-200 shadow-sm">
