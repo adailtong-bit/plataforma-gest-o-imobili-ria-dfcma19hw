@@ -54,4 +54,3 @@ export function PropertyInventory({ data }: Props) {
     </Card>
   )
 }
-

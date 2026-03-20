@@ -36,7 +36,8 @@ class PermissionErrorBoundary extends Component<
             Erro de Exibição
           </h1>
           <p className="text-muted-foreground max-w-md mb-6">
-            Um componente falhou ao renderizar corretamente. Aplicamos um fallback para que você possa continuar usando a plataforma.
+            Um componente falhou ao renderizar corretamente. Aplicamos um
+            fallback para que você possa continuar usando a plataforma.
           </p>
           <Button
             onClick={() => window.location.reload()}
@@ -214,4 +215,3 @@ export function RequirePermission({
 
   return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
 }
-

@@ -48,7 +48,9 @@ export function ServiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{service ? 'Editar Serviço' : 'Adicionar Serviço'}</DialogTitle>
+          <DialogTitle>
+            {service ? 'Editar Serviço' : 'Adicionar Serviço'}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
@@ -105,4 +107,3 @@ export function ServiceDialog({
     </Dialog>
   )
 }
-

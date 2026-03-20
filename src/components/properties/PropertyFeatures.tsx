@@ -50,4 +50,3 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
     </Card>
   )
 }
-

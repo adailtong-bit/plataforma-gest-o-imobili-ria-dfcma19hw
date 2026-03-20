@@ -59,7 +59,8 @@ export function PropertyManagement({ property }: Props) {
                     <div>
                       <h4 className="font-semibold text-sm">{task.title}</h4>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {task.type.replace('_', ' ')} • prioridade {task.priority}
+                        {task.type.replace('_', ' ')} • prioridade{' '}
+                        {task.priority}
                       </p>
                     </div>
                   </div>
@@ -123,4 +124,3 @@ export function PropertyManagement({ property }: Props) {
     </div>
   )
 }
-

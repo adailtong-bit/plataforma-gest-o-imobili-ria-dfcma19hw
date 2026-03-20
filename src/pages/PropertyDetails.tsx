@@ -159,7 +159,8 @@ export default function PropertyDetails() {
                 }}
                 className="border-slate-300 font-medium"
               >
-                <X className="h-4 w-4 mr-2" /> {t('common.cancel') || 'Cancelar'}
+                <X className="h-4 w-4 mr-2" />{' '}
+                {t('common.cancel') || 'Cancelar'}
               </Button>
               <Button
                 onClick={handleSave}
@@ -304,4 +305,3 @@ export default function PropertyDetails() {
     </div>
   )
 }
-

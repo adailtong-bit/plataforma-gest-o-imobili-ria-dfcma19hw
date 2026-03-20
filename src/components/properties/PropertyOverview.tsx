@@ -46,4 +46,3 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
     </Card>
   )
 }
-

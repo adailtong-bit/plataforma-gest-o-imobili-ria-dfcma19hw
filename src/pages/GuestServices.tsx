@@ -215,7 +215,13 @@ export default function GuestServices() {
                       )}
                     </TableCell>
                     <TableCell className="capitalize">
-                      {service.category === 'dining' ? 'Restaurante' : service.category === 'transport' ? 'Transporte' : service.category === 'other' ? 'Outro' : service.category}
+                      {service.category === 'dining'
+                        ? 'Restaurante'
+                        : service.category === 'transport'
+                          ? 'Transporte'
+                          : service.category === 'other'
+                            ? 'Outro'
+                            : service.category}
                     </TableCell>
                     <TableCell className="font-medium">
                       <DataMask>{formatAppCurrency(currentPrice)}</DataMask>
@@ -370,4 +376,3 @@ export default function GuestServices() {
     </div>
   )
 }
-

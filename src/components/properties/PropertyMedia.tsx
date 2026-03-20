@@ -33,4 +33,3 @@ export function PropertyMedia({ data }: Props) {
     </Card>
   )
 }
-
