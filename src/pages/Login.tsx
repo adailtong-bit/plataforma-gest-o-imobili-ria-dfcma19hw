@@ -48,6 +48,13 @@ export default function Login() {
           case 'tenant':
             targetPath = '/portal/tenant'
             break
+          case 'master':
+          case 'super_admin':
+          case 'platform_owner':
+          case 'software_tenant':
+          case 'internal_user':
+            targetPath = '/'
+            break
           default:
             targetPath = '/'
         }
@@ -76,8 +83,7 @@ export default function Login() {
     } else {
       toast({
         title: 'Authentication Failed',
-        description:
-          'Invalid email or password. Please verify your credentials and try again.',
+        description: 'Credenciais inválidas',
         variant: 'destructive',
       })
     }
@@ -102,8 +108,7 @@ export default function Login() {
     } else {
       toast({
         title: 'Authentication Failed',
-        description:
-          'Invalid email or password. Please verify your credentials and try again.',
+        description: 'Credenciais inválidas',
         variant: 'destructive',
       })
     }
@@ -111,6 +116,7 @@ export default function Login() {
 
   const getRoleIcon = (role?: string) => {
     switch (role?.toLowerCase()) {
+      case 'master':
       case 'super_admin':
       case 'admin':
       case 'platform_owner':

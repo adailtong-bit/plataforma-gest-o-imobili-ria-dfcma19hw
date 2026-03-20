@@ -346,8 +346,10 @@ export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 const getRoleName = (role: UserRole) => {
   switch (role) {
-    case 'super_admin':
+    case 'master':
       return 'Master Admin'
+    case 'super_admin':
+      return 'Super Admin'
     case 'platform_owner':
       return 'Admin'
     case 'software_tenant':
@@ -372,7 +374,7 @@ const defaultTestUsers = [
     id: 'u-master',
     name: 'Master Admin',
     email: 'master@plataforma.com',
-    role: 'super_admin',
+    role: 'master',
     status: 'active',
     isFirstLogin: false,
     isDemo: true,
@@ -597,7 +599,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(() => {
     const user = getInitialUser()
     if (!user) return false
-    return user.role !== 'platform_owner' && user.role !== 'super_admin'
+    return (
+      user.role !== 'platform_owner' &&
+      user.role !== 'super_admin' &&
+      user.role !== 'master'
+    )
   })
 
   const [isTourOpen, setIsTourOpen] = useState(false)
@@ -618,7 +624,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       if (
         initialUser?.role === 'platform_owner' ||
-        initialUser?.role === 'super_admin'
+        initialUser?.role === 'super_admin' ||
+        initialUser?.role === 'master'
       ) {
         if (isMounted) {
           setCurrentUserObj(initialUser)
@@ -702,7 +709,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (!currentUserObj) return []
       if (
         currentUserObj.role === 'platform_owner' ||
-        currentUserObj.role === 'super_admin'
+        currentUserObj.role === 'super_admin' ||
+        currentUserObj.role === 'master'
       )
         return items
       return items.filter(
@@ -719,6 +727,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (
         currentUserObj?.role !== 'platform_owner' &&
         currentUserObj?.role !== 'super_admin' &&
+        currentUserObj?.role !== 'master' &&
         (currentUserObj as User)?.organizationId
       ) {
         return {
@@ -1304,7 +1313,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     async (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      if (user.role === 'platform_owner' || user.role === 'super_admin')
+      if (
+        user.role === 'platform_owner' ||
+        user.role === 'super_admin' ||
+        user.role === 'master'
+      )
         return true
 
       if (user.permissions && user.permissions.length > 0) {
@@ -1331,7 +1344,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      if (user.role === 'platform_owner' || user.role === 'super_admin')
+      if (
+        user.role === 'platform_owner' ||
+        user.role === 'super_admin' ||
+        user.role === 'master'
+      )
         return true
 
       if (user.permissions && user.permissions.length > 0) {

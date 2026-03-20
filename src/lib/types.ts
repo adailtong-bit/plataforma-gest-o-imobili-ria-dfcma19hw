@@ -1,6 +1,7 @@
 import { type ClassValue } from 'clsx'
 
 export type UserRole =
+  | 'master'
   | 'super_admin'
   | 'platform_owner'
   | 'software_tenant'
