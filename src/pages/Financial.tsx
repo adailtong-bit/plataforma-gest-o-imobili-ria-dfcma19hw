@@ -28,6 +28,7 @@ import {
   Clock,
   ArrowUpCircle,
   ArrowDownCircle,
+  Filter,
 } from 'lucide-react'
 import {
   Dialog,
@@ -59,6 +60,8 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DatePickerWithRange } from '@/components/ui/date-range-picker'
+import { DateRange } from 'react-day-picker'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
@@ -80,6 +83,12 @@ export default function Financial() {
   const [viewMode, setViewMode] = useState<'pm' | 'owner' | 'property'>('pm')
   const [selectedOwnerId, setSelectedOwnerId] = useState('all')
   const [selectedPropertyId, setSelectedPropertyId] = useState('all')
+
+  const [filterCategory, setFilterCategory] = useState<string>('all')
+  const [filterPeriod, setFilterPeriod] = useState<string>('all')
+  const [customDateRange, setCustomDateRange] = useState<
+    DateRange | undefined
+  >()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<any>(null)
@@ -110,8 +119,9 @@ export default function Financial() {
     status: 'pending',
   })
 
-  const entriesWithBalance = useMemo(() => {
-    const filtered = ledgerEntries.filter((entry) => {
+  const filteredData = useMemo(() => {
+    // 1. Filter by View Mode
+    const viewFiltered = ledgerEntries.filter((entry) => {
       if (viewMode === 'pm') return true
       if (viewMode === 'owner') {
         if (selectedOwnerId === 'all') return true
@@ -125,12 +135,78 @@ export default function Financial() {
       return true
     })
 
-    const sortedAsc = [...filtered].sort(
+    // 2. Filter by Category
+    const catFiltered = viewFiltered.filter((entry) => {
+      if (filterCategory === 'all') return true
+      if (filterCategory === 'income') return entry.type === 'income'
+      if (filterCategory === 'expense') return entry.type === 'expense'
+      if (filterCategory === 'maintenance') {
+        const cat = entry.category?.toLowerCase() || ''
+        return (
+          cat.includes('maintenance') ||
+          cat.includes('manutenção') ||
+          cat.includes('manutencao')
+        )
+      }
+      if (filterCategory === 'cleaning') {
+        const cat = entry.category?.toLowerCase() || ''
+        return cat.includes('cleaning') || cat.includes('limpeza')
+      }
+      return true
+    })
+
+    // 3. Setup Period Boundaries
+    let start: Date | null = null
+    let end: Date | null = null
+    const now = new Date()
+
+    if (filterPeriod === 'month') {
+      start = new Date(now.getFullYear(), now.getMonth(), 1)
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+    } else if (filterPeriod === 'semester') {
+      const s = now.getMonth() < 6 ? 0 : 6
+      start = new Date(now.getFullYear(), s, 1)
+      end = new Date(now.getFullYear(), s + 6, 0, 23, 59, 59, 999)
+    } else if (filterPeriod === 'year') {
+      start = new Date(now.getFullYear(), 0, 1)
+      end = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999)
+    } else if (filterPeriod === 'custom' && customDateRange?.from) {
+      start = new Date(customDateRange.from.getTime())
+      start.setHours(0, 0, 0, 0)
+      end = customDateRange.to
+        ? new Date(customDateRange.to.getTime())
+        : new Date(customDateRange.from.getTime())
+      end.setHours(23, 59, 59, 999)
+    }
+
+    // 4. Split into previous (for initial balance) and current (for display)
+    let initialBalance = 0
+    const displayEntries: any[] = []
+
+    catFiltered.forEach((entry) => {
+      const entryDate = new Date(entry.date)
+      const amt = entry.type === 'income' ? entry.amount : -entry.amount
+
+      if (start && entryDate < start) {
+        if (entry.status === 'cleared') {
+          initialBalance += amt
+        }
+      } else if (start && end && entryDate >= start && entryDate <= end) {
+        displayEntries.push(entry)
+      } else if (!start) {
+        displayEntries.push(entry)
+      }
+    })
+
+    // 5. Sort and calculate running balance
+    const sortedAsc = [...displayEntries].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     )
 
-    let currentBalance = 0
+    let currentBalance = initialBalance
     const calculated = sortedAsc.map((entry) => {
+      // We only update the running real bank balance for cleared items,
+      // but for projection purposes we might want to include pending. Let's include all in running balance for the view.
       currentBalance += entry.type === 'income' ? entry.amount : -entry.amount
       return {
         ...entry,
@@ -138,8 +214,21 @@ export default function Financial() {
       }
     })
 
-    return calculated.reverse()
-  }, [ledgerEntries, viewMode, selectedOwnerId, selectedPropertyId, properties])
+    return {
+      entries: calculated.reverse(),
+      initialBalance,
+      finalBalance: currentBalance,
+    }
+  }, [
+    ledgerEntries,
+    viewMode,
+    selectedOwnerId,
+    selectedPropertyId,
+    properties,
+    filterCategory,
+    filterPeriod,
+    customDateRange,
+  ])
 
   const balances = useMemo(() => {
     let income = 0
@@ -147,7 +236,7 @@ export default function Financial() {
     let pendingIncome = 0
     let pendingExpense = 0
 
-    entriesWithBalance.forEach((e) => {
+    filteredData.entries.forEach((e) => {
       if (e.status === 'cleared') {
         if (e.type === 'income') income += e.amount
         else expense += e.amount
@@ -158,14 +247,15 @@ export default function Financial() {
     })
 
     return {
-      currentBalance: income - expense,
+      currentBalance: filteredData.finalBalance,
+      periodNet: income - expense,
       income,
       expense,
       pendingIncome,
       pendingExpense,
       pendingBalance: pendingIncome - pendingExpense,
     }
-  }, [entriesWithBalance])
+  }, [filteredData])
 
   const handleAdd = () => {
     addLedgerEntry({
@@ -420,69 +510,119 @@ export default function Financial() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-4 mb-6">
-            <Tabs
-              value={viewMode}
-              onValueChange={(v: any) => {
-                setViewMode(v)
-                setSelectedOwnerId('all')
-                setSelectedPropertyId('all')
-              }}
-            >
-              <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
-                <TabsTrigger value="pm" className="gap-2">
-                  <Building className="w-4 h-4" /> PM (Geral)
-                </TabsTrigger>
-                <TabsTrigger value="owner" className="gap-2">
-                  <User className="w-4 h-4" /> Proprietário
-                </TabsTrigger>
-                <TabsTrigger value="property" className="gap-2">
-                  <Building className="w-4 h-4" /> Propriedade
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+            <div className="flex flex-col gap-3 w-full lg:w-auto">
+              <Tabs
+                value={viewMode}
+                onValueChange={(v: any) => {
+                  setViewMode(v)
+                  setSelectedOwnerId('all')
+                  setSelectedPropertyId('all')
+                }}
+              >
+                <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
+                  <TabsTrigger value="pm" className="gap-2">
+                    <Building className="w-4 h-4 hidden sm:block" /> PM (Geral)
+                  </TabsTrigger>
+                  <TabsTrigger value="owner" className="gap-2">
+                    <User className="w-4 h-4 hidden sm:block" /> Proprietário
+                  </TabsTrigger>
+                  <TabsTrigger value="property" className="gap-2">
+                    <Building className="w-4 h-4 hidden sm:block" /> Propriedade
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
 
-            {viewMode === 'owner' && (
-              <div className="w-full md:w-[300px]">
+              {viewMode === 'owner' && (
+                <div className="w-full md:w-[400px]">
+                  <Select
+                    value={selectedOwnerId}
+                    onValueChange={setSelectedOwnerId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o Proprietário" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">
+                        Todos os Proprietários
+                      </SelectItem>
+                      {owners.map((o) => (
+                        <SelectItem key={o.id} value={o.id}>
+                          {o.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {viewMode === 'property' && (
+                <div className="w-full md:w-[400px]">
+                  <Select
+                    value={selectedPropertyId}
+                    onValueChange={setSelectedPropertyId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a Propriedade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as Propriedades</SelectItem>
+                      {properties.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 w-full lg:w-auto">
+              <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                <Filter className="w-4 h-4" />
+                <span className="hidden xl:inline">Filtros:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Select
-                  value={selectedOwnerId}
-                  onValueChange={setSelectedOwnerId}
+                  value={filterCategory}
+                  onValueChange={setFilterCategory}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o Proprietário" />
+                  <SelectTrigger className="w-[140px] sm:w-[160px] bg-white">
+                    <SelectValue placeholder="Categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos os Proprietários</SelectItem>
-                    {owners.map((o) => (
-                      <SelectItem key={o.id} value={o.id}>
-                        {o.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="all">Todas Categorias</SelectItem>
+                    <SelectItem value="income">Receitas</SelectItem>
+                    <SelectItem value="expense">Despesas</SelectItem>
+                    <SelectItem value="maintenance">Manutenções</SelectItem>
+                    <SelectItem value="cleaning">Limpezas</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-            )}
 
-            {viewMode === 'property' && (
-              <div className="w-full md:w-[300px]">
-                <Select
-                  value={selectedPropertyId}
-                  onValueChange={setSelectedPropertyId}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a Propriedade" />
+                <Select value={filterPeriod} onValueChange={setFilterPeriod}>
+                  <SelectTrigger className="w-[140px] sm:w-[160px] bg-white">
+                    <SelectValue placeholder="Período" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas as Propriedades</SelectItem>
-                    {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="all">Todo o Período</SelectItem>
+                    <SelectItem value="month">Mês Atual</SelectItem>
+                    <SelectItem value="semester">Semestre Atual</SelectItem>
+                    <SelectItem value="year">Ano Fiscal</SelectItem>
+                    <SelectItem value="custom">Personalizado</SelectItem>
                   </SelectContent>
                 </Select>
+
+                {filterPeriod === 'custom' && (
+                  <div className="bg-white rounded-md">
+                    <DatePickerWithRange
+                      date={customDateRange}
+                      setDate={setCustomDateRange}
+                    />
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -496,7 +636,7 @@ export default function Financial() {
             >
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Saldo Atual (Conta Corrente)
+                  Saldo Final Projetado
                 </div>
                 <div
                   className={cn(
@@ -509,14 +649,14 @@ export default function Financial() {
                   {formatAppCurrency(balances.currentBalance)}
                 </div>
                 <div className="text-xs text-slate-500 mt-2">
-                  Apenas transações pagas/recebidas
+                  Saldo projetado incluindo o histórico filtrado
                 </div>
               </CardContent>
             </Card>
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Total Receitas (Pagas)
+                  Total Receitas (No Período)
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
                   {formatAppCurrency(balances.income)}
@@ -531,7 +671,7 @@ export default function Financial() {
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Total Despesas (Pagas)
+                  Total Despesas (No Período)
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
                   {formatAppCurrency(balances.expense)}
@@ -565,7 +705,7 @@ export default function Financial() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {entriesWithBalance.map((entry) => {
+              {filteredData.entries.map((entry) => {
                 const isIncome = entry.type === 'income'
                 return (
                   <TableRow key={entry.id} className="hover:bg-slate-50">
@@ -619,6 +759,11 @@ export default function Financial() {
                               ? 'Custo Fixo'
                               : 'Custo Variável'}
                           </Badge>
+                        )}
+                        {entry.category && entry.category !== 'other' && (
+                          <span className="text-[10px] text-slate-500 capitalize px-1 bg-slate-100 rounded-sm">
+                            {entry.category}
+                          </span>
                         )}
                       </div>
                     </TableCell>
@@ -900,7 +1045,7 @@ export default function Financial() {
                   </TableRow>
                 )
               })}
-              {entriesWithBalance.length === 0 && (
+              {filteredData.entries.length === 0 && (
                 <TableRow>
                   <TableCell
                     colSpan={7}
