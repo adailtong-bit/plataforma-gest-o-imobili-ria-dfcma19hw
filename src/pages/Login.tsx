@@ -60,8 +60,8 @@ export default function Login() {
     e.preventDefault()
     if (!email) {
       toast({
-        title: 'Error',
-        description: 'Please enter an email address',
+        title: 'Authentication Error',
+        description: 'Please enter an email address.',
         variant: 'destructive',
       })
       return
@@ -69,11 +69,15 @@ export default function Login() {
 
     const success = login(email, password)
     if (success) {
-      toast({ title: 'Success', description: 'Logged in successfully' })
+      toast({
+        title: 'Welcome Back',
+        description: 'Authentication successful.',
+      })
     } else {
       toast({
-        title: 'Error',
-        description: 'Invalid credentials',
+        title: 'Authentication Failed',
+        description:
+          'Invalid email or password. Please verify your credentials and try again.',
         variant: 'destructive',
       })
     }
@@ -81,7 +85,8 @@ export default function Login() {
 
   const handleDemoLogin = (demoEmail: string) => {
     let pwd = ''
-    if (demoEmail === 'admin@plataforma.com') pwd = 'admin123'
+    if (demoEmail === 'master@plataforma.com') pwd = 'master123'
+    else if (demoEmail === 'admin@plataforma.com') pwd = 'admin123'
     else if (demoEmail === 'parceiro@plataforma.com') pwd = 'parceiro123'
     else if (demoEmail === 'proprietario@plataforma.com')
       pwd = 'proprietario123'
@@ -90,11 +95,15 @@ export default function Login() {
 
     const success = login(demoEmail, pwd)
     if (success) {
-      toast({ title: 'Success', description: 'Logged in successfully' })
+      toast({
+        title: 'Welcome Back',
+        description: 'Authentication successful.',
+      })
     } else {
       toast({
-        title: 'Error',
-        description: 'Invalid credentials',
+        title: 'Authentication Failed',
+        description:
+          'Invalid email or password. Please verify your credentials and try again.',
         variant: 'destructive',
       })
     }
@@ -102,8 +111,8 @@ export default function Login() {
 
   const getRoleIcon = (role?: string) => {
     switch (role?.toLowerCase()) {
-      case 'admin':
       case 'super_admin':
+      case 'admin':
       case 'platform_owner':
       case 'software_tenant':
       case 'internal_user':
@@ -125,6 +134,7 @@ export default function Login() {
   const demoUsers = allUsers
     .filter(
       (u) =>
+        u.email === 'master@plataforma.com' ||
         u.email === 'admin@plataforma.com' ||
         u.email === 'parceiro@plataforma.com' ||
         u.email === 'proprietario@plataforma.com' ||
@@ -183,6 +193,15 @@ export default function Login() {
                   Credenciais de Teste / Default Credentials:
                 </p>
                 <ul className="text-blue-800 space-y-1.5">
+                  <li
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      setEmail('master@plataforma.com')
+                      setPassword('master123')
+                    }}
+                  >
+                    <strong>Master:</strong> master@plataforma.com / master123
+                  </li>
                   <li
                     className="cursor-pointer hover:underline"
                     onClick={() => {

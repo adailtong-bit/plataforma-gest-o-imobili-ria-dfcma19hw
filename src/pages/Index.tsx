@@ -34,6 +34,7 @@ export default function Index() {
   const navigate = useNavigate()
 
   const isRealAdmin =
+    currentUser?.role === 'super_admin' ||
     currentUser?.role === 'platform_owner' ||
     currentUser?.role === 'software_tenant' ||
     currentUser?.role === 'internal_user'

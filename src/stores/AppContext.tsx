@@ -346,6 +346,8 @@ export const AppContext = createContext<AppContextType | undefined>(undefined)
 
 const getRoleName = (role: UserRole) => {
   switch (role) {
+    case 'super_admin':
+      return 'Master Admin'
     case 'platform_owner':
       return 'Admin'
     case 'software_tenant':
@@ -366,6 +368,15 @@ const getRoleName = (role: UserRole) => {
 }
 
 const defaultTestUsers = [
+  {
+    id: 'u-master',
+    name: 'Master Admin',
+    email: 'master@plataforma.com',
+    role: 'super_admin',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+  },
   {
     id: 'u-admin',
     name: 'Administrador Teste',
@@ -446,7 +457,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const hasTenant = parsed.some(
       (t: any) => t.email === 'locatario@plataforma.com',
     )
-    if (!hasTenant) parsed.push(defaultTestUsers[3] as any)
+    if (!hasTenant) parsed.push(defaultTestUsers[4] as any)
     return parsed
   })
 
@@ -460,7 +471,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const hasOwner = parsed.some(
       (o: any) => o.email === 'proprietario@plataforma.com',
     )
-    if (!hasOwner) parsed.push(defaultTestUsers[2] as any)
+    if (!hasOwner) parsed.push(defaultTestUsers[3] as any)
     return parsed
   })
 
@@ -474,7 +485,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     )
     return hasPartner
       ? initialPartners
-      : [...initialPartners, defaultTestUsers[1] as unknown as Partner]
+      : [...initialPartners, defaultTestUsers[2] as unknown as Partner]
   })
 
   const [bookings, setBookings] = useState<Booking[]>(initialBookings)
@@ -491,9 +502,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [users, setUsers] = useState<User[]>(() => {
     const hasAdmin = systemUsers.some((u) => u.email === 'admin@plataforma.com')
-    return hasAdmin
-      ? systemUsers
-      : [...systemUsers, defaultTestUsers[0] as unknown as User]
+    const hasMaster = systemUsers.some(
+      (u) => u.email === 'master@plataforma.com',
+    )
+    let initialArr = [...systemUsers]
+    if (!hasMaster) initialArr.push(defaultTestUsers[0] as unknown as User)
+    if (!hasAdmin) initialArr.push(defaultTestUsers[1] as unknown as User)
+    return initialArr
   })
 
   const [paymentIntegrations, setPaymentIntegrations] = useState<
@@ -582,7 +597,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(() => {
     const user = getInitialUser()
     if (!user) return false
-    return user.role !== 'platform_owner'
+    return user.role !== 'platform_owner' && user.role !== 'super_admin'
   })
 
   const [isTourOpen, setIsTourOpen] = useState(false)
@@ -601,7 +616,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const initializeSession = async () => {
       const initialUser = getInitialUser()
 
-      if (initialUser?.role === 'platform_owner') {
+      if (
+        initialUser?.role === 'platform_owner' ||
+        initialUser?.role === 'super_admin'
+      ) {
         if (isMounted) {
           setCurrentUserObj(initialUser)
           setIsAuthenticated(true)
@@ -682,7 +700,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const filterByOrg = useCallback(
     <T extends { organizationId?: string }>(items: T[]): T[] => {
       if (!currentUserObj) return []
-      if (currentUserObj.role === 'platform_owner') return items
+      if (
+        currentUserObj.role === 'platform_owner' ||
+        currentUserObj.role === 'super_admin'
+      )
+        return items
       return items.filter(
         (item) =>
           !item.organizationId ||
@@ -696,6 +718,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     <T extends object>(item: T): T => {
       if (
         currentUserObj?.role !== 'platform_owner' &&
+        currentUserObj?.role !== 'super_admin' &&
         (currentUserObj as User)?.organizationId
       ) {
         return {
@@ -796,12 +819,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const login = (email: string, password?: string) => {
-    const user = allUsers.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase(),
-    )
+    const emailLower = email.toLowerCase()
+    const user = allUsers.find((u) => u.email.toLowerCase() === emailLower)
     if (user) {
-      const emailLower = email.toLowerCase()
       const isDefaultAccount = [
+        'master@plataforma.com',
         'admin@plataforma.com',
         'parceiro@plataforma.com',
         'proprietario@plataforma.com',
@@ -809,6 +831,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ].includes(emailLower)
 
       if (isDefaultAccount) {
+        if (emailLower === 'master@plataforma.com' && password !== 'master123')
+          return false
         if (emailLower === 'admin@plataforma.com' && password !== 'admin123')
           return false
         if (
@@ -1280,7 +1304,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     async (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      if (user.role === 'platform_owner') return true
+      if (user.role === 'platform_owner' || user.role === 'super_admin')
+        return true
 
       if (user.permissions && user.permissions.length > 0) {
         const override = user.permissions.find(
@@ -1306,7 +1331,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     (user: any, resource: Resource, action: Action) => {
       if (!user || !user.role) return false
 
-      if (user.role === 'platform_owner') return true
+      if (user.role === 'platform_owner' || user.role === 'super_admin')
+        return true
 
       if (user.permissions && user.permissions.length > 0) {
         const override = user.permissions.find(

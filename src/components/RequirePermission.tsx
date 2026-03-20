@@ -81,9 +81,9 @@ export function RequirePermission({
 
   // ENHANCED PERMISSION HANDLING: Testers/admins have unrestricted access to all modules during validation phase.
   const isDeveloperBypass =
+    currentUser?.role === 'super_admin' ||
     currentUser?.role === 'platform_owner' ||
-    currentUser?.role === 'admin' ||
-    currentUser?.role === 'super_admin'
+    currentUser?.role === 'admin'
 
   const effectiveUser =
     simulationMode && simulationRole && !ignoreSimulation && currentUser
