@@ -20,7 +20,8 @@ import { Logo } from '@/components/Logo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Login() {
-  const { login, allUsers, isAuthenticated, isAuthLoading } = useAuthStore()
+  const { login, allUsers, isAuthenticated, isAuthLoading, currentUser } =
+    useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
@@ -32,10 +33,28 @@ export default function Login() {
   const from = location.state?.from?.pathname || '/'
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading) {
-      navigate(from, { replace: true })
+    if (isAuthenticated && !isAuthLoading && currentUser) {
+      let targetPath = from
+
+      if (targetPath === '/' || targetPath === '/login') {
+        switch (currentUser.role) {
+          case 'property_owner':
+            targetPath = '/portal/owner'
+            break
+          case 'partner':
+          case 'partner_employee':
+            targetPath = '/portal/partner'
+            break
+          case 'tenant':
+            targetPath = '/portal/tenant'
+            break
+          default:
+            targetPath = '/'
+        }
+      }
+      navigate(targetPath, { replace: true })
     }
-  }, [isAuthenticated, isAuthLoading, navigate, from])
+  }, [isAuthenticated, isAuthLoading, currentUser, navigate, from])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,24 +67,36 @@ export default function Login() {
       return
     }
 
-    const success = login(email)
+    const success = login(email, password)
     if (success) {
       toast({ title: 'Success', description: 'Logged in successfully' })
-      navigate(from, { replace: true })
     } else {
       toast({
         title: 'Error',
-        description: 'Invalid email or user not found',
+        description: 'Invalid credentials',
         variant: 'destructive',
       })
     }
   }
 
   const handleDemoLogin = (demoEmail: string) => {
-    const success = login(demoEmail)
+    let pwd = ''
+    if (demoEmail === 'admin@plataforma.com') pwd = 'admin123'
+    else if (demoEmail === 'parceiro@plataforma.com') pwd = 'parceiro123'
+    else if (demoEmail === 'proprietario@plataforma.com')
+      pwd = 'proprietario123'
+    else if (demoEmail === 'locatario@plataforma.com') pwd = 'locatario123'
+    else pwd = 'password'
+
+    const success = login(demoEmail, pwd)
     if (success) {
       toast({ title: 'Success', description: 'Logged in successfully' })
-      navigate(from, { replace: true })
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Invalid credentials',
+        variant: 'destructive',
+      })
     }
   }
 

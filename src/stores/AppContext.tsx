@@ -185,7 +185,7 @@ interface AppContextType {
   setSelectedPropertyId: (id: string) => void
   t: (key: string, params?: Record<string, string>) => string
   formatAppCurrency: (value: number) => string
-  login: (email: string) => boolean
+  login: (email: string, password?: string) => boolean
   logout: () => void
   addProperty: (property: Property) => void
   updateProperty: (property: Property) => void
@@ -795,11 +795,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [allMessages, currentUserObj?.id],
   )
 
-  const login = (email: string) => {
+  const login = (email: string, password?: string) => {
     const user = allUsers.find(
       (u) => u.email.toLowerCase() === email.toLowerCase(),
     )
     if (user) {
+      const emailLower = email.toLowerCase()
+      const isDefaultAccount = [
+        'admin@plataforma.com',
+        'parceiro@plataforma.com',
+        'proprietario@plataforma.com',
+        'locatario@plataforma.com',
+      ].includes(emailLower)
+
+      if (isDefaultAccount) {
+        if (emailLower === 'admin@plataforma.com' && password !== 'admin123')
+          return false
+        if (
+          emailLower === 'parceiro@plataforma.com' &&
+          password !== 'parceiro123'
+        )
+          return false
+        if (
+          emailLower === 'proprietario@plataforma.com' &&
+          password !== 'proprietario123'
+        )
+          return false
+        if (
+          emailLower === 'locatario@plataforma.com' &&
+          password !== 'locatario123'
+        )
+          return false
+      } else {
+        if (user.password && user.password !== password) return false
+      }
+
       setCurrentUserObj(user)
       localStorage.setItem('app_current_user_id', user.id)
       setIsAuthenticated(true)
