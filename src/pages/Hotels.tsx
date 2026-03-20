@@ -48,17 +48,19 @@ import { Hotel } from '@/lib/types'
 
 export default function Hotels() {
   const {
-    hotels,
-    towers,
+    hotels = [],
+    towers = [],
     addHotel,
     updateHotel,
     deleteHotel,
     addTower,
     updateTower,
     deleteTower,
-  } = useContext(AppContext)!
+  } = useContext(AppContext) || {}
   const { t } = useLanguageStore()
   const { toast } = useToast()
+
+  const safeT = typeof t === 'function' ? t : (key: string) => key
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<Hotel | null>(null)
@@ -104,8 +106,8 @@ export default function Hotels() {
 
   const handleEditClick = (h: Hotel) => {
     const hotelTowers = towers
-      .filter((t) => t.hotelId === h.id)
-      .map((t) => ({ id: t.id, name: t.name }))
+      .filter((tower) => tower.hotelId === h.id)
+      .map((tower) => ({ id: tower.id, name: tower.name }))
     setForm({
       name: h.name || '',
       managerName: h.managerName || '',
@@ -127,8 +129,8 @@ export default function Hotels() {
   const handleSave = () => {
     if (!form.name || !form.city) {
       toast({
-        title: t('hotel_form.validation_error'),
-        description: t('hotel_form.validation_error'),
+        title: safeT('hotel_form.validation_error'),
+        description: safeT('hotel_form.validation_error'),
         variant: 'destructive',
       })
       return
@@ -149,25 +151,27 @@ export default function Hotels() {
       state: form.state,
       zipCode: form.zipCode,
       country: form.country,
-      towers: form.towersList.filter((t) => !t.isDeleted).map((t) => t.id),
+      towers: form.towersList
+        .filter((tower) => !tower.isDeleted)
+        .map((tower) => tower.id),
     }
 
-    if (editingRecord) {
+    if (editingRecord && updateHotel) {
       updateHotel({ ...editingRecord, ...hotelData } as Hotel)
-      toast({ title: t('common.save') })
-    } else {
+      toast({ title: safeT('common.save') })
+    } else if (addHotel) {
       addHotel(hotelData as Hotel)
-      toast({ title: t('common.success') })
+      toast({ title: safeT('common.success') })
     }
 
     // Sync Towers
-    form.towersList.forEach((t) => {
-      if (t.isDeleted && !t.isNew) {
-        deleteTower(t.id)
-      } else if (t.isNew && !t.isDeleted) {
-        addTower({ id: t.id, hotelId: hId, name: t.name })
-      } else if (!t.isNew && !t.isDeleted) {
-        updateTower({ id: t.id, hotelId: hId, name: t.name })
+    form.towersList.forEach((tower) => {
+      if (tower.isDeleted && !tower.isNew && deleteTower) {
+        deleteTower(tower.id)
+      } else if (tower.isNew && !tower.isDeleted && addTower) {
+        addTower({ id: tower.id, hotelId: hId, name: tower.name })
+      } else if (!tower.isNew && !tower.isDeleted && updateTower) {
+        updateTower({ id: tower.id, hotelId: hId, name: tower.name })
       }
     })
 
@@ -176,8 +180,10 @@ export default function Hotels() {
   }
 
   const handleDelete = (id: string) => {
-    deleteHotel(id)
-    toast({ title: t('common.delete_success') })
+    if (deleteHotel) {
+      deleteHotel(id)
+      toast({ title: safeT('common.delete_success') })
+    }
   }
 
   const addTowerField = () => {
@@ -193,8 +199,8 @@ export default function Hotels() {
   const removeTowerField = (id: string) => {
     setForm((prev) => ({
       ...prev,
-      towersList: prev.towersList.map((t) =>
-        t.id === id ? { ...t, isDeleted: true } : t,
+      towersList: prev.towersList.map((tower) =>
+        tower.id === id ? { ...tower, isDeleted: true } : tower,
       ),
     }))
   }
@@ -205,9 +211,9 @@ export default function Hotels() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Building className="h-8 w-8 text-trust-blue" />
-            {t('hotels.title')}
+            {safeT('hotels.title')}
           </h1>
-          <p className="text-muted-foreground">{t('hotels.subtitle')}</p>
+          <p className="text-muted-foreground">{safeT('hotels.subtitle')}</p>
         </div>
         <Dialog
           open={isAddOpen}
@@ -218,49 +224,51 @@ export default function Hotels() {
         >
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> {t('hotels.add_title')}
+              <Plus className="h-4 w-4" /> {safeT('hotels.add_title')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingRecord ? t('common.edit') : t('hotels.add_title')}
+                {editingRecord
+                  ? safeT('common.edit')
+                  : safeT('hotels.add_title')}
               </DialogTitle>
               <DialogDescription>
-                {t('hotel_form.define_divisions')}
+                {safeT('hotel_form.define_divisions')}
               </DialogDescription>
             </DialogHeader>
 
             <Tabs defaultValue="details" className="w-full mt-4">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="details">
-                  {t('hotel_form.details')}
+                  {safeT('hotel_form.details')}
                 </TabsTrigger>
                 <TabsTrigger value="location">
-                  {t('hotel_form.location')}
+                  {safeT('hotel_form.location')}
                 </TabsTrigger>
                 <TabsTrigger value="towers">
-                  {t('hotel_form.towers_wings')}
+                  {safeT('hotel_form.towers_wings')}
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4 py-4">
                 <div className="grid gap-2">
                   <Label>
-                    {t('hotel_form.hotel_name')}{' '}
+                    {safeT('hotel_form.hotel_name')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    placeholder={t('hotel_form.placeholder_name')}
+                    placeholder={safeT('hotel_form.placeholder_name')}
                     value={form.name || ''}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>{t('common.manager')}</Label>
+                    <Label>{safeT('common.manager')}</Label>
                     <Input
-                      placeholder={t('common.manager')}
+                      placeholder={safeT('common.manager')}
                       value={form.managerName || ''}
                       onChange={(e) =>
                         setForm({ ...form, managerName: e.target.value })
@@ -268,7 +276,7 @@ export default function Hotels() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>{t('common.phone')}</Label>
+                    <Label>{safeT('common.phone')}</Label>
                     <Input
                       placeholder="+1 (555) 000-0000"
                       value={form.managerPhone || ''}
@@ -279,7 +287,7 @@ export default function Hotels() {
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label>{t('common.email')}</Label>
+                  <Label>{safeT('common.email')}</Label>
                   <Input
                     placeholder="manager@hotel.com"
                     value={form.managerEmail || ''}
@@ -292,7 +300,7 @@ export default function Hotels() {
 
               <TabsContent value="location" className="space-y-4 py-4">
                 <div className="grid gap-2">
-                  <Label>{t('common.country')}</Label>
+                  <Label>{safeT('common.country')}</Label>
                   <Select
                     value={form.country || 'US'}
                     onValueChange={(val) => setForm({ ...form, country: val })}
@@ -302,22 +310,22 @@ export default function Hotels() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="US">
-                        {t('common.country_us')}
+                        {safeT('common.country_us')}
                       </SelectItem>
                       <SelectItem value="BR">
-                        {t('common.country_br')}
+                        {safeT('common.country_br')}
                       </SelectItem>
                       <SelectItem value="ES">
-                        {t('common.country_es')}
+                        {safeT('common.country_es')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-4 gap-4">
                   <div className="grid gap-2 col-span-3">
-                    <Label>{t('hotel_form.street_address')}</Label>
+                    <Label>{safeT('hotel_form.street_address')}</Label>
                     <Input
-                      placeholder={t('hotel_form.street_address')}
+                      placeholder={safeT('hotel_form.street_address')}
                       value={form.address || ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
@@ -325,9 +333,9 @@ export default function Hotels() {
                     />
                   </div>
                   <div className="grid gap-2 col-span-1">
-                    <Label>{t('hotel_form.number')}</Label>
+                    <Label>{safeT('hotel_form.number')}</Label>
                     <Input
-                      placeholder={t('hotel_form.number')}
+                      placeholder={safeT('hotel_form.number')}
                       value={form.number || ''}
                       onChange={(e) =>
                         setForm({ ...form, number: e.target.value })
@@ -337,9 +345,9 @@ export default function Hotels() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>{t('hotel_form.neighborhood')}</Label>
+                    <Label>{safeT('hotel_form.neighborhood')}</Label>
                     <Input
-                      placeholder={t('hotel_form.neighborhood')}
+                      placeholder={safeT('hotel_form.neighborhood')}
                       value={form.neighborhood || ''}
                       onChange={(e) =>
                         setForm({ ...form, neighborhood: e.target.value })
@@ -348,11 +356,11 @@ export default function Hotels() {
                   </div>
                   <div className="grid gap-2">
                     <Label>
-                      {t('hotel_form.city')}{' '}
+                      {safeT('hotel_form.city')}{' '}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      placeholder={t('hotel_form.city')}
+                      placeholder={safeT('hotel_form.city')}
                       value={form.city || ''}
                       onChange={(e) =>
                         setForm({ ...form, city: e.target.value })
@@ -362,9 +370,9 @@ export default function Hotels() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>{t('hotel_form.state')}</Label>
+                    <Label>{safeT('hotel_form.state')}</Label>
                     <Input
-                      placeholder={t('hotel_form.state')}
+                      placeholder={safeT('hotel_form.state')}
                       value={form.state || ''}
                       onChange={(e) =>
                         setForm({ ...form, state: e.target.value })
@@ -372,9 +380,9 @@ export default function Hotels() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>{t('hotel_form.zip_code')}</Label>
+                    <Label>{safeT('hotel_form.zip_code')}</Label>
                     <Input
-                      placeholder={t('hotel_form.zip_code')}
+                      placeholder={safeT('hotel_form.zip_code')}
                       value={form.zipCode || ''}
                       onChange={(e) =>
                         setForm({ ...form, zipCode: e.target.value })
@@ -387,45 +395,46 @@ export default function Hotels() {
               <TabsContent value="towers" className="space-y-4 py-4">
                 <div className="flex justify-between items-center mb-2">
                   <Label className="text-muted-foreground">
-                    {t('hotel_form.define_divisions')}
+                    {safeT('hotel_form.define_divisions')}
                   </Label>
                   <Button variant="outline" size="sm" onClick={addTowerField}>
                     <Plus className="h-4 w-4 mr-2" />{' '}
-                    {t('hotel_form.add_division')}
+                    {safeT('hotel_form.add_division')}
                   </Button>
                 </div>
                 <div className="space-y-3">
                   {form.towersList
-                    .filter((t) => !t.isDeleted)
-                    .map((t, i) => (
-                      <div key={t.id} className="flex gap-2 items-center">
+                    .filter((tower) => !tower.isDeleted)
+                    .map((tower, i) => (
+                      <div key={tower.id} className="flex gap-2 items-center">
                         <Input
-                          value={t.name || ''}
+                          value={tower.name || ''}
                           onChange={(e) => {
                             const val = e.target.value
                             setForm((prev) => ({
                               ...prev,
                               towersList: prev.towersList.map((x) =>
-                                x.id === t.id ? { ...x, name: val } : x,
+                                x.id === tower.id ? { ...x, name: val } : x,
                               ),
                             }))
                           }}
-                          placeholder={t('hotel_form.towers_wings')}
+                          placeholder={safeT('hotel_form.towers_wings')}
                           className="flex-1"
                         />
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeTowerField(t.id)}
+                          onClick={() => removeTowerField(tower.id)}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
-                  {form.towersList.filter((t) => !t.isDeleted).length === 0 && (
+                  {form.towersList.filter((tower) => !tower.isDeleted)
+                    .length === 0 && (
                     <div className="text-center py-6 text-sm text-slate-500 border border-dashed rounded-md bg-slate-50">
-                      {t('hotel_form.no_divisions')}
+                      {safeT('hotel_form.no_divisions')}
                     </div>
                   )}
                 </div>
@@ -434,10 +443,10 @@ export default function Hotels() {
 
             <DialogFooter className="mt-6 border-t pt-4">
               <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                {t('common.cancel')}
+                {safeT('common.cancel')}
               </Button>
               <Button onClick={handleSave} className="bg-trust-blue text-white">
-                {t('common.save')}
+                {safeT('common.save')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -449,12 +458,12 @@ export default function Hotels() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.address')}</TableHead>
-                <TableHead>{t('common.manager')}</TableHead>
-                <TableHead>{t('common.phone')}</TableHead>
+                <TableHead>{safeT('common.name')}</TableHead>
+                <TableHead>{safeT('common.address')}</TableHead>
+                <TableHead>{safeT('common.manager')}</TableHead>
+                <TableHead>{safeT('common.phone')}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions')}
+                  {safeT('common.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -483,32 +492,33 @@ export default function Hotels() {
                         size="sm"
                         onClick={() => handleEditClick(h)}
                       >
-                        <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
+                        <Pencil className="h-4 w-4 mr-2" />{' '}
+                        {safeT('common.edit')}
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
                             <Trash2 className="h-4 w-4 mr-2" />{' '}
-                            {t('common.delete')}
+                            {safeT('common.delete')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
-                              {t('hotel_form.delete_title')}
+                              {safeT('hotel_form.delete_title')}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              {t('hotel_form.delete_desc')}
+                              {safeT('hotel_form.delete_desc')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>
-                              {t('common.cancel')}
+                              {safeT('common.cancel')}
                             </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(h.id)}
                             >
-                              {t('common.delete')}
+                              {safeT('common.delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -523,7 +533,7 @@ export default function Hotels() {
                     colSpan={5}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    {safeT('common.empty')}
                   </TableCell>
                 </TableRow>
               )}
