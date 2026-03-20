@@ -25,8 +25,8 @@ export default function Login() {
   const location = useLocation()
   const { toast } = useToast()
 
-  const [email, setEmail] = useState('admin@corepm.com')
-  const [password, setPassword] = useState('password123')
+  const [email, setEmail] = useState('admin@plataforma.com')
+  const [password, setPassword] = useState('admin123')
   const [showPassword, setShowPassword] = useState(false)
 
   const from = location.state?.from?.pathname || '/'
@@ -94,11 +94,11 @@ export default function Login() {
   const demoUsers = allUsers
     .filter(
       (u) =>
-        u.role === 'platform_owner' ||
-        u.role === 'software_tenant' ||
-        u.role === 'property_owner' ||
-        u.role === 'tenant' ||
-        u.role === 'partner',
+        u.email === 'admin@plataforma.com' ||
+        u.email === 'parceiro@plataforma.com' ||
+        u.email === 'proprietario@plataforma.com' ||
+        u.email === 'locatario@plataforma.com' ||
+        u.isDemo,
     )
     .slice(0, 6)
 
@@ -147,6 +147,53 @@ export default function Login() {
             </TabsList>
 
             <TabsContent value="login">
+              <div className="bg-blue-50/50 p-4 rounded-md text-sm mb-6 text-left border border-blue-100">
+                <p className="font-semibold text-blue-900 mb-2">
+                  Credenciais de Teste / Default Credentials:
+                </p>
+                <ul className="text-blue-800 space-y-1.5">
+                  <li
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      setEmail('admin@plataforma.com')
+                      setPassword('admin123')
+                    }}
+                  >
+                    <strong>Admin:</strong> admin@plataforma.com / admin123
+                  </li>
+                  <li
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      setEmail('parceiro@plataforma.com')
+                      setPassword('parceiro123')
+                    }}
+                  >
+                    <strong>Partner:</strong> parceiro@plataforma.com /
+                    parceiro123
+                  </li>
+                  <li
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      setEmail('proprietario@plataforma.com')
+                      setPassword('proprietario123')
+                    }}
+                  >
+                    <strong>Owner:</strong> proprietario@plataforma.com /
+                    proprietario123
+                  </li>
+                  <li
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      setEmail('locatario@plataforma.com')
+                      setPassword('locatario123')
+                    }}
+                  >
+                    <strong>Tenant:</strong> locatario@plataforma.com /
+                    locatario123
+                  </li>
+                </ul>
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -156,7 +203,7 @@ export default function Login() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="admin@corepm.com"
+                        placeholder="admin@plataforma.com"
                         className="pl-10 bg-white"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

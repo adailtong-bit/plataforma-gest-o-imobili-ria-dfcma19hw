@@ -365,6 +365,47 @@ const getRoleName = (role: UserRole) => {
   }
 }
 
+const defaultTestUsers = [
+  {
+    id: 'u-admin',
+    name: 'Administrador Teste',
+    email: 'admin@plataforma.com',
+    role: 'platform_owner',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+  },
+  {
+    id: 'u-partner',
+    name: 'Parceiro Teste',
+    email: 'parceiro@plataforma.com',
+    role: 'partner',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+    entityType: 'company',
+    type: 'maintenance',
+  },
+  {
+    id: 'u-owner',
+    name: 'Proprietário Teste',
+    email: 'proprietario@plataforma.com',
+    role: 'property_owner',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+  },
+  {
+    id: 'u-tenant',
+    name: 'Locatário Teste',
+    email: 'locatario@plataforma.com',
+    role: 'tenant',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+  },
+]
+
 const getInitialUser = () => {
   const savedId = localStorage.getItem('app_current_user_id')
   if (!savedId) return null
@@ -381,6 +422,7 @@ const getInitialUser = () => {
     ...localOwners,
     ...initialPartners,
     ...localTenants,
+    ...defaultTestUsers,
   ]
 
   const found = allInitialUsers.find((u) => u.id === savedId)
@@ -400,7 +442,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [tenants, setTenants] = useState<Tenant[]>(() => {
     const saved = localStorage.getItem('app_tenants')
-    return saved ? JSON.parse(saved) : initialTenants
+    const parsed = saved ? JSON.parse(saved) : initialTenants
+    const hasTenant = parsed.some(
+      (t: any) => t.email === 'locatario@plataforma.com',
+    )
+    if (!hasTenant) parsed.push(defaultTestUsers[3] as any)
+    return parsed
   })
 
   useEffect(() => {
@@ -409,14 +456,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [owners, setOwners] = useState<Owner[]>(() => {
     const saved = localStorage.getItem('app_owners')
-    return saved ? JSON.parse(saved) : initialOwners
+    const parsed = saved ? JSON.parse(saved) : initialOwners
+    const hasOwner = parsed.some(
+      (o: any) => o.email === 'proprietario@plataforma.com',
+    )
+    if (!hasOwner) parsed.push(defaultTestUsers[2] as any)
+    return parsed
   })
 
   useEffect(() => {
     localStorage.setItem('app_owners', JSON.stringify(owners))
   }, [owners])
 
-  const [partners, setPartners] = useState<Partner[]>(initialPartners)
+  const [partners, setPartners] = useState<Partner[]>(() => {
+    const hasPartner = initialPartners.some(
+      (p) => p.email === 'parceiro@plataforma.com',
+    )
+    return hasPartner
+      ? initialPartners
+      : [...initialPartners, defaultTestUsers[1] as unknown as Partner]
+  })
+
   const [bookings, setBookings] = useState<Booking[]>(initialBookings)
   const [calendarBlocks, setCalendarBlocks] =
     useState<CalendarBlock[]>(initialBlocks)
@@ -428,7 +488,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [workflows, setWorkflows] = useState<Workflow[]>(initialWorkflows)
 
   const [allMessages, setAllMessages] = useState<Message[]>(initialMessages)
-  const [users, setUsers] = useState<User[]>(systemUsers)
+
+  const [users, setUsers] = useState<User[]>(() => {
+    const hasAdmin = systemUsers.some((u) => u.email === 'admin@plataforma.com')
+    return hasAdmin
+      ? systemUsers
+      : [...systemUsers, defaultTestUsers[0] as unknown as User]
+  })
+
   const [paymentIntegrations, setPaymentIntegrations] = useState<
     PaymentIntegration[]
   >(defaultPaymentIntegrations)
@@ -716,7 +783,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     for (const item of combinedList) {
       if (!seenIds.has(item.id)) {
         seenIds.add(item.id)
-        uniqueUsers.push(item)
+        uniqueUsers.push(item as any)
       }
     }
 
