@@ -110,22 +110,35 @@ export default function Financial() {
     status: 'pending',
   })
 
-  const filteredEntries = useMemo(() => {
-    return ledgerEntries
-      .filter((entry) => {
-        if (viewMode === 'pm') return true
-        if (viewMode === 'owner') {
-          if (selectedOwnerId === 'all') return true
-          const prop = properties.find((p) => p.id === entry.propertyId)
-          return prop?.ownerId === selectedOwnerId
-        }
-        if (viewMode === 'property') {
-          if (selectedPropertyId === 'all') return true
-          return entry.propertyId === selectedPropertyId
-        }
-        return true
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const entriesWithBalance = useMemo(() => {
+    const filtered = ledgerEntries.filter((entry) => {
+      if (viewMode === 'pm') return true
+      if (viewMode === 'owner') {
+        if (selectedOwnerId === 'all') return true
+        const prop = properties.find((p) => p.id === entry.propertyId)
+        return prop?.ownerId === selectedOwnerId
+      }
+      if (viewMode === 'property') {
+        if (selectedPropertyId === 'all') return true
+        return entry.propertyId === selectedPropertyId
+      }
+      return true
+    })
+
+    const sortedAsc = [...filtered].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    )
+
+    let currentBalance = 0
+    const calculated = sortedAsc.map((entry) => {
+      currentBalance += entry.type === 'income' ? entry.amount : -entry.amount
+      return {
+        ...entry,
+        runningBalance: currentBalance,
+      }
+    })
+
+    return calculated.reverse()
   }, [ledgerEntries, viewMode, selectedOwnerId, selectedPropertyId, properties])
 
   const balances = useMemo(() => {
@@ -134,7 +147,7 @@ export default function Financial() {
     let pendingIncome = 0
     let pendingExpense = 0
 
-    filteredEntries.forEach((e) => {
+    entriesWithBalance.forEach((e) => {
       if (e.status === 'cleared') {
         if (e.type === 'income') income += e.amount
         else expense += e.amount
@@ -152,7 +165,7 @@ export default function Financial() {
       pendingExpense,
       pendingBalance: pendingIncome - pendingExpense,
     }
-  }, [filteredEntries])
+  }, [entriesWithBalance])
 
   const handleAdd = () => {
     addLedgerEntry({
@@ -547,11 +560,12 @@ export default function Financial() {
                 <TableHead>Tipo / Categoria</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
+                <TableHead className="text-right">Saldo</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEntries.map((entry) => {
+              {entriesWithBalance.map((entry) => {
                 const isIncome = entry.type === 'income'
                 return (
                   <TableRow key={entry.id} className="hover:bg-slate-50">
@@ -630,6 +644,16 @@ export default function Financial() {
                     >
                       {isIncome ? '+' : '-'}
                       {formatAppCurrency(entry.amount)}
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        'text-right font-bold',
+                        entry.runningBalance >= 0
+                          ? 'text-slate-900'
+                          : 'text-red-600',
+                      )}
+                    >
+                      {formatAppCurrency(entry.runningBalance)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2 items-center">
@@ -876,10 +900,10 @@ export default function Financial() {
                   </TableRow>
                 )
               })}
-              {filteredEntries.length === 0 && (
+              {entriesWithBalance.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="text-center py-12 text-muted-foreground"
                   >
                     Nenhuma transação encontrada para os filtros selecionados.
