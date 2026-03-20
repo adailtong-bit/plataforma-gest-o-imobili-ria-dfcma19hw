@@ -67,7 +67,8 @@ export default function Users() {
 
   const [activeTab, setActiveTab] = useState('team')
 
-  const isPlatformOwner = currentUser?.role === 'platform_owner'
+  const isPlatformOwner =
+    currentUser?.role === 'platform_owner' || currentUser?.role === 'master'
 
   const availableRoles =
     isPlatformOwner && activeTab === 'pms'

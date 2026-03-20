@@ -20,14 +20,20 @@ import { Logo } from '@/components/Logo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Login() {
-  const { login, allUsers, isAuthenticated, isAuthLoading, currentUser } =
-    useAuthStore()
+  const {
+    login,
+    logout,
+    allUsers,
+    isAuthenticated,
+    isAuthLoading,
+    currentUser,
+  } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
 
-  const [email, setEmail] = useState('admin@plataforma.com')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('master@plataforma.com')
+  const [password, setPassword] = useState('master123')
   const [showPassword, setShowPassword] = useState(false)
 
   const from = location.state?.from?.pathname || '/'
@@ -81,9 +87,11 @@ export default function Login() {
         description: 'Authentication successful.',
       })
     } else {
+      logout()
       toast({
         title: 'Authentication Failed',
-        description: 'Credenciais inválidas',
+        description:
+          'Invalid credentials. Please check your email and password and try again.',
         variant: 'destructive',
       })
     }
@@ -106,9 +114,11 @@ export default function Login() {
         description: 'Authentication successful.',
       })
     } else {
+      logout()
       toast({
         title: 'Authentication Failed',
-        description: 'Credenciais inválidas',
+        description:
+          'Invalid credentials. Please check your email and password and try again.',
         variant: 'destructive',
       })
     }

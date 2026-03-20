@@ -706,7 +706,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const filterByOrg = useCallback(
     <T extends { organizationId?: string }>(items: T[]): T[] => {
-      if (!currentUserObj) return []
+      if (!currentUserObj) return items // Show all items if no user is logged in
       if (
         currentUserObj.role === 'platform_owner' ||
         currentUserObj.role === 'super_admin' ||
@@ -829,7 +829,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const login = (email: string, password?: string) => {
     const emailLower = email.toLowerCase()
-    const user = allUsers.find((u) => u.email.toLowerCase() === emailLower)
+
+    // Create a complete list of users without organizational filtering for authentication
+    const rawAllUsers = [...users, ...owners, ...partners, ...tenants]
+
+    const user = rawAllUsers.find((u) => u.email.toLowerCase() === emailLower)
     if (user) {
       const isDefaultAccount = [
         'master@plataforma.com',

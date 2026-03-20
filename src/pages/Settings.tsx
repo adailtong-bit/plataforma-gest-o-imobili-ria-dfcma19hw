@@ -87,6 +87,7 @@ export default function Settings() {
   }
 
   const canViewSubscription =
+    currentUser?.role === 'master' ||
     currentUser?.role === 'platform_owner' ||
     currentUser?.role === 'software_tenant'
 
