@@ -33,17 +33,16 @@ class PermissionErrorBoundary extends Component<
             <AlertTriangle className="h-12 w-12 text-orange-600" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Display Error
+            Erro de Exibição
           </h1>
           <p className="text-muted-foreground max-w-md mb-6">
-            A component failed to render correctly. We have applied a fallback
-            so you can continue using the platform.
+            Um componente falhou ao renderizar corretamente. Aplicamos um fallback para que você possa continuar usando a plataforma.
           </p>
           <Button
             onClick={() => window.location.reload()}
             className="bg-primary text-primary-foreground"
           >
-            Reload Page
+            Recarregar Página
           </Button>
         </div>
       )
@@ -119,10 +118,10 @@ export function RequirePermission({
 
       if (!isPortalUser) {
         toast({
-          title: t('common.access_denied') || 'Access Denied',
+          title: t('common.access_denied') || 'Acesso Negado',
           description:
             t('common.access_denied_desc') ||
-            'You do not have permission to view this page.',
+            'Você não tem permissão para acessar esta página.',
           variant: 'destructive',
         })
         setHasAlerted(true)
@@ -148,7 +147,7 @@ export function RequirePermission({
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
         <Loader2 className="h-12 w-12 text-primary animate-spin" />
         <h2 className="text-xl font-medium text-slate-700">
-          Verifying access...
+          Carregando permissões...
         </h2>
       </div>
     )
@@ -190,24 +189,24 @@ export function RequirePermission({
         </h1>
         <p className="text-muted-foreground max-w-md mb-6">
           {t('common.access_denied_desc') ||
-            'You do not have permission to view this resource.'}
+            'Você não tem permissão para acessar esta página.'}
         </p>
         <div className="flex gap-2 justify-center">
           <Button variant="outline" onClick={() => window.history.back()}>
-            {t('common.back') || 'Go Back'}
+            {t('common.back') || 'Voltar'}
           </Button>
           <Button
             className="bg-primary text-primary-foreground"
             onClick={() => (window.location.href = '/')}
           >
-            {t('common.return_home') || 'Return to Dashboard'}
+            {t('common.return_home') || 'Voltar para o Painel'}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-8">
-          Resource: {resource} | Role:{' '}
+          Recurso: {resource} | Perfil:{' '}
           {effectiveUser
             ? t(`roles.${effectiveUser.role}`) || effectiveUser.role
-            : 'Unknown'}
+            : 'Desconhecido'}
         </p>
       </div>
     )
@@ -215,3 +214,4 @@ export function RequirePermission({
 
   return <PermissionErrorBoundary>{children}</PermissionErrorBoundary>
 }
+

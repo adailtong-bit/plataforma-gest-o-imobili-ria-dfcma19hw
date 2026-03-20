@@ -26,12 +26,12 @@ export function PropertyLocation({
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Location Details</CardTitle>
+        <CardTitle>Detalhes de Localização</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Address</Label>
+            <Label>Endereço</Label>
             <Input
               value={data.address}
               onChange={(e) => onChange('address', e.target.value)}
@@ -39,7 +39,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2">
-            <Label>City</Label>
+            <Label>Cidade</Label>
             <Input
               value={data.city || ''}
               onChange={(e) => onChange('city', e.target.value)}
@@ -47,7 +47,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2">
-            <Label>State</Label>
+            <Label>Estado</Label>
             <Input
               value={data.state || ''}
               onChange={(e) => onChange('state', e.target.value)}
@@ -55,7 +55,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2">
-            <Label>Zip Code</Label>
+            <Label>CEP</Label>
             <Input
               value={data.zipCode || ''}
               onChange={(e) => onChange('zipCode', e.target.value)}
@@ -63,7 +63,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2 col-span-2">
-            <Label>Linked Condominium</Label>
+            <Label>Condomínio Vinculado</Label>
             <Select
               value={data.condominiumId || 'none'}
               onValueChange={(v) =>
@@ -72,10 +72,10 @@ export function PropertyLocation({
               disabled={!canEdit}
             >
               <SelectTrigger>
-                <SelectValue placeholder="None" />
+                <SelectValue placeholder="Nenhum" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="none">Nenhum</SelectItem>
                 {condominiums.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -89,3 +89,4 @@ export function PropertyLocation({
     </Card>
   )
 }
+

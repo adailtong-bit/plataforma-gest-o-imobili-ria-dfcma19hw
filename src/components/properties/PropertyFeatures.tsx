@@ -14,12 +14,12 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Features & Amenities</CardTitle>
+        <CardTitle>Características e Comodidades</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label>Bedrooms</Label>
+            <Label>Quartos</Label>
             <Input
               type="number"
               value={data.bedrooms}
@@ -28,7 +28,7 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Bathrooms</Label>
+            <Label>Banheiros</Label>
             <Input
               type="number"
               value={data.bathrooms}
@@ -37,7 +37,7 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Max Guests</Label>
+            <Label>Máx. Hóspedes</Label>
             <Input
               type="number"
               value={data.guests}
@@ -50,3 +50,4 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
     </Card>
   )
 }
+

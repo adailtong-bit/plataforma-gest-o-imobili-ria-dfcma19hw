@@ -11,7 +11,7 @@ export function PropertyHistory({ data }: Props) {
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Price History & Logs</CardTitle>
+        <CardTitle>Histórico de Preços e Logs</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -23,20 +23,20 @@ export function PropertyHistory({ data }: Props) {
               >
                 <div>
                   <p className="text-sm font-medium text-slate-900">
-                    Price updated to ${log.price}
+                    Preço atualizado para ${log.price}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Changed by: {log.changedBy || 'System'}
+                    Alterado por: {log.changedBy || 'Sistema'}
                   </p>
                 </div>
                 <div className="text-sm text-slate-500 font-mono bg-slate-50 px-2 py-1 rounded">
-                  {format(new Date(log.date), 'MMM dd, yyyy HH:mm')}
+                  {format(new Date(log.date), 'dd/MM/yyyy HH:mm')}
                 </div>
               </div>
             ))
           ) : (
             <div className="text-center py-8 text-muted-foreground border-dashed border-2 rounded-lg bg-slate-50">
-              No history logs available.
+              Nenhum histórico disponível.
             </div>
           )}
         </div>
@@ -44,3 +44,4 @@ export function PropertyHistory({ data }: Props) {
     </Card>
   )
 }
+

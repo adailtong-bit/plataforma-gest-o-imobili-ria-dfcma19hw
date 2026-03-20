@@ -19,7 +19,7 @@ export function PropertyInventory({ data }: Props) {
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Inventory</CardTitle>
+        <CardTitle>Inventário</CardTitle>
       </CardHeader>
       <CardContent>
         {inventory.length > 0 ? (
@@ -27,9 +27,9 @@ export function PropertyInventory({ data }: Props) {
             <TableHeader>
               <TableRow>
                 <TableHead>Item</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Condition</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead>Quantidade</TableHead>
+                <TableHead>Condição</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -47,10 +47,11 @@ export function PropertyInventory({ data }: Props) {
           </Table>
         ) : (
           <div className="text-center py-8 text-muted-foreground border-dashed border-2 rounded-lg bg-slate-50">
-            No inventory items recorded.
+            Nenhum item de inventário registrado.
           </div>
         )}
       </CardContent>
     </Card>
   )
 }
+

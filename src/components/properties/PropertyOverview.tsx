@@ -13,12 +13,12 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Basic Information</CardTitle>
+        <CardTitle>Informações Básicas</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Property Name</Label>
+            <Label>Nome da Propriedade</Label>
             <Input
               value={data.name}
               onChange={(e) => onChange('name', e.target.value)}
@@ -26,7 +26,7 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Property Type</Label>
+            <Label>Tipo de Propriedade</Label>
             <Input
               value={data.type}
               onChange={(e) => onChange('type', e.target.value)}
@@ -34,7 +34,7 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Profile Type</Label>
+            <Label>Tipo de Perfil</Label>
             <Input value={data.profileType} disabled />
           </div>
           <div className="space-y-2">
@@ -46,3 +46,4 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
     </Card>
   )
 }
+

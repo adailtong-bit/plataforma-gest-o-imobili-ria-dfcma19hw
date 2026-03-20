@@ -84,16 +84,16 @@ export default function PropertyDetails() {
     return (
       <div className="p-6 text-center max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Property Not Found
+          Propriedade não encontrada
         </h2>
         <p className="text-slate-600 mb-6">
-          The property you are looking for does not exist or has been removed.
+          A propriedade que você está procurando não existe ou foi removida.
         </p>
         <Button
           onClick={() => navigate('/properties')}
           className="bg-trust-blue text-white"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Properties
+          <ArrowLeft className="mr-2 h-4 w-4" /> Voltar para Propriedades
         </Button>
       </div>
     )
@@ -108,8 +108,8 @@ export default function PropertyDetails() {
     setProperty(formData)
     setIsEditing(false)
     toast({
-      title: t('common.success') || 'Success',
-      description: 'Property updated successfully.',
+      title: t('common.success') || 'Sucesso',
+      description: 'Propriedade atualizada com sucesso.',
     })
   }
 
@@ -117,8 +117,8 @@ export default function PropertyDetails() {
     if (id) {
       deleteProperty(id)
       toast({
-        title: t('common.success') || 'Success',
-        description: 'Property deleted successfully.',
+        title: t('common.success') || 'Sucesso',
+        description: 'Propriedade excluída com sucesso.',
       })
       navigate('/properties')
     }
@@ -159,14 +159,14 @@ export default function PropertyDetails() {
                 }}
                 className="border-slate-300 font-medium"
               >
-                <X className="h-4 w-4 mr-2" /> {t('common.cancel') || 'Cancel'}
+                <X className="h-4 w-4 mr-2" /> {t('common.cancel') || 'Cancelar'}
               </Button>
               <Button
                 onClick={handleSave}
                 className="bg-trust-blue text-white font-bold"
               >
                 <Save className="h-4 w-4 mr-2" />{' '}
-                {t('common.save') || 'Save Changes'}
+                {t('common.save') || 'Salvar Alterações'}
               </Button>
             </>
           ) : (
@@ -178,7 +178,7 @@ export default function PropertyDetails() {
                   className="border-slate-300 font-medium"
                 >
                   <Pencil className="h-4 w-4 mr-2" />{' '}
-                  {t('common.edit') || 'Edit Property'}
+                  {t('common.edit') || 'Editar Propriedade'}
                 </Button>
               )}
               {canDelete && (
@@ -186,25 +186,25 @@ export default function PropertyDetails() {
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" className="font-medium">
                       <Trash2 className="h-4 w-4 mr-2" />{' '}
-                      {t('common.delete') || 'Delete'}
+                      {t('common.delete') || 'Excluir'}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {t('common.delete_title') || 'Are you absolutely sure?'}
+                        {t('common.delete_title') || 'Tem certeza?'}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         {t('common.delete_desc') ||
-                          'This action cannot be undone. This will permanently delete the property record.'}
+                          'Esta ação não pode ser desfeita. Isso excluirá permanentemente o registro da propriedade.'}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>
-                        {t('common.cancel') || 'Cancel'}
+                        {t('common.cancel') || 'Cancelar'}
                       </AlertDialogCancel>
                       <AlertDialogAction onClick={handleDelete}>
-                        {t('common.delete') || 'Delete'}
+                        {t('common.delete') || 'Excluir'}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -221,37 +221,37 @@ export default function PropertyDetails() {
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Overview
+            Visão Geral
           </TabsTrigger>
           <TabsTrigger
             value="management"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Management
+            Gestão
           </TabsTrigger>
           <TabsTrigger
             value="financials"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Financials
+            Financeiro
           </TabsTrigger>
           <TabsTrigger
             value="details"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Details
+            Detalhes
           </TabsTrigger>
           <TabsTrigger
             value="inventory"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Inventory
+            Inventário
           </TabsTrigger>
           <TabsTrigger
             value="history"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            History
+            Histórico
           </TabsTrigger>
         </TabsList>
         <div className="mt-0">
@@ -304,3 +304,4 @@ export default function PropertyDetails() {
     </div>
   )
 }
+

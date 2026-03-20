@@ -48,11 +48,11 @@ export function ServiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{service ? 'Edit Service' : 'Add Service'}</DialogTitle>
+          <DialogTitle>{service ? 'Editar Serviço' : 'Adicionar Serviço'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Name</Label>
+            <Label>Nome</Label>
             <Input
               value={form.name || ''}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -60,7 +60,7 @@ export function ServiceDialog({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Base Price</Label>
+              <Label>Preço Base</Label>
               <Input
                 type="number"
                 value={form.price || ''}
@@ -70,7 +70,7 @@ export function ServiceDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>Categoria</Label>
               <Select
                 value={form.category}
                 onValueChange={(v) => setForm({ ...form, category: v as any })}
@@ -80,15 +80,15 @@ export function ServiceDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="spa">Spa</SelectItem>
-                  <SelectItem value="transport">Transport</SelectItem>
-                  <SelectItem value="dining">Dining</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="transport">Transporte</SelectItem>
+                  <SelectItem value="dining">Restaurante</SelectItem>
+                  <SelectItem value="other">Outro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <Label>Active</Label>
+            <Label>Ativo</Label>
             <Switch
               checked={form.active}
               onCheckedChange={(c) => setForm({ ...form, active: c })}
@@ -97,11 +97,12 @@ export function ServiceDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            Cancelar
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>Salvar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
+

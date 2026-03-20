@@ -32,9 +32,9 @@ export function PropertyManagement({ property }: Props) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
-            <CardTitle>Active Tasks & Maintenance</CardTitle>
+            <CardTitle>Tarefas e Manutenção Ativas</CardTitle>
             <CardDescription>
-              Operational tasks currently assigned to this property.
+              Tarefas operacionais atribuídas a esta propriedade.
             </CardDescription>
           </div>
         </CardHeader>
@@ -59,7 +59,7 @@ export function PropertyManagement({ property }: Props) {
                     <div>
                       <h4 className="font-semibold text-sm">{task.title}</h4>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {task.type.replace('_', ' ')} • {task.priority} priority
+                        {task.type.replace('_', ' ')} • prioridade {task.priority}
                       </p>
                     </div>
                   </div>
@@ -76,7 +76,7 @@ export function PropertyManagement({ property }: Props) {
           ) : (
             <div className="text-center py-8 text-muted-foreground border rounded-lg border-dashed">
               <Wrench className="mx-auto h-8 w-8 text-slate-300 mb-2" />
-              <p>No active tasks for this property.</p>
+              <p>Nenhuma tarefa ativa para esta propriedade.</p>
             </div>
           )}
         </CardContent>
@@ -84,9 +84,9 @@ export function PropertyManagement({ property }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Calendar Blocks & Availability</CardTitle>
+          <CardTitle>Bloqueios de Calendário e Disponibilidade</CardTitle>
           <CardDescription>
-            Scheduled blocks indicating maintenance or owner use.
+            Bloqueios agendados indicando manutenção ou uso do proprietário.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -105,8 +105,8 @@ export function PropertyManagement({ property }: Props) {
                       {block.type.replace('_', ' ')}
                     </h4>
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(block.startDate), 'MMM dd, yyyy')} -{' '}
-                      {format(new Date(block.endDate), 'MMM dd, yyyy')}
+                      {format(new Date(block.startDate), 'dd/MM/yyyy')} -{' '}
+                      {format(new Date(block.endDate), 'dd/MM/yyyy')}
                     </p>
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export function PropertyManagement({ property }: Props) {
           ) : (
             <div className="text-center py-8 text-muted-foreground border rounded-lg border-dashed">
               <Calendar className="mx-auto h-8 w-8 text-slate-300 mb-2" />
-              <p>No active calendar blocks.</p>
+              <p>Nenhum bloqueio de calendário ativo.</p>
             </div>
           )}
         </CardContent>
@@ -123,3 +123,4 @@ export function PropertyManagement({ property }: Props) {
     </div>
   )
 }
+

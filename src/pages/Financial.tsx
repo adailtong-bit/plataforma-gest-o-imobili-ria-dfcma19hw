@@ -607,7 +607,7 @@ export default function Financial() {
                   <SelectContent>
                     <SelectItem value="all">Todo o Período</SelectItem>
                     <SelectItem value="month">Mês Atual</SelectItem>
-                    <SelectItem value="semester">Semestre Atual</SelectItem>
+                    <SelectItem value="semester">Semestre</SelectItem>
                     <SelectItem value="year">Ano Fiscal</SelectItem>
                     <SelectItem value="custom">Personalizado</SelectItem>
                   </SelectContent>
@@ -1062,3 +1062,4 @@ export default function Financial() {
     </div>
   )
 }
+

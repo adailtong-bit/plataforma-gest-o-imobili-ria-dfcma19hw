@@ -1,4 +1,3 @@
-/* Table Component primitives - A component that displays a table - from shadcn/ui (exposes Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption) */
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -123,3 +122,4 @@ export {
   TableCell,
   TableCaption,
 }
+

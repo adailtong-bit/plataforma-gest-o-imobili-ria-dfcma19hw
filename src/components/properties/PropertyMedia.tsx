@@ -11,7 +11,7 @@ export function PropertyMedia({ data }: Props) {
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Media Gallery</CardTitle>
+        <CardTitle>Galeria de Mídia</CardTitle>
       </CardHeader>
       <CardContent>
         {data.image ? (
@@ -26,10 +26,11 @@ export function PropertyMedia({ data }: Props) {
           />
         ) : (
           <div className="p-8 text-center text-muted-foreground border-dashed border-2 rounded-lg">
-            No primary image set.
+            Nenhuma imagem principal definida.
           </div>
         )}
       </CardContent>
     </Card>
   )
 }
+
