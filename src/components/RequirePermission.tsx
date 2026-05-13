@@ -33,17 +33,17 @@ class PermissionErrorBoundary extends Component<
             <AlertTriangle className="h-12 w-12 text-orange-600" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Erro de Exibição
+            Display Error
           </h1>
           <p className="text-muted-foreground max-w-md mb-6">
-            Um componente falhou ao renderizar corretamente. Aplicamos um
-            fallback para que você possa continuar usando a plataforma.
+            A component failed to render correctly. We applied a fallback so you
+            can continue using the platform.
           </p>
           <Button
             onClick={() => window.location.reload()}
             className="bg-primary text-primary-foreground"
           >
-            Recarregar Página
+            Reload Page
           </Button>
         </div>
       )
@@ -119,10 +119,10 @@ export function RequirePermission({
 
       if (!isPortalUser) {
         toast({
-          title: t('common.access_denied') || 'Acesso Negado',
+          title: t('common.access_denied') || 'Access Denied',
           description:
             t('common.access_denied_desc') ||
-            'Você não tem permissão para acessar esta página.',
+            'You do not have permission to view this page.',
           variant: 'destructive',
         })
         setHasAlerted(true)
@@ -147,11 +147,12 @@ export function RequirePermission({
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
         <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <h2 className="text-xl font-medium text-slate-700">Carregando...</h2>
+        <h2 className="text-xl font-medium text-slate-700">
+          {t('common.loading') || 'Loading...'}
+        </h2>
       </div>
     )
   }
-
   if (!isAuthenticated || !effectiveUser) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
@@ -184,28 +185,29 @@ export function RequirePermission({
           <ShieldX className="h-12 w-12 text-red-600" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          {t('common.access_denied') || 'Acesso Negado'}
+          {t('common.access_denied') || 'Access Denied'}
         </h1>
         <p className="text-muted-foreground max-w-md mb-6">
           {t('common.access_denied_desc') ||
-            'Você não tem permissão para acessar esta página.'}
+            'You do not have permission to view this page.'}
         </p>
         <div className="flex gap-2 justify-center">
           <Button variant="outline" onClick={() => window.history.back()}>
-            {t('common.back') || 'Voltar'}
+            {t('common.back') || 'Back'}
           </Button>
           <Button
             className="bg-primary text-primary-foreground"
             onClick={() => (window.location.href = '/')}
           >
-            {t('common.return_home') || 'Voltar para o Painel'}
+            {t('common.return_home') || 'Return Home'}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-8">
-          Recurso: {resource} | Perfil:{' '}
+          {t('common.resource') || 'Resource'}: {resource} |{' '}
+          {t('common.profile') || 'Profile'}:{' '}
           {effectiveUser
             ? t(`roles.${effectiveUser.role}`) || effectiveUser.role
-            : 'Desconhecido'}
+            : t('common.unknown') || 'Unknown'}
         </p>
       </div>
     )

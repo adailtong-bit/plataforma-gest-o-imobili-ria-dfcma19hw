@@ -80,13 +80,13 @@ export default function HotelDetails() {
     return (
       <div className="p-6 text-center max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Hotel Not Found
+          {t('hotels.not_found') || 'Hotel Not Found'}
         </h2>
         <Button
           onClick={() => navigate('/hotels')}
           className="bg-trust-blue text-white"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Hotels
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t('common.back') || 'Back'}
         </Button>
       </div>
     )
@@ -97,14 +97,17 @@ export default function HotelDetails() {
     setHotel(formData)
     setIsEditing(false)
     toast({
-      title: t('common.success'),
-      description: 'Hotel updated successfully.',
+      title: t('common.success') || 'Success',
+      description: t('hotels.update_success') || 'Hotel updated successfully.',
     })
   }
 
   const handleDelete = () => {
     deleteHotel(hotel.id)
-    toast({ title: t('common.success'), description: 'Hotel deleted.' })
+    toast({
+      title: t('common.success') || 'Success',
+      description: t('hotels.delete_success') || 'Hotel deleted.',
+    })
     navigate('/hotels')
   }
 
@@ -117,7 +120,10 @@ export default function HotelDetails() {
     })
     setNewTowerName('')
     setIsAddTowerOpen(false)
-    toast({ title: 'Tower added successfully.' })
+    toast({
+      title: t('common.success') || 'Success',
+      description: t('hotels.tower_add_success') || 'Tower added successfully.',
+    })
   }
 
   const hotelTowers = towers.filter((t) => t.hotelId === hotel.id)
@@ -158,37 +164,43 @@ export default function HotelDetails() {
                   setIsEditing(false)
                 }}
               >
-                <X className="h-4 w-4 mr-2" /> Cancel
+                <X className="h-4 w-4 mr-2" /> {t('common.cancel') || 'Cancel'}
               </Button>
               <Button onClick={handleSave} className="bg-trust-blue text-white">
-                <Save className="h-4 w-4 mr-2" /> Save
+                <Save className="h-4 w-4 mr-2" /> {t('common.save') || 'Save'}
               </Button>
             </>
           ) : (
             <>
               <Button variant="outline" onClick={() => setIsEditing(true)}>
-                <Pencil className="h-4 w-4 mr-2" /> Edit
+                <Pencil className="h-4 w-4 mr-2" /> {t('common.edit') || 'Edit'}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-2" /> Delete
+                    <Trash2 className="h-4 w-4 mr-2" />{' '}
+                    {t('common.delete') || 'Delete'}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t('common.delete_title') || 'Are you sure?'}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone.
+                      {t('common.delete_desc') ||
+                        'This action cannot be undone.'}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {t('common.cancel') || 'Cancel'}
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       className="bg-red-600"
                     >
-                      Delete
+                      {t('common.delete') || 'Delete'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -200,20 +212,26 @@ export default function HotelDetails() {
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="towers">Towers</TabsTrigger>
-          <TabsTrigger value="rooms">All Rooms</TabsTrigger>
+          <TabsTrigger value="overview">
+            {t('properties.tabs.overview') || 'Overview'}
+          </TabsTrigger>
+          <TabsTrigger value="towers">
+            {t('hotels.towers') || 'Towers'}
+          </TabsTrigger>
+          <TabsTrigger value="rooms">
+            {t('hotels.all_rooms') || 'All Rooms'}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Hotel Information</CardTitle>
+              <CardTitle>{t('hotels.info') || 'Hotel Information'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Name</Label>
+                  <Label>{t('common.name') || 'Name'}</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) =>
@@ -223,7 +241,9 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Manager Name</Label>
+                  <Label>
+                    {t('condominiums.manager_name') || 'Manager Name'}
+                  </Label>
                   <Input
                     value={formData.managerName || ''}
                     onChange={(e) =>
@@ -233,7 +253,9 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Manager Email</Label>
+                  <Label>
+                    {t('condominiums.manager_email') || 'Manager Email'}
+                  </Label>
                   <Input
                     value={formData.managerEmail || ''}
                     onChange={(e) =>
@@ -243,7 +265,9 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Manager Phone</Label>
+                  <Label>
+                    {t('condominiums.manager_phone') || 'Manager Phone'}
+                  </Label>
                   <Input
                     value={formData.managerPhone || ''}
                     onChange={(e) =>
@@ -253,7 +277,7 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <Label>Address</Label>
+                  <Label>{t('common.address') || 'Address'}</Label>
                   <Input
                     value={formData.address}
                     onChange={(e) =>
@@ -263,7 +287,7 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>City</Label>
+                  <Label>{t('common.city') || 'City'}</Label>
                   <Input
                     value={formData.city}
                     onChange={(e) =>
@@ -273,7 +297,7 @@ export default function HotelDetails() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>State</Label>
+                  <Label>{t('common.state') || 'State'}</Label>
                   <Input
                     value={formData.state}
                     onChange={(e) =>
@@ -289,20 +313,25 @@ export default function HotelDetails() {
 
         <TabsContent value="towers" className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold">Towers & Wings</h3>
+            <h3 className="text-lg font-bold">
+              {t('hotels.towers_wings') || 'Towers & Wings'}
+            </h3>
             <Dialog open={isAddTowerOpen} onOpenChange={setIsAddTowerOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="bg-trust-blue text-white">
-                  <Plus className="w-4 h-4 mr-2" /> Add Tower
+                  <Plus className="w-4 h-4 mr-2" />{' '}
+                  {t('hotels.add_tower') || 'Add Tower'}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add New Tower/Wing</DialogTitle>
+                  <DialogTitle>
+                    {t('hotels.add_new_tower') || 'Add New Tower/Wing'}
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label>Tower Name</Label>
+                    <Label>{t('hotels.tower_name') || 'Tower Name'}</Label>
                     <Input
                       value={newTowerName}
                       onChange={(e) => setNewTowerName(e.target.value)}
@@ -315,9 +344,11 @@ export default function HotelDetails() {
                     variant="outline"
                     onClick={() => setIsAddTowerOpen(false)}
                   >
-                    Cancel
+                    {t('common.cancel') || 'Cancel'}
                   </Button>
-                  <Button onClick={handleAddTower}>Add</Button>
+                  <Button onClick={handleAddTower}>
+                    {t('common.add') || 'Add'}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -332,7 +363,7 @@ export default function HotelDetails() {
                   <div className="flex justify-between items-center mt-4">
                     <Link to={`/hotels/${hotel.id}/towers/${tower.id}`}>
                       <Button variant="outline" size="sm">
-                        Manage Rooms
+                        {t('hotels.manage_rooms') || 'Manage Rooms'}
                       </Button>
                     </Link>
                     <Button
@@ -349,7 +380,7 @@ export default function HotelDetails() {
             ))}
             {hotelTowers.length === 0 && (
               <div className="col-span-full text-center py-8 text-muted-foreground border border-dashed rounded-lg">
-                No towers or wings defined.
+                {t('hotels.no_towers') || 'No towers or wings defined.'}
               </div>
             )}
           </div>
@@ -358,7 +389,7 @@ export default function HotelDetails() {
         <TabsContent value="rooms">
           <Card>
             <CardHeader>
-              <CardTitle>All Rooms</CardTitle>
+              <CardTitle>{t('hotels.all_rooms') || 'All Rooms'}</CardTitle>
               <CardDescription>
                 Rooms across all towers in this hotel.
               </CardDescription>
