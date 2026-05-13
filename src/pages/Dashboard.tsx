@@ -2,9 +2,11 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import { formatCurrency } from '@/lib/utils'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function Dashboard() {
   const { properties, tenants, financials } = useContext(AppContext)!
+  const { t } = useLanguageStore()
 
   const totalRevenue = financials.invoices
     .filter((i) => i.status === 'paid')
@@ -14,12 +16,14 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <h1 className="text-3xl font-bold tracking-tight">
+        {t('sidebar.dashboard') || 'Painel'}
+      </h1>
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Revenue
+              {t('common.total_revenue') || 'Receita Total'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -31,7 +35,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Properties
+              {t('common.properties') || 'Propriedades'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -41,7 +45,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Tenants
+              {t('common.active_tenants') || 'Inquilinos Ativos'}
             </CardTitle>
           </CardHeader>
           <CardContent>

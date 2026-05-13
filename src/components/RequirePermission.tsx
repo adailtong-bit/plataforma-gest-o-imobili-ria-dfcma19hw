@@ -147,9 +147,7 @@ export function RequirePermission({
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
         <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <h2 className="text-xl font-medium text-slate-700">
-          Carregando permissões...
-        </h2>
+        <h2 className="text-xl font-medium text-slate-700">Carregando...</h2>
       </div>
     )
   }

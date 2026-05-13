@@ -131,7 +131,7 @@ export function FinancialReports() {
 
   // --- Breakdown by Category (Room, F&B, Services) ---
   const revenueByCategory = useMemo(() => {
-    const data = { Room: 0, 'F&B': 0, Services: 0 }
+    const data = { Quarto: 0, 'A&B': 0, Serviços: 0 }
     filteredEntries.forEach((e) => {
       if (e.type === 'income') {
         const cat = e.category as keyof typeof data
@@ -147,7 +147,7 @@ export function FinancialReports() {
   const revenueByTower = useMemo(() => {
     const data: Record<string, number> = {}
     towers.forEach((t) => (data[t.name] = 0))
-    data['Other'] = 0
+    data['Outros'] = 0
 
     filteredEntries.forEach((e) => {
       if (e.type === 'income') {
@@ -157,10 +157,10 @@ export function FinancialReports() {
           if (tower) {
             data[tower.name] = (data[tower.name] || 0) + e.amount
           } else {
-            data['Other'] += e.amount
+            data['Outros'] += e.amount
           }
         } else {
-          data['Other'] += e.amount
+          data['Outros'] += e.amount
         }
       }
     })
@@ -248,30 +248,30 @@ export function FinancialReports() {
 
   const handleExport = () => {
     const headers = [
-      'Date',
-      'Property',
-      'Type',
-      'Category',
-      'Description',
-      'Amount',
+      'Data',
+      'Propriedade',
+      'Tipo',
+      'Categoria',
+      'Descrição',
+      'Valor',
       'Status',
     ]
     const rows = filteredEntries.map((entry) => {
       const property = properties.find((p) => p.id === entry.propertyId)
       return [
         format(new Date(entry.date), 'yyyy-MM-dd'),
-        property?.name || 'Unknown',
-        entry.type,
+        property?.name || 'Desconhecido',
+        entry.type === 'income' ? 'Receita' : 'Despesa',
         entry.category,
         `"${entry.description.replace(/"/g, '""')}"`,
         entry.amount.toFixed(2),
-        entry.status,
+        entry.status === 'cleared' ? 'Pago' : 'Pendente',
       ]
     })
-    exportToCSV('financial_report', headers, rows)
+    exportToCSV('relatorio_financeiro', headers, rows)
     toast({
-      title: t('common.export_success'),
-      description: 'Financial data downloaded.',
+      title: t('common.export_success') || 'Sucesso',
+      description: 'Dados financeiros exportados.',
     })
   }
 
@@ -308,16 +308,18 @@ export function FinancialReports() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Owner</Label>
+              <Label className="text-sm font-medium">
+                {t('sidebar.owners') || 'Proprietário'}
+              </Label>
               <Select
                 value={selectedOwnerId}
                 onValueChange={setSelectedOwnerId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All Owners" />
+                  <SelectValue placeholder="Todos os Proprietários" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Owners</SelectItem>
+                  <SelectItem value="all">Todos os Proprietários</SelectItem>
                   {owners.map((o) => (
                     <SelectItem key={o.id} value={o.id}>
                       {o.name}
@@ -327,16 +329,18 @@ export function FinancialReports() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Condominium</Label>
+              <Label className="text-sm font-medium">
+                {t('sidebar.condominiums') || 'Condomínio'}
+              </Label>
               <Select
                 value={selectedCondoId}
                 onValueChange={setSelectedCondoId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All Condos" />
+                  <SelectValue placeholder="Todos os Condomínios" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Condos</SelectItem>
+                  <SelectItem value="all">Todos os Condomínios</SelectItem>
                   {condominiums.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -376,7 +380,8 @@ export function FinancialReports() {
             {t('financial.projected_cash_flow')}
           </TabsTrigger>
           <TabsTrigger value="category">
-            <PieChartIcon className="h-4 w-4 mr-2" /> Profitability by Category
+            <PieChartIcon className="h-4 w-4 mr-2" /> Rentabilidade por
+            Categoria
           </TabsTrigger>
         </TabsList>
 
@@ -436,9 +441,11 @@ export function FinancialReports() {
         <TabsContent value="towers">
           <Card>
             <CardHeader>
-              <CardTitle>{t('financial.tower_breakdown')}</CardTitle>
+              <CardTitle>
+                {t('financial.tower_breakdown') || 'Detalhamento por Torre'}
+              </CardTitle>
               <CardDescription>
-                Financial performance split by building towers.
+                Desempenho financeiro dividido por torres do edifício.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -474,9 +481,9 @@ export function FinancialReports() {
         <TabsContent value="channels">
           <Card>
             <CardHeader>
-              <CardTitle>Channel Analysis (Traffic & Performance)</CardTitle>
+              <CardTitle>Análise de Canais (Tráfego e Desempenho)</CardTitle>
               <CardDescription>
-                Simulated traffic and conversion data from external OTAs.
+                Dados simulados de tráfego e conversão de OTAs externas.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -486,7 +493,7 @@ export function FinancialReports() {
                     airbnb: { label: 'Airbnb', color: '#ff5a5f' },
                     booking: { label: 'Booking.com', color: '#003580' },
                     vrbo: { label: 'VRBO', color: '#00619b' },
-                    direct: { label: 'Direct', color: '#10b981' },
+                    direct: { label: 'Direto', color: '#10b981' },
                   }}
                   className="h-full w-full"
                 >
@@ -536,9 +543,9 @@ export function FinancialReports() {
         <TabsContent value="category">
           <Card>
             <CardHeader>
-              <CardTitle>Revenue by Category</CardTitle>
+              <CardTitle>Receita por Categoria</CardTitle>
               <CardDescription>
-                Room vs F&B vs Services distribution.
+                Distribuição entre Quarto, A&B e Serviços.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -580,7 +587,9 @@ export function FinancialReports() {
           <Card>
             <CardHeader>
               <CardTitle>
-                {t('financial.projected_cash_flow')} (6 Months)
+                {t('financial.projected_cash_flow') ||
+                  'Fluxo de Caixa Projetado'}{' '}
+                (6 Meses)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -601,13 +610,13 @@ export function FinancialReports() {
                     <Bar
                       dataKey="income"
                       fill="#22c55e"
-                      name="Income"
+                      name="Receita"
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar
                       dataKey="expenses"
                       fill="#ef4444"
-                      name="Expenses"
+                      name="Despesas"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>

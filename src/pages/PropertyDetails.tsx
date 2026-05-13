@@ -222,37 +222,37 @@ export default function PropertyDetails() {
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Visão Geral
+            {t('properties.tabs.overview') || 'Visão Geral'}
           </TabsTrigger>
           <TabsTrigger
             value="management"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Gestão
+            {t('properties.tabs.management') || 'Gestão'}
           </TabsTrigger>
           <TabsTrigger
             value="financials"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Financeiro
+            {t('properties.tabs.financial') || 'Financeiro'}
           </TabsTrigger>
           <TabsTrigger
             value="details"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Detalhes
+            {t('common.details') || 'Detalhes'}
           </TabsTrigger>
           <TabsTrigger
             value="inventory"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Inventário
+            {t('properties.tabs.inventory') || 'Inventário'}
           </TabsTrigger>
           <TabsTrigger
             value="history"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
           >
-            Histórico
+            {t('common.history') || 'Histórico'}
           </TabsTrigger>
         </TabsList>
         <div className="mt-0">

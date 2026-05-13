@@ -59,8 +59,23 @@ export function PropertyManagement({ property }: Props) {
                     <div>
                       <h4 className="font-semibold text-sm">{task.title}</h4>
                       <p className="text-xs text-muted-foreground capitalize">
-                        {task.type.replace('_', ' ')} • prioridade{' '}
-                        {task.priority}
+                        {task.type === 'cleaning'
+                          ? 'Limpeza'
+                          : task.type === 'maintenance'
+                            ? 'Manutenção'
+                            : task.type === 'inspection'
+                              ? 'Inspeção'
+                              : task.type.replace('_', ' ')}{' '}
+                        • prioridade{' '}
+                        {task.priority === 'low'
+                          ? 'Baixa'
+                          : task.priority === 'medium'
+                            ? 'Média'
+                            : task.priority === 'high'
+                              ? 'Alta'
+                              : task.priority === 'critical'
+                                ? 'Crítica'
+                                : task.priority}
                       </p>
                     </div>
                   </div>
@@ -69,7 +84,13 @@ export function PropertyManagement({ property }: Props) {
                       task.status === 'completed' ? 'default' : 'secondary'
                     }
                   >
-                    {task.status}
+                    {task.status === 'completed'
+                      ? 'Concluído'
+                      : task.status === 'pending'
+                        ? 'Pendente'
+                        : task.status === 'in_progress'
+                          ? 'Em Progresso'
+                          : task.status}
                   </Badge>
                 </div>
               ))}
@@ -103,7 +124,11 @@ export function PropertyManagement({ property }: Props) {
                   </div>
                   <div>
                     <h4 className="font-semibold text-sm capitalize">
-                      {block.type.replace('_', ' ')}
+                      {block.type === 'owner_use'
+                        ? 'Uso do Proprietário'
+                        : block.type === 'maintenance'
+                          ? 'Manutenção'
+                          : block.type.replace('_', ' ')}
                     </h4>
                     <p className="text-xs text-muted-foreground">
                       {format(new Date(block.startDate), 'dd/MM/yyyy')} -{' '}

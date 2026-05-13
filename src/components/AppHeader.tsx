@@ -79,7 +79,7 @@ export function AppHeader() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
             <Input
               type="search"
-              placeholder={t('common.search') || 'Search anything...'}
+              placeholder={t('common.search') || 'Pesquisar...'}
               className="w-full bg-slate-50 border-slate-200 pl-9 focus-visible:ring-trust-blue"
             />
           </div>
@@ -108,10 +108,10 @@ export function AppHeader() {
               onValueChange={setSelectedPropertyId}
             >
               <SelectTrigger className="h-9 bg-slate-50 border-slate-200 text-sm">
-                <SelectValue placeholder="All Properties" />
+                <SelectValue placeholder="Todas as Propriedades" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Properties</SelectItem>
+                <SelectItem value="all">Todas as Propriedades</SelectItem>
                 {accessibleProperties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -194,7 +194,7 @@ export function AppHeader() {
             <DropdownMenuLabel className="font-normal border-b pb-2 mb-2">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-bold leading-none text-slate-900">
-                  {currentUser?.name || 'Guest'}
+                  {currentUser?.name || 'Visitante'}
                 </p>
                 <p className="text-xs leading-none text-slate-500 font-medium">
                   {currentUser

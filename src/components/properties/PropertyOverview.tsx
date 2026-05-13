@@ -35,11 +35,27 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
           </div>
           <div className="space-y-2">
             <Label>Tipo de Perfil</Label>
-            <Input value={data.profileType} disabled />
+            <Input
+              value={
+                data.profileType === 'short_term'
+                  ? 'Curto Prazo'
+                  : 'Longo Prazo'
+              }
+              disabled
+            />
           </div>
           <div className="space-y-2">
             <Label>Status</Label>
-            <Input value={data.status} disabled />
+            <Input
+              value={
+                data.status === 'available'
+                  ? 'Disponível'
+                  : data.status === 'rented'
+                    ? 'Alugado'
+                    : data.status
+              }
+              disabled
+            />
           </div>
         </div>
       </CardContent>

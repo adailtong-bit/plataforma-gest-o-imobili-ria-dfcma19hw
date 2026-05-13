@@ -506,17 +506,17 @@ export default function Properties() {
                 <div className="grid gap-4 p-4 border rounded-md bg-slate-50">
                   <div className="grid gap-2">
                     <Label className="font-bold text-black flex items-center gap-2">
-                      <Building className="h-4 w-4" /> Parent Hotel Link
+                      <Building className="h-4 w-4" /> Vínculo com Hotel
                     </Label>
                     <Select
                       value={newProp.hotelId || 'none'}
                       onValueChange={handleHotelChange}
                     >
                       <SelectTrigger className="text-black bg-white">
-                        <SelectValue placeholder="Select Hotel (Optional)" />
+                        <SelectValue placeholder="Selecionar Hotel (Opcional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="none">Nenhum</SelectItem>
                         {hotels.map((h) => (
                           <SelectItem key={h.id} value={h.id}>
                             {h.name}
@@ -530,7 +530,7 @@ export default function Properties() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
                       <div className="grid gap-2">
                         <Label className="text-xs text-black font-bold">
-                          Tower / Wing
+                          Torre / Ala
                         </Label>
                         <Select
                           value={newProp.towerId || 'none'}
@@ -542,10 +542,10 @@ export default function Properties() {
                           }
                         >
                           <SelectTrigger className="text-black bg-white">
-                            <SelectValue placeholder="Select..." />
+                            <SelectValue placeholder="Selecionar..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="none">Nenhum</SelectItem>
                             {towers
                               .filter((t) => t.hotelId === newProp.hotelId)
                               .map((t) => (
@@ -558,7 +558,7 @@ export default function Properties() {
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs text-black font-bold">
-                          Floor
+                          Andar
                         </Label>
                         <Input
                           value={newProp.floor || ''}
@@ -566,12 +566,12 @@ export default function Properties() {
                             setNewProp({ ...newProp, floor: e.target.value })
                           }
                           className="bg-white text-black"
-                          placeholder="e.g. 5"
+                          placeholder="Ex: 5"
                         />
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs text-black font-bold">
-                          Room/Suite
+                          Quarto/Suíte
                         </Label>
                         <Input
                           value={newProp.roomNumber || ''}
@@ -582,7 +582,7 @@ export default function Properties() {
                             })
                           }
                           className="bg-white text-black"
-                          placeholder="e.g. 501"
+                          placeholder="Ex: 501"
                         />
                       </div>
                     </div>
@@ -606,9 +606,9 @@ export default function Properties() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="US">United States (USA)</SelectItem>
-                      <SelectItem value="BR">Brazil (Brasil)</SelectItem>
-                      <SelectItem value="ES">Spain (España)</SelectItem>
+                      <SelectItem value="US">Estados Unidos (EUA)</SelectItem>
+                      <SelectItem value="BR">Brasil</SelectItem>
+                      <SelectItem value="ES">Espanha</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -653,13 +653,13 @@ export default function Properties() {
                     />
                   </div>
                   <div className="grid gap-2 col-span-1">
-                    <Label className="text-black font-bold">No.</Label>
+                    <Label className="text-black font-bold">Nº</Label>
                     <Input
                       value={newProp.number || ''}
                       onChange={(e) =>
                         setNewProp({ ...newProp, number: e.target.value })
                       }
-                      placeholder="Number"
+                      placeholder="Número"
                       className="text-black"
                       disabled={isHotelLinked}
                     />
@@ -669,14 +669,14 @@ export default function Properties() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1">
                     <Label className="text-xs text-black font-bold">
-                      Neighborhood
+                      Bairro
                     </Label>
                     <Input
                       value={newProp.neighborhood || ''}
                       onChange={(e) =>
                         setNewProp({ ...newProp, neighborhood: e.target.value })
                       }
-                      placeholder="Neighborhood"
+                      placeholder="Bairro"
                       className="text-black"
                       disabled={isHotelLinked}
                     />

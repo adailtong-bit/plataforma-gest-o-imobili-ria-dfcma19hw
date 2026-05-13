@@ -358,7 +358,9 @@ export function PropertyFinancials({
             </Select>
           </div>
           <div className="grid gap-2 md:col-span-2 pt-4">
-            <h3 className="font-semibold text-sm">{t('properties.hoa_fee')}</h3>
+            <h3 className="font-semibold text-sm">
+              {t('properties.hoa_fee') || 'Taxa de Condomínio'}
+            </h3>
           </div>
           <div className="grid gap-2">
             <Label>{t('properties.hoa_fee')}</Label>

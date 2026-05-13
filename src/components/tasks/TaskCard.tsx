@@ -49,7 +49,13 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
               variant="outline"
               className="text-[10px] uppercase bg-slate-100 font-bold text-slate-700"
             >
-              {task.type}
+              {task.type === 'cleaning'
+                ? 'Limpeza'
+                : task.type === 'maintenance'
+                  ? 'Manutenção'
+                  : task.type === 'inspection'
+                    ? 'Inspeção'
+                    : task.type}
             </Badge>
             <Badge
               variant="outline"
@@ -58,7 +64,15 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
                 getPriorityStyle(task.priority),
               )}
             >
-              {task.priority}
+              {task.priority === 'low'
+                ? 'Baixa'
+                : task.priority === 'medium'
+                  ? 'Média'
+                  : task.priority === 'high'
+                    ? 'Alta'
+                    : task.priority === 'critical'
+                      ? 'Crítica'
+                      : task.priority}
             </Badge>
           </div>
           {task.backToBack && (
