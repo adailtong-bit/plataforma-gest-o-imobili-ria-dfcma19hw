@@ -37,6 +37,14 @@
     "vite.config.ts"
   ],
   "deployment": {
-    "lastDevBuildRef": "3e5e732"
+    "lastDevBuildRef": "3e5e732",
+    "lastProdBuildRef": "902c90e",
+    "publishedAt": "2026-05-13T20:23:35.502Z",
+    "lastPublishedRef": "3e5e732"
+  },
+  "migrations": {
+    "applied": [
+      "0001-pnpm-workspace-allow-builds"
+    ]
   }
 }
