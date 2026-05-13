@@ -62,7 +62,7 @@ import { TourGuide } from '@/components/tour/TourGuide'
 
 const App = () => {
   useEffect(() => {
-    document.title = 'COREPM'
+    document.title = 'Summerpm'
   }, [])
 
   return (

@@ -178,7 +178,7 @@ export default function Login() {
           </h1>
           <p className="text-slate-400 text-lg">
             Manage properties, owners, partners, and financials in one place
-            with COREPM.
+            with Summerpm.
           </p>
         </div>
       </div>

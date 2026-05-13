@@ -48,7 +48,7 @@ const generated = (() => {
     {
       id: 'user1',
       name: 'Platform Admin',
-      email: 'admin@corepm.com',
+      email: 'admin@summerpm.com',
       role: 'platform_owner',
       status: 'active',
       isFirstLogin: false,
@@ -106,7 +106,7 @@ const generated = (() => {
   const defaultPaymentIntegrations: PaymentIntegration[] = []
 
   const defaultFinancialSettings: FinancialSettings = {
-    companyName: 'COREPM Inc',
+    companyName: 'Summerpm Inc',
     ein: '12-3456789',
     bankName: 'Chase',
     routingNumber: '122000248',
