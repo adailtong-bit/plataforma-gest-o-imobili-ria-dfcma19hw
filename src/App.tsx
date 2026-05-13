@@ -59,10 +59,20 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect } from 'react'
 import { RequirePermission } from '@/components/RequirePermission'
 import { TourGuide } from '@/components/tour/TourGuide'
+import logoImg from '@/assets/summerpm-logo-d35a2.jpg'
 
 const App = () => {
   useEffect(() => {
     document.title = 'Summerpm'
+
+    // Ensure favicon is set and properly bundled
+    let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']")
+    if (!link) {
+      link = document.createElement('link')
+      link.rel = 'icon'
+      document.head.appendChild(link)
+    }
+    link.href = logoImg
   }, [])
 
   return (
