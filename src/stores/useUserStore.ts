@@ -1,17 +1,59 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase/client'
+
+let globalProfiles: any[] = []
+let listeners: (() => void)[] = []
+const notify = () => listeners.forEach((l) => l())
+
+export const fetchProfiles = async () => {
+  const { data } = await supabase.from('profiles').select('*')
+  if (data) {
+    globalProfiles = data
+    notify()
+  }
+}
+
+fetchProfiles()
 
 const useUserStore = () => {
-  const context = useContext(AppContext)
-  if (!context) throw new Error('useUserStore must be used within AppProvider')
+  const [profiles, setProfiles] = useState<any[]>(globalProfiles)
+
+  useEffect(() => {
+    const l = () => setProfiles(globalProfiles)
+    listeners.push(l)
+    return () => {
+      listeners = listeners.filter((x) => x !== l)
+    }
+  }, [])
+
+  const addProfile = async (profile: any) => {
+    // In a real app, you would call an edge function to create auth user.
+    // For demo/audit, we just insert into profiles if needed.
+    const { error } = await supabase.from('profiles').insert(profile)
+    if (!error) await fetchProfiles()
+    else console.error('Error adding profile:', error)
+  }
+
+  const updateProfile = async (profile: any) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ name: profile.name, role: profile.role })
+      .eq('id', profile.id)
+    if (!error) await fetchProfiles()
+  }
+
+  const deleteProfile = async (id: string) => {
+    // Deleting from profiles might fail if auth.users still exists, but we have ON DELETE CASCADE from auth.users, not the other way around.
+    // For demo, we just try.
+    const { error } = await supabase.from('profiles').delete().eq('id', id)
+    if (!error) await fetchProfiles()
+  }
 
   return {
-    users: context.users,
-    addUser: context.addUser,
-    updateUser: context.updateUser,
-    deleteUser: context.deleteUser,
-    approveUser: context.approveUser,
-    blockUser: context.blockUser,
+    profiles,
+    addProfile,
+    updateProfile,
+    deleteProfile,
   }
 }
 

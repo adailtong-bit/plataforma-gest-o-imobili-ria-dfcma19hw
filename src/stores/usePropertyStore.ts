@@ -21,6 +21,7 @@ export const fetchProperties = async () => {
       agentId: p.agent_id,
       listingPrice: p.listing_price,
       hoaValue: p.hoa_value,
+      area: p.area,
     }))
     notify()
   }
@@ -66,6 +67,7 @@ const usePropertyStore = () => {
       agent_id: prop.agentId,
       listing_price: prop.listingPrice,
       hoa_value: prop.hoaValue,
+      area: prop.area,
     }
     const { error } = await supabase.from('properties').insert(dbProp)
     if (!error) await fetchProperties()
@@ -99,6 +101,7 @@ const usePropertyStore = () => {
       agent_id: prop.agentId,
       listing_price: prop.listingPrice,
       hoa_value: prop.hoaValue,
+      area: prop.area,
     }
     const { error } = await supabase
       .from('properties')

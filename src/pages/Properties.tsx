@@ -108,6 +108,7 @@ export default function Properties() {
     image: '',
     listingPrice: 0,
     hoaValue: 0,
+    area: 0,
   })
 
   const accessibleProperties = properties.filter((p) => {
@@ -278,6 +279,7 @@ export default function Properties() {
           community: comm,
           listingPrice: newProp.listingPrice || 0,
           hoaValue: newProp.hoaValue || 0,
+          area: newProp.area || 0,
           image: newProp.image || existing.image,
         } as Property)
         toast({
@@ -317,6 +319,7 @@ export default function Properties() {
         fixedExpenses: [],
         listingPrice: newProp.listingPrice || 0,
         hoaValue: newProp.hoaValue || 0,
+        area: newProp.area || 0,
       } as Property)
       toast({
         title: t('properties.property_added'),
@@ -429,6 +432,7 @@ export default function Properties() {
                   guests: 6,
                   listingPrice: 0,
                   hoaValue: 0,
+                  area: 0,
                 })
                 setSelectedCountry('US')
               }
@@ -615,7 +619,7 @@ export default function Properties() {
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
                     {t('common.name')} <span className="text-red-500">*</span>
-                  </Label>
+                  </Label>{' '}
                   <Input
                     value={newProp.name}
                     onChange={(e) =>
@@ -728,7 +732,22 @@ export default function Properties() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="grid gap-2">
+                    <Label className="text-black font-bold">Área (m²)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={newProp.area || ''}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value)
+                        if (val < 0) return
+                        setNewProp({ ...newProp, area: val })
+                      }}
+                      className="text-black bg-white"
+                      placeholder="Ex: 150"
+                    />
+                  </div>
                   <div className="grid gap-2">
                     <Label className="text-black font-bold">
                       {t('properties.property_value')} ($)

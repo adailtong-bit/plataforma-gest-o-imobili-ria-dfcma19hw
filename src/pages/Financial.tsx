@@ -260,6 +260,23 @@ export default function Financial() {
   }, [filteredData])
 
   const handleAdd = () => {
+    if (Number(form.amount) <= 0) {
+      toast({
+        title: 'Valor inválido',
+        description: 'O valor deve ser maior que zero.',
+        variant: 'destructive',
+      })
+      return
+    }
+    if (!form.description) {
+      toast({
+        title: 'Descrição inválida',
+        description: 'A descrição é obrigatória.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     addLedgerEntry({
       description: form.description || 'Nova transação',
       amount: Number(form.amount) || 0,
@@ -279,6 +296,15 @@ export default function Financial() {
   }
 
   const handleEdit = () => {
+    if (Number(form.amount) <= 0) {
+      toast({
+        title: 'Valor inválido',
+        description: 'O valor deve ser maior que zero.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (editingRecord) {
       updateLedgerEntry({
         ...editingRecord,
@@ -396,11 +422,15 @@ export default function Financial() {
                   <Label>Valor</Label>
                   <Input
                     type="number"
+                    min="0"
+                    step="0.01"
                     placeholder="0.00"
                     value={form.amount}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value)
+                      if (val < 0) return
                       setForm({ ...form, amount: e.target.value })
-                    }
+                    }}
                   />
                 </div>
                 <div className="grid gap-2">
@@ -886,13 +916,17 @@ export default function Financial() {
                                   <Label>Valor</Label>
                                   <Input
                                     type="number"
+                                    min="0"
+                                    step="0.01"
                                     value={form.amount}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
+                                      const val = parseFloat(e.target.value)
+                                      if (val < 0) return
                                       setForm({
                                         ...form,
                                         amount: e.target.value,
                                       })
-                                    }
+                                    }}
                                   />
                                 </div>
                                 <div className="grid gap-2">
