@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -49,6 +50,10 @@ interface Message {
 export default function Messages() {
   const { profile } = useAuth()
   const { toast } = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const convIdParam = searchParams.get('chat')
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeConv, setActiveConv] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -57,6 +62,15 @@ export default function Messages() {
   const [availableUsers, setAvailableUsers] = useState<Profile[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (convIdParam && conversations.length > 0) {
+      const conv = conversations.find((c) => c.id === convIdParam)
+      if (conv && conv.id !== activeConv?.id) {
+        setActiveConv(conv)
+      }
+    }
+  }, [convIdParam, conversations])
 
   useEffect(() => {
     if (!profile) return
@@ -172,7 +186,10 @@ export default function Messages() {
 
       setConversations(formattedConvs)
 
-      if (activeConv) {
+      if (convIdParam) {
+        const urlConv = formattedConvs.find((c) => c.id === convIdParam)
+        if (urlConv) setActiveConv(urlConv)
+      } else if (activeConv) {
         const updatedActive = formattedConvs.find((c) => c.id === activeConv.id)
         if (updatedActive) setActiveConv(updatedActive)
       }
@@ -237,50 +254,14 @@ export default function Messages() {
       }
 
       if (commonConvId) {
-        const conv = conversations.find((c) => c.id === commonConvId)
-        if (conv) {
-          setActiveConv(conv)
-          setIsDialogOpen(false)
-          return
-        } else {
-          const { data: convData, error: convDataError } = await supabase
-            .from('conversations')
-            .select(
-              `
-              id,
-              created_at,
-              conversation_participants (
-                profiles (
-                  id,
-                  name,
-                  email,
-                  role,
-                  pm_id
-                )
-              )
-            `,
-            )
-            .eq('id', commonConvId)
-            .single()
-
-          if (convData && !convDataError) {
-            const newFormattedConv = {
-              id: convData.id,
-              created_at: convData.created_at,
-              participants: (convData as any).conversation_participants
-                .map((cp: any) => ({ profile: cp.profiles }))
-                .filter((p: any) => p.profile !== null),
-            }
-            setActiveConv(newFormattedConv)
-            setIsDialogOpen(false)
-            return
-          }
-        }
+        setIsDialogOpen(false)
+        setSearchParams({ chat: commonConvId })
+        return
       }
 
       const { data: newConv, error: convError } = await supabase
         .from('conversations')
-        .insert({})
+        .insert({ updated_at: new Date().toISOString() })
         .select()
         .single()
 
@@ -297,37 +278,7 @@ export default function Messages() {
 
       await loadConversations()
       setIsDialogOpen(false)
-
-      const { data: createdConvData } = await supabase
-        .from('conversations')
-        .select(
-          `
-          id,
-          created_at,
-          conversation_participants (
-            profiles (
-              id,
-              name,
-              email,
-              role,
-              pm_id
-            )
-          )
-        `,
-        )
-        .eq('id', newConv.id)
-        .single()
-
-      if (createdConvData) {
-        const newFormattedConv = {
-          id: createdConvData.id,
-          created_at: createdConvData.created_at,
-          participants: (createdConvData as any).conversation_participants
-            .map((cp: any) => ({ profile: cp.profiles }))
-            .filter((p: any) => p.profile !== null),
-        }
-        setActiveConv(newFormattedConv)
-      }
+      setSearchParams({ chat: newConv.id })
     } catch (error: any) {
       console.error('Error starting conversation:', error)
       toast({
@@ -392,7 +343,11 @@ export default function Messages() {
                   availableUsers.map((u) => (
                     <button
                       key={u.id}
-                      onClick={() => startConversation(u.id)}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        startConversation(u.id)
+                      }}
                       className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-slate-100 transition-colors text-left"
                     >
                       <Avatar>
@@ -427,12 +382,17 @@ export default function Messages() {
             <div className="divide-y">
               {conversations.map((conv) => {
                 const other = getOtherParticipant(conv)
+                const isActive =
+                  activeConv?.id === conv.id || convIdParam === conv.id
                 return (
                   <button
                     key={conv.id}
-                    onClick={() => setActiveConv(conv)}
+                    onClick={() => {
+                      setActiveConv(conv)
+                      setSearchParams({ chat: conv.id })
+                    }}
                     className={`w-full p-4 flex items-center gap-3 hover:bg-slate-100 transition-colors text-left ${
-                      activeConv?.id === conv.id ? 'bg-slate-200' : ''
+                      isActive ? 'bg-slate-200' : ''
                     }`}
                   >
                     <Avatar>

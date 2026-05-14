@@ -139,7 +139,7 @@ export function useChatSystem(currentUser: any) {
     if (!convId) {
       const { data: convData, error: convError } = await supabase
         .from('conversations')
-        .insert({})
+        .insert({ updated_at: new Date().toISOString() })
         .select('id')
         .single()
       if (!convData || convError) {
@@ -166,7 +166,7 @@ export function useChatSystem(currentUser: any) {
 
     const { data: convData, error: convError } = await supabase
       .from('conversations')
-      .insert({})
+      .insert({ updated_at: new Date().toISOString() })
       .select('id')
       .single()
     if (!convData || convError) {
