@@ -129,6 +129,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: Record<
   },
   internal_user: {
     dashboard: ['view'],
+    messages: FULL_ACCESS,
   },
   partner: {
     dashboard: ['view'],
@@ -213,7 +214,9 @@ export const canChat = (initiator: User, target: User): boolean => {
     initiatorRole === 'super_admin' ||
     targetRole === 'super_admin' ||
     initiatorRole === 'master' ||
-    targetRole === 'master'
+    targetRole === 'master' ||
+    initiatorRole === 'admin' ||
+    targetRole === 'admin'
   ) {
     return true
   }

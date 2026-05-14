@@ -175,28 +175,33 @@ export function RequirePermission({
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (!allowed) {
-    const isPortalUser = [
-      'tenant',
-      'property_owner',
-      'partner',
-      'partner_employee',
-    ].includes(effectiveUser?.role || '')
+  const isPortalUser = [
+    'tenant',
+    'property_owner',
+    'partner',
+    'partner_employee',
+  ].includes(effectiveUser?.role || '')
 
-    if (isPortalUser) {
-      const portalPath =
-        effectiveUser.role === 'property_owner'
-          ? '/portal/owner'
-          : effectiveUser.role === 'partner' ||
-              effectiveUser.role === 'partner_employee'
-            ? '/portal/partner'
-            : '/portal/tenant'
+  if (isPortalUser) {
+    const portalPath =
+      effectiveUser.role === 'property_owner'
+        ? '/portal/owner'
+        : effectiveUser.role === 'partner' ||
+            effectiveUser.role === 'partner_employee'
+          ? '/portal/partner'
+          : '/portal/tenant'
 
-      if (!location.pathname.startsWith(portalPath)) {
-        return <Navigate to={portalPath} replace />
-      }
+    const isAllowedPath =
+      location.pathname.startsWith(portalPath) ||
+      location.pathname.startsWith('/messages') ||
+      location.pathname.startsWith('/help')
+
+    if (!isAllowedPath) {
+      return <Navigate to={portalPath} replace />
     }
+  }
 
+  if (!allowed) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500">
         <div className="bg-red-50 p-4 rounded-full mb-4">

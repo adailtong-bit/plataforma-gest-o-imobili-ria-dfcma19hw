@@ -111,11 +111,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
 
-      // If we don't have a session, we can stop loading immediately.
-      // If we DO have a session, onAuthStateChange (INITIAL_SESSION)
-      // will handle loading the profile, preventing race conditions.
       if (!session) {
         setLoading(false)
+      } else if (session.user) {
+        // Ensure profile is loaded in case INITIAL_SESSION missed it
+        loadProfile(session.user.id)
       }
     })
 
