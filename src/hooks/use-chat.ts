@@ -137,25 +137,26 @@ export function useChatSystem(currentUser: any) {
     let convId = thread?.id
 
     if (!convId) {
-      const { data: convData } = await supabase
+      const { data: convData, error: convError } = await supabase
         .from('conversations')
         .insert({})
         .select('id')
         .single()
-      if (!convData) return
+      if (!convData || convError) {
+        console.error('Error creating conversation:', convError)
+        return
+      }
       convId = convData.id
       await supabase.from('conversation_participants').insert([
         { conversation_id: convId, profile_id: currentUser.id },
         { conversation_id: convId, profile_id: contactId },
       ])
     }
-    await supabase
-      .from('messages')
-      .insert({
-        conversation_id: convId,
-        sender_id: currentUser.id,
-        content: text,
-      })
+    await supabase.from('messages').insert({
+      conversation_id: convId,
+      sender_id: currentUser.id,
+      content: text,
+    })
   }
 
   const startChat = async (contactId: string) => {
@@ -163,12 +164,15 @@ export function useChatSystem(currentUser: any) {
     let thread = threads.find((t) => t.contactId === contactId)
     if (thread) return thread.id
 
-    const { data: convData } = await supabase
+    const { data: convData, error: convError } = await supabase
       .from('conversations')
       .insert({})
       .select('id')
       .single()
-    if (!convData) return null
+    if (!convData || convError) {
+      console.error('Error starting conversation:', convError)
+      return null
+    }
     const convId = convData.id
 
     await supabase.from('conversation_participants').insert([

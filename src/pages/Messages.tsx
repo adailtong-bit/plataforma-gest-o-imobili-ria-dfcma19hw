@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { canChat } from '@/lib/permissions'
 import { User } from '@/lib/types'
@@ -47,6 +48,7 @@ interface Message {
 
 export default function Messages() {
   const { profile } = useAuth()
+  const { toast } = useToast()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeConv, setActiveConv] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -240,6 +242,39 @@ export default function Messages() {
           setActiveConv(conv)
           setIsDialogOpen(false)
           return
+        } else {
+          const { data: convData, error: convDataError } = await supabase
+            .from('conversations')
+            .select(
+              `
+              id,
+              created_at,
+              conversation_participants (
+                profiles (
+                  id,
+                  name,
+                  email,
+                  role,
+                  pm_id
+                )
+              )
+            `,
+            )
+            .eq('id', commonConvId)
+            .single()
+
+          if (convData && !convDataError) {
+            const newFormattedConv = {
+              id: convData.id,
+              created_at: convData.created_at,
+              participants: (convData as any).conversation_participants
+                .map((cp: any) => ({ profile: cp.profiles }))
+                .filter((p: any) => p.profile !== null),
+            }
+            setActiveConv(newFormattedConv)
+            setIsDialogOpen(false)
+            return
+          }
         }
       }
 
@@ -293,8 +328,13 @@ export default function Messages() {
         }
         setActiveConv(newFormattedConv)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting conversation:', error)
+      toast({
+        title: 'Error starting conversation',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      })
     }
   }
 
