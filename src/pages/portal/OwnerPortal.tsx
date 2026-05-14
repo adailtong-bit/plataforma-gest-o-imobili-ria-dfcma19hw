@@ -60,6 +60,12 @@ export default function OwnerPortal() {
         date: new Date().toISOString(),
         price: 450,
         assignee: 'DevTech Services',
+        description:
+          '[DEV] The AC unit in the main suite is leaking and making a loud noise. Needs immediate repair. Technician found a broken coil.',
+        images: [
+          'https://img.usecurling.com/p/200/200?q=ac%20repair',
+          'https://img.usecurling.com/p/200/200?q=water%20leak',
+        ],
       },
     ] as any[]
   }, [targetUserId])
@@ -160,7 +166,7 @@ export default function OwnerPortal() {
           >
             <Link to="/messages">
               <MessageSquare className="h-4 w-4 mr-2" />
-              Contact PM (Sync)
+              {t('owner_portal.contact_pm') || 'Contact PM'}
             </Link>
           </Button>
         </div>
@@ -184,7 +190,7 @@ export default function OwnerPortal() {
         <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
-              Pending HOA & Taxes
+              {t('owner_portal.pending_hoa') || 'Pending HOA & Taxes'}
             </CardTitle>
             <Landmark className="h-4 w-4 text-emerald-600" />
           </CardHeader>
@@ -197,7 +203,7 @@ export default function OwnerPortal() {
         <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
-              Pending Cost Approvals
+              {t('owner_portal.pending_approvals') || 'Pending Cost Approvals'}
             </CardTitle>
             <ClipboardList className="h-4 w-4 text-orange-600" />
           </CardHeader>
@@ -210,7 +216,7 @@ export default function OwnerPortal() {
         <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
-              Pending Renewals
+              {t('owner_portal.pending_renewals') || 'Pending Renewals'}
             </CardTitle>
             <FileText className="h-4 w-4 text-purple-600" />
           </CardHeader>
@@ -228,31 +234,31 @@ export default function OwnerPortal() {
             value="ledger"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Ledger & Financial
+            {t('owner_portal.ledger') || 'Ledger & Financial'}
           </TabsTrigger>
           <TabsTrigger
             value="hoa_taxes"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            HOA & Taxes
+            {t('owner_portal.hoa_taxes') || 'HOA & Taxes'}
           </TabsTrigger>
           <TabsTrigger
             value="tasks"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Damages & Costs
+            {t('owner_portal.damages_costs') || 'Damages & Costs'}
           </TabsTrigger>
           <TabsTrigger
             value="renewals"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Renewals
+            {t('owner_portal.renewals') || 'Renewals'}
           </TabsTrigger>
           <TabsTrigger
             value="properties"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Properties
+            {t('owner_portal.properties') || 'Properties'}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="ledger" className="mt-6">
@@ -267,28 +273,31 @@ export default function OwnerPortal() {
             <CardHeader className="bg-slate-50/50 border-b pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Landmark className="h-5 w-5 text-emerald-600" />
-                HOA & Property Taxes
+                {t('owner_portal.hoa_taxes') || 'HOA & Property Taxes'}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-slate-500">
-                    Manage your upcoming HOA fees and property taxes.
+                    {t('owner_portal.hoa_desc') ||
+                      'Manage your upcoming HOA fees and property taxes.'}
                   </p>
                   <Button asChild variant="outline" size="sm">
-                    <Link to="/financial">Go to Financial</Link>
+                    <Link to="/financial">
+                      {t('owner_portal.go_to_financial') || 'Go to Financial'}
+                    </Link>
                   </Button>
                 </div>
                 {hoaAndTaxes.length === 0 ? (
                   <div className="text-center py-12 px-4 border-2 border-dashed rounded-lg bg-slate-50/50">
                     <Landmark className="h-8 w-8 text-slate-300 mx-auto mb-3" />
                     <h3 className="text-sm font-medium text-slate-900">
-                      No records found
+                      {t('owner_portal.no_records') || 'No records found'}
                     </h3>
                     <p className="text-sm text-slate-500 mt-1">
-                      No HOA or Tax records have been registered for your
-                      properties.
+                      {t('owner_portal.no_hoa_records') ||
+                        'No HOA or Tax records have been registered for your properties.'}
                     </p>
                   </div>
                 ) : (
@@ -320,10 +329,12 @@ export default function OwnerPortal() {
                               </div>
                               <div className="text-xs uppercase tracking-wider font-semibold">
                                 {entry.status === 'cleared' ? (
-                                  <span className="text-emerald-600">Paid</span>
+                                  <span className="text-emerald-600">
+                                    {t('common.paid') || 'Paid'}
+                                  </span>
                                 ) : (
                                   <span className="text-orange-600">
-                                    Pending
+                                    {t('common.pending') || 'Pending'}
                                   </span>
                                 )}
                               </div>
@@ -339,51 +350,19 @@ export default function OwnerPortal() {
           </Card>
         </TabsContent>
         <TabsContent value="tasks" className="mt-6">
-          {mockTasks.length > 0 && (
-            <div className="mb-6 space-y-4">
-              <h3 className="font-bold text-orange-800 flex items-center gap-2">
-                <ClipboardList className="h-5 w-5" /> Sandbox Tasks (Development
-                Only)
-              </h3>
-              <div className="grid gap-4">
-                {mockTasks.map((t) => (
-                  <div
-                    key={t.id}
-                    className="bg-orange-50/50 p-4 rounded-lg border border-orange-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm"
-                  >
-                    <div>
-                      <p className="font-bold text-slate-900">{t.title}</p>
-                      <p className="text-sm text-slate-600">{t.propertyName}</p>
-                    </div>
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                      <div className="text-right flex-1 md:flex-none">
-                        <p className="font-bold text-lg text-slate-900">
-                          ${t.price}
-                        </p>
-                        <p className="text-xs text-orange-600 uppercase tracking-wider font-bold">
-                          Pending Approval
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        className="bg-orange-600 hover:bg-orange-700 text-white shrink-0 shadow-sm"
-                      >
-                        Approve
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          <OwnerTasks ownerId={targetUserId} properties={properties} />
+          <OwnerTasks
+            ownerId={targetUserId}
+            properties={properties}
+            tasksOverride={allTasks}
+          />
         </TabsContent>
         <TabsContent value="renewals" className="mt-6 space-y-4">
           <Card className="shadow-sm border-slate-200">
             <CardHeader className="bg-slate-50/50 border-b pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="h-5 w-5 text-purple-600" />
-                Long-term Contract Renewals
+                {t('owner_portal.long_term_renewals') ||
+                  'Long-term Contract Renewals'}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
@@ -391,11 +370,12 @@ export default function OwnerPortal() {
                 <div className="text-center py-12 px-4 border-2 border-dashed rounded-lg bg-slate-50/50">
                   <FileText className="h-8 w-8 text-slate-300 mx-auto mb-3" />
                   <h3 className="text-sm font-medium text-slate-900">
-                    No pending renewals
+                    {t('owner_portal.no_pending_renewals') ||
+                      'No pending renewals'}
                   </h3>
                   <p className="text-sm text-slate-500 mt-1">
-                    There are no long-term contracts awaiting your approval at
-                    this time.
+                    {t('owner_portal.no_pending_renewals_desc') ||
+                      'There are no long-term contracts awaiting your approval at this time.'}
                   </p>
                 </div>
               ) : (
@@ -414,7 +394,7 @@ export default function OwnerPortal() {
                             {property?.name}
                           </h4>
                           <p className="text-sm text-slate-600 font-medium">
-                            Tenant:{' '}
+                            {t('common.tenant') || 'Tenant'}:{' '}
                             <span className="text-slate-900">
                               {tenant.name}
                             </span>
@@ -422,7 +402,8 @@ export default function OwnerPortal() {
                           <div className="flex flex-wrap gap-4 mt-3 text-sm bg-slate-50 p-3 rounded-md border border-slate-100 w-fit">
                             <div>
                               <span className="text-slate-500 block text-xs uppercase tracking-wider mb-0.5">
-                                Current Rent
+                                {t('owner_portal.current_rent') ||
+                                  'Current Rent'}
                               </span>
                               <span className="font-medium text-slate-900">
                                 ${tenant.rentValue}
@@ -431,7 +412,8 @@ export default function OwnerPortal() {
                             <div className="w-px bg-slate-200"></div>
                             <div>
                               <span className="text-slate-500 block text-xs uppercase tracking-wider mb-0.5">
-                                Proposed Rent
+                                {t('owner_portal.proposed_rent') ||
+                                  'Proposed Rent'}
                               </span>
                               <span className="font-bold text-purple-700">
                                 ${tenant.suggestedRenewalPrice}
@@ -446,7 +428,8 @@ export default function OwnerPortal() {
                               handleApproveRenewal(tenant.id, true)
                             }
                           >
-                            <CheckCircle2 className="w-4 h-4 mr-2" /> Approve
+                            <CheckCircle2 className="w-4 h-4 mr-2" />{' '}
+                            {t('common.approve') || 'Approve'}
                           </Button>
                           <Button
                             variant="outline"
@@ -455,7 +438,8 @@ export default function OwnerPortal() {
                               handleApproveRenewal(tenant.id, false)
                             }
                           >
-                            <XCircle className="w-4 h-4 mr-2" /> Reject
+                            <XCircle className="w-4 h-4 mr-2" />{' '}
+                            {t('common.reject') || 'Reject'}
                           </Button>
                         </div>
                       </div>

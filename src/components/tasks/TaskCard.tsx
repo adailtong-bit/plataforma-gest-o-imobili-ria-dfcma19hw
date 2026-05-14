@@ -17,6 +17,7 @@ import {
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import { cn } from '@/lib/utils'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface TaskCardProps {
   task: Task
@@ -27,6 +28,8 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
+  const { t } = useLanguageStore()
+
   const getPriorityStyle = (p: string) => {
     switch (p) {
       case 'critical':
@@ -50,11 +53,11 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
               className="text-[10px] uppercase bg-slate-100 font-bold text-slate-700"
             >
               {task.type === 'cleaning'
-                ? 'Limpeza'
+                ? t('common.cleaning') || 'Limpeza'
                 : task.type === 'maintenance'
-                  ? 'Manutenção'
+                  ? t('common.maintenance') || 'Manutenção'
                   : task.type === 'inspection'
-                    ? 'Inspeção'
+                    ? t('visits.inspection') || 'Inspeção'
                     : task.type}
             </Badge>
             <Badge
@@ -65,13 +68,13 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
               )}
             >
               {task.priority === 'low'
-                ? 'Baixa'
+                ? t('common.low') || 'Baixa'
                 : task.priority === 'medium'
-                  ? 'Média'
+                  ? t('common.medium') || 'Média'
                   : task.priority === 'high'
-                    ? 'Alta'
+                    ? t('common.high') || 'Alta'
                     : task.priority === 'critical'
-                      ? 'Crítica'
+                      ? t('common.critical') || 'Crítica'
                       : task.priority}
             </Badge>
           </div>
