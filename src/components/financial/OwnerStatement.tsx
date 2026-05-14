@@ -232,11 +232,19 @@ export function OwnerStatement({
               ${totalExpenses.toFixed(2)}
             </p>
           </div>
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm text-slate-600 font-medium">
-              {t('financial.net_income') || 'Net Income'}
+          <div
+            className={`p-4 rounded-lg border ${netIncome < 0 ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-100'}`}
+          >
+            <p
+              className={`text-sm font-medium ${netIncome < 0 ? 'text-red-800' : 'text-slate-600'}`}
+            >
+              {netIncome < 0
+                ? 'Negative Payout / Balance Due'
+                : t('financial.net_income') || 'Net Income (Payout)'}
             </p>
-            <p className="text-2xl font-bold text-blue-700">
+            <p
+              className={`text-2xl font-bold ${netIncome < 0 ? 'text-red-700' : 'text-blue-700'}`}
+            >
               ${netIncome.toFixed(2)}
             </p>
           </div>

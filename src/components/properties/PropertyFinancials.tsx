@@ -144,19 +144,35 @@ export function PropertyFinancials({
   }
 
   const validateForm = () => {
-    if (
-      !formData.name ||
-      !formData.amount ||
-      !formData.provider ||
-      !formData.paymentDate
-    ) {
+    if (!formData.name || !formData.provider || !formData.paymentDate) {
       toast({
-        title: t('common.error'),
-        description: t('common.required'),
+        title: 'Validation Error',
+        description: 'Please fill in all required fields.',
         variant: 'destructive',
       })
       return false
     }
+
+    if (formData.amount <= 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Amount must be greater than zero.',
+        variant: 'destructive',
+      })
+      return false
+    }
+
+    if (formData.contractStartDate && formData.contractEndDate) {
+      if (formData.contractEndDate < formData.contractStartDate) {
+        toast({
+          title: 'Validation Error',
+          description: 'Contract end date cannot be before start date.',
+          variant: 'destructive',
+        })
+        return false
+      }
+    }
+
     return true
   }
 

@@ -43,21 +43,20 @@ export function CurrencyInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
-    // Allow digits, dots, commas, minus, and currency symbols briefly
-    // But we mostly care about digits
-    if (/^[0-9.,$-]*$/.test(inputValue) || inputValue === '') {
+    // Allow digits, dots, commas, and currency symbols briefly (no minus)
+    if (/^[0-9.,$]*$/.test(inputValue) || inputValue === '') {
       setDisplayValue(inputValue)
 
-      const numericString = inputValue.replace(/[^0-9.-]/g, '')
+      const numericString = inputValue.replace(/[^0-9.]/g, '')
       const parsed = parseFloat(numericString)
-      if (!isNaN(parsed)) {
+      if (!isNaN(parsed) && parsed >= 0) {
         onChange(parsed)
       }
     }
   }
 
   const handleBlur = () => {
-    const numericString = displayValue.replace(/[^0-9.-]/g, '')
+    const numericString = displayValue.replace(/[^0-9.]/g, '')
     const parsed = parseFloat(numericString)
 
     if (!isNaN(parsed)) {

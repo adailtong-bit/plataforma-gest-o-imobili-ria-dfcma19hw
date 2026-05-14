@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Property, Condominium } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import usePropertyStore from '@/stores/usePropertyStore'
 
 interface Props {
   data: Property
@@ -23,6 +25,63 @@ export function PropertyLocation({
   canEdit,
   condominiums,
 }: Props) {
+  const { properties } = usePropertyStore()
+  const [zipError, setZipError] = useState('')
+  const [addressWarning, setAddressWarning] = useState('')
+
+  const validateZipCode = (zip: string) => {
+    if (!zip) {
+      setZipError('')
+      return true
+    }
+    const cleanZip = zip.replace(/\D/g, '')
+    // Dummy sequences check
+    if (
+      cleanZip === '00000000' ||
+      cleanZip === '00000' ||
+      /^(\d)\1+$/.test(cleanZip)
+    ) {
+      setZipError('Invalid ZIP code format')
+      return false
+    }
+    setZipError('')
+    return true
+  }
+
+  const checkAddressUniqueness = (address: string, zipCode: string) => {
+    if (!address || !zipCode) {
+      setAddressWarning('')
+      return
+    }
+
+    // Extract first number from address
+    const numberMatch = address.match(/\d+/)
+    const number = numberMatch ? numberMatch[0] : ''
+
+    if (number) {
+      const isDuplicate = properties.some(
+        (p) =>
+          p.id !== data.id &&
+          p.zipCode === zipCode &&
+          p.address.includes(number),
+      )
+      if (isDuplicate) {
+        setAddressWarning(
+          'Warning: A property with this Zip Code and Number might already exist.',
+        )
+      } else {
+        setAddressWarning('')
+      }
+    } else {
+      setAddressWarning('')
+    }
+  }
+
+  useEffect(() => {
+    validateZipCode(data.zipCode || '')
+    checkAddressUniqueness(data.address || '', data.zipCode || '')
+  }, [data.address, data.zipCode, properties, data.id])
+
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
@@ -37,6 +96,9 @@ export function PropertyLocation({
               onChange={(e) => onChange('address', e.target.value)}
               disabled={!canEdit}
             />
+            {addressWarning && (
+              <p className="text-xs text-amber-600">{addressWarning}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Cidade</Label>
@@ -58,9 +120,17 @@ export function PropertyLocation({
             <Label>CEP</Label>
             <Input
               value={data.zipCode || ''}
-              onChange={(e) => onChange('zipCode', e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value
+                onChange('zipCode', val)
+              }}
+              onBlur={(e) => validateZipCode(e.target.value)}
               disabled={!canEdit}
+              className={
+                zipError ? 'border-red-500 focus-visible:ring-red-500' : ''
+              }
             />
+            {zipError && <p className="text-xs text-red-500">{zipError}</p>}
           </div>
           <div className="space-y-2 col-span-2">
             <Label>Condomínio Vinculado</Label>

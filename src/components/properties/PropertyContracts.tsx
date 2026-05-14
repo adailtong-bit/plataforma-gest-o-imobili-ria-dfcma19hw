@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useTenantStore from '@/stores/useTenantStore'
+import usePropertyStore from '@/stores/usePropertyStore'
 import { Tenant } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -49,6 +50,7 @@ export function PropertyContracts({
   canEdit,
 }: PropertyContractsProps) {
   const { tenants, addTenant } = useTenantStore()
+  const { properties, updateProperty } = usePropertyStore()
   const { toast } = useToast()
   const { t, language } = useLanguageStore()
   const [isOpen, setIsOpen] = useState(false)
@@ -63,18 +65,56 @@ export function PropertyContracts({
     status: 'active',
   })
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+
   const propertyTenants = tenants.filter((t) => t.propertyId === propertyId)
+  const property = properties.find((p) => p.id === propertyId)
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {}
+    let isValid = true
+
+    if (!newContract.name) {
+      newErrors.name = 'Name is required'
+      isValid = false
+    }
+
+    if (!newContract.leaseStart) {
+      newErrors.leaseStart = 'Start date is required'
+      isValid = false
+    }
+
+    if (!newContract.leaseEnd) {
+      newErrors.leaseEnd = 'End date is required'
+      isValid = false
+    } else if (
+      newContract.leaseStart &&
+      newContract.leaseEnd < newContract.leaseStart
+    ) {
+      newErrors.leaseEnd = 'End date cannot be before start date'
+      isValid = false
+    }
+
+    if (!newContract.rentValue || newContract.rentValue <= 0) {
+      newErrors.rentValue = 'Rent value must be greater than 0'
+      isValid = false
+    }
+
+    if (property?.status === 'maintenance') {
+      newErrors.general =
+        'Cannot create contract for property under maintenance'
+      isValid = false
+    }
+
+    setErrors(newErrors)
+    return isValid
+  }
 
   const handleSave = () => {
-    if (
-      !newContract.name ||
-      !newContract.leaseStart ||
-      !newContract.leaseEnd ||
-      !newContract.rentValue
-    ) {
+    if (!validate()) {
       toast({
-        title: t('common.error'),
-        description: t('common.required'),
+        title: 'Validation Error',
+        description: 'Please check the highlighted fields',
         variant: 'destructive',
       })
       return
@@ -93,6 +133,11 @@ export function PropertyContracts({
       role: 'tenant',
     } as Tenant)
 
+    // Update property status based on new contract
+    if (newContract.status === 'active' && property) {
+      updateProperty({ ...property, status: 'rented' })
+    }
+
     setIsOpen(false)
     setNewContract({
       name: '',
@@ -103,7 +148,11 @@ export function PropertyContracts({
       rentValue: 0,
       status: 'active',
     })
-    toast({ title: t('common.success') })
+    setErrors({})
+    toast({
+      title: 'Contract Created',
+      description: 'The contract has been successfully created.',
+    })
   }
 
   return (
@@ -123,6 +172,11 @@ export function PropertyContracts({
         )}
       </CardHeader>
       <CardContent>
+        {errors.general && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-md text-sm">
+            {errors.general}
+          </div>
+        )}
         <Table>
           <TableHeader>
             <TableRow>
@@ -185,60 +239,153 @@ export function PropertyContracts({
         </Table>
       </CardContent>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open)
+          if (!open) setErrors({})
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('common.new')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>{t('common.name')}</Label>
+              <Label className={errors.name ? 'text-red-500' : ''}>
+                {t('common.name')}
+              </Label>
               <Input
                 value={newContract.name}
-                onChange={(e) =>
+                onChange={(e) => {
                   setNewContract({ ...newContract, name: e.target.value })
-                }
+                  if (errors.name) setErrors({ ...errors, name: '' })
+                }}
                 placeholder="John Doe"
+                className={
+                  errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''
+                }
+                onBlur={() => {
+                  if (!newContract.name)
+                    setErrors({ ...errors, name: 'Name is required' })
+                }}
               />
+              {errors.name && (
+                <span className="text-xs text-red-500">{errors.name}</span>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('common.start_date')}</Label>
+                <Label className={errors.leaseStart ? 'text-red-500' : ''}>
+                  {t('common.start_date')}
+                </Label>
                 <Input
                   type="date"
                   value={newContract.leaseStart}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewContract({
                       ...newContract,
                       leaseStart: e.target.value,
                     })
+                    if (errors.leaseStart)
+                      setErrors({ ...errors, leaseStart: '' })
+                  }}
+                  className={
+                    errors.leaseStart
+                      ? 'border-red-500 focus-visible:ring-red-500'
+                      : ''
                   }
+                  onBlur={() => {
+                    if (!newContract.leaseStart)
+                      setErrors({
+                        ...errors,
+                        leaseStart: 'Start date is required',
+                      })
+                  }}
                 />
+                {errors.leaseStart && (
+                  <span className="text-xs text-red-500">
+                    {errors.leaseStart}
+                  </span>
+                )}
               </div>
               <div className="grid gap-2">
-                <Label>{t('common.end_date')}</Label>
+                <Label className={errors.leaseEnd ? 'text-red-500' : ''}>
+                  {t('common.end_date')}
+                </Label>
                 <Input
                   type="date"
                   value={newContract.leaseEnd}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewContract({ ...newContract, leaseEnd: e.target.value })
+                    if (errors.leaseEnd) setErrors({ ...errors, leaseEnd: '' })
+                  }}
+                  className={
+                    errors.leaseEnd
+                      ? 'border-red-500 focus-visible:ring-red-500'
+                      : ''
                   }
+                  onBlur={() => {
+                    if (!newContract.leaseEnd) {
+                      setErrors({ ...errors, leaseEnd: 'End date is required' })
+                    } else if (
+                      newContract.leaseStart &&
+                      newContract.leaseEnd < newContract.leaseStart
+                    ) {
+                      setErrors({
+                        ...errors,
+                        leaseEnd: 'End date cannot be before start date',
+                      })
+                    }
+                  }}
                 />
+                {errors.leaseEnd && (
+                  <span className="text-xs text-red-500">
+                    {errors.leaseEnd}
+                  </span>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('common.value')}</Label>
+                <Label className={errors.rentValue ? 'text-red-500' : ''}>
+                  {t('common.value')}
+                </Label>
                 <Input
                   type="number"
-                  value={newContract.rentValue}
-                  onChange={(e) =>
-                    setNewContract({
-                      ...newContract,
-                      rentValue: Number(e.target.value),
-                    })
+                  min="0"
+                  step="0.01"
+                  value={newContract.rentValue || ''}
+                  onChange={(e) => {
+                    const val = Number(e.target.value)
+                    if (val >= 0) {
+                      setNewContract({
+                        ...newContract,
+                        rentValue: val,
+                      })
+                      if (errors.rentValue)
+                        setErrors({ ...errors, rentValue: '' })
+                    }
+                  }}
+                  className={
+                    errors.rentValue
+                      ? 'border-red-500 focus-visible:ring-red-500'
+                      : ''
                   }
+                  onBlur={() => {
+                    if (!newContract.rentValue || newContract.rentValue <= 0) {
+                      setErrors({
+                        ...errors,
+                        rentValue: 'Rent value must be greater than 0',
+                      })
+                    }
+                  }}
                 />
+                {errors.rentValue && (
+                  <span className="text-xs text-red-500">
+                    {errors.rentValue}
+                  </span>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label>{t('common.status')}</Label>
