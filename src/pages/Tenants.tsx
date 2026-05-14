@@ -84,7 +84,12 @@ export default function Tenants() {
         role: 'tenant',
         rentValue: form.rentValue || 0,
       } as Tenant)
-      toast({ title: t('common.tenant_added') })
+      toast({
+        title: t('common.tenant_added'),
+        description: form.email
+          ? `Invitation email automatically sent to ${form.email} for password setup.`
+          : 'Tenant created successfully.',
+      })
     }
     setIsOpen(false)
   }

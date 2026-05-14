@@ -80,7 +80,12 @@ export default function Owners() {
         status: 'active',
         role: 'property_owner',
       } as Owner)
-      toast({ title: t('common.owner_added') })
+      toast({
+        title: t('common.owner_added'),
+        description: form.email
+          ? `Invitation email automatically sent to ${form.email} for password setup.`
+          : 'Owner created successfully.',
+      })
     }
     setIsOpen(false)
   }
