@@ -169,7 +169,8 @@ export function OwnerStatement({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
-                {t('common.all_properties') || 'Total Portfolio Balance'}
+                {t('common.all_properties') ||
+                  'Total Portfolio Balance (All Accounts)'}
               </SelectItem>
               {ownerProperties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
@@ -208,9 +209,9 @@ export function OwnerStatement({
           <Button
             variant="outline"
             onClick={handleDownloadCSV}
-            className="gap-2"
+            className="gap-2 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200"
           >
-            <Download className="h-4 w-4" /> Export for Accounting
+            <Download className="h-4 w-4" /> Export for Quickbooks (CSV)
           </Button>
         </div>
       </CardHeader>

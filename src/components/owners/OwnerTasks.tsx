@@ -97,8 +97,8 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
         <Card className="border-orange-200 shadow-md">
           <CardHeader className="bg-orange-50 border-b border-orange-100">
             <CardTitle className="flex items-center gap-2 text-orange-800">
-              <ClipboardList className="h-5 w-5" /> Aprovações Pendentes (
-              {pendingApprovals.length})
+              <ClipboardList className="h-5 w-5" /> Aprovações de Custos (Acima
+              do Limite ADM) ({pendingApprovals.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -155,8 +155,8 @@ export function OwnerTasks({ ownerId, properties }: OwnerTasksProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" /> Histórico de Tarefas e
-            Manutenções
+            <ClipboardList className="h-5 w-5" /> Histórico de Danos e Custos de
+            Manutenção
           </CardTitle>
           <div className="flex gap-2">
             <Select

@@ -392,21 +392,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.messages', 'Mensagens')}
-                          </span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={location.pathname === '/financial'}
-                        className="data-[active=true]:bg-trust-blue data-[active=true]:text-white hover:bg-slate-800 hover:text-white transition-colors"
-                      >
-                        <Link to="/financial" className="px-4 py-2.5">
-                          <DollarSign className="h-4 w-4 mr-3" />
-                          <span className="font-medium text-sm">
-                            {getTitle('sidebar.financial', 'Financeiro')}
+                            {getTitle('common.messages', 'Mensagens')} (PM Sync)
                           </span>
                         </Link>
                       </SidebarMenuButton>
