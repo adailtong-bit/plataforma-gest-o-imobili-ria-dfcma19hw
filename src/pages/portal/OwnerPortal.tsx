@@ -1,9 +1,10 @@
-import { useContext, useState } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTenantStore from '@/stores/useTenantStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useTaskStore from '@/stores/useTaskStore'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
 import { OwnerTasks } from '@/components/owners/OwnerTasks'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
@@ -15,13 +16,15 @@ import {
   FileText,
   CheckCircle2,
   XCircle,
+  Landmark,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function OwnerPortal() {
-  const { properties, tasks } = useContext(AppContext)!
+  const { properties } = usePropertyStore()
+  const { tasks } = useTaskStore()
   const { currentUser, allUsers, simulationMode, simulationRole } =
     useAuthStore()
   const { t } = useLanguageStore()
