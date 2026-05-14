@@ -32,10 +32,8 @@ export default function OwnerPortal() {
   const { ledgerEntries } = useFinancialStore()
   const { tenants, updateTenant } = useTenantStore()
 
-  if (!currentUser) return null
-
-  let targetUserId = currentUser.id
-  let displayName = currentUser.name
+  let targetUserId = currentUser?.id
+  let displayName = currentUser?.name
 
   if (simulationMode && simulationRole === 'property_owner') {
     const firstOwner = allUsers.find((u) => u.role === 'property_owner')
@@ -114,6 +112,8 @@ export default function OwnerPortal() {
       })
     }
   }
+
+  if (!currentUser || !targetUserId) return null
 
   return (
     <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
