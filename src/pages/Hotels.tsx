@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState } from 'react'
+import useHotelStore from '@/stores/useHotelStore'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -56,7 +56,7 @@ export default function Hotels() {
     addTower,
     updateTower,
     deleteTower,
-  } = useContext(AppContext) || {}
+  } = useHotelStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -136,7 +136,7 @@ export default function Hotels() {
       return
     }
 
-    let hId = editingRecord?.id || `hotel-${Date.now()}`
+    let hId = editingRecord?.id
 
     const hotelData = {
       id: hId,
@@ -169,7 +169,7 @@ export default function Hotels() {
       if (tower.isDeleted && !tower.isNew && deleteTower) {
         deleteTower(tower.id)
       } else if (tower.isNew && !tower.isDeleted && addTower) {
-        addTower({ id: tower.id, hotelId: hId, name: tower.name })
+        addTower({ hotelId: hId, name: tower.name })
       } else if (!tower.isNew && !tower.isDeleted && updateTower) {
         updateTower({ id: tower.id, hotelId: hId, name: tower.name })
       }

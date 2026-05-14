@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/hooks/use-auth'
 import useAuthStore from '@/stores/useAuthStore'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
@@ -21,13 +22,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Login() {
   const {
-    login,
-    logout,
-    allUsers,
-    isAuthenticated,
-    isAuthLoading,
-    currentUser,
-  } = useAuthStore()
+    signIn,
+    signOut,
+    loading: isAuthLoading,
+    profile: currentUser,
+    session,
+  } = useAuth()
+
+  const isAuthenticated = !!session
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
@@ -69,7 +71,7 @@ export default function Login() {
     }
   }, [isAuthenticated, isAuthLoading, currentUser, navigate, from])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) {
       toast({
@@ -80,14 +82,14 @@ export default function Login() {
       return
     }
 
-    const success = login(email, password)
-    if (success) {
+    const { error } = await signIn(email, password)
+    if (!error) {
       toast({
         title: 'Welcome Back',
         description: 'Authentication successful.',
       })
     } else {
-      logout()
+      signOut()
       toast({
         title: 'Authentication Failed',
         description:
@@ -97,7 +99,7 @@ export default function Login() {
     }
   }
 
-  const handleDemoLogin = (demoEmail: string) => {
+  const handleDemoLogin = async (demoEmail: string) => {
     let pwd = ''
     if (demoEmail === 'master@plataforma.com') pwd = 'master123'
     else if (demoEmail === 'admin@plataforma.com') pwd = 'admin123'
@@ -107,14 +109,14 @@ export default function Login() {
     else if (demoEmail === 'locatario@plataforma.com') pwd = 'locatario123'
     else pwd = 'password'
 
-    const success = login(demoEmail, pwd)
-    if (success) {
+    const { error } = await signIn(demoEmail, pwd)
+    if (!error) {
       toast({
         title: 'Welcome Back',
         description: 'Authentication successful.',
       })
     } else {
-      logout()
+      signOut()
       toast({
         title: 'Authentication Failed',
         description:
@@ -147,17 +149,14 @@ export default function Login() {
     }
   }
 
-  const demoUsers = allUsers
-    .filter(
-      (u) =>
-        u.email === 'master@plataforma.com' ||
-        u.email === 'admin@plataforma.com' ||
-        u.email === 'parceiro@plataforma.com' ||
-        u.email === 'proprietario@plataforma.com' ||
-        u.email === 'locatario@plataforma.com' ||
-        u.isDemo,
-    )
-    .slice(0, 6)
+  const demoUsers = [
+    {
+      email: 'master@plataforma.com',
+      name: 'Master User',
+      role: 'master',
+      id: '1',
+    },
+  ]
 
   return (
     <div className="flex min-h-screen w-full flex-col lg:flex-row bg-slate-50">

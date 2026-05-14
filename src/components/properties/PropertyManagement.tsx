@@ -1,5 +1,4 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import useTaskStore from '@/stores/useTaskStore'
 import { Property } from '@/lib/types'
 import {
   Card,
@@ -17,10 +16,8 @@ interface Props {
 }
 
 export function PropertyManagement({ property }: Props) {
-  const context = useContext(AppContext)
-  if (!context) return null
-
-  const { tasks, calendarBlocks } = context
+  const { tasks } = useTaskStore()
+  const calendarBlocks: any[] = []
 
   const propertyTasks = tasks.filter((t) => t.propertyId === property.id)
   const propertyBlocks = calendarBlocks.filter(

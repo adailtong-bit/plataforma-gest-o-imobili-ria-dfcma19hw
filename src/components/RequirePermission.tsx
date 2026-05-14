@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
+import { useAuth } from '@/hooks/use-auth'
 import useAuthStore from '@/stores/useAuthStore'
 import { Resource, Action, User } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
@@ -66,13 +67,13 @@ export function RequirePermission({
   ignoreSimulation = false,
 }: RequirePermissionProps) {
   const {
-    currentUser,
-    isAuthenticated,
+    profile: currentUser,
+    session,
     hasPermissionSync,
-    isAuthLoading,
-    simulationMode,
-    simulationRole,
-  } = useAuthStore()
+    loading: isAuthLoading,
+  } = useAuth()
+  const { simulationMode, simulationRole } = useAuthStore()
+  const isAuthenticated = !!session
   const location = useLocation()
   const { toast } = useToast()
   const { t } = useLanguageStore()

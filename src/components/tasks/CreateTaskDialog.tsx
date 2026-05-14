@@ -95,7 +95,6 @@ export function CreateTaskDialog() {
     const initialApprovalStatus = isAboveThreshold ? 'owner_pending' : undefined
 
     addTask({
-      id: `task-${Date.now()}`,
       title: form.title,
       propertyId: form.propertyId,
       propertyName: prop?.name || '',

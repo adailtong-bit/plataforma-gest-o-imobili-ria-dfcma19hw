@@ -1,5 +1,7 @@
-import { useContext, useState, useMemo } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState, useMemo } from 'react'
+import useFinancialStore from '@/stores/useFinancialStore'
+import usePropertyStore from '@/stores/usePropertyStore'
+import useOwnerStore from '@/stores/useOwnerStore'
 import {
   Card,
   CardContent,
@@ -74,9 +76,9 @@ export default function Financial() {
     updateLedgerEntry,
     deleteLedgerEntry,
     formatAppCurrency,
-    properties,
-    owners,
-  } = useContext(AppContext)!
+  } = useFinancialStore()
+  const { properties } = usePropertyStore()
+  const { owners } = useOwnerStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -259,7 +261,6 @@ export default function Financial() {
 
   const handleAdd = () => {
     addLedgerEntry({
-      id: `ledg-${Date.now()}`,
       description: form.description || 'Nova transação',
       amount: Number(form.amount) || 0,
       type: form.type as 'income' | 'expense',

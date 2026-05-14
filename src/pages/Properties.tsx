@@ -286,7 +286,6 @@ export default function Properties() {
       }
     } else {
       addProperty({
-        id: `prop${Date.now()}`,
         name: newProp.name || '',
         address: newProp.address || '',
         number: newProp.number || '',
@@ -313,7 +312,7 @@ export default function Properties() {
         description: { pt: '', en: '', es: '' },
         hoaRules: { pt: '', en: '', es: '' },
         documents: [],
-        ownerId: newProp.ownerId || 'owner1',
+        ownerId: newProp.ownerId || undefined,
         agentId: newProp.agentId,
         fixedExpenses: [],
         listingPrice: newProp.listingPrice || 0,

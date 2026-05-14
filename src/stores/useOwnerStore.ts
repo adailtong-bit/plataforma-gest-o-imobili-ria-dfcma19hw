@@ -1,15 +1,45 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase/client'
+
+let globalOwners: any[] = []
+let listeners: (() => void)[] = []
+const notify = () => listeners.forEach((l) => l())
+
+export const fetchOwners = async () => {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('role', 'property_owner')
+  if (data) {
+    globalOwners = data
+    notify()
+  }
+}
+
+fetchOwners()
 
 const useOwnerStore = () => {
-  const context = useContext(AppContext)
-  if (!context) throw new Error('useOwnerStore must be used within AppProvider')
+  const [owners, setOwners] = useState<any[]>(globalOwners)
 
-  return {
-    owners: context.owners,
-    addOwner: context.addOwner,
-    updateOwner: context.updateOwner,
+  useEffect(() => {
+    const l = () => setOwners(globalOwners)
+    listeners.push(l)
+    return () => {
+      listeners = listeners.filter((x) => x !== l)
+    }
+  }, [])
+
+  const addOwner = async (owner: any) => {}
+
+  const updateOwner = async (owner: any) => {
+    await supabase
+      .from('profiles')
+      .update({ name: owner.name })
+      .eq('id', owner.id)
+    await fetchOwners()
   }
+
+  return { owners, addOwner, updateOwner }
 }
 
 export default useOwnerStore
