@@ -1,5 +1,6 @@
 import { Property } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface Props {
   data: Property
@@ -8,10 +9,11 @@ interface Props {
 }
 
 export function PropertyMedia({ data }: Props) {
+  const { t } = useLanguageStore()
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Galeria de Mídia</CardTitle>
+        <CardTitle>{t('properties.cover_image') || 'Cover Image'}</CardTitle>
       </CardHeader>
       <CardContent>
         {data.image ? (
@@ -26,7 +28,7 @@ export function PropertyMedia({ data }: Props) {
           />
         ) : (
           <div className="p-8 text-center text-muted-foreground border-dashed border-2 rounded-lg">
-            Nenhuma imagem principal definida.
+            {t('properties.no_image') || 'No Image'}
           </div>
         )}
       </CardContent>

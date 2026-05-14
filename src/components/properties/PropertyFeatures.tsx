@@ -2,6 +2,7 @@ import { Property, Condominium } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface Props {
   data: Property
@@ -11,15 +12,18 @@ interface Props {
 }
 
 export function PropertyFeatures({ data, onChange, canEdit }: Props) {
+  const { t } = useLanguageStore()
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Características e Comodidades</CardTitle>
+        <CardTitle>
+          {t('properties.tabs.features') || 'Features & Amenities'}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label>Quartos</Label>
+            <Label>{t('properties.features.bedrooms') || 'Bedrooms'}</Label>
             <Input
               type="number"
               value={data.bedrooms}
@@ -28,7 +32,7 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Banheiros</Label>
+            <Label>{t('properties.features.bathrooms') || 'Bathrooms'}</Label>
             <Input
               type="number"
               value={data.bathrooms}
@@ -37,7 +41,7 @@ export function PropertyFeatures({ data, onChange, canEdit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label>Máx. Hóspedes</Label>
+            <Label>{t('properties.features.guests') || 'Max Guests'}</Label>
             <Input
               type="number"
               value={data.guests}

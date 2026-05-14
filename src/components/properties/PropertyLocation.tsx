@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import usePropertyStore from '@/stores/usePropertyStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface Props {
   data: Property
@@ -26,6 +27,7 @@ export function PropertyLocation({
   condominiums,
 }: Props) {
   const { properties } = usePropertyStore()
+  const { t } = useLanguageStore()
   const [zipError, setZipError] = useState('')
   const [addressWarning, setAddressWarning] = useState('')
 
@@ -85,12 +87,12 @@ export function PropertyLocation({
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader>
-        <CardTitle>Detalhes de Localização</CardTitle>
+        <CardTitle>{t('properties.tabs.location') || 'Location'}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Endereço</Label>
+            <Label>{t('properties.location.address') || 'Address'}</Label>
             <Input
               value={data.address}
               onChange={(e) => onChange('address', e.target.value)}
@@ -101,7 +103,7 @@ export function PropertyLocation({
             )}
           </div>
           <div className="space-y-2">
-            <Label>Cidade</Label>
+            <Label>{t('common.city') || 'City'}</Label>
             <Input
               value={data.city || ''}
               onChange={(e) => onChange('city', e.target.value)}
@@ -109,7 +111,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2">
-            <Label>Estado</Label>
+            <Label>{t('common.state') || 'State'}</Label>
             <Input
               value={data.state || ''}
               onChange={(e) => onChange('state', e.target.value)}
@@ -117,7 +119,7 @@ export function PropertyLocation({
             />
           </div>
           <div className="space-y-2">
-            <Label>CEP</Label>
+            <Label>{t('properties.zip_code') || 'Zip Code'}</Label>
             <Input
               value={data.zipCode || ''}
               onChange={(e) => {
@@ -133,7 +135,9 @@ export function PropertyLocation({
             {zipError && <p className="text-xs text-red-500">{zipError}</p>}
           </div>
           <div className="space-y-2 col-span-2">
-            <Label>Condomínio Vinculado</Label>
+            <Label>
+              {t('properties.location.linked_condo') || 'Linked Condominium'}
+            </Label>
             <Select
               value={data.condominiumId || 'none'}
               onValueChange={(v) =>
@@ -142,10 +146,12 @@ export function PropertyLocation({
               disabled={!canEdit}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Nenhum" />
+                <SelectValue placeholder={t('common.none') || 'None'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Nenhum</SelectItem>
+                <SelectItem value="none">
+                  {t('common.none') || 'None'}
+                </SelectItem>
                 {condominiums.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
