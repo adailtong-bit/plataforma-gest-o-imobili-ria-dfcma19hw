@@ -95,17 +95,29 @@ export function RequirePermission({
 
   const isSoftwareTenant = effectiveUser?.role === 'software_tenant'
 
+  const isPortalUserRole = [
+    'tenant',
+    'property_owner',
+    'partner',
+    'partner_employee',
+  ].includes(effectiveUser?.role || '')
+
+  const isAlwaysAllowedResource =
+    isPortalUserRole && (resource === 'messages' || resource === 'portal')
+
   const allowed = isDeveloperBypass
     ? true
     : isSoftwareTenant
       ? true
-      : effectiveUser
-        ? hasPermission(
-            effectiveUser as any,
-            resource as Resource,
-            action as Action,
-          )
-        : false
+      : isAlwaysAllowedResource
+        ? true
+        : effectiveUser
+          ? hasPermission(
+              effectiveUser as any,
+              resource as Resource,
+              action as Action,
+            )
+          : false
 
   useEffect(() => {
     if (

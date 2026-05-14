@@ -15,7 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { canChat } from '@/lib/permissions'
 import { User } from '@/lib/types'
 import { useAuth } from '@/hooks/use-auth'
 import { useChatSystem } from '@/hooks/use-chat'
@@ -63,9 +62,26 @@ export default function Messages() {
     setNewMessage('')
   }
 
-  const availableContacts = allUsers.filter(
-    (u) => u.id !== currentUser?.id && canChat(currentUser as User, u as User),
-  )
+  const availableContacts = allUsers.filter((u) => {
+    if (!currentUser) return false
+    if (u.id === currentUser.id) return false
+
+    // Tenant and Owner can chat with PM and Staff
+    if (
+      currentUser.role === 'tenant' ||
+      currentUser.role === 'property_owner'
+    ) {
+      return [
+        'software_tenant',
+        'internal_user',
+        'master',
+        'platform_owner',
+      ].includes(u.role)
+    }
+
+    // PM and Staff can chat with everyone linked to them
+    return true
+  })
 
   const handleStartChat = async (contact: User) => {
     setIsNewChatOpen(false)
@@ -95,7 +111,8 @@ export default function Messages() {
           {t('common.messages') || 'Messages'}
         </h1>
         <p className="text-muted-foreground">
-          Communicate with tenants, owners, and partners.
+          {t('messages.subtitle') ||
+            'Communicate with tenants, owners, and partners.'}
         </p>
       </div>
 
@@ -108,12 +125,15 @@ export default function Messages() {
                   className="w-full mb-3 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                   size="sm"
                 >
-                  <Plus className="h-4 w-4 mr-2" /> New Chat
+                  <Plus className="h-4 w-4 mr-2" />{' '}
+                  {t('messages.new_chat') || 'New Chat'}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Start New Conversation</DialogTitle>
+                  <DialogTitle>
+                    {t('messages.start_new') || 'Start New Conversation'}
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
                   {availableContacts.map((c) => (
@@ -128,7 +148,7 @@ export default function Messages() {
                   ))}
                   {availableContacts.length === 0 && (
                     <p className="text-sm text-muted-foreground text-center p-4">
-                      No available contacts.
+                      {t('messages.no_contacts') || 'No available contacts.'}
                     </p>
                   )}
                 </div>
@@ -137,7 +157,7 @@ export default function Messages() {
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder={t('common.search') || 'Search...'}
                 className="pl-9 bg-slate-50 border-slate-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -167,14 +187,18 @@ export default function Messages() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate font-medium">
-                    <DataMask>{m.lastMessage || 'New conversation'}</DataMask>
+                    <DataMask>
+                      {m.lastMessage ||
+                        t('messages.new_conversation') ||
+                        'New conversation'}
+                    </DataMask>
                   </p>
                 </div>
               </button>
             ))}
             {filteredMessages.length === 0 && (
               <div className="p-8 text-center text-sm text-muted-foreground font-medium">
-                No conversations found.
+                {t('messages.no_conversations') || 'No conversations found.'}
               </div>
             )}
           </ScrollArea>
@@ -229,7 +253,8 @@ export default function Messages() {
                 })}
                 {activeChat.history.length === 0 && (
                   <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm font-medium">
-                    Send a message to start the conversation!
+                    {t('messages.send_to_start') ||
+                      'Send a message to start the conversation!'}
                   </div>
                 )}
               </div>
@@ -245,7 +270,9 @@ export default function Messages() {
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
+                    placeholder={
+                      t('messages.type_message') || 'Type your message...'
+                    }
                     className="flex-1 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 shadow-sm"
                   />
                   <Button
@@ -261,7 +288,8 @@ export default function Messages() {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground font-medium bg-white">
-              Select a conversation to start messaging
+              {t('messages.select_conversation') ||
+                'Select a conversation to start messaging'}
             </div>
           )}
         </Card>
