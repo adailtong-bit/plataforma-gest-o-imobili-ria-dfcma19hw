@@ -11,10 +11,61 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
+      conversation_participants: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          profile_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          profile_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hotels: {
         Row: {
           address: string | null
@@ -108,11 +159,50 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ledger_entries_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "ledger_entries_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -233,32 +323,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'properties_agent_id_fkey'
-            columns: ['agent_id']
+            foreignKeyName: "properties_agent_id_fkey"
+            columns: ["agent_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "properties_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_owner_id_fkey'
-            columns: ['owner_id']
+            foreignKeyName: "properties_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_tower_id_fkey'
-            columns: ['tower_id']
+            foreignKeyName: "properties_tower_id_fkey"
+            columns: ["tower_id"]
             isOneToOne: false
-            referencedRelation: 'towers'
-            referencedColumns: ['id']
+            referencedRelation: "towers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -328,18 +418,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tasks_assignee_id_fkey'
-            columns: ['assignee_id']
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tasks_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "tasks_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -364,11 +454,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'towers_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "towers_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -388,33 +478,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -423,23 +513,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -448,23 +538,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -473,36 +563,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -510,6 +600,7 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -521,6 +612,14 @@ export const Constants = {
 // --- COLUMN TYPES (actual PostgreSQL types) ---
 // Use this to know the real database type when writing migrations.
 // "string" in TypeScript types above may be uuid, text, varchar, timestamptz, etc.
+// Table: conversation_participants
+//   conversation_id: uuid (not null)
+//   profile_id: uuid (not null)
+//   created_at: timestamp with time zone (not null, default: now())
+// Table: conversations
+//   id: uuid (not null, default: gen_random_uuid())
+//   created_at: timestamp with time zone (not null, default: now())
+//   updated_at: timestamp with time zone (not null, default: now())
 // Table: hotels
 //   id: uuid (not null, default: gen_random_uuid())
 //   name: text (not null)
@@ -547,6 +646,12 @@ export const Constants = {
 //   cost_type: text (nullable)
 //   is_recurring: boolean (nullable, default: false)
 //   recurrence_frequency: text (nullable)
+//   created_at: timestamp with time zone (not null, default: now())
+// Table: messages
+//   id: uuid (not null, default: gen_random_uuid())
+//   conversation_id: uuid (not null)
+//   sender_id: uuid (not null)
+//   content: text (not null)
 //   created_at: timestamp with time zone (not null, default: now())
 // Table: profiles
 //   id: uuid (not null)
@@ -610,11 +715,21 @@ export const Constants = {
 //   created_at: timestamp with time zone (not null, default: now())
 
 // --- CONSTRAINTS ---
+// Table: conversation_participants
+//   FOREIGN KEY conversation_participants_conversation_id_fkey: FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+//   PRIMARY KEY conversation_participants_pkey: PRIMARY KEY (conversation_id, profile_id)
+//   FOREIGN KEY conversation_participants_profile_id_fkey: FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+// Table: conversations
+//   PRIMARY KEY conversations_pkey: PRIMARY KEY (id)
 // Table: hotels
 //   PRIMARY KEY hotels_pkey: PRIMARY KEY (id)
 // Table: ledger_entries
 //   PRIMARY KEY ledger_entries_pkey: PRIMARY KEY (id)
 //   FOREIGN KEY ledger_entries_property_id_fkey: FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
+// Table: messages
+//   FOREIGN KEY messages_conversation_id_fkey: FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+//   PRIMARY KEY messages_pkey: PRIMARY KEY (id)
+//   FOREIGN KEY messages_sender_id_fkey: FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE CASCADE
 // Table: profiles
 //   FOREIGN KEY profiles_id_fkey: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 //   PRIMARY KEY profiles_pkey: PRIMARY KEY (id)
@@ -633,6 +748,16 @@ export const Constants = {
 //   PRIMARY KEY towers_pkey: PRIMARY KEY (id)
 
 // --- ROW LEVEL SECURITY POLICIES ---
+// Table: conversation_participants
+//   Policy "Participants can view their participations" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: ((profile_id = auth.uid()) OR (conversation_id IN ( SELECT conversation_participants_1.conversation_id    FROM conversation_participants conversation_participants_1   WHERE (conversation_participants_1.profile_id = auth.uid()))) OR is_admin_or_pm())
+//   Policy "Users can add participants" (INSERT, PERMISSIVE) roles={authenticated}
+//     WITH CHECK: true
+// Table: conversations
+//   Policy "Participants can view conversations" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: ((id IN ( SELECT conversation_participants.conversation_id    FROM conversation_participants   WHERE (conversation_participants.profile_id = auth.uid()))) OR is_admin_or_pm())
+//   Policy "Users can insert conversations" (INSERT, PERMISSIVE) roles={authenticated}
+//     WITH CHECK: true
 // Table: hotels
 //   Policy "hotels_delete" (DELETE, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -653,6 +778,11 @@ export const Constants = {
 //   Policy "ledger_update" (UPDATE, PERMISSIVE) roles={authenticated}
 //     USING: true
 //     WITH CHECK: true
+// Table: messages
+//   Policy "Participants can insert messages" (INSERT, PERMISSIVE) roles={authenticated}
+//     WITH CHECK: ((sender_id = auth.uid()) AND ((conversation_id IN ( SELECT conversation_participants.conversation_id    FROM conversation_participants   WHERE (conversation_participants.profile_id = auth.uid()))) OR is_admin_or_pm()))
+//   Policy "Participants can view messages" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: ((conversation_id IN ( SELECT conversation_participants.conversation_id    FROM conversation_participants   WHERE (conversation_participants.profile_id = auth.uid()))) OR is_admin_or_pm())
 // Table: profiles
 //   Policy "profiles_delete" (DELETE, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -705,7 +835,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 // FUNCTION is_admin_or_pm()
 //   CREATE OR REPLACE FUNCTION public.is_admin_or_pm()
 //    RETURNS boolean
@@ -714,8 +844,9 @@ export const Constants = {
 //    SET search_path TO 'public'
 //   AS $function$
 //     SELECT EXISTS (
-//       SELECT 1 FROM public.profiles
+//       SELECT 1 FROM public.profiles 
 //       WHERE id = auth.uid() AND role IN ('master', 'software_tenant', 'internal_user', 'platform_owner')
 //     );
 //   $function$
-//
+//   
+
