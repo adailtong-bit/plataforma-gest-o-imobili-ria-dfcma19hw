@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Property } from '@/lib/types'
+import { ENV } from '@/lib/env'
+import useAuthStore from '@/stores/useAuthStore'
 
 let globalProperties: Property[] = []
 let listeners: (() => void)[] = []
@@ -31,6 +33,8 @@ fetchProperties()
 
 const usePropertyStore = () => {
   const [properties, setProperties] = useState<Property[]>(globalProperties)
+  const { currentUser, simulationMode, simulationRole, allUsers } =
+    useAuthStore()
 
   useEffect(() => {
     const l = () => setProperties(globalProperties)
@@ -117,8 +121,46 @@ const usePropertyStore = () => {
     else console.error(error)
   }
 
+  const finalProperties = useMemo(() => {
+    let targetUserId = currentUser?.id
+    if (simulationMode && simulationRole === 'property_owner') {
+      const firstOwner = allUsers.find((u) => u.role === 'property_owner')
+      if (firstOwner) targetUserId = firstOwner.id
+    }
+
+    if (ENV.isDev && targetUserId) {
+      const mockPropId = `dev_mock_prop_${targetUserId}`
+      const mockProperty: Property = {
+        id: mockPropId,
+        name: '[DEV Sandbox] Oceanfront Villa',
+        address: '101 Developer Way',
+        city: 'Orlando',
+        state: 'FL',
+        zipCode: '32819',
+        country: 'US',
+        type: 'House',
+        profileType: 'short_term',
+        community: 'Test Driven Heights',
+        status: 'available',
+        bedrooms: 4,
+        bathrooms: 3,
+        guests: 8,
+        ownerId: targetUserId,
+        image: 'https://img.usecurling.com/p/800/600?q=modern%20house',
+        listingPrice: 350,
+        hoaValue: 400,
+        area: 2500,
+      } as any
+
+      if (!properties.some((p) => p.id === mockPropId)) {
+        return [...properties, mockProperty]
+      }
+    }
+    return properties
+  }, [properties, currentUser, simulationMode, simulationRole, allUsers])
+
   return {
-    properties,
+    properties: finalProperties,
     addProperty,
     updateProperty,
     deleteProperty,

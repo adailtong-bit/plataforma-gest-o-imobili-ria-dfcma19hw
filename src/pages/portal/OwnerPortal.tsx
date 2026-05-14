@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
+import { ENV } from '@/lib/env'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTenantStore from '@/stores/useTenantStore'
@@ -47,13 +48,48 @@ export default function OwnerPortal() {
   const ownerProperties = properties.filter((p) => p.ownerId === targetUserId)
   const ownerPropertyIds = ownerProperties.map((p) => p.id)
 
-  const pendingTasks = tasks.filter(
+  const mockTasks = useMemo(() => {
+    if (!ENV.isDev || !targetUserId) return []
+    return [
+      {
+        id: `dev_mock_task_1`,
+        title: '[DEV] HVAC Maintenance',
+        propertyId: `dev_mock_prop_${targetUserId}`,
+        propertyName: '[DEV Sandbox] Oceanfront Villa',
+        status: 'pending_approval',
+        approvalStatus: 'owner_pending',
+        type: 'maintenance',
+        date: new Date().toISOString(),
+        price: 450,
+        assignee: 'DevTech Services',
+      },
+    ] as any[]
+  }, [targetUserId])
+
+  const mockTenants = useMemo(() => {
+    if (!ENV.isDev || !targetUserId) return []
+    return [
+      {
+        id: `dev_mock_tenant_1`,
+        name: '[DEV] Test Tenant (Simulation)',
+        propertyId: `dev_mock_prop_${targetUserId}`,
+        ownerDecision: 'pending',
+        suggestedRenewalPrice: 3000,
+        rentValue: 2800,
+      },
+    ] as any[]
+  }, [targetUserId])
+
+  const allTasks = [...tasks, ...mockTasks]
+  const allTenants = [...tenants, ...mockTenants]
+
+  const pendingTasks = allTasks.filter(
     (t) =>
       ownerPropertyIds.includes(t.propertyId) &&
       (t.status === 'pending_approval' || t.approvalStatus === 'owner_pending'),
   )
 
-  const pendingRenewals = tenants.filter(
+  const pendingRenewals = allTenants.filter(
     (t) =>
       ownerPropertyIds.includes(t.propertyId) &&
       t.ownerDecision === 'pending' &&
@@ -276,6 +312,43 @@ export default function OwnerPortal() {
           </Card>
         </TabsContent>
         <TabsContent value="tasks" className="mt-6">
+          {ENV.isDev && mockTasks.length > 0 && (
+            <div className="mb-6 space-y-4">
+              <h3 className="font-bold text-orange-800 flex items-center gap-2">
+                <ClipboardList className="h-5 w-5" /> Sandbox Tasks (Development
+                Only)
+              </h3>
+              <div className="grid gap-4">
+                {mockTasks.map((t) => (
+                  <div
+                    key={t.id}
+                    className="bg-orange-50/50 p-4 rounded-lg border border-orange-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm"
+                  >
+                    <div>
+                      <p className="font-bold text-slate-900">{t.title}</p>
+                      <p className="text-sm text-slate-600">{t.propertyName}</p>
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                      <div className="text-right flex-1 md:flex-none">
+                        <p className="font-bold text-lg text-slate-900">
+                          ${t.price}
+                        </p>
+                        <p className="text-xs text-orange-600 uppercase tracking-wider font-bold">
+                          Pending Approval
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-orange-600 hover:bg-orange-700 text-white shrink-0 shadow-sm"
+                      >
+                        Approve
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <OwnerTasks ownerId={targetUserId} properties={properties} />
         </TabsContent>
         <TabsContent value="renewals" className="mt-6 space-y-4">

@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import { ENV } from '@/lib/env'
+import useAuthStore from '@/stores/useAuthStore'
 
 let globalLedger: any[] = []
 let listeners: (() => void)[] = []
@@ -23,6 +25,8 @@ fetchFinancials()
 
 const useFinancialStore = () => {
   const [ledgerEntries, setLedgerEntries] = useState<any[]>(globalLedger)
+  const { currentUser, simulationMode, simulationRole, allUsers } =
+    useAuthStore()
 
   useEffect(() => {
     const l = () => setLedgerEntries(globalLedger)
@@ -83,8 +87,58 @@ const useFinancialStore = () => {
       currency: 'USD',
     }).format(val)
 
+  const finalLedgerEntries = useMemo(() => {
+    let targetUserId = currentUser?.id
+    if (simulationMode && simulationRole === 'property_owner') {
+      const firstOwner = allUsers.find((u) => u.role === 'property_owner')
+      if (firstOwner) targetUserId = firstOwner.id
+    }
+
+    if (ENV.isDev && targetUserId) {
+      const mockPropId = `dev_mock_prop_${targetUserId}`
+      const mockEntries = [
+        {
+          id: `dev_mock_le_1`,
+          propertyId: mockPropId,
+          description: '[DEV] HOA Monthly Fee',
+          amount: 400,
+          type: 'expense',
+          date: new Date().toISOString(),
+          status: 'pending',
+          category: 'hoa',
+        },
+        {
+          id: `dev_mock_le_2`,
+          propertyId: mockPropId,
+          description: '[DEV] Annual Property Tax',
+          amount: 2500,
+          type: 'expense',
+          date: new Date(Date.now() + 86400000 * 10).toISOString(),
+          status: 'pending',
+          category: 'tax',
+        },
+        {
+          id: `dev_mock_le_3`,
+          propertyId: mockPropId,
+          description: '[DEV] Payout - Booking #1029',
+          amount: 1800,
+          type: 'income',
+          date: new Date(Date.now() - 86400000 * 3).toISOString(),
+          status: 'cleared',
+          category: 'booking',
+        },
+      ]
+
+      const filtered = ledgerEntries.filter(
+        (e) => !e.id.startsWith('dev_mock_'),
+      )
+      return [...filtered, ...mockEntries]
+    }
+    return ledgerEntries
+  }, [ledgerEntries, currentUser, simulationMode, simulationRole, allUsers])
+
   return {
-    ledgerEntries,
+    ledgerEntries: finalLedgerEntries,
     addLedgerEntry,
     updateLedgerEntry,
     deleteLedgerEntry,
