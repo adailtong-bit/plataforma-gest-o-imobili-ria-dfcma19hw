@@ -51,50 +51,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProfile = async (userId: string) => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-      setProfile((data as UserProfile) || null)
+    let mounted = true
+
+    const loadProfile = async (userId: string) => {
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single()
+
+        if (mounted) {
+          setProfile((data as UserProfile) || null)
+        }
+      } catch (error) {
+        if (mounted) {
+          setProfile(null)
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
+      }
     }
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return
+
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user) {
-        setLoading(true)
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            setProfile((data as UserProfile) || null)
-            setLoading(false)
-          })
-          .catch(() => {
-            setProfile(null)
-            setLoading(false)
-          })
-      } else {
+
+      if (event === 'SIGNED_OUT') {
         setProfile(null)
         setLoading(false)
+      } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        if (session?.user) {
+          setLoading(true)
+          loadProfile(session.user.id)
+        } else {
+          setProfile(null)
+          setLoading(false)
+        }
       }
+      // For TOKEN_REFRESHED and USER_UPDATED, we only update the session state (handled above)
+      // to avoid triggering full page reloads or loops.
     })
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id).finally(() => setLoading(false))
-      } else {
+      if (!mounted) return
+
+      // If we don't have a session, we can stop loading immediately.
+      // If we DO have a session, onAuthStateChange (INITIAL_SESSION)
+      // will handle loading the profile, preventing race conditions.
+      if (!session) {
         setLoading(false)
       }
     })
-    return () => subscription.unsubscribe()
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signUp = async (

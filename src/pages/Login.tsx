@@ -42,10 +42,22 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated && !isAuthLoading) {
+      if (!currentUser) {
+        // If we are authenticated but have no profile, we must sign out to prevent an infinite loop.
+        // RequirePermission will bounce the user back to /login if there's no profile.
+        signOut()
+        toast({
+          title: 'Authentication Error',
+          description: 'Profile not found. Please contact support.',
+          variant: 'destructive',
+        })
+        return
+      }
+
       let targetPath = from
 
       if (targetPath === '/' || targetPath === '/login') {
-        const role = currentUser?.role?.toLowerCase() || 'master'
+        const role = currentUser.role?.toLowerCase() || 'master'
         switch (role) {
           case 'owner':
           case 'property_owner':
@@ -72,7 +84,15 @@ export default function Login() {
       }
       navigate(targetPath, { replace: true })
     }
-  }, [isAuthenticated, isAuthLoading, currentUser, navigate, from])
+  }, [
+    isAuthenticated,
+    isAuthLoading,
+    currentUser,
+    navigate,
+    from,
+    signOut,
+    toast,
+  ])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
