@@ -1,11 +1,10 @@
-import { useState, useContext, useMemo, useRef, useEffect } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Search, Send, Plus } from 'lucide-react'
+import { Search, Send, Plus, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -18,12 +17,20 @@ import {
 } from '@/components/ui/dialog'
 import { canChat } from '@/lib/permissions'
 import { User } from '@/lib/types'
+import { useAuth } from '@/hooks/use-auth'
+import { useChatSystem } from '@/hooks/use-chat'
 
 export default function Messages() {
-  const { messages, sendMessage, startChat, currentUser, allUsers } =
-    useContext(AppContext)!
+  const { profile: currentUser } = useAuth()
   const { t } = useLanguageStore()
-  const [activeThread, setActiveThread] = useState(messages[0]?.id)
+  const {
+    threads: messages,
+    allUsers,
+    sendMessage,
+    startChat,
+    loading,
+  } = useChatSystem(currentUser)
+  const [activeThread, setActiveThread] = useState<string | null>(null)
   const [newMessage, setNewMessage] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [isNewChatOpen, setIsNewChatOpen] = useState(false)
@@ -37,6 +44,12 @@ export default function Messages() {
     () => messages.find((m) => m.id === activeThread),
     [messages, activeThread],
   )
+
+  useEffect(() => {
+    if (!activeThread && messages.length > 0) {
+      setActiveThread(messages[0].id)
+    }
+  }, [messages, activeThread])
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -54,25 +67,32 @@ export default function Messages() {
     (u) => u.id !== currentUser?.id && canChat(currentUser as User, u as User),
   )
 
-  const handleStartChat = (contact: User) => {
+  const handleStartChat = async (contact: User) => {
+    setIsNewChatOpen(false)
     const existing = messages.find((m) => m.contactId === contact.id)
     if (existing) {
       setActiveThread(existing.id)
     } else {
-      startChat(contact.id)
-      setTimeout(() => {
-        const newThread = messages.find((m) => m.contactId === contact.id)
-        if (newThread) setActiveThread(newThread.id)
-      }, 100)
+      const newThreadId = await startChat(contact.id)
+      if (newThreadId) {
+        setActiveThread(newThreadId)
+      }
     }
-    setIsNewChatOpen(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
     <div className="flex flex-col gap-6 h-[calc(100vh-6rem)] min-h-0">
       <div className="shrink-0">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('common.messages')}
+          {t('common.messages') || 'Messages'}
         </h1>
         <p className="text-muted-foreground">
           Communicate with tenants, owners, and partners.
@@ -85,7 +105,7 @@ export default function Messages() {
             <Dialog open={isNewChatOpen} onOpenChange={setIsNewChatOpen}>
               <DialogTrigger asChild>
                 <Button
-                  className="w-full mb-3 bg-trust-blue text-white"
+                  className="w-full mb-3 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                   size="sm"
                 >
                   <Plus className="h-4 w-4 mr-2" /> New Chat
@@ -95,19 +115,19 @@ export default function Messages() {
                 <DialogHeader>
                   <DialogTitle>Start New Conversation</DialogTitle>
                 </DialogHeader>
-                <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+                <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
                   {availableContacts.map((c) => (
                     <Button
                       key={c.id}
                       variant="outline"
-                      className="justify-start"
+                      className="justify-start shadow-sm"
                       onClick={() => handleStartChat(c as User)}
                     >
                       {c.name} ({c.role.replace('_', ' ')})
                     </Button>
                   ))}
                   {availableContacts.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground text-center p-4">
                       No available contacts.
                     </p>
                   )}
@@ -118,7 +138,7 @@ export default function Messages() {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search..."
-                className="pl-9 bg-slate-50"
+                className="pl-9 bg-slate-50 border-slate-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -147,13 +167,13 @@ export default function Messages() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate font-medium">
-                    <DataMask>{m.lastMessage}</DataMask>
+                    <DataMask>{m.lastMessage || 'New conversation'}</DataMask>
                   </p>
                 </div>
               </button>
             ))}
             {filteredMessages.length === 0 && (
-              <div className="p-8 text-center text-sm text-muted-foreground">
+              <div className="p-8 text-center text-sm text-muted-foreground font-medium">
                 No conversations found.
               </div>
             )}
@@ -165,7 +185,7 @@ export default function Messages() {
             <>
               <CardHeader className="border-b py-4 px-6 bg-white shrink-0 shadow-sm z-10">
                 <CardTitle className="text-lg flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8 border border-slate-200">
                     <AvatarImage src={activeChat.avatar} />
                     <AvatarFallback>
                       {activeChat.contact.charAt(0)}
@@ -184,7 +204,7 @@ export default function Messages() {
                   return (
                     <div
                       key={h.id}
-                      className={`flex max-w-[75%] ${isMe ? 'self-end' : 'self-start'}`}
+                      className={`flex max-w-[75%] animate-fade-in-up ${isMe ? 'self-end' : 'self-start'}`}
                     >
                       <div
                         className={`p-3 rounded-2xl ${
@@ -193,7 +213,7 @@ export default function Messages() {
                             : 'bg-white border border-slate-200 text-slate-900 rounded-tl-sm shadow-sm'
                         }`}
                       >
-                        <p className="text-sm font-medium leading-relaxed">
+                        <p className="text-sm font-medium leading-relaxed break-words">
                           <DataMask>{h.text}</DataMask>
                         </p>
                         <span
@@ -207,6 +227,11 @@ export default function Messages() {
                     </div>
                   )
                 })}
+                {activeChat.history.length === 0 && (
+                  <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm font-medium">
+                    Send a message to start the conversation!
+                  </div>
+                )}
               </div>
 
               <div className="p-4 border-t border-slate-200 bg-white shrink-0">
@@ -221,12 +246,13 @@ export default function Messages() {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type your message..."
-                    className="flex-1 bg-slate-50 border-slate-200 focus-visible:ring-blue-600"
+                    className="flex-1 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 shadow-sm"
                   />
                   <Button
                     type="submit"
                     size="icon"
-                    className="bg-blue-600 hover:bg-blue-700 shadow-sm shrink-0"
+                    disabled={!newMessage.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 shadow-sm shrink-0 transition-all"
                   >
                     <Send className="h-4 w-4" />
                   </Button>
