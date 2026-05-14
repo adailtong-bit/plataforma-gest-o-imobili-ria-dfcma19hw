@@ -8,8 +8,10 @@ import { PropertyOverview } from '@/components/properties/PropertyOverview'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
 import { PropertyContent } from '@/components/properties/PropertyContent'
 import { PropertyLocation } from '@/components/properties/PropertyLocation'
+import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { ShortTermCalendar } from '@/components/short-term/ShortTermCalendar'
 import { supabase } from '@/lib/supabase/client'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface OwnerPropertiesProps {
   ownerId: string
@@ -21,6 +23,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
     null,
   )
   const [condominiums, setCondominiums] = useState<Condominium[]>([])
+  const { t } = useLanguageStore()
 
   useEffect(() => {
     const fetchCondos = async () => {
@@ -52,7 +55,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
     ) {
       condosToPass.push({
         id: selectedProperty.condominiumId,
-        name: 'Condomínio Vinculado',
+        name: t('properties.location.linked_condo') || 'Linked Condominium',
       } as any)
     }
 
@@ -63,7 +66,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
           onClick={() => setSelectedPropertyId(null)}
           className="mb-2 hover:bg-slate-100"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" /> Voltar para Propriedades
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back') || 'Back'}
         </Button>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
@@ -79,13 +82,9 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
           </div>
           <Badge
             variant="outline"
-            className="bg-slate-50 text-sm px-3 py-1 font-medium"
+            className="bg-slate-50 text-sm px-3 py-1 font-medium capitalize"
           >
-            {selectedProperty.status === 'available'
-              ? 'Disponível'
-              : selectedProperty.status === 'rented'
-                ? 'Alugado'
-                : selectedProperty.status}
+            {t(`status.${selectedProperty.status}`) || selectedProperty.status}
           </Badge>
         </div>
 
@@ -107,6 +106,11 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
               canEdit={false}
               condominiums={condosToPass}
             />
+            <PropertyFeatures
+              data={selectedProperty}
+              onChange={() => {}}
+              canEdit={false}
+            />
             <PropertyContent
               data={selectedProperty}
               onChange={() => {}}
@@ -119,7 +123,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
               <CardHeader className="bg-slate-50/50 border-b">
                 <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
                   <CalendarDays className="h-5 w-5 text-blue-600" />
-                  Calendário de Locações
+                  {t('calendar.title') || 'Calendar'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -128,12 +132,15 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-100 border border-red-200"></div>
                     <span className="text-slate-600">
-                      Dias Ocupados / Reservados
+                      {t('common.occupied') || 'Occupied'} /{' '}
+                      {t('status.reserved') || 'Reserved'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-slate-100 border border-slate-200"></div>
-                    <span className="text-slate-600">Dias Disponíveis</span>
+                    <span className="text-slate-600">
+                      {t('status.available') || 'Available'}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -148,8 +155,8 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
     <Card className="border-slate-200 shadow-sm bg-white">
       <CardHeader className="border-b bg-slate-50/50">
         <CardTitle className="flex items-center gap-2 text-slate-800">
-          <Building2 className="h-5 w-5 text-blue-600" /> Galeria de
-          Propriedades
+          <Building2 className="h-5 w-5 text-blue-600" />{' '}
+          {t('properties.title') || 'Properties'}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
@@ -157,11 +164,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
           <div className="text-center py-12 px-4 text-slate-500 border-2 border-dashed rounded-lg bg-slate-50/50">
             <Building2 className="h-8 w-8 text-slate-300 mx-auto mb-3" />
             <p className="font-medium text-slate-900">
-              Nenhuma propriedade associada
-            </p>
-            <p className="text-sm mt-1">
-              Seus imóveis aparecerão aqui assim que a administradora os
-              vincular ao seu perfil.
+              {t('common.empty') || 'No properties'}
             </p>
           </div>
         ) : (
@@ -184,12 +187,8 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <Badge className="absolute top-3 right-3 bg-white/95 text-slate-900 hover:bg-white border-none shadow-sm font-medium">
-                    {property.status === 'available'
-                      ? 'Disponível'
-                      : property.status === 'rented'
-                        ? 'Alugado'
-                        : property.status}
+                  <Badge className="absolute top-3 right-3 bg-white/95 text-slate-900 hover:bg-white border-none shadow-sm font-medium capitalize">
+                    {t(`status.${property.status}`) || property.status}
                   </Badge>
                 </div>
                 <CardContent className="p-5 flex-1 flex flex-col">
@@ -212,7 +211,7 @@ export function OwnerProperties({ ownerId, properties }: OwnerPropertiesProps) {
                       className="w-full gap-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-700 transition-colors"
                       onClick={() => setSelectedPropertyId(property.id)}
                     >
-                      Ver Ficha Completa
+                      {t('common.view') || 'View Details'}
                     </Button>
                   </div>
                 </CardContent>

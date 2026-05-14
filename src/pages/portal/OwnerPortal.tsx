@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import useAuthStore from '@/stores/useAuthStore'
-import { ENV } from '@/lib/env'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useTenantStore from '@/stores/useTenantStore'
@@ -9,19 +8,19 @@ import useTaskStore from '@/stores/useTaskStore'
 import { OwnerProperties } from '@/components/owners/OwnerProperties'
 import { OwnerTasks } from '@/components/owners/OwnerTasks'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
+import { OwnerNegotiationTab } from '@/components/renewals/OwnerNegotiationTab'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Building2,
   ClipboardList,
   MessageSquare,
   FileText,
-  CheckCircle2,
-  XCircle,
   Landmark,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
 
 export default function OwnerPortal() {
   const { properties } = usePropertyStore()
@@ -43,8 +42,37 @@ export default function OwnerPortal() {
     }
   }
 
-  const ownerProperties = properties.filter((p) => p.ownerId === targetUserId)
+  const mockProperties = useMemo(() => {
+    if (!targetUserId) return []
+    if (
+      properties.some(
+        (p) => p.ownerId === targetUserId && p.name.includes('[DEV'),
+      )
+    )
+      return []
+    return [
+      {
+        id: `dev_mock_prop_${targetUserId}`,
+        name: '[DEV Sandbox] Oceanfront Villa',
+        address: '123 Ocean Drive',
+        city: 'Miami',
+        status: 'rented',
+        ownerId: targetUserId,
+        image: 'https://img.usecurling.com/p/400/300?q=villa',
+      },
+    ] as any[]
+  }, [targetUserId, properties])
+
+  const allProperties = [...properties, ...mockProperties]
+  const ownerProperties = allProperties.filter(
+    (p) => p.ownerId === targetUserId,
+  )
   const ownerPropertyIds = ownerProperties.map((p) => p.id)
+
+  const mockPropId =
+    ownerProperties.find((p) => p.name.includes('[DEV'))?.id ||
+    ownerProperties[0]?.id ||
+    `dev_mock_prop_${targetUserId}`
 
   const mockTasks = useMemo(() => {
     if (!targetUserId) return []
@@ -52,7 +80,7 @@ export default function OwnerPortal() {
       {
         id: `dev_mock_task_1`,
         title: '[DEV] HVAC Maintenance',
-        propertyId: `dev_mock_prop_${targetUserId}`,
+        propertyId: mockPropId,
         propertyName: '[DEV Sandbox] Oceanfront Villa',
         status: 'pending_approval',
         approvalStatus: 'owner_pending',
@@ -68,7 +96,7 @@ export default function OwnerPortal() {
         ],
       },
     ] as any[]
-  }, [targetUserId])
+  }, [targetUserId, mockPropId])
 
   const mockTenants = useMemo(() => {
     if (!targetUserId) return []
@@ -76,20 +104,20 @@ export default function OwnerPortal() {
       {
         id: `dev_mock_tenant_1`,
         name: '[DEV] Test Tenant (Simulation)',
-        propertyId: `dev_mock_prop_${targetUserId}`,
+        propertyId: mockPropId,
         ownerDecision: 'pending',
         suggestedRenewalPrice: 3000,
         rentValue: 2800,
       },
     ] as any[]
-  }, [targetUserId])
+  }, [targetUserId, mockPropId])
 
   const mockLedger = useMemo(() => {
     if (!targetUserId) return []
     return [
       {
         id: `dev_mock_ledger_1`,
-        propertyId: `dev_mock_prop_${targetUserId}`,
+        propertyId: mockPropId,
         date: new Date().toISOString(),
         type: 'expense',
         category: 'hoa',
@@ -99,7 +127,7 @@ export default function OwnerPortal() {
       },
       {
         id: `dev_mock_ledger_2`,
-        propertyId: `dev_mock_prop_${targetUserId}`,
+        propertyId: mockPropId,
         date: new Date().toISOString(),
         type: 'expense',
         category: 'tax',
@@ -108,7 +136,7 @@ export default function OwnerPortal() {
         status: 'pending',
       },
     ] as any[]
-  }, [targetUserId])
+  }, [targetUserId, mockPropId])
 
   const allTasks = [...tasks, ...mockTasks]
   const allTenants = [...tenants, ...mockTenants]
@@ -120,11 +148,11 @@ export default function OwnerPortal() {
       (t.status === 'pending_approval' || t.approvalStatus === 'owner_pending'),
   )
 
-  const pendingRenewals = allTenants.filter(
+  const renewals = allTenants.filter(
     (t) =>
       ownerPropertyIds.includes(t.propertyId) &&
-      t.ownerDecision === 'pending' &&
-      t.suggestedRenewalPrice,
+      t.suggestedRenewalPrice !== undefined &&
+      t.suggestedRenewalPrice !== null,
   )
 
   const hoaAndTaxes = allLedgerEntries.filter(
@@ -137,14 +165,6 @@ export default function OwnerPortal() {
   )
 
   const pendingHoaTaxes = hoaAndTaxes.filter((e) => e.status !== 'cleared')
-
-  const handleApproveRenewal = (tenantId: string, approved: boolean) => {
-    if (updateTenant) {
-      updateTenant(tenantId, {
-        ownerDecision: approved ? 'accepted' : 'rejected',
-      })
-    }
-  }
 
   if (!currentUser || !targetUserId) return null
 
@@ -222,7 +242,7 @@ export default function OwnerPortal() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
-              {pendingRenewals.length}
+              {renewals.filter((r) => r.ownerDecision === 'pending').length}
             </div>
           </CardContent>
         </Card>
@@ -264,7 +284,7 @@ export default function OwnerPortal() {
         <TabsContent value="ledger" className="mt-6">
           <OwnerStatement
             ownerId={targetUserId}
-            properties={properties}
+            properties={allProperties}
             ledgerEntries={allLedgerEntries}
           />
         </TabsContent>
@@ -303,7 +323,7 @@ export default function OwnerPortal() {
                 ) : (
                   <div className="space-y-4">
                     {hoaAndTaxes.map((entry) => {
-                      const prop = properties.find(
+                      const prop = allProperties.find(
                         (p) => p.id === entry.propertyId,
                       )
                       return (
@@ -319,7 +339,8 @@ export default function OwnerPortal() {
                               {prop?.name || 'General'}
                             </div>
                             <div className="text-xs text-slate-400 mt-1">
-                              Due: {new Date(entry.date).toLocaleDateString()}
+                              {t('common.due_date') || 'Due'}:{' '}
+                              {new Date(entry.date).toLocaleDateString()}
                             </div>
                           </div>
                           <div className="flex items-center gap-4 mt-4 md:mt-0">
@@ -352,7 +373,7 @@ export default function OwnerPortal() {
         <TabsContent value="tasks" className="mt-6">
           <OwnerTasks
             ownerId={targetUserId}
-            properties={properties}
+            properties={allProperties}
             tasksOverride={allTasks}
           />
         </TabsContent>
@@ -361,88 +382,71 @@ export default function OwnerPortal() {
             <CardHeader className="bg-slate-50/50 border-b pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="h-5 w-5 text-purple-600" />
-                {t('owner_portal.long_term_renewals') ||
-                  'Long-term Contract Renewals'}
+                {t('renewals.title') || 'Contract Renewals'}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              {pendingRenewals.length === 0 ? (
+              {renewals.length === 0 ? (
                 <div className="text-center py-12 px-4 border-2 border-dashed rounded-lg bg-slate-50/50">
                   <FileText className="h-8 w-8 text-slate-300 mx-auto mb-3" />
                   <h3 className="text-sm font-medium text-slate-900">
-                    {t('owner_portal.no_pending_renewals') ||
-                      'No pending renewals'}
+                    {t('renewals.no_results') || 'No renewals found'}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1">
-                    {t('owner_portal.no_pending_renewals_desc') ||
-                      'There are no long-term contracts awaiting your approval at this time.'}
-                  </p>
                 </div>
               ) : (
-                <div className="grid gap-4">
-                  {pendingRenewals.map((tenant) => {
-                    const property = properties.find(
+                <div className="grid gap-6">
+                  {renewals.map((tenant) => {
+                    const property = allProperties.find(
                       (p) => p.id === tenant.propertyId,
                     )
+
+                    const mockHistory = [
+                      {
+                        id: 'msg1',
+                        senderId: 'pm',
+                        text: `${t('renewals.negotiation_started') || 'Negotiation Started'}. ${t('renewals.proposed_value') || 'Proposed Value'}: $${tenant.suggestedRenewalPrice}`,
+                        timestamp: new Date(
+                          Date.now() - 86400000 * 2,
+                        ).toISOString(),
+                      },
+                    ]
+
                     return (
-                      <div
+                      <Card
                         key={tenant.id}
-                        className="border border-purple-100 p-5 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white shadow-sm hover:shadow-md transition-shadow"
+                        className="overflow-hidden border-slate-200 shadow-sm bg-slate-50/30"
                       >
-                        <div className="space-y-1">
-                          <h4 className="font-bold text-lg text-slate-900">
-                            {property?.name}
-                          </h4>
-                          <p className="text-sm text-slate-600 font-medium">
-                            {t('common.tenant') || 'Tenant'}:{' '}
-                            <span className="text-slate-900">
-                              {tenant.name}
-                            </span>
-                          </p>
-                          <div className="flex flex-wrap gap-4 mt-3 text-sm bg-slate-50 p-3 rounded-md border border-slate-100 w-fit">
-                            <div>
-                              <span className="text-slate-500 block text-xs uppercase tracking-wider mb-0.5">
-                                {t('owner_portal.current_rent') ||
-                                  'Current Rent'}
+                        <div className="bg-slate-100/80 p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                          <div>
+                            <h4 className="font-bold text-lg text-slate-900">
+                              {property?.name || 'Property'}
+                            </h4>
+                            <p className="text-sm text-slate-600 font-medium mt-1">
+                              {t('common.tenant') || 'Tenant'}:{' '}
+                              <span className="text-slate-900">
+                                {tenant.name}
                               </span>
-                              <span className="font-medium text-slate-900">
-                                ${tenant.rentValue}
-                              </span>
-                            </div>
-                            <div className="w-px bg-slate-200"></div>
-                            <div>
-                              <span className="text-slate-500 block text-xs uppercase tracking-wider mb-0.5">
-                                {t('owner_portal.proposed_rent') ||
-                                  'Proposed Rent'}
-                              </span>
-                              <span className="font-bold text-purple-700">
-                                ${tenant.suggestedRenewalPrice}
-                              </span>
-                            </div>
+                            </p>
                           </div>
-                        </div>
-                        <div className="flex gap-2 w-full md:w-auto shrink-0">
-                          <Button
-                            className="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white shadow-sm"
-                            onClick={() =>
-                              handleApproveRenewal(tenant.id, true)
-                            }
-                          >
-                            <CheckCircle2 className="w-4 h-4 mr-2" />{' '}
-                            {t('common.approve') || 'Approve'}
-                          </Button>
-                          <Button
+                          <Badge
                             variant="outline"
-                            className="flex-1 md:flex-none text-red-600 border-red-200 hover:bg-red-50 bg-white"
-                            onClick={() =>
-                              handleApproveRenewal(tenant.id, false)
-                            }
+                            className="bg-white capitalize text-sm px-3 py-1"
                           >
-                            <XCircle className="w-4 h-4 mr-2" />{' '}
-                            {t('common.reject') || 'Reject'}
-                          </Button>
+                            {t(`common.${tenant.ownerDecision || 'pending'}`)}
+                          </Badge>
                         </div>
-                      </div>
+                        <div className="p-5">
+                          <OwnerNegotiationTab
+                            tenant={tenant}
+                            owner={currentUser as any}
+                            history={mockHistory}
+                            onSend={(text) => console.log('Sent:', text)}
+                            onUpdateTenant={(data) => {
+                              if (updateTenant) updateTenant(tenant.id, data)
+                            }}
+                          />
+                        </div>
+                      </Card>
                     )
                   })}
                 </div>
@@ -451,7 +455,7 @@ export default function OwnerPortal() {
           </Card>
         </TabsContent>
         <TabsContent value="properties" className="mt-6">
-          <OwnerProperties ownerId={targetUserId} properties={properties} />
+          <OwnerProperties ownerId={targetUserId} properties={allProperties} />
         </TabsContent>
       </Tabs>
     </div>
