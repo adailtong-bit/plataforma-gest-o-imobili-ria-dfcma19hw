@@ -47,7 +47,7 @@ export default function OwnerPortal() {
   const ownerPropertyIds = ownerProperties.map((p) => p.id)
 
   const mockTasks = useMemo(() => {
-    if (!ENV.isDev || !targetUserId) return []
+    if (!targetUserId) return []
     return [
       {
         id: `dev_mock_task_1`,
@@ -65,7 +65,7 @@ export default function OwnerPortal() {
   }, [targetUserId])
 
   const mockTenants = useMemo(() => {
-    if (!ENV.isDev || !targetUserId) return []
+    if (!targetUserId) return []
     return [
       {
         id: `dev_mock_tenant_1`,
@@ -78,8 +78,35 @@ export default function OwnerPortal() {
     ] as any[]
   }, [targetUserId])
 
+  const mockLedger = useMemo(() => {
+    if (!targetUserId) return []
+    return [
+      {
+        id: `dev_mock_ledger_1`,
+        propertyId: `dev_mock_prop_${targetUserId}`,
+        date: new Date().toISOString(),
+        type: 'expense',
+        category: 'hoa',
+        amount: 400,
+        description: '[DEV] Monthly HOA',
+        status: 'pending',
+      },
+      {
+        id: `dev_mock_ledger_2`,
+        propertyId: `dev_mock_prop_${targetUserId}`,
+        date: new Date().toISOString(),
+        type: 'expense',
+        category: 'tax',
+        amount: 1200,
+        description: '[DEV] Property Tax Q3',
+        status: 'pending',
+      },
+    ] as any[]
+  }, [targetUserId])
+
   const allTasks = [...tasks, ...mockTasks]
   const allTenants = [...tenants, ...mockTenants]
+  const allLedgerEntries = [...ledgerEntries, ...mockLedger]
 
   const pendingTasks = allTasks.filter(
     (t) =>
@@ -94,7 +121,7 @@ export default function OwnerPortal() {
       t.suggestedRenewalPrice,
   )
 
-  const hoaAndTaxes = ledgerEntries.filter(
+  const hoaAndTaxes = allLedgerEntries.filter(
     (e) =>
       ownerPropertyIds.includes(e.propertyId) &&
       (e.category === 'hoa' ||
@@ -232,7 +259,7 @@ export default function OwnerPortal() {
           <OwnerStatement
             ownerId={targetUserId}
             properties={properties}
-            ledgerEntries={ledgerEntries}
+            ledgerEntries={allLedgerEntries}
           />
         </TabsContent>
         <TabsContent value="hoa_taxes" className="mt-6 space-y-4">
@@ -312,7 +339,7 @@ export default function OwnerPortal() {
           </Card>
         </TabsContent>
         <TabsContent value="tasks" className="mt-6">
-          {ENV.isDev && mockTasks.length > 0 && (
+          {mockTasks.length > 0 && (
             <div className="mb-6 space-y-4">
               <h3 className="font-bold text-orange-800 flex items-center gap-2">
                 <ClipboardList className="h-5 w-5" /> Sandbox Tasks (Development

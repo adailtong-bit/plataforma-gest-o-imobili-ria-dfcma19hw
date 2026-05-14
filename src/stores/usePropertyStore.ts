@@ -29,14 +29,19 @@ export const fetchProperties = async () => {
   }
 }
 
-fetchProperties()
-
 const usePropertyStore = () => {
   const [properties, setProperties] = useState<Property[]>(globalProperties)
   const { currentUser, simulationMode, simulationRole, allUsers } =
     useAuthStore()
 
   useEffect(() => {
+    if (currentUser) {
+      fetchProperties()
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    fetchProperties() // Fallback initial fetch
     const l = () => setProperties(globalProperties)
     listeners.push(l)
     return () => {
@@ -128,7 +133,7 @@ const usePropertyStore = () => {
       if (firstOwner) targetUserId = firstOwner.id
     }
 
-    if (ENV.isDev && targetUserId) {
+    if (targetUserId) {
       const mockPropId = `dev_mock_prop_${targetUserId}`
       const mockProperty: Property = {
         id: mockPropId,
