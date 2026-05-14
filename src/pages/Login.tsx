@@ -41,11 +41,13 @@ export default function Login() {
   const from = location.state?.from?.pathname || '/'
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading && currentUser) {
+    if (isAuthenticated && !isAuthLoading) {
       let targetPath = from
 
       if (targetPath === '/' || targetPath === '/login') {
-        switch (currentUser.role) {
+        const role = currentUser?.role?.toLowerCase() || 'master'
+        switch (role) {
+          case 'owner':
           case 'property_owner':
             targetPath = '/portal/owner'
             break
@@ -58,6 +60,7 @@ export default function Login() {
             break
           case 'master':
           case 'super_admin':
+          case 'admin':
           case 'platform_owner':
           case 'software_tenant':
           case 'internal_user':

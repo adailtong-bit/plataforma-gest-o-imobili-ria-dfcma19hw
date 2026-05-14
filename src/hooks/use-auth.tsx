@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .select('*')
         .eq('id', userId)
         .single()
-      if (data) setProfile(data as UserProfile)
+      setProfile((data as UserProfile) || null)
     }
 
     const {
@@ -66,13 +66,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) {
+        setLoading(true)
         supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single()
           .then(({ data }) => {
-            if (data) setProfile(data as UserProfile)
+            setProfile((data as UserProfile) || null)
+            setLoading(false)
+          })
+          .catch(() => {
+            setProfile(null)
             setLoading(false)
           })
       } else {
