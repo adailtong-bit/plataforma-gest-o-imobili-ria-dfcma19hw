@@ -7,6 +7,7 @@ import { useEffect, useState, Component, ErrorInfo, ReactNode } from 'react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { ShieldX, AlertTriangle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { hasPermission } from '@/lib/permissions'
 
 class PermissionErrorBoundary extends Component<
   { children: ReactNode },
@@ -99,7 +100,11 @@ export function RequirePermission({
     : isSoftwareTenant
       ? true
       : effectiveUser
-        ? hasPermissionSync(effectiveUser, resource, action)
+        ? hasPermission(
+            effectiveUser as any,
+            resource as Resource,
+            action as Action,
+          )
         : false
 
   useEffect(() => {

@@ -80,12 +80,27 @@ export function FinancialReports() {
   const { language, t } = useLanguageStore()
   const context = useContext(AppContext)
 
+  const effectiveRole =
+    context?.simulationMode && context?.simulationRole
+      ? context.simulationRole
+      : context?.currentUser?.role
+
+  const effectiveUserId =
+    context?.simulationMode && context?.simulationRole === 'property_owner'
+      ? context.allUsers?.find((u) => u.role === 'property_owner')?.id ||
+        context.currentUser?.id
+      : context?.currentUser?.id
+
+  const isOwner = effectiveRole === 'property_owner'
+
   // Global property selection
   const globalPropertyId = context?.selectedPropertyId || 'all'
 
   const [selectedPropertyId, setSelectedPropertyId] =
     useState<string>(globalPropertyId)
-  const [selectedOwnerId, setSelectedOwnerId] = useState<string>('all')
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(
+    isOwner && effectiveUserId ? effectiveUserId : 'all',
+  )
   const [selectedCondoId, setSelectedCondoId] = useState<string>('all')
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -299,35 +314,40 @@ export function FinancialReports() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('common.all')}</SelectItem>
-                  {properties.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
+                  {properties.map((p) => {
+                    if (isOwner && p.ownerId !== effectiveUserId) return null
+                    return (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                {t('sidebar.owners') || 'Proprietário'}
-              </Label>
-              <Select
-                value={selectedOwnerId}
-                onValueChange={setSelectedOwnerId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos os Proprietários" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Proprietários</SelectItem>
-                  {owners.map((o) => (
-                    <SelectItem key={o.id} value={o.id}>
-                      {o.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isOwner && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  {t('sidebar.owners') || 'Proprietário'}
+                </Label>
+                <Select
+                  value={selectedOwnerId}
+                  onValueChange={setSelectedOwnerId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos os Proprietários" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os Proprietários</SelectItem>
+                    {owners.map((o) => (
+                      <SelectItem key={o.id} value={o.id}>
+                        {o.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label className="text-sm font-medium">
                 {t('sidebar.condominiums') || 'Condomínio'}

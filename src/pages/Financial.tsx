@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import useFinancialStore from '@/stores/useFinancialStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useOwnerStore from '@/stores/useOwnerStore'
+import useAuthStore from '@/stores/useAuthStore'
 import {
   Card,
   CardContent,
@@ -67,7 +68,8 @@ import { DateRange } from 'react-day-picker'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
+import { cn, exportToCSV } from '@/lib/utils'
+import { Download } from 'lucide-react'
 
 export default function Financial() {
   const {
@@ -82,8 +84,19 @@ export default function Financial() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
-  const [viewMode, setViewMode] = useState<'pm' | 'owner' | 'property'>('pm')
-  const [selectedOwnerId, setSelectedOwnerId] = useState('all')
+  const authStore = useAuthStore()
+  const effectiveRole = authStore.simulationMode && authStore.simulationRole 
+    ? authStore.simulationRole 
+    : authStore.currentUser?.role
+
+  const effectiveUserId = authStore.simulationMode && authStore.simulationRole === 'property_owner'
+    ? authStore.allUsers.find(u => u.role === 'property_owner')?.id || authStore.currentUser?.id
+    : authStore.currentUser?.id
+
+  const isOwner = effectiveRole === 'property_owner'
+
+  const [viewMode, setViewMode] = useState<'pm' | 'owner' | 'property'>(isOwner ? 'owner' : 'pm')
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(isOwner && effectiveUserId ? effectiveUserId : 'all')
   const [selectedPropertyId, setSelectedPropertyId] = useState('all')
 
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -352,6 +365,35 @@ export default function Financial() {
     toast({ title: 'Transação marcada como paga' })
   }
 
+  const handleExport = () => {
+    const headers = [
+      'Data',
+      'Propriedade',
+      'Tipo',
+      'Categoria',
+      'Descrição',
+      'Valor',
+      'Status',
+    ]
+    const rows = filteredData.entries.map((entry) => {
+      const property = properties.find((p) => p.id === entry.propertyId)
+      return [
+        format(new Date(entry.date), 'yyyy-MM-dd'),
+        property?.name || 'Geral/Desconhecido',
+        entry.type === 'income' ? 'Receita' : 'Despesa',
+        entry.category || '',
+        `"${entry.description.replace(/"/g, '""')}"`,
+        entry.amount.toFixed(2),
+        entry.status === 'cleared' ? 'Pago' : 'Pendente',
+      ]
+    })
+    exportToCSV('extrato_financeiro', headers, rows)
+    toast({
+      title: 'Sucesso',
+      description: 'Extrato financeiro exportado com sucesso.',
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -363,18 +405,23 @@ export default function Financial() {
             Gestão de contas correntes, custos fixos e variáveis.
           </p>
         </div>
-        <Dialog
-          open={isAddOpen}
-          onOpenChange={(val) => {
-            if (val) resetForm()
-            setIsAddOpen(val)
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> Incluir Lançamento
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport} className="gap-2">
+            <Download className="h-4 w-4" /> Exportar (CSV)
+          </Button>
+          {!isOwner && (
+            <Dialog
+              open={isAddOpen}
+              onOpenChange={(val) => {
+                if (val) resetForm()
+                setIsAddOpen(val)
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button className="bg-trust-blue gap-2 text-white">
+                  <Plus className="h-4 w-4" /> Incluir Lançamento
+                </Button>
+              </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Incluir Transação</DialogTitle>
@@ -524,11 +571,13 @@ export default function Financial() {
                 </Select>
               </div>
             </div>
-            <DialogFooter>
-              <Button onClick={handleAdd}>Salvar Lançamento</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                <DialogFooter>
+                  <Button onClick={handleAdd}>Salvar Lançamento</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
       </div>
 
       <Card className="border-slate-200">
@@ -543,28 +592,30 @@ export default function Financial() {
         <CardContent>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
             <div className="flex flex-col gap-3 w-full lg:w-auto">
-              <Tabs
-                value={viewMode}
-                onValueChange={(v: any) => {
-                  setViewMode(v)
-                  setSelectedOwnerId('all')
-                  setSelectedPropertyId('all')
-                }}
-              >
-                <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
-                  <TabsTrigger value="pm" className="gap-2">
-                    <Building className="w-4 h-4 hidden sm:block" /> PM (Geral)
-                  </TabsTrigger>
-                  <TabsTrigger value="owner" className="gap-2">
-                    <User className="w-4 h-4 hidden sm:block" /> Proprietário
-                  </TabsTrigger>
-                  <TabsTrigger value="property" className="gap-2">
-                    <Building className="w-4 h-4 hidden sm:block" /> Propriedade
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {!isOwner && (
+                <Tabs
+                  value={viewMode}
+                  onValueChange={(v: any) => {
+                    setViewMode(v)
+                    setSelectedOwnerId('all')
+                    setSelectedPropertyId('all')
+                  }}
+                >
+                  <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
+                    <TabsTrigger value="pm" className="gap-2">
+                      <Building className="w-4 h-4 hidden sm:block" /> PM (Geral)
+                    </TabsTrigger>
+                    <TabsTrigger value="owner" className="gap-2">
+                      <User className="w-4 h-4 hidden sm:block" /> Proprietário
+                    </TabsTrigger>
+                    <TabsTrigger value="property" className="gap-2">
+                      <Building className="w-4 h-4 hidden sm:block" /> Propriedade
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              )}
 
-              {viewMode === 'owner' && (
+              {viewMode === 'owner' && !isOwner && (
                 <div className="w-full md:w-[400px]">
                   <Select
                     value={selectedOwnerId}
@@ -598,13 +649,21 @@ export default function Financial() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todas as Propriedades</SelectItem>
-                      {properties.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
+                      {properties.map((p) => {
+                        if (isOwner && p.ownerId !== effectiveUserId) return null
+                        return (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        )
+                      })}
                     </SelectContent>
                   </Select>
+                </div>
+              )}
+              {isOwner && viewMode === 'owner' && (
+                <div className="flex items-center gap-2 text-sm font-medium bg-blue-50 text-blue-700 px-4 py-2 rounded-md border border-blue-200">
+                  <User className="w-4 h-4" /> Visualizando Suas Propriedades
                 </div>
               )}
             </div>
@@ -833,7 +892,7 @@ export default function Financial() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2 items-center">
-                        {entry.status !== 'cleared' && (
+                        {entry.status !== 'cleared' && !isOwner && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -843,8 +902,9 @@ export default function Financial() {
                             <CheckCircle2 className="h-4 w-4 mr-1" /> Pagar
                           </Button>
                         )}
-                        <Dialog
-                          open={editingRecord?.id === entry.id}
+                        {!isOwner && (
+                          <Dialog
+                            open={editingRecord?.id === entry.id}
                           onOpenChange={(open) =>
                             !open && setEditingRecord(null)
                           }
@@ -1044,37 +1104,38 @@ export default function Financial() {
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-slate-500 hover:text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Excluir Transação
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tem certeza que deseja excluir esta transação?
-                                Esta ação não pode ser desfeita.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-600 hover:bg-red-700"
-                                onClick={() => handleDelete(entry.id)}
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-slate-500 hover:text-red-600"
                               >
-                                Excluir
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Excluir Transação
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir esta transação?
+                                  Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-red-600 hover:bg-red-700"
+                                  onClick={() => handleDelete(entry.id)}
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
