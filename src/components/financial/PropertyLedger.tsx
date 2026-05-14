@@ -140,7 +140,13 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>{entry.category}</TableCell>
+                  <TableCell className="capitalize">
+                    {entry.category === 'hoa'
+                      ? 'HOA / Condomínio'
+                      : entry.category === 'tax'
+                        ? 'Impostos'
+                        : entry.category}
+                  </TableCell>
                   <TableCell className="max-w-[250px] truncate text-slate-700">
                     <DataMask>{entry.description}</DataMask>
                   </TableCell>

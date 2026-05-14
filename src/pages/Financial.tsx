@@ -120,6 +120,7 @@ export default function Financial() {
       description: '',
       amount: '',
       type: 'income',
+      category: 'other',
       date: new Date().toISOString().substring(0, 10),
       propertyId: 'none',
       costType: 'variable',
@@ -133,6 +134,7 @@ export default function Financial() {
     description: '',
     amount: '',
     type: 'income',
+    category: 'other',
     date: new Date().toISOString().substring(0, 10),
     propertyId: 'none',
     costType: 'variable',
@@ -173,6 +175,25 @@ export default function Financial() {
       if (filterCategory === 'cleaning') {
         const cat = entry.category?.toLowerCase() || ''
         return cat.includes('cleaning') || cat.includes('limpeza')
+      }
+      if (filterCategory === 'hoa') {
+        const cat = entry.category?.toLowerCase() || ''
+        const desc = entry.description?.toLowerCase() || ''
+        return (
+          cat.includes('hoa') ||
+          desc.includes('hoa') ||
+          desc.includes('condomínio')
+        )
+      }
+      if (filterCategory === 'tax') {
+        const cat = entry.category?.toLowerCase() || ''
+        const desc = entry.description?.toLowerCase() || ''
+        return (
+          cat.includes('tax') ||
+          cat.includes('imposto') ||
+          desc.includes('tax') ||
+          desc.includes('imposto')
+        )
       }
       return true
     })
@@ -303,7 +324,7 @@ export default function Financial() {
       type: form.type as 'income' | 'expense',
       date: new Date(form.date).toISOString(),
       status: form.status as 'pending' | 'cleared',
-      category: 'other',
+      category: form.category,
       propertyId: form.propertyId === 'none' ? '' : form.propertyId,
       costType: form.costType as 'fixed' | 'variable',
       isRecurring: form.isRecurring,
@@ -331,6 +352,7 @@ export default function Financial() {
         description: form.description,
         amount: Number(form.amount),
         type: form.type as 'income' | 'expense',
+        category: form.category,
         date: new Date(form.date).toISOString(),
         propertyId: form.propertyId === 'none' ? '' : form.propertyId,
         costType: form.costType as 'fixed' | 'variable',
@@ -349,6 +371,7 @@ export default function Financial() {
       description: entry.description,
       amount: entry.amount.toString(),
       type: entry.type,
+      category: entry.category || 'other',
       date: entry.date.substring(0, 10),
       propertyId: entry.propertyId || 'none',
       costType: entry.costType || 'variable',
@@ -416,7 +439,7 @@ export default function Financial() {
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" /> Exportar (CSV)
           </Button>
-          {!isOwner && (
+          {true && (
             <Dialog
               open={isAddOpen}
               onOpenChange={(val) => {
@@ -462,15 +485,41 @@ export default function Financial() {
                     </div>
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label>Descrição</Label>
-                    <Input
-                      placeholder="Ex: Conta de Luz, Aluguel..."
-                      value={form.description}
-                      onChange={(e) =>
-                        setForm({ ...form, description: e.target.value })
-                      }
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Descrição</Label>
+                      <Input
+                        placeholder="Ex: Conta de Luz, Aluguel..."
+                        value={form.description}
+                        onChange={(e) =>
+                          setForm({ ...form, description: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Categoria</Label>
+                      <Select
+                        value={form.category}
+                        onValueChange={(v) => setForm({ ...form, category: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="other">Outros</SelectItem>
+                          <SelectItem value="rent">Aluguel</SelectItem>
+                          <SelectItem value="maintenance">
+                            Manutenção
+                          </SelectItem>
+                          <SelectItem value="cleaning">Limpeza</SelectItem>
+                          <SelectItem value="hoa">HOA / Condomínio</SelectItem>
+                          <SelectItem value="tax">Impostos</SelectItem>
+                          <SelectItem value="utilities">
+                            Utilidades (Água, Luz)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -501,12 +550,18 @@ export default function Financial() {
                           <SelectValue placeholder="Geral" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">Geral (PM)</SelectItem>
-                          {properties.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name}
-                            </SelectItem>
-                          ))}
+                          {!isOwner && (
+                            <SelectItem value="none">Geral (PM)</SelectItem>
+                          )}
+                          {properties
+                            .filter(
+                              (p) => !isOwner || p.ownerId === effectiveUserId,
+                            )
+                            .map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -703,6 +758,8 @@ export default function Financial() {
                     <SelectItem value="expense">Despesas</SelectItem>
                     <SelectItem value="maintenance">Manutenções</SelectItem>
                     <SelectItem value="cleaning">Limpezas</SelectItem>
+                    <SelectItem value="hoa">HOA / Condomínio</SelectItem>
+                    <SelectItem value="tax">Impostos</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -908,7 +965,7 @@ export default function Financial() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2 items-center">
-                        {entry.status !== 'cleared' && !isOwner && (
+                        {entry.status !== 'cleared' && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -918,7 +975,7 @@ export default function Financial() {
                             <CheckCircle2 className="h-4 w-4 mr-1" /> Pagar
                           </Button>
                         )}
-                        {!isOwner && (
+                        {true && (
                           <>
                             <Dialog
                               open={editingRecord?.id === entry.id}
@@ -978,17 +1035,55 @@ export default function Financial() {
                                     </div>
                                   </div>
 
-                                  <div className="grid gap-2">
-                                    <Label>Descrição</Label>
-                                    <Input
-                                      value={form.description}
-                                      onChange={(e) =>
-                                        setForm({
-                                          ...form,
-                                          description: e.target.value,
-                                        })
-                                      }
-                                    />
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>Descrição</Label>
+                                      <Input
+                                        value={form.description}
+                                        onChange={(e) =>
+                                          setForm({
+                                            ...form,
+                                            description: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>Categoria</Label>
+                                      <Select
+                                        value={form.category}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, category: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="other">
+                                            Outros
+                                          </SelectItem>
+                                          <SelectItem value="rent">
+                                            Aluguel
+                                          </SelectItem>
+                                          <SelectItem value="maintenance">
+                                            Manutenção
+                                          </SelectItem>
+                                          <SelectItem value="cleaning">
+                                            Limpeza
+                                          </SelectItem>
+                                          <SelectItem value="hoa">
+                                            HOA / Condomínio
+                                          </SelectItem>
+                                          <SelectItem value="tax">
+                                            Impostos
+                                          </SelectItem>
+                                          <SelectItem value="utilities">
+                                            Utilidades (Água, Luz)
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
                                   </div>
 
                                   <div className="grid grid-cols-2 gap-4">
@@ -1021,14 +1116,25 @@ export default function Financial() {
                                           <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="none">
-                                            Geral (PM)
-                                          </SelectItem>
-                                          {properties.map((p) => (
-                                            <SelectItem key={p.id} value={p.id}>
-                                              {p.name}
+                                          {!isOwner && (
+                                            <SelectItem value="none">
+                                              Geral (PM)
                                             </SelectItem>
-                                          ))}
+                                          )}
+                                          {properties
+                                            .filter(
+                                              (p) =>
+                                                !isOwner ||
+                                                p.ownerId === effectiveUserId,
+                                            )
+                                            .map((p) => (
+                                              <SelectItem
+                                                key={p.id}
+                                                value={p.id}
+                                              >
+                                                {p.name}
+                                              </SelectItem>
+                                            ))}
                                         </SelectContent>
                                       </Select>
                                     </div>

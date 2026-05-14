@@ -328,7 +328,11 @@ export function OwnerStatement({
                     </TableCell>
                     <TableCell>
                       <span className="capitalize text-black">
-                        {entry.category}
+                        {entry.category === 'hoa'
+                          ? 'HOA / Condomínio'
+                          : entry.category === 'tax'
+                            ? 'Impostos'
+                            : entry.category}
                       </span>
                     </TableCell>
                     <TableCell>

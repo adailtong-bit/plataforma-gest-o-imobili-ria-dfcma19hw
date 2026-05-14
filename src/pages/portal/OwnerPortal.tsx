@@ -57,6 +57,17 @@ export default function OwnerPortal() {
       t.suggestedRenewalPrice,
   )
 
+  const hoaAndTaxes = ledgerEntries.filter(
+    (e) =>
+      ownerPropertyIds.includes(e.propertyId) &&
+      (e.category === 'hoa' ||
+        e.category === 'tax' ||
+        e.description.toLowerCase().includes('hoa') ||
+        e.description.toLowerCase().includes('tax')),
+  )
+
+  const pendingHoaTaxes = hoaAndTaxes.filter((e) => e.status !== 'cleared')
+
   const handleApproveRenewal = (tenantId: string, approved: boolean) => {
     if (updateTenant) {
       updateTenant(tenantId, {
@@ -107,6 +118,19 @@ export default function OwnerPortal() {
         <Card className="border-slate-200 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
+              Pending HOA & Taxes
+            </CardTitle>
+            <Landmark className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {pendingHoaTaxes.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200 shadow-sm bg-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">
               Pending Cost Approvals
             </CardTitle>
             <ClipboardList className="h-4 w-4 text-orange-600" />
@@ -133,12 +157,18 @@ export default function OwnerPortal() {
       </div>
 
       <Tabs defaultValue="ledger" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px] h-auto p-1 bg-slate-100/50 border shadow-sm">
+        <TabsList className="grid w-full grid-cols-5 lg:w-[750px] h-auto p-1 bg-slate-100/50 border shadow-sm">
           <TabsTrigger
             value="ledger"
             className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
             Ledger & Financial
+          </TabsTrigger>
+          <TabsTrigger
+            value="hoa_taxes"
+            className="py-2.5 whitespace-normal h-auto text-xs md:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+          >
+            HOA & Taxes
           </TabsTrigger>
           <TabsTrigger
             value="tasks"
@@ -165,6 +195,82 @@ export default function OwnerPortal() {
             properties={properties}
             ledgerEntries={ledgerEntries}
           />
+        </TabsContent>
+        <TabsContent value="hoa_taxes" className="mt-6 space-y-4">
+          <Card className="shadow-sm border-slate-200">
+            <CardHeader className="bg-slate-50/50 border-b pb-4">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Landmark className="h-5 w-5 text-emerald-600" />
+                HOA & Property Taxes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-slate-500">
+                    Manage your upcoming HOA fees and property taxes.
+                  </p>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/financial">Go to Financial</Link>
+                  </Button>
+                </div>
+                {hoaAndTaxes.length === 0 ? (
+                  <div className="text-center py-12 px-4 border-2 border-dashed rounded-lg bg-slate-50/50">
+                    <Landmark className="h-8 w-8 text-slate-300 mx-auto mb-3" />
+                    <h3 className="text-sm font-medium text-slate-900">
+                      No records found
+                    </h3>
+                    <p className="text-sm text-slate-500 mt-1">
+                      No HOA or Tax records have been registered for your
+                      properties.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {hoaAndTaxes.map((entry) => {
+                      const prop = properties.find(
+                        (p) => p.id === entry.propertyId,
+                      )
+                      return (
+                        <div
+                          key={entry.id}
+                          className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                        >
+                          <div>
+                            <div className="font-bold text-slate-900">
+                              {entry.description}
+                            </div>
+                            <div className="text-sm text-slate-500">
+                              {prop?.name || 'General'}
+                            </div>
+                            <div className="text-xs text-slate-400 mt-1">
+                              Due: {new Date(entry.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 mt-4 md:mt-0">
+                            <div className="text-right">
+                              <div className="font-bold text-lg">
+                                ${entry.amount.toFixed(2)}
+                              </div>
+                              <div className="text-xs uppercase tracking-wider font-semibold">
+                                {entry.status === 'cleared' ? (
+                                  <span className="text-emerald-600">Paid</span>
+                                ) : (
+                                  <span className="text-orange-600">
+                                    Pending
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         <TabsContent value="tasks" className="mt-6">
           <OwnerTasks ownerId={targetUserId} properties={properties} />
