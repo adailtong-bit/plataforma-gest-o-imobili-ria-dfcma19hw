@@ -156,6 +156,30 @@ export default function Login() {
       role: 'master',
       id: '1',
     },
+    {
+      email: 'admin@plataforma.com',
+      name: 'Admin User',
+      role: 'admin',
+      id: '2',
+    },
+    {
+      email: 'parceiro@plataforma.com',
+      name: 'Partner User',
+      role: 'partner',
+      id: '3',
+    },
+    {
+      email: 'proprietario@plataforma.com',
+      name: 'Owner User',
+      role: 'property_owner',
+      id: '4',
+    },
+    {
+      email: 'locatario@plataforma.com',
+      name: 'Tenant User',
+      role: 'tenant',
+      id: '5',
+    },
   ]
 
   return (
