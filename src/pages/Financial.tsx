@@ -85,18 +85,25 @@ export default function Financial() {
   const { toast } = useToast()
 
   const authStore = useAuthStore()
-  const effectiveRole = authStore.simulationMode && authStore.simulationRole 
-    ? authStore.simulationRole 
-    : authStore.currentUser?.role
+  const effectiveRole =
+    authStore.simulationMode && authStore.simulationRole
+      ? authStore.simulationRole
+      : authStore.currentUser?.role
 
-  const effectiveUserId = authStore.simulationMode && authStore.simulationRole === 'property_owner'
-    ? authStore.allUsers.find(u => u.role === 'property_owner')?.id || authStore.currentUser?.id
-    : authStore.currentUser?.id
+  const effectiveUserId =
+    authStore.simulationMode && authStore.simulationRole === 'property_owner'
+      ? authStore.allUsers.find((u) => u.role === 'property_owner')?.id ||
+        authStore.currentUser?.id
+      : authStore.currentUser?.id
 
   const isOwner = effectiveRole === 'property_owner'
 
-  const [viewMode, setViewMode] = useState<'pm' | 'owner' | 'property'>(isOwner ? 'owner' : 'pm')
-  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(isOwner && effectiveUserId ? effectiveUserId : 'all')
+  const [viewMode, setViewMode] = useState<'pm' | 'owner' | 'property'>(
+    isOwner ? 'owner' : 'pm',
+  )
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(
+    isOwner && effectiveUserId ? effectiveUserId : 'all',
+  )
   const [selectedPropertyId, setSelectedPropertyId] = useState('all')
 
   const [filterCategory, setFilterCategory] = useState<string>('all')
@@ -422,155 +429,161 @@ export default function Financial() {
                   <Plus className="h-4 w-4" /> Incluir Lançamento
                 </Button>
               </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Incluir Transação</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Tipo</Label>
-                  <Select
-                    value={form.type}
-                    onValueChange={(v) => setForm({ ...form, type: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="income">Receita</SelectItem>
-                      <SelectItem value="expense">Despesa</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Data</Label>
-                  <Input
-                    type="date"
-                    value={form.date}
-                    onChange={(e) => setForm({ ...form, date: e.target.value })}
-                  />
-                </div>
-              </div>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Incluir Transação</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Tipo</Label>
+                      <Select
+                        value={form.type}
+                        onValueChange={(v) => setForm({ ...form, type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="income">Receita</SelectItem>
+                          <SelectItem value="expense">Despesa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Data</Label>
+                      <Input
+                        type="date"
+                        value={form.date}
+                        onChange={(e) =>
+                          setForm({ ...form, date: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid gap-2">
-                <Label>Descrição</Label>
-                <Input
-                  placeholder="Ex: Conta de Luz, Aluguel..."
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                />
-              </div>
+                  <div className="grid gap-2">
+                    <Label>Descrição</Label>
+                    <Input
+                      placeholder="Ex: Conta de Luz, Aluguel..."
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                    />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Valor</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={form.amount}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value)
-                      if (val < 0) return
-                      setForm({ ...form, amount: e.target.value })
-                    }}
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Valor</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={form.amount}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value)
+                          if (val < 0) return
+                          setForm({ ...form, amount: e.target.value })
+                        }}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Propriedade (Opcional)</Label>
+                      <Select
+                        value={form.propertyId}
+                        onValueChange={(v) =>
+                          setForm({ ...form, propertyId: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Geral" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Geral (PM)</SelectItem>
+                          {properties.map((p) => (
+                            <SelectItem key={p.id} value={p.id}>
+                              {p.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {form.type === 'expense' && (
+                    <div className="grid gap-2">
+                      <Label>Categoria de Custo</Label>
+                      <Select
+                        value={form.costType}
+                        onValueChange={(v) => setForm({ ...form, costType: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fixed">
+                            Custo Fixo (Condomínio, Água, Luz)
+                          </SelectItem>
+                          <SelectItem value="variable">
+                            Custo Variável (Limpeza, Manutenção)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Switch
+                      checked={form.isRecurring}
+                      onCheckedChange={(v) =>
+                        setForm({ ...form, isRecurring: v })
+                      }
+                    />
+                    <Label>É uma despesa/receita recorrente?</Label>
+                  </div>
+
+                  {form.isRecurring && (
+                    <div className="grid gap-2">
+                      <Label>Frequência de Repetição</Label>
+                      <Select
+                        value={form.recurrenceFrequency}
+                        onValueChange={(v) =>
+                          setForm({ ...form, recurrenceFrequency: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">Mensalmente</SelectItem>
+                          <SelectItem value="yearly">Anualmente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Ao marcar este item como "Pago", o sistema irá gerar
+                        automaticamente o lançamento do próximo mês/ano.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="grid gap-2">
+                    <Label>Status Inicial</Label>
+                    <Select
+                      value={form.status}
+                      onValueChange={(v) => setForm({ ...form, status: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pendente</SelectItem>
+                        <SelectItem value="cleared">Pago/Recebido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label>Propriedade (Opcional)</Label>
-                  <Select
-                    value={form.propertyId}
-                    onValueChange={(v) => setForm({ ...form, propertyId: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Geral" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Geral (PM)</SelectItem>
-                      {properties.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {form.type === 'expense' && (
-                <div className="grid gap-2">
-                  <Label>Categoria de Custo</Label>
-                  <Select
-                    value={form.costType}
-                    onValueChange={(v) => setForm({ ...form, costType: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fixed">
-                        Custo Fixo (Condomínio, Água, Luz)
-                      </SelectItem>
-                      <SelectItem value="variable">
-                        Custo Variável (Limpeza, Manutenção)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-2 pt-2">
-                <Switch
-                  checked={form.isRecurring}
-                  onCheckedChange={(v) => setForm({ ...form, isRecurring: v })}
-                />
-                <Label>É uma despesa/receita recorrente?</Label>
-              </div>
-
-              {form.isRecurring && (
-                <div className="grid gap-2">
-                  <Label>Frequência de Repetição</Label>
-                  <Select
-                    value={form.recurrenceFrequency}
-                    onValueChange={(v) =>
-                      setForm({ ...form, recurrenceFrequency: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="monthly">Mensalmente</SelectItem>
-                      <SelectItem value="yearly">Anualmente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Ao marcar este item como "Pago", o sistema irá gerar
-                    automaticamente o lançamento do próximo mês/ano.
-                  </p>
-                </div>
-              )}
-
-              <div className="grid gap-2">
-                <Label>Status Inicial</Label>
-                <Select
-                  value={form.status}
-                  onValueChange={(v) => setForm({ ...form, status: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pendente</SelectItem>
-                    <SelectItem value="cleared">Pago/Recebido</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
                 <DialogFooter>
                   <Button onClick={handleAdd}>Salvar Lançamento</Button>
                 </DialogFooter>
@@ -603,13 +616,15 @@ export default function Financial() {
                 >
                   <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
                     <TabsTrigger value="pm" className="gap-2">
-                      <Building className="w-4 h-4 hidden sm:block" /> PM (Geral)
+                      <Building className="w-4 h-4 hidden sm:block" /> PM
+                      (Geral)
                     </TabsTrigger>
                     <TabsTrigger value="owner" className="gap-2">
                       <User className="w-4 h-4 hidden sm:block" /> Proprietário
                     </TabsTrigger>
                     <TabsTrigger value="property" className="gap-2">
-                      <Building className="w-4 h-4 hidden sm:block" /> Propriedade
+                      <Building className="w-4 h-4 hidden sm:block" />{' '}
+                      Propriedade
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -650,7 +665,8 @@ export default function Financial() {
                     <SelectContent>
                       <SelectItem value="all">Todas as Propriedades</SelectItem>
                       {properties.map((p) => {
-                        if (isOwner && p.ownerId !== effectiveUserId) return null
+                        if (isOwner && p.ownerId !== effectiveUserId)
+                          return null
                         return (
                           <SelectItem key={p.id} value={p.id}>
                             {p.name}
@@ -903,238 +919,247 @@ export default function Financial() {
                           </Button>
                         )}
                         {!isOwner && (
-                          <Dialog
-                            open={editingRecord?.id === entry.id}
-                          onOpenChange={(open) =>
-                            !open && setEditingRecord(null)
-                          }
-                        >
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-slate-500 hover:text-blue-600"
-                              onClick={() => openEdit(entry)}
+                          <>
+                            <Dialog
+                              open={editingRecord?.id === entry.id}
+                              onOpenChange={(open) =>
+                                !open && setEditingRecord(null)
+                              }
                             >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle>Alterar Transação</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                  <Label>Tipo</Label>
-                                  <Select
-                                    value={form.type}
-                                    onValueChange={(v) =>
-                                      setForm({ ...form, type: v })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="income">
-                                        Receita
-                                      </SelectItem>
-                                      <SelectItem value="expense">
-                                        Despesa
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="grid gap-2">
-                                  <Label>Data</Label>
-                                  <Input
-                                    type="date"
-                                    value={form.date}
-                                    onChange={(e) =>
-                                      setForm({ ...form, date: e.target.value })
-                                    }
-                                  />
-                                </div>
-                              </div>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-slate-500 hover:text-blue-600"
+                                  onClick={() => openEdit(entry)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>Alterar Transação</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>Tipo</Label>
+                                      <Select
+                                        value={form.type}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, type: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="income">
+                                            Receita
+                                          </SelectItem>
+                                          <SelectItem value="expense">
+                                            Despesa
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>Data</Label>
+                                      <Input
+                                        type="date"
+                                        value={form.date}
+                                        onChange={(e) =>
+                                          setForm({
+                                            ...form,
+                                            date: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
 
-                              <div className="grid gap-2">
-                                <Label>Descrição</Label>
-                                <Input
-                                  value={form.description}
-                                  onChange={(e) =>
-                                    setForm({
-                                      ...form,
-                                      description: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
+                                  <div className="grid gap-2">
+                                    <Label>Descrição</Label>
+                                    <Input
+                                      value={form.description}
+                                      onChange={(e) =>
+                                        setForm({
+                                          ...form,
+                                          description: e.target.value,
+                                        })
+                                      }
+                                    />
+                                  </div>
 
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                  <Label>Valor</Label>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value={form.amount}
-                                    onChange={(e) => {
-                                      const val = parseFloat(e.target.value)
-                                      if (val < 0) return
-                                      setForm({
-                                        ...form,
-                                        amount: e.target.value,
-                                      })
-                                    }}
-                                  />
-                                </div>
-                                <div className="grid gap-2">
-                                  <Label>Propriedade</Label>
-                                  <Select
-                                    value={form.propertyId}
-                                    onValueChange={(v) =>
-                                      setForm({ ...form, propertyId: v })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="none">
-                                        Geral (PM)
-                                      </SelectItem>
-                                      {properties.map((p) => (
-                                        <SelectItem key={p.id} value={p.id}>
-                                          {p.name}
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>Valor</Label>
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={form.amount}
+                                        onChange={(e) => {
+                                          const val = parseFloat(e.target.value)
+                                          if (val < 0) return
+                                          setForm({
+                                            ...form,
+                                            amount: e.target.value,
+                                          })
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>Propriedade</Label>
+                                      <Select
+                                        value={form.propertyId}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, propertyId: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="none">
+                                            Geral (PM)
+                                          </SelectItem>
+                                          {properties.map((p) => (
+                                            <SelectItem key={p.id} value={p.id}>
+                                              {p.name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+
+                                  {form.type === 'expense' && (
+                                    <div className="grid gap-2">
+                                      <Label>Categoria de Custo</Label>
+                                      <Select
+                                        value={form.costType}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, costType: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="fixed">
+                                            Custo Fixo
+                                          </SelectItem>
+                                          <SelectItem value="variable">
+                                            Custo Variável
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  <div className="flex items-center space-x-2 pt-2">
+                                    <Switch
+                                      checked={form.isRecurring}
+                                      onCheckedChange={(v) =>
+                                        setForm({ ...form, isRecurring: v })
+                                      }
+                                    />
+                                    <Label>
+                                      É uma despesa/receita recorrente?
+                                    </Label>
+                                  </div>
+
+                                  {form.isRecurring && (
+                                    <div className="grid gap-2">
+                                      <Label>Frequência</Label>
+                                      <Select
+                                        value={form.recurrenceFrequency}
+                                        onValueChange={(v) =>
+                                          setForm({
+                                            ...form,
+                                            recurrenceFrequency: v,
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="monthly">
+                                            Mensal
+                                          </SelectItem>
+                                          <SelectItem value="yearly">
+                                            Anual
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  <div className="grid gap-2">
+                                    <Label>Status</Label>
+                                    <Select
+                                      value={form.status}
+                                      onValueChange={(v) =>
+                                        setForm({ ...form, status: v })
+                                      }
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="pending">
+                                          Pendente
                                         </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
+                                        <SelectItem value="cleared">
+                                          Pago/Recebido
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
                                 </div>
-                              </div>
-
-                              {form.type === 'expense' && (
-                                <div className="grid gap-2">
-                                  <Label>Categoria de Custo</Label>
-                                  <Select
-                                    value={form.costType}
-                                    onValueChange={(v) =>
-                                      setForm({ ...form, costType: v })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="fixed">
-                                        Custo Fixo
-                                      </SelectItem>
-                                      <SelectItem value="variable">
-                                        Custo Variável
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-
-                              <div className="flex items-center space-x-2 pt-2">
-                                <Switch
-                                  checked={form.isRecurring}
-                                  onCheckedChange={(v) =>
-                                    setForm({ ...form, isRecurring: v })
-                                  }
-                                />
-                                <Label>É uma despesa/receita recorrente?</Label>
-                              </div>
-
-                              {form.isRecurring && (
-                                <div className="grid gap-2">
-                                  <Label>Frequência</Label>
-                                  <Select
-                                    value={form.recurrenceFrequency}
-                                    onValueChange={(v) =>
-                                      setForm({
-                                        ...form,
-                                        recurrenceFrequency: v,
-                                      })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="monthly">
-                                        Mensal
-                                      </SelectItem>
-                                      <SelectItem value="yearly">
-                                        Anual
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-
-                              <div className="grid gap-2">
-                                <Label>Status</Label>
-                                <Select
-                                  value={form.status}
-                                  onValueChange={(v) =>
-                                    setForm({ ...form, status: v })
-                                  }
+                                <DialogFooter>
+                                  <Button onClick={handleEdit}>
+                                    Salvar Alterações
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-slate-500 hover:text-red-600"
                                 >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="pending">
-                                      Pendente
-                                    </SelectItem>
-                                    <SelectItem value="cleared">
-                                      Pago/Recebido
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button onClick={handleEdit}>
-                                Salvar Alterações
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-slate-500 hover:text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Excluir Transação
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja excluir esta transação?
-                                  Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-red-600 hover:bg-red-700"
-                                  onClick={() => handleDelete(entry.id)}
-                                >
-                                  Excluir
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Excluir Transação
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Tem certeza que deseja excluir esta
+                                    transação? Esta ação não pode ser desfeita.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>
+                                    Cancelar
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-red-600 hover:bg-red-700"
+                                    onClick={() => handleDelete(entry.id)}
+                                  >
+                                    Excluir
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
                         )}
                       </div>
                     </TableCell>
