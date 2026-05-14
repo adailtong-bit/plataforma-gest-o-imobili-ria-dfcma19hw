@@ -195,7 +195,16 @@ export default function Messages() {
         }
       })
 
-      setConversations(formattedConvs)
+      const uniqueConvsMap = new Map<string, Conversation>()
+      for (const c of formattedConvs) {
+        const other = c.participants.find((p) => p.id !== profile?.id)
+        const key = other?.id || c.id
+        if (!uniqueConvsMap.has(key)) {
+          uniqueConvsMap.set(key, c)
+        }
+      }
+
+      setConversations(Array.from(uniqueConvsMap.values()))
     } catch (error) {
       console.error('Error loading conversations:', error)
     } finally {
@@ -313,13 +322,23 @@ export default function Messages() {
     setNewMessage('')
 
     try {
-      const { error } = await supabase.from('messages').insert({
-        conversation_id: activeConvId,
-        sender_id: profile.id,
-        content: content,
-      })
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: activeConvId,
+          sender_id: profile.id,
+          content: content,
+        })
+        .select('*')
+        .single()
 
       if (error) throw error
+
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === data.id)) return prev
+        return [...prev, data]
+      })
+      scrollToBottom()
 
       await supabase
         .from('conversations')
@@ -402,8 +421,11 @@ export default function Messages() {
                         <p className="font-medium text-sm text-slate-900 truncate">
                           {u.name}
                         </p>
-                        <p className="text-xs text-slate-500 capitalize truncate">
-                          {u.role?.replace('_', ' ')}
+                        <p className="text-xs text-slate-500 truncate">
+                          <span className="capitalize">
+                            {u.role?.replace('_', ' ')}
+                          </span>{' '}
+                          • {u.email}
                         </p>
                       </div>
                     </button>
