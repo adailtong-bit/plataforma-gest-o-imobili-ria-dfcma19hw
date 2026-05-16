@@ -61,8 +61,17 @@ const useHotelStore = () => {
       zip_code: hotel.zipCode,
       country: hotel.country,
     }
-    const { error } = await supabase.from('hotels').insert(dbHotel)
-    if (!error) await fetchHotels()
+    const { error, data } = await supabase
+      .from('hotels')
+      .insert(dbHotel)
+      .select()
+      .single()
+    if (!error) {
+      await fetchHotels()
+      return data
+    }
+    console.error('Error adding hotel:', error)
+    return null
   }
 
   const updateHotel = async (hotel: Hotel) => {

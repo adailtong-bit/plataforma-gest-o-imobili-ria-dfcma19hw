@@ -126,7 +126,7 @@ export default function Hotels() {
     setIsAddOpen(true)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.city) {
       toast({
         title: safeT('hotel_form.validation_error'),
@@ -157,23 +157,28 @@ export default function Hotels() {
     }
 
     if (editingRecord && updateHotel) {
-      updateHotel({ ...editingRecord, ...hotelData } as Hotel)
+      await updateHotel({ ...editingRecord, ...hotelData } as Hotel)
       toast({ title: safeT('common.save') })
     } else if (addHotel) {
-      addHotel(hotelData as Hotel)
+      const newHotel = await addHotel(hotelData as Hotel)
+      if (newHotel) {
+        hId = newHotel.id
+      }
       toast({ title: safeT('common.success') })
     }
 
-    // Sync Towers
-    form.towersList.forEach((tower) => {
-      if (tower.isDeleted && !tower.isNew && deleteTower) {
-        deleteTower(tower.id)
-      } else if (tower.isNew && !tower.isDeleted && addTower) {
-        addTower({ hotelId: hId, name: tower.name })
-      } else if (!tower.isNew && !tower.isDeleted && updateTower) {
-        updateTower({ id: tower.id, hotelId: hId, name: tower.name })
+    if (hId) {
+      // Sync Towers
+      for (const tower of form.towersList) {
+        if (tower.isDeleted && !tower.isNew && deleteTower) {
+          await deleteTower(tower.id)
+        } else if (tower.isNew && !tower.isDeleted && addTower) {
+          await addTower({ hotelId: hId, name: tower.name })
+        } else if (!tower.isNew && !tower.isDeleted && updateTower) {
+          await updateTower({ id: tower.id, hotelId: hId, name: tower.name })
+        }
       }
-    })
+    }
 
     setIsAddOpen(false)
     resetForm()
