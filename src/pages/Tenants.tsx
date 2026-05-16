@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Briefcase } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -60,6 +60,9 @@ export default function Tenants() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<Partial<Tenant>>({})
 
+  const [promoteTenantId, setPromoteTenantId] = useState<string | null>(null)
+  const [promoteFunction, setPromoteFunction] = useState('')
+
   const handleOpenAdd = () => {
     setEditingId(null)
     setForm({ country: 'US' })
@@ -96,6 +99,37 @@ export default function Tenants() {
 
   const ctry = (form.country as 'US' | 'BR' | 'ES') || 'US'
 
+  const handlePromote = () => {
+    const tenant = tenants.find((t) => t.id === promoteTenantId)
+    if (tenant && context?.addPartner) {
+      context.addPartner({
+        id: `partner-${Date.now()}`,
+        name: tenant.name,
+        companyName: '',
+        type: promoteFunction || 'General Services',
+        entityType: 'individual',
+        email: tenant.email || '',
+        phone: tenant.phone || '',
+        cpfCnpj: tenant.cpfCnpj || '',
+        address: tenant.address || '',
+        city: tenant.city || '',
+        state: tenant.state || '',
+        zipCode: tenant.zipCode || '',
+        status: 'active',
+        role: 'partner',
+        origin: 'tenant_promotion',
+        serviceRates: [],
+        employees: [],
+      } as any)
+      toast({
+        title: t('common.success') || 'Success',
+        description: 'Tenant promoted to Partner (Opporjob Integration).',
+      })
+    }
+    setPromoteTenantId(null)
+    setPromoteFunction('')
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex justify-between items-center">
@@ -112,6 +146,42 @@ export default function Tenants() {
           <Plus className="h-4 w-4" /> {t('common.add')}
         </Button>
       </div>
+
+      <Dialog
+        open={!!promoteTenantId}
+        onOpenChange={(v) => !v && setPromoteTenantId(null)}
+      >
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Promote to Service Provider</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <p className="text-sm text-slate-600">
+              Integrate this tenant with the Opporjob network as a Service
+              Provider.
+            </p>
+            <div className="space-y-2">
+              <Label>Function / Service Type</Label>
+              <Input
+                placeholder="e.g., General Maintenance, Cleaning"
+                value={promoteFunction}
+                onChange={(e) => setPromoteFunction(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPromoteTenantId(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handlePromote}
+              className="bg-indigo-600 text-white hover:bg-indigo-700"
+            >
+              Confirm Integration
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-black">
@@ -438,15 +508,30 @@ export default function Tenants() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                        onClick={() => setPromoteTenantId(tenant.id)}
+                        title="Promote to Partner (Opporjob)"
+                      >
+                        <Briefcase className="h-4 w-4 md:mr-2" />{' '}
+                        <span className="hidden md:inline">Promote</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleOpenEdit(tenant)}
                       >
-                        <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
+                        <Pencil className="h-4 w-4 md:mr-2" />{' '}
+                        <span className="hidden md:inline">
+                          {t('common.edit')}
+                        </span>
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" />{' '}
-                            {t('common.delete')}
+                            <Trash2 className="h-4 w-4 md:mr-2" />{' '}
+                            <span className="hidden md:inline">
+                              {t('common.delete')}
+                            </span>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>

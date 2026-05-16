@@ -20,6 +20,7 @@ import {
   User,
   Phone,
   MapPin,
+  Briefcase,
 } from 'lucide-react'
 import {
   Dialog,
@@ -455,12 +456,30 @@ export default function Partners() {
                     {partner.entityType || 'company'}
                   </TableCell>
                   <TableCell className="capitalize">
-                    <Badge
-                      variant="outline"
-                      className="font-normal bg-slate-50"
-                    >
-                      {partner?.type || 'unknown'}
-                    </Badge>
+                    <div className="flex flex-col items-start gap-1">
+                      <Badge
+                        variant="outline"
+                        className="font-normal bg-slate-50"
+                      >
+                        {partner?.type || 'unknown'}
+                      </Badge>
+                      {(partner as any).origin === 'tenant_promotion' && (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-1 py-0 h-4 bg-emerald-50 text-emerald-700 border-emerald-200"
+                        >
+                          Promoted Tenant
+                        </Badge>
+                      )}
+                      {(partner as any).origin === 'opporjob' && (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-1 py-0 h-4 bg-indigo-50 text-indigo-700 border-indigo-200"
+                        >
+                          Opporjob
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col text-sm text-slate-600">

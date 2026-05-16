@@ -45,6 +45,16 @@ import {
 import { ChartContainer } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Link } from 'react-router-dom'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
@@ -234,6 +244,12 @@ export default function Dashboard() {
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
             {t('dashboard.tabs.operations', 'Operations & Team')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="integrations"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4 text-indigo-700 data-[state=active]:text-indigo-900"
+          >
+            Opporjob Network
           </TabsTrigger>
         </TabsList>
 
@@ -951,6 +967,138 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* --- INTEGRATIONS (OPPORJOB) --- */}
+        <TabsContent value="integrations" className="space-y-6 outline-none">
+          <Card className="shadow-sm border-indigo-100">
+            <CardHeader className="bg-indigo-50/50 pb-4 border-b border-indigo-100">
+              <CardTitle className="flex items-center gap-2 text-indigo-900">
+                <Briefcase className="h-5 w-5 text-indigo-600" />
+                Opporjob Service Providers Network
+              </CardTitle>
+              <CardDescription>
+                Integrated ecosystem of qualified service providers and promoted
+                tenants.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <Card className="bg-white shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-slate-500">
+                      Available Partners
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-slate-900">24</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-slate-500">
+                      Promoted Tenants
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-slate-900">3</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-slate-500">
+                      Active Tasks via Opporjob
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-slate-900">12</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-slate-900">
+                  Recent Integrations
+                </h3>
+                <div className="rounded-md border bg-white">
+                  <Table>
+                    <TableHeader className="bg-slate-50">
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Service Type</TableHead>
+                        <TableHead>Origin</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          Carlos Cleaning Co.
+                        </TableCell>
+                        <TableCell>Housekeeping</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                          >
+                            Opporjob Platform
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-emerald-500 text-white">
+                            Active
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">
+                          Maria Services
+                        </TableCell>
+                        <TableCell>Plumbing</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                          >
+                            Opporjob Platform
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-emerald-500 text-white">
+                            Active
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">John Doe</TableCell>
+                        <TableCell>General Maintenance</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                          >
+                            Promoted Tenant
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-emerald-500 text-white">
+                            Active
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Link to="/partners">
+                    <Button variant="outline" className="gap-2">
+                      Manage All Partners <Briefcase className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
