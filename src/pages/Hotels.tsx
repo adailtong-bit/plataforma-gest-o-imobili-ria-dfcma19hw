@@ -10,7 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, Building, Trash } from 'lucide-react'
+import { Plus, Pencil, Trash2, Building, Trash, Settings } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import {
   Dialog,
   DialogContent,
@@ -59,6 +60,7 @@ export default function Hotels() {
   } = useHotelStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const safeT = typeof t === 'function' ? t : (key: string) => key
 
@@ -492,6 +494,15 @@ export default function Hotels() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-trust-blue text-white"
+                        onClick={() => navigate(`/hotels/${h.id}`)}
+                      >
+                        <Settings className="h-4 w-4 mr-2" />{' '}
+                        {safeT('common.manage') || 'Manage'}
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
