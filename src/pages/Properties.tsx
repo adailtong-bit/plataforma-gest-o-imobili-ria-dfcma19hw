@@ -896,7 +896,10 @@ export default function Properties() {
                       value={newProp.area || ''}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value)
-                        if (val < 0) return
+                        if (isNaN(val) || val < 0) {
+                          setNewProp({ ...newProp, area: 0 })
+                          return
+                        }
                         setNewProp({ ...newProp, area: val })
                       }}
                       className="text-black bg-white"
