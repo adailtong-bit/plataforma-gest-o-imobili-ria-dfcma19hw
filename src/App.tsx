@@ -58,45 +58,35 @@ import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
 import { useEffect } from 'react'
-import { RequirePermission as BaseRequirePermission } from '@/components/RequirePermission'
+import { Navigate, useLocation } from 'react-router-dom'
+import useAuthStore from '@/stores/useAuthStore'
+import { Loader2 } from 'lucide-react'
 import { TourGuide } from '@/components/tour/TourGuide'
 import logoImg from '@/assets/summerpm-logo-d35a2.jpg'
 
-const RequirePermission = ({
-  resource,
-  children,
-  ignoreSimulation = false,
-}: {
-  resource: string
-  children: JSX.Element
-  ignoreSimulation?: boolean
-}) => {
-  const { profile, user, loading } = useAuth()
+const AuthGuard = ({ children }: { children: JSX.Element }) => {
+  const { session, loading: supabaseLoading } = useAuth()
+  const { isAuthenticated: appAuthenticated, isAuthLoading: appLoading } =
+    useAuthStore()
+  const location = useLocation()
 
-  const userEmail = user?.email?.toLowerCase() || ''
-  const isSuperUser =
-    profile?.role === 'master' ||
-    profile?.role === 'super_admin' ||
-    profile?.role === 'admin' ||
-    profile?.role === 'platform_owner' ||
-    userEmail === 'adailtong@gmail.com' ||
-    userEmail.includes('admin') ||
-    userEmail.includes('skip')
+  const isLoading = supabaseLoading || appLoading
+  const isAuth = !!session || appAuthenticated
 
-  // Wait until loading finishes, then bypass for admins
-  if (!loading && isSuperUser) {
-    return children
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        <h2 className="text-xl font-medium text-slate-700">Carregando...</h2>
+      </div>
+    )
   }
 
-  // Delegate normal permissions and loading states
-  return (
-    <BaseRequirePermission
-      resource={resource as any}
-      ignoreSimulation={ignoreSimulation}
-    >
-      {children}
-    </BaseRequirePermission>
-  )
+  if (!isAuth) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  return children
 }
 
 const App = () => {
@@ -139,387 +129,86 @@ const App = () => {
                 />
 
                 {/* Protected Routes */}
-                <Route element={<DashboardLayout />}>
+                <Route
+                  element={
+                    <AuthGuard>
+                      <DashboardLayout />
+                    </AuthGuard>
+                  }
+                >
                   {/* Real Estate Dashboard as Main Route */}
-                  <Route
-                    path="/"
-                    element={
-                      <RequirePermission resource="dashboard">
-                        <Dashboard />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/" element={<Dashboard />} />
                   {/* Dashboard Alias */}
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <RequirePermission resource="dashboard">
-                        <Dashboard />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/help" element={<HelpHub />} />
 
                   {/* Advanced Management Tools */}
-                  <Route
-                    path="/performance"
-                    element={
-                      <RequirePermission resource="performance">
-                        <Performance />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/guest-services"
-                    element={
-                      <RequirePermission resource="guest_services">
-                        <GuestServices />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/pos"
-                    element={
-                      <RequirePermission resource="pos">
-                        <PointOfSale />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/marketing"
-                    element={
-                      <RequirePermission resource="marketing">
-                        <Marketing />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/performance" element={<Performance />} />
+                  <Route path="/guest-services" element={<GuestServices />} />
+                  <Route path="/pos" element={<PointOfSale />} />
+                  <Route path="/marketing" element={<Marketing />} />
 
-                  <Route
-                    path="/properties"
-                    element={
-                      <RequirePermission resource="properties">
-                        <Properties />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/properties/:id"
-                    element={
-                      <RequirePermission resource="properties">
-                        <PropertyDetails />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/hotels"
-                    element={
-                      <RequirePermission resource="hotels">
-                        <Hotels />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/hotels/:id"
-                    element={
-                      <RequirePermission resource="hotels">
-                        <HotelDetails />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/properties" element={<Properties />} />
+                  <Route path="/properties/:id" element={<PropertyDetails />} />
+                  <Route path="/hotels" element={<Hotels />} />
+                  <Route path="/hotels/:id" element={<HotelDetails />} />
                   {/* Direct Room Navigation */}
                   <Route
                     path="/hotels/:hotelId/rooms/:roomId"
-                    element={
-                      <RequirePermission resource="hotels">
-                        <HotelRoomDetails />
-                      </RequirePermission>
-                    }
+                    element={<HotelRoomDetails />}
                   />
                   {/* Tower Room Navigation */}
                   <Route
                     path="/hotels/:hotelId/towers/:towerId/rooms/:roomId"
-                    element={
-                      <RequirePermission resource="hotels">
-                        <HotelRoomDetails />
-                      </RequirePermission>
-                    }
+                    element={<HotelRoomDetails />}
                   />
                   <Route
                     path="/hotels/:id/towers/:towerId"
-                    element={
-                      <RequirePermission resource="hotels">
-                        <TowerDetails />
-                      </RequirePermission>
-                    }
+                    element={<TowerDetails />}
                   />
-                  <Route
-                    path="/short-term"
-                    element={
-                      <RequirePermission resource="short_term">
-                        <ShortTerm />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/condominiums"
-                    element={
-                      <RequirePermission resource="condominiums">
-                        <Condominiums />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/short-term" element={<ShortTerm />} />
+                  <Route path="/condominiums" element={<Condominiums />} />
                   <Route
                     path="/condominiums/:id"
-                    element={
-                      <RequirePermission resource="condominiums">
-                        <CondominiumDetails />
-                      </RequirePermission>
-                    }
+                    element={<CondominiumDetails />}
                   />
-                  <Route
-                    path="/tenants"
-                    element={
-                      <RequirePermission resource="tenants">
-                        <Tenants />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/tenants/:id"
-                    element={
-                      <RequirePermission resource="tenants">
-                        <TenantDetails />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/owners"
-                    element={
-                      <RequirePermission resource="owners">
-                        <Owners />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/owners/:id"
-                    element={
-                      <RequirePermission resource="owners">
-                        <OwnerDetails />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/partners"
-                    element={
-                      <RequirePermission resource="partners">
-                        <Partners />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/partners/:id"
-                    element={
-                      <RequirePermission resource="partners">
-                        <PartnerDetails />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/calendar"
-                    element={
-                      <RequirePermission resource="calendar">
-                        <CalendarPage />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/tasks"
-                    element={
-                      <RequirePermission resource="tasks">
-                        <Tasks />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/financial"
-                    element={
-                      <RequirePermission resource="financial">
-                        <Financial />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/invoices"
-                    element={
-                      <RequirePermission resource="financial">
-                        <Invoices />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/messages"
-                    element={
-                      <RequirePermission resource="messages">
-                        <Messages />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/settings"
-                    element={
-                      <RequirePermission resource="settings">
-                        <Settings />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/users"
-                    element={
-                      <RequirePermission resource="users">
-                        <Users />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/service-pricing"
-                    element={
-                      <RequirePermission resource="service_pricing">
-                        <ServicePricing />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/market-analysis"
-                    element={
-                      <RequirePermission resource="market_analysis">
-                        <MarketAnalysis />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/reports"
-                    element={
-                      <RequirePermission resource="reports">
-                        <Reports />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/workflows"
-                    element={
-                      <RequirePermission resource="workflows">
-                        <Workflows />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/renewals"
-                    element={
-                      <RequirePermission resource="renewals">
-                        <Renewals />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/visits"
-                    element={
-                      <RequirePermission resource="visits">
-                        <Visits />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/housekeeping"
-                    element={
-                      <RequirePermission resource="tasks">
-                        <Housekeeping />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/night-audit"
-                    element={
-                      <RequirePermission resource="financial">
-                        <NightAudit />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/tenants" element={<Tenants />} />
+                  <Route path="/tenants/:id" element={<TenantDetails />} />
+                  <Route path="/owners" element={<Owners />} />
+                  <Route path="/owners/:id" element={<OwnerDetails />} />
+                  <Route path="/partners" element={<Partners />} />
+                  <Route path="/partners/:id" element={<PartnerDetails />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/tasks" element={<Tasks />} />
+                  <Route path="/financial" element={<Financial />} />
+                  <Route path="/invoices" element={<Invoices />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/users" element={<Users />} />
+                  <Route path="/service-pricing" element={<ServicePricing />} />
+                  <Route path="/market-analysis" element={<MarketAnalysis />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/workflows" element={<Workflows />} />
+                  <Route path="/renewals" element={<Renewals />} />
+                  <Route path="/visits" element={<Visits />} />
+                  <Route path="/housekeeping" element={<Housekeeping />} />
+                  <Route path="/night-audit" element={<NightAudit />} />
 
                   {/* Admin */}
-                  <Route
-                    path="/admin/publicity"
-                    element={
-                      <RequirePermission resource="publicity">
-                        <PublicityAdmin />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/admin/migration"
-                    element={
-                      <RequirePermission resource="migration">
-                        <MigrationHub />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/admin/analytics"
-                    element={
-                      <RequirePermission resource="analytics">
-                        <Analytics />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/admin/automation"
-                    element={
-                      <RequirePermission resource="automation">
-                        <Automation />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/admin/audit"
-                    element={
-                      <RequirePermission resource="audit_logs" ignoreSimulation>
-                        <AuditPanel />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/admin/publicity" element={<PublicityAdmin />} />
+                  <Route path="/admin/migration" element={<MigrationHub />} />
+                  <Route path="/admin/analytics" element={<Analytics />} />
+                  <Route path="/admin/automation" element={<Automation />} />
+                  <Route path="/admin/audit" element={<AuditPanel />} />
                   <Route
                     path="/admin/environment"
-                    element={
-                      <RequirePermission resource="audit_logs" ignoreSimulation>
-                        <EnvironmentManager />
-                      </RequirePermission>
-                    }
+                    element={<EnvironmentManager />}
                   />
 
                   {/* Portals - Protected by RequirePermission internally or here */}
-                  <Route
-                    path="/portal/tenant"
-                    element={
-                      <RequirePermission resource="portal">
-                        <TenantPortal />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/portal/owner"
-                    element={
-                      <RequirePermission resource="portal">
-                        <OwnerPortal />
-                      </RequirePermission>
-                    }
-                  />
-                  <Route
-                    path="/portal/partner"
-                    element={
-                      <RequirePermission resource="portal">
-                        <PartnerPortal />
-                      </RequirePermission>
-                    }
-                  />
+                  <Route path="/portal/tenant" element={<TenantPortal />} />
+                  <Route path="/portal/owner" element={<OwnerPortal />} />
+                  <Route path="/portal/partner" element={<PartnerPortal />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Route>

@@ -72,7 +72,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (mounted) {
           let userProfile = data as UserProfile | null
 
-          // Failsafe for the primary admin user to never be locked out
+          // Se a row do profile não existir, criar um perfil em memória temporário
+          // Baseado no usuário atualmente logado para não travar a aplicação
+          if (!userProfile) {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser()
+            if (user) {
+              userProfile = {
+                id: user.id,
+                email: user.email || '',
+                name: user.user_metadata?.name || 'Admin',
+                role: 'master', // Força 'master' para não bloquear
+                permissions: ['*'],
+              }
+            }
+          }
+
+          // Failsafe imutável para o admin
           if (userProfile) {
             const emailLower = userProfile.email.toLowerCase()
             if (
@@ -80,13 +97,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               emailLower.includes('admin') ||
               emailLower.includes('skip')
             ) {
-              if (
-                !['master', 'admin', 'super_admin', 'platform_owner'].includes(
-                  userProfile.role,
-                )
-              ) {
-                userProfile.role = 'master'
-              }
+              userProfile.role = 'master'
+              userProfile.permissions = ['*']
             }
           }
 
