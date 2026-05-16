@@ -218,7 +218,7 @@ export default function Properties() {
     setNewProp({ ...newProp, zipCode: val })
   }
 
-  const handleAddProperty = () => {
+  const handleAddProperty = async () => {
     if (!newProp.name?.trim()) {
       toast({
         title: t('properties.validation_error'),
@@ -310,10 +310,15 @@ export default function Properties() {
     if (selectedHotel) comm = selectedHotel.name
     else if (selectedCondo) comm = selectedCondo.name
 
+    let finalOwnerId = newProp.ownerId || undefined
+    if (isOwner && currentUser) {
+      finalOwnerId = currentUser.id
+    }
+
     if (editingId) {
       const existing = properties.find((p) => p.id === editingId)
       if (existing) {
-        updateProperty({
+        const { error } = await updateProperty({
           ...existing,
           name: newProp.name || '',
           address: finalAddress,
@@ -337,12 +342,22 @@ export default function Properties() {
           image: newProp.image || existing.image,
           gallery: newProp.gallery || existing.gallery,
         } as Property)
+
+        if (error) {
+          toast({
+            title: t('common.error'),
+            description: error.message,
+            variant: 'destructive',
+          })
+          return
+        }
+
         toast({
           title: t('properties.property_updated') || 'Propriedade alterada',
         })
       }
     } else {
-      addProperty({
+      const { error } = await addProperty({
         name: newProp.name || '',
         address: finalAddress,
         number: newProp.number || '',
@@ -369,13 +384,23 @@ export default function Properties() {
         description: { pt: '', en: '', es: '' },
         hoaRules: { pt: '', en: '', es: '' },
         documents: [],
-        ownerId: newProp.ownerId || undefined,
+        ownerId: finalOwnerId,
         agentId: newProp.agentId,
         fixedExpenses: [],
         listingPrice: newProp.listingPrice || 0,
         hoaValue: newProp.hoaValue || 0,
         area: newProp.area || 0,
       } as Property)
+
+      if (error) {
+        toast({
+          title: t('common.error'),
+          description: error.message,
+          variant: 'destructive',
+        })
+        return
+      }
+
       toast({
         title: t('properties.property_added'),
         description: `${newProp.name} ${t('common.done').toLowerCase()}.`,
@@ -411,9 +436,10 @@ export default function Properties() {
     setSelectedCountry('US')
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      deleteProperty(id)
+      const { error } = await deleteProperty(id)
+      if (error) throw error
       toast({ title: t('properties.delete_success') })
     } catch (e: any) {
       toast({
@@ -1321,8 +1347,8 @@ export default function Properties() {
                 </p>
               </CardHeader>
               <CardContent className="flex-1 pb-2">
-                <div className="flex items-center gap-1 text-sm text-black mb-4">
-                  <MapPin className="h-3 w-3 text-black" />
+                <div className="flex items-center gap-1 text-sm text-black mb-2">
+                  <MapPin className="h-3 w-3 text-black shrink-0" />
                   <span className="truncate font-medium">
                     <DataMask>
                       {property.address}
@@ -1330,6 +1356,39 @@ export default function Properties() {
                     </DataMask>
                   </span>
                 </div>
+                {(property.hotelId ||
+                  property.towerId ||
+                  property.roomNumber) && (
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    {property.hotelId && (
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200 text-[10px]"
+                      >
+                        <Building className="w-3 h-3 mr-1" />
+                        {hotels.find((h) => h.id === property.hotelId)?.name ||
+                          'Hotel'}
+                      </Badge>
+                    )}
+                    {property.towerId && (
+                      <Badge
+                        variant="outline"
+                        className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]"
+                      >
+                        Torre:{' '}
+                        {towers.find((t) => t.id === property.towerId)?.name}
+                      </Badge>
+                    )}
+                    {property.roomNumber && (
+                      <Badge
+                        variant="outline"
+                        className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]"
+                      >
+                        Q: {property.roomNumber}
+                      </Badge>
+                    )}
+                  </div>
+                )}
               </CardContent>
               <CardFooter className="pt-4 border-t bg-white flex flex-col gap-2 z-10 relative">
                 <Link to={`/properties/${property.id}`} className="w-full">

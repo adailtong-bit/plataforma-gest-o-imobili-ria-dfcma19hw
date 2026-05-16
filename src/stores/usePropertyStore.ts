@@ -62,9 +62,9 @@ const usePropertyStore = () => {
       type: prop.type,
       profile_type: prop.profileType,
       community: prop.community,
-      condominium_id: prop.condominiumId,
-      hotel_id: prop.hotelId,
-      tower_id: prop.towerId,
+      condominium_id: prop.condominiumId || null,
+      hotel_id: prop.hotelId || null,
+      tower_id: prop.towerId || null,
       floor: prop.floor,
       room_number: prop.roomNumber,
       status: prop.status,
@@ -72,15 +72,20 @@ const usePropertyStore = () => {
       bedrooms: prop.bedrooms,
       bathrooms: prop.bathrooms,
       guests: prop.guests,
-      owner_id: prop.ownerId,
-      agent_id: prop.agentId,
+      owner_id: prop.ownerId || null,
+      agent_id: prop.agentId || null,
       listing_price: prop.listingPrice,
       hoa_value: prop.hoaValue,
       area: prop.area,
     }
-    const { error } = await supabase.from('properties').insert(dbProp)
+    const { data, error } = await supabase
+      .from('properties')
+      .insert(dbProp)
+      .select()
+      .single()
     if (!error) await fetchProperties()
     else console.error(error)
+    return { data, error }
   }
 
   const updateProperty = async (prop: Property) => {
@@ -96,9 +101,9 @@ const usePropertyStore = () => {
       type: prop.type,
       profile_type: prop.profileType,
       community: prop.community,
-      condominium_id: prop.condominiumId,
-      hotel_id: prop.hotelId,
-      tower_id: prop.towerId,
+      condominium_id: prop.condominiumId || null,
+      hotel_id: prop.hotelId || null,
+      tower_id: prop.towerId || null,
       floor: prop.floor,
       room_number: prop.roomNumber,
       status: prop.status,
@@ -106,24 +111,28 @@ const usePropertyStore = () => {
       bedrooms: prop.bedrooms,
       bathrooms: prop.bathrooms,
       guests: prop.guests,
-      owner_id: prop.ownerId,
-      agent_id: prop.agentId,
+      owner_id: prop.ownerId || null,
+      agent_id: prop.agentId || null,
       listing_price: prop.listingPrice,
       hoa_value: prop.hoaValue,
       area: prop.area,
     }
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('properties')
       .update(dbProp)
       .eq('id', prop.id)
+      .select()
+      .single()
     if (!error) await fetchProperties()
     else console.error(error)
+    return { data, error }
   }
 
   const deleteProperty = async (id: string) => {
     const { error } = await supabase.from('properties').delete().eq('id', id)
     if (!error) await fetchProperties()
     else console.error(error)
+    return { error }
   }
 
   const finalProperties = useMemo(() => {
