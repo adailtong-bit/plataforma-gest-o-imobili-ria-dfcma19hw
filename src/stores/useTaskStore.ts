@@ -27,6 +27,7 @@ export const fetchTasks = async () => {
       laborCost: t.labor_cost,
       teamMemberPayout: t.team_member_payout,
       source: t.source,
+      images: t.images || [],
     }))
     notify()
   }
@@ -64,6 +65,7 @@ const useTaskStore = () => {
       labor_cost: task.laborCost,
       team_member_payout: task.teamMemberPayout,
       source: task.source,
+      images: task.images || [],
     }
     const { error } = await supabase.from('tasks').insert(dbTask)
     if (!error) await fetchTasks()

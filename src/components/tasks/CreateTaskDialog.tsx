@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   SelectGroup,
   SelectLabel,
 } from '@/components/ui/select'
-import { Plus } from 'lucide-react'
+import { Plus, Camera, X } from 'lucide-react'
 import useTaskStore from '@/stores/useTaskStore'
 import usePropertyStore from '@/stores/usePropertyStore'
 import usePartnerStore from '@/stores/usePartnerStore'
@@ -55,6 +55,9 @@ export function CreateTaskDialog() {
     ? properties.filter((p) => partnerData?.linkedPropertyIds?.includes(p.id))
     : properties
 
+  const [images, setImages] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [form, setForm] = useState({
     title: '',
     propertyId: '',
@@ -68,6 +71,71 @@ export function CreateTaskDialog() {
     laborCost: 0,
     teamMemberPayout: 0,
   })
+
+  const addTimestampToImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext('2d')
+          if (!ctx) return resolve(e.target?.result as string)
+
+          ctx.drawImage(img, 0, 0)
+
+          const timestamp = new Date().toLocaleString()
+          const fontSize = Math.max(14, img.height * 0.05)
+          ctx.font = `${fontSize}px Arial`
+
+          const textWidth = ctx.measureText(timestamp).width
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+          ctx.fillRect(
+            img.width - textWidth - 20,
+            img.height - fontSize - 20,
+            textWidth + 20,
+            fontSize + 20,
+          )
+
+          ctx.fillStyle = 'white'
+          ctx.textAlign = 'right'
+          ctx.fillText(timestamp, img.width - 10, img.height - 15)
+
+          resolve(canvas.toDataURL('image/jpeg', 0.8))
+        }
+        img.src = e.target?.result as string
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+
+    const remainingSlots = 10 - images.length
+    const filesToProcess = files.slice(0, remainingSlots)
+
+    if (files.length > remainingSlots) {
+      toast({
+        title: 'Limit reached',
+        description: 'You can only upload a maximum of 10 photos.',
+        variant: 'destructive',
+      })
+    }
+
+    const processedImages = await Promise.all(
+      filesToProcess.map(addTimestampToImage),
+    )
+
+    setImages((prev) => [...prev, ...processedImages])
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   const handleSave = () => {
     if (!form.title || !form.propertyId || !form.type) {
@@ -112,6 +180,7 @@ export function CreateTaskDialog() {
       laborCost: form.laborCost,
       teamMemberPayout: form.teamMemberPayout,
       source: 'manual',
+      images: images,
     })
 
     toast({
@@ -134,6 +203,7 @@ export function CreateTaskDialog() {
       laborCost: 0,
       teamMemberPayout: 0,
     })
+    setImages([])
   }
 
   const taskTypeToSkills: Record<string, string[]> = {
@@ -383,6 +453,60 @@ export function CreateTaskDialog() {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="space-y-4 border-t pt-4 mt-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm">
+                Photos / Evidence (Max 10)
+              </h4>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={images.length >= 10}
+              >
+                <Camera className="h-4 w-4" />
+                Add Photos
+              </Button>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
+            </div>
+
+            {images.length > 0 && (
+              <div className="grid grid-cols-5 gap-2">
+                {images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-square rounded-md overflow-hidden border group"
+                  >
+                    <img
+                      src={img}
+                      alt={`Task photo ${idx}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImages(images.filter((_, i) => i !== idx))
+                      }
+                      className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter>
