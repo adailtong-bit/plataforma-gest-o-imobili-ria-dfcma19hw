@@ -20,8 +20,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Edit, Save } from 'lucide-react'
 
 interface RoomListProps {
   hotelId: string
@@ -32,6 +41,8 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
   const [roomTypes, setRoomTypes] = useState<any[]>([])
   const [rooms, setRooms] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [editingRoom, setEditingRoom] = useState<any>(null)
+  const [editFormData, setEditFormData] = useState<any>({})
   const { toast } = useToast()
 
   const fetchRooms = async () => {
@@ -128,7 +139,49 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
     }
   }
 
-  if (loading) {
+  const handleSaveEdit = async () => {
+    if (!editingRoom) return
+    setLoading(true)
+
+    const updatePayload: any = {
+      room_number: editFormData.room_number,
+      name: editFormData.name,
+      room_type_id:
+        editFormData.room_type_id === 'custom'
+          ? null
+          : editFormData.room_type_id,
+    }
+
+    const selectedType = roomTypes.find(
+      (rt) => rt.id === updatePayload.room_type_id,
+    )
+    if (selectedType) {
+      updatePayload.listing_price = selectedType.base_price
+    }
+
+    const { error } = await supabase
+      .from('properties')
+      .update(updatePayload)
+      .eq('id', editingRoom.id)
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      })
+    } else {
+      toast({
+        title: 'Success',
+        description: 'Room updated successfully.',
+      })
+      fetchRooms()
+      setEditingRoom(null)
+    }
+    setLoading(false)
+  }
+
+  if (loading && rooms.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
@@ -153,7 +206,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
           <TableHeader className="bg-slate-50">
             <TableRow>
               <TableHead>Room Number / Name</TableHead>
-              <TableHead>Pricing Category (Link)</TableHead>
+              <TableHead>Pricing Category</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Current Price</TableHead>
               <TableHead className="text-right">Manage</TableHead>
@@ -218,22 +271,39 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                     </DataMask>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-trust-blue border-trust-blue/20 hover:bg-trust-blue/10"
-                      asChild
-                    >
-                      <Link
-                        to={
-                          towerId !== 'none'
-                            ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
-                            : `/hotels/${hotelId}/rooms/${room.id}`
-                        }
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setEditingRoom(room)
+                          setEditFormData({
+                            room_number: room.room_number || '',
+                            name: room.name || '',
+                            room_type_id: room.room_type_id || 'custom',
+                          })
+                        }}
+                        className="text-trust-blue border-trust-blue/20 hover:bg-trust-blue/10 gap-1"
                       >
-                        Edit Details
-                      </Link>
-                    </Button>
+                        <Edit className="w-3 h-3" /> Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-slate-500"
+                        asChild
+                      >
+                        <Link
+                          to={
+                            towerId !== 'none'
+                              ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
+                              : `/hotels/${hotelId}/rooms/${room.id}`
+                          }
+                        >
+                          Details
+                        </Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )
@@ -251,6 +321,86 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog
+        open={!!editingRoom}
+        onOpenChange={(open) => !open && setEditingRoom(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Room</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Room Number</Label>
+                <Input
+                  value={editFormData.room_number || ''}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      room_number: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. 101"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Room Name</Label>
+                <Input
+                  value={editFormData.name || ''}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, name: e.target.value })
+                  }
+                  placeholder="e.g. Ocean View Suite"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Category (Pricing)</Label>
+              <Select
+                value={editFormData.room_type_id}
+                onValueChange={(val) =>
+                  setEditFormData({ ...editFormData, room_type_id: val })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="custom">None / Custom Price</SelectItem>
+                  {roomTypes.map((rt) => (
+                    <SelectItem key={rt.id} value={rt.id}>
+                      {rt.name} - ${rt.base_price}/night
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Associating a category will automatically apply its base price
+                to this room.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingRoom(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              className="bg-trust-blue text-white gap-2"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

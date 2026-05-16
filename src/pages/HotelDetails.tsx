@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label'
 import { RoomList } from '@/components/hotels/RoomList'
 import { RoomTypesManager } from '@/components/hotels/RoomTypesManager'
 import { DataMask } from '@/components/DataMask'
+import { supabase } from '@/lib/supabase/client'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,20 +66,41 @@ export default function HotelDetails() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (hotels.length > 0) {
-      const found = hotels.find((h) => h.id === id)
-      if (found) {
-        setHotel(found)
-        setFormData(found)
+    async function loadHotel() {
+      if (!id) return
+
+      // Attempt to find in store first
+      if (hotels.length > 0) {
+        const found = hotels.find((h) => h.id === id)
+        if (found) {
+          setHotel(found)
+          setFormData(found)
+          setIsLoading(false)
+          return
+        }
+      }
+
+      setIsLoading(true)
+      // Fallback to direct DB fetch if not in store
+      const { data } = await supabase
+        .from('hotels')
+        .select('*')
+        .eq('id', id)
+        .single()
+      if (data) {
+        const h = {
+          ...data,
+          managerName: data.manager_name,
+          managerPhone: data.manager_phone,
+          managerEmail: data.manager_email,
+          zipCode: data.zip_code,
+        } as unknown as Hotel
+        setHotel(h)
+        setFormData(h)
       }
       setIsLoading(false)
-    } else {
-      // Fallback timeout in case store is empty or takes too long
-      const timer = setTimeout(() => {
-        setIsLoading(false)
-      }, 1500)
-      return () => clearTimeout(timer)
     }
+    loadHotel()
   }, [id, hotels])
 
   if (isLoading) {

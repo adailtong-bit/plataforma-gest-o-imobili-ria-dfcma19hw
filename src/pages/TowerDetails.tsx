@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2 } from 'lucide-react'
-import useHotelStore from '@/stores/useHotelStore'
 import { RoomList } from '@/components/hotels/RoomList'
 import {
   Card,
@@ -11,24 +10,36 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import { supabase } from '@/lib/supabase/client'
 
 export default function TowerDetails() {
   const { id: hotelId, towerId } = useParams()
   const navigate = useNavigate()
-  const { hotels, towers } = useHotelStore()
+
   const [loading, setLoading] = useState(true)
+  const [hotel, setHotel] = useState<any>(null)
+  const [tower, setTower] = useState<any>(null)
 
   useEffect(() => {
-    if (hotels.length > 0 && towers.length > 0) {
-      setLoading(false)
-    } else {
-      const timer = setTimeout(() => setLoading(false), 1500)
-      return () => clearTimeout(timer)
-    }
-  }, [hotels, towers])
+    async function loadData() {
+      if (!hotelId || !towerId) {
+        setLoading(false)
+        return
+      }
 
-  const hotel = hotels.find((h) => h.id === hotelId)
-  const tower = towers.find((t) => t.id === towerId)
+      const [hotelRes, towerRes] = await Promise.all([
+        supabase.from('hotels').select('*').eq('id', hotelId).single(),
+        supabase.from('towers').select('*').eq('id', towerId).single(),
+      ])
+
+      if (hotelRes.data) setHotel(hotelRes.data)
+      if (towerRes.data) setTower(towerRes.data)
+
+      setLoading(false)
+    }
+
+    loadData()
+  }, [hotelId, towerId])
 
   if (loading) {
     return (
