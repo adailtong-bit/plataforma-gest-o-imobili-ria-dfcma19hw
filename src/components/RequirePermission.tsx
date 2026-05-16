@@ -184,22 +184,6 @@ export function RequirePermission({
     'partner_employee',
   ].includes(effectiveUser?.role || '')
 
-  if (isPortalUser) {
-    const portalPath =
-      effectiveUser.role === 'property_owner'
-        ? '/portal/owner'
-        : effectiveUser.role === 'partner' ||
-            effectiveUser.role === 'partner_employee'
-          ? '/portal/partner'
-          : '/portal/tenant'
-
-    // Only force redirect if they are trying to access the main admin dashboard.
-    // Allow navigation to other routes, letting the 'allowed' logic determine access.
-    if (location.pathname === '/' || location.pathname === '/dashboard') {
-      return <Navigate to={portalPath} replace />
-    }
-  }
-
   if (!allowed) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 animate-in fade-in duration-500">
