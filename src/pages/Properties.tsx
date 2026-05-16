@@ -214,30 +214,68 @@ export default function Properties() {
       })
       return
     }
-    if (!newProp.address?.trim()) {
-      toast({
-        title: t('properties.validation_error'),
-        description: t('properties.address_required'),
-        variant: 'destructive',
-      })
-      return
+    const selectedCondo = condominiums.find(
+      (c) => c.id === newProp.condominiumId,
+    )
+    const selectedHotel = hotels.find((h) => h.id === newProp.hotelId)
+
+    const isHotelLinkedLocal = !!newProp.hotelId && newProp.hotelId !== 'none'
+    const isCondoLinkedLocal =
+      !!newProp.condominiumId && newProp.condominiumId !== 'none'
+
+    const finalAddress = isHotelLinkedLocal
+      ? selectedHotel?.address || selectedHotel?.name || ''
+      : isCondoLinkedLocal
+        ? selectedCondo?.address || newProp.address || ''
+        : newProp.address || ''
+    const finalZipCode = isHotelLinkedLocal
+      ? selectedHotel?.zipCode || '00000'
+      : isCondoLinkedLocal
+        ? selectedCondo?.zipCode || newProp.zipCode || ''
+        : newProp.zipCode || ''
+    const finalCity = isHotelLinkedLocal
+      ? selectedHotel?.city || 'City'
+      : isCondoLinkedLocal
+        ? selectedCondo?.city || newProp.city || ''
+        : newProp.city || ''
+    const finalState = isHotelLinkedLocal
+      ? selectedHotel?.state || 'ST'
+      : isCondoLinkedLocal
+        ? selectedCondo?.state || newProp.state || ''
+        : newProp.state || ''
+    const finalCountry = isHotelLinkedLocal
+      ? selectedHotel?.country || 'US'
+      : isCondoLinkedLocal
+        ? selectedCondo?.country || selectedCountry
+        : selectedCountry
+
+    if (!isHotelLinkedLocal) {
+      if (!finalAddress?.trim()) {
+        toast({
+          title: t('properties.validation_error'),
+          description: t('properties.address_required'),
+          variant: 'destructive',
+        })
+        return
+      }
+      if (!finalZipCode?.trim() || isGenericOrPlaceholder(finalZipCode)) {
+        toast({
+          title: t('properties.validation_error'),
+          description: t('properties.zip_required'),
+          variant: 'destructive',
+        })
+        return
+      }
+      if (!finalCity?.trim() || !finalState?.trim()) {
+        toast({
+          title: t('properties.validation_error'),
+          description: t('properties.city_state_required'),
+          variant: 'destructive',
+        })
+        return
+      }
     }
-    if (!newProp.zipCode?.trim() || isGenericOrPlaceholder(newProp.zipCode)) {
-      toast({
-        title: t('properties.validation_error'),
-        description: t('properties.zip_required'),
-        variant: 'destructive',
-      })
-      return
-    }
-    if (!newProp.city?.trim() || !newProp.state?.trim()) {
-      toast({
-        title: t('properties.validation_error'),
-        description: t('properties.city_state_required'),
-        variant: 'destructive',
-      })
-      return
-    }
+
     if (!newProp.profileType) {
       toast({
         title: t('properties.validation_error'),
@@ -247,32 +285,9 @@ export default function Properties() {
       return
     }
 
-    const selectedCondo = condominiums.find(
-      (c) => c.id === newProp.condominiumId,
-    )
-    const selectedHotel = hotels.find((h) => h.id === newProp.hotelId)
-
     let comm = newProp.community || t('properties.independent_community')
     if (selectedHotel) comm = selectedHotel.name
     else if (selectedCondo) comm = selectedCondo.name
-
-    const isHotelLinkedLocal = !!newProp.hotelId && newProp.hotelId !== 'none'
-
-    const finalAddress = isHotelLinkedLocal
-      ? selectedHotel?.address || selectedHotel?.name || ''
-      : newProp.address || ''
-    const finalZipCode = isHotelLinkedLocal
-      ? selectedHotel?.zipCode || ''
-      : newProp.zipCode || ''
-    const finalCity = isHotelLinkedLocal
-      ? selectedHotel?.city || ''
-      : newProp.city || ''
-    const finalState = isHotelLinkedLocal
-      ? selectedHotel?.state || ''
-      : newProp.state || ''
-    const finalCountry = isHotelLinkedLocal
-      ? selectedHotel?.country || 'US'
-      : selectedCountry
 
     if (editingId) {
       const existing = properties.find((p) => p.id === editingId)
