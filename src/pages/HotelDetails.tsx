@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,9 +10,10 @@ import {
   Plus,
   Building,
   MapPin,
+  Loader2,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { AppContext } from '@/stores/AppContext'
+import useHotelStore from '@/stores/useHotelStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Hotel, Tower } from '@/lib/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -51,15 +52,8 @@ import {
 export default function HotelDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const {
-    hotels,
-    towers,
-    updateHotel,
-    deleteHotel,
-    addTower,
-    updateTower,
-    deleteTower,
-  } = useContext(AppContext)!
+  const { hotels, towers, updateHotel, deleteHotel, addTower, deleteTower } =
+    useHotelStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -68,14 +62,32 @@ export default function HotelDetails() {
   const [formData, setFormData] = useState<Hotel | null>(null)
   const [newTowerName, setNewTowerName] = useState('')
   const [isAddTowerOpen, setIsAddTowerOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const found = hotels.find((h) => h.id === id)
-    if (found) {
-      setHotel(found)
-      setFormData(found)
+    if (hotels.length > 0) {
+      const found = hotels.find((h) => h.id === id)
+      if (found) {
+        setHotel(found)
+        setFormData(found)
+      }
+      setIsLoading(false)
+    } else {
+      // Fallback timeout in case store is empty or takes too long
+      const timer = setTimeout(() => {
+        setIsLoading(false)
+      }, 1500)
+      return () => clearTimeout(timer)
     }
   }, [id, hotels])
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-trust-blue" />
+      </div>
+    )
+  }
 
   if (!hotel || !formData) {
     return (
@@ -85,7 +97,7 @@ export default function HotelDetails() {
         </h2>
         <Button
           onClick={() => navigate('/hotels')}
-          className="bg-trust-blue text-white"
+          className="bg-trust-blue text-white mt-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> {t('common.back') || 'Back'}
         </Button>
@@ -115,7 +127,6 @@ export default function HotelDetails() {
   const handleAddTower = () => {
     if (!newTowerName) return
     addTower({
-      id: `tower-${Date.now()}`,
       hotelId: hotel.id,
       name: newTowerName,
     })
@@ -237,7 +248,7 @@ export default function HotelDetails() {
                 <div className="space-y-2">
                   <Label>{t('common.name') || 'Name'}</Label>
                   <Input
-                    value={formData.name}
+                    value={formData.name || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
@@ -283,7 +294,7 @@ export default function HotelDetails() {
                 <div className="space-y-2 col-span-2">
                   <Label>{t('common.address') || 'Address'}</Label>
                   <Input
-                    value={formData.address}
+                    value={formData.address || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, address: e.target.value })
                     }
@@ -293,7 +304,7 @@ export default function HotelDetails() {
                 <div className="space-y-2">
                   <Label>{t('common.city') || 'City'}</Label>
                   <Input
-                    value={formData.city}
+                    value={formData.city || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, city: e.target.value })
                     }
@@ -303,7 +314,7 @@ export default function HotelDetails() {
                 <div className="space-y-2">
                   <Label>{t('common.state') || 'State'}</Label>
                   <Input
-                    value={formData.state}
+                    value={formData.state || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, state: e.target.value })
                     }

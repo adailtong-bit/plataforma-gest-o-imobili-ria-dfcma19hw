@@ -7,7 +7,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import usePropertyStore from '@/stores/usePropertyStore'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { DataMask } from '@/components/DataMask'
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 interface RoomListProps {
   hotelId: string
@@ -29,9 +29,63 @@ interface RoomListProps {
 }
 
 export function RoomList({ hotelId, towerId }: RoomListProps) {
-  const { properties } = usePropertyStore()
   const [roomTypes, setRoomTypes] = useState<any[]>([])
+  const [rooms, setRooms] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+
+  const fetchRooms = async () => {
+    let query = supabase.from('properties').select('*').eq('hotel_id', hotelId)
+
+    if (towerId !== 'none') {
+      query = query.eq('tower_id', towerId)
+    }
+
+    const { data } = await query
+    if (data) {
+      const sorted = data.sort((a, b) => {
+        const nameA = a.room_number || a.name || ''
+        const nameB = b.room_number || b.name || ''
+        return nameA.localeCompare(nameB)
+      })
+      setRooms(sorted)
+    }
+    setLoading(false)
+  }
+
+  const fetchRoomTypes = async () => {
+    const { data } = await supabase
+      .from('room_types')
+      .select('id, name, base_price')
+      .eq('hotel_id', hotelId)
+      .order('name')
+    if (data) setRoomTypes(data)
+  }
+
+  useEffect(() => {
+    fetchRoomTypes()
+    fetchRooms()
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'properties',
+          filter: `hotel_id=eq.${hotelId}`,
+        },
+        () => {
+          fetchRooms()
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [hotelId, towerId])
 
   const handleUpdateCategory = async (roomId: string, typeId: string) => {
     const updatePayload =
@@ -56,122 +110,147 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
     } else {
       toast({
         title: 'Success',
-        description:
-          'Room category updated successfully. (Refresh to see changes)',
+        description: 'Room category updated successfully.',
       })
+      setRooms((prev) =>
+        prev.map((r) =>
+          r.id === roomId
+            ? {
+                ...r,
+                room_type_id: updatePayload.room_type_id,
+                listing_price: selectedType
+                  ? selectedType.base_price
+                  : r.listing_price,
+              }
+            : r,
+        ),
+      )
     }
   }
 
-  useEffect(() => {
-    const fetchRoomTypes = async () => {
-      const { data } = await supabase
-        .from('room_types')
-        .select('id, name, base_price')
-        .eq('hotel_id', hotelId)
-      if (data) setRoomTypes(data)
-    }
-    fetchRoomTypes()
-  }, [hotelId])
-
-  const rooms = properties.filter(
-    (p) =>
-      p.hotelId === hotelId &&
-      (towerId === 'none' || p.towerId === towerId) &&
-      p.profileType === 'short_term',
-  )
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center bg-slate-50 p-2 rounded-md border border-slate-100">
+        <p className="text-sm font-medium text-slate-600 px-2">
+          {rooms.length} Room{rooms.length !== 1 && 's'} Found
+        </p>
         <BulkRoomManager
           hotelId={hotelId}
           defaultTowerId={towerId !== 'none' ? towerId : undefined}
           roomTypes={roomTypes}
         />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Number</TableHead>
-            <TableHead>Category/Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Base Price</TableHead>
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rooms.map((room) => {
-            const typeInfo = roomTypes.find(
-              (rt) => rt.id === (room as any).room_type_id,
-            )
-            const displayPrice = typeInfo
-              ? typeInfo.base_price
-              : room.listingPrice
+      <div className="border rounded-md">
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead>Number/Name</TableHead>
+              <TableHead>Category/Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Base Price</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rooms.map((room) => {
+              const typeInfo = roomTypes.find(
+                (rt) => rt.id === room.room_type_id,
+              )
+              const displayPrice = typeInfo
+                ? typeInfo.base_price
+                : room.listing_price
 
-            return (
-              <TableRow key={room.id}>
-                <TableCell className="font-bold">{room.roomNumber}</TableCell>
-                <TableCell>
-                  <Select
-                    value={(room as any).room_type_id || 'custom'}
-                    onValueChange={(val) => handleUpdateCategory(room.id, val)}
-                  >
-                    <SelectTrigger className="w-[180px] h-8 text-xs bg-slate-50 border-slate-200">
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        value="custom"
-                        className="text-xs text-slate-500"
-                      >
-                        Custom / Uncategorized
-                      </SelectItem>
-                      {roomTypes.map((rt) => (
-                        <SelectItem
-                          key={rt.id}
-                          value={rt.id}
-                          className="text-xs font-medium"
-                        >
-                          {rt.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{room.status}</Badge>
-                </TableCell>
-                <TableCell>
-                  <DataMask>${displayPrice}</DataMask>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link
-                      to={
-                        towerId !== 'none'
-                          ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
-                          : `/hotels/${hotelId}/rooms/${room.id}`
+              return (
+                <TableRow key={room.id}>
+                  <TableCell className="font-bold text-slate-700">
+                    {room.room_number || room.name || 'Unnamed Room'}
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      value={room.room_type_id || 'custom'}
+                      onValueChange={(val) =>
+                        handleUpdateCategory(room.id, val)
                       }
                     >
-                      View
-                    </Link>
-                  </Button>
+                      <SelectTrigger className="w-[200px] h-9 text-sm bg-white">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          value="custom"
+                          className="text-sm text-slate-500 italic"
+                        >
+                          Custom / Uncategorized
+                        </SelectItem>
+                        {roomTypes.map((rt) => (
+                          <SelectItem
+                            key={rt.id}
+                            value={rt.id}
+                            className="text-sm font-medium text-slate-900"
+                          >
+                            {rt.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        room.status === 'available' ? 'default' : 'secondary'
+                      }
+                      className="capitalize"
+                    >
+                      {room.status || 'available'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <DataMask className="font-medium text-green-700">
+                      ${displayPrice || 0}
+                    </DataMask>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-trust-blue border-trust-blue/20 hover:bg-trust-blue/10"
+                      asChild
+                    >
+                      <Link
+                        to={
+                          towerId !== 'none'
+                            ? `/hotels/${hotelId}/towers/${towerId}/rooms/${room.id}`
+                            : `/hotels/${hotelId}/rooms/${room.id}`
+                        }
+                      >
+                        Edit Details
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+            {rooms.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  No rooms found in this view.
                 </TableCell>
               </TableRow>
-            )
-          })}
-          {rooms.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={5}
-                className="text-center py-4 text-muted-foreground"
-              >
-                No rooms found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }
