@@ -184,7 +184,7 @@ export function AppSidebar() {
       title: getTitle('sidebar.front_desk', 'Front Desk'),
       url: '/front-desk',
       icon: ConciergeBell,
-      resource: 'short_term',
+      resource: 'properties',
     },
     {
       title: getTitle('sidebar.housekeeping', 'Housekeeping'),
