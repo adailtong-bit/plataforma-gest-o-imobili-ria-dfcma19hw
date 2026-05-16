@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RoomList } from '@/components/hotels/RoomList'
+import { RoomTypesManager } from '@/components/hotels/RoomTypesManager'
 import { DataMask } from '@/components/DataMask'
 import {
   AlertDialog,
@@ -218,6 +219,9 @@ export default function HotelDetails() {
           <TabsTrigger value="towers">
             {t('hotels.towers') || 'Towers'}
           </TabsTrigger>
+          <TabsTrigger value="room-types">
+            {t('hotels.room_types') || 'Room Types & Rates'}
+          </TabsTrigger>
           <TabsTrigger value="rooms">
             {t('hotels.all_rooms') || 'All Rooms'}
           </TabsTrigger>
@@ -384,6 +388,10 @@ export default function HotelDetails() {
               </div>
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="room-types">
+          <RoomTypesManager hotelId={hotel.id} />
         </TabsContent>
 
         <TabsContent value="rooms">
