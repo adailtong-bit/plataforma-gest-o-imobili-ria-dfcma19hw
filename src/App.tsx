@@ -55,6 +55,7 @@ import Performance from '@/pages/Performance'
 import GuestServices from '@/pages/GuestServices'
 import PointOfSale from '@/pages/PointOfSale'
 import Marketing from '@/pages/Marketing'
+import Pricing from '@/pages/Pricing'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
@@ -187,6 +188,7 @@ const App = () => {
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/users" element={<Users />} />
+                  <Route path="/pricing" element={<Pricing />} />
                   <Route path="/service-pricing" element={<ServicePricing />} />
                   <Route path="/market-analysis" element={<MarketAnalysis />} />
                   <Route path="/reports" element={<Reports />} />

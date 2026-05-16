@@ -14,6 +14,14 @@ import { DataMask } from '@/components/DataMask'
 import { BulkRoomManager } from './BulkRoomManager'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
 
 interface RoomListProps {
   hotelId: string
@@ -23,6 +31,36 @@ interface RoomListProps {
 export function RoomList({ hotelId, towerId }: RoomListProps) {
   const { properties } = usePropertyStore()
   const [roomTypes, setRoomTypes] = useState<any[]>([])
+  const { toast } = useToast()
+
+  const handleUpdateCategory = async (roomId: string, typeId: string) => {
+    const updatePayload =
+      typeId === 'custom' ? { room_type_id: null } : { room_type_id: typeId }
+
+    const selectedType = roomTypes.find((rt) => rt.id === typeId)
+    if (selectedType) {
+      ;(updatePayload as any).listing_price = selectedType.base_price
+    }
+
+    const { error } = await supabase
+      .from('properties')
+      .update(updatePayload)
+      .eq('id', roomId)
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      })
+    } else {
+      toast({
+        title: 'Success',
+        description:
+          'Room category updated successfully. (Refresh to see changes)',
+      })
+    }
+  }
 
   useEffect(() => {
     const fetchRoomTypes = async () => {
@@ -74,18 +112,31 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
               <TableRow key={room.id}>
                 <TableCell className="font-bold">{room.roomNumber}</TableCell>
                 <TableCell>
-                  {typeInfo ? (
-                    <Badge
-                      variant="secondary"
-                      className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200"
-                    >
-                      {typeInfo.name}
-                    </Badge>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">
-                      {room.name} (Custom)
-                    </span>
-                  )}
+                  <Select
+                    value={(room as any).room_type_id || 'custom'}
+                    onValueChange={(val) => handleUpdateCategory(room.id, val)}
+                  >
+                    <SelectTrigger className="w-[180px] h-8 text-xs bg-slate-50 border-slate-200">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value="custom"
+                        className="text-xs text-slate-500"
+                      >
+                        Custom / Uncategorized
+                      </SelectItem>
+                      {roomTypes.map((rt) => (
+                        <SelectItem
+                          key={rt.id}
+                          value={rt.id}
+                          className="text-xs font-medium"
+                        >
+                          {rt.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">{room.status}</Badge>

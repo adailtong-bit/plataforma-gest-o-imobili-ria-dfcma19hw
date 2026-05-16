@@ -226,6 +226,12 @@ export function AppSidebar() {
       resource: 'settings',
     },
     {
+      title: getTitle('sidebar.pricing', 'Pricing'),
+      url: '/pricing',
+      icon: DollarSign,
+      resource: 'settings',
+    },
+    {
       title: getTitle('common.service_pricing', 'Price Catalog'),
       url: '/service-pricing',
       icon: DollarSign,
