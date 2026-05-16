@@ -281,6 +281,7 @@ export default function Properties() {
           hoaValue: newProp.hoaValue || 0,
           area: newProp.area || 0,
           image: newProp.image || existing.image,
+          gallery: newProp.gallery || existing.gallery,
         } as Property)
         toast({
           title: t('properties.property_updated') || 'Propriedade alterada',
@@ -307,7 +308,7 @@ export default function Properties() {
         roomNumber: newProp.roomNumber || '',
         status: 'available',
         image: newProp.image || 'https://img.usecurling.com/p/400/300?q=house',
-        gallery: [],
+        gallery: newProp.gallery || [],
         bedrooms: newProp.bedrooms || 0,
         bathrooms: newProp.bathrooms || 0,
         guests: newProp.guests || 0,
@@ -348,6 +349,7 @@ export default function Properties() {
       towerId: undefined,
       floor: '',
       roomNumber: '',
+      gallery: [],
       image: '',
       listingPrice: 0,
       hoaValue: 0,
@@ -433,6 +435,8 @@ export default function Properties() {
                   listingPrice: 0,
                   hoaValue: 0,
                   area: 0,
+                  gallery: [],
+                  image: '',
                 })
                 setSelectedCountry('US')
               }
@@ -592,6 +596,66 @@ export default function Properties() {
                   )}
                 </div>
 
+                {/* Condominium Link */}
+                <div className="grid gap-4 p-4 border rounded-md bg-slate-50">
+                  <div className="grid gap-2">
+                    <Label className="font-bold text-black flex items-center gap-2">
+                      <Building className="h-4 w-4" />{' '}
+                      {t('properties.condominium_link', 'Condominium Link')}
+                    </Label>
+                    <Select
+                      value={newProp.condominiumId || 'none'}
+                      onValueChange={(val) => {
+                        if (val === 'none') {
+                          setNewProp({ ...newProp, condominiumId: undefined })
+                        } else {
+                          const condo = condominiums.find((c) => c.id === val)
+                          setNewProp({
+                            ...newProp,
+                            condominiumId: val,
+                            hotelId: undefined,
+                            address: condo?.address || newProp.address,
+                            number: condo?.number || newProp.number,
+                            neighborhood:
+                              condo?.neighborhood || newProp.neighborhood,
+                            city: condo?.city || newProp.city,
+                            state: condo?.state || newProp.state,
+                            zipCode: condo?.zipCode || newProp.zipCode,
+                          })
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="text-black bg-white">
+                        <SelectValue
+                          placeholder={t(
+                            'properties.select_condominium',
+                            'Select Condominium',
+                          )}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          {t('common.none', 'None')}
+                        </SelectItem>
+                        {condominiums.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {newProp.condominiumId &&
+                      newProp.condominiumId !== 'none' && (
+                        <p className="text-xs text-slate-500">
+                          {t(
+                            'properties.condo_inherited_info',
+                            'Access and contact details will be inherited.',
+                          )}
+                        </p>
+                      )}
+                  </div>
+                </div>
+
                 {/* Main Inputs */}
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
@@ -618,14 +682,21 @@ export default function Properties() {
 
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
-                    {t('common.name')} <span className="text-red-500">*</span>
+                    {t(
+                      'properties.property_nickname',
+                      'Property Nickname / Name',
+                    )}{' '}
+                    <span className="text-red-500">*</span>
                   </Label>{' '}
                   <Input
                     value={newProp.name}
                     onChange={(e) =>
                       setNewProp({ ...newProp, name: e.target.value })
                     }
-                    placeholder={t('properties.search_placeholder')}
+                    placeholder={t(
+                      'properties.nickname_placeholder',
+                      'E.g. Villa Sunshine',
+                    )}
                     className="text-black"
                   />
                 </div>
@@ -792,31 +863,52 @@ export default function Properties() {
 
                 <div className="grid gap-2">
                   <Label className="text-black font-bold">
-                    {t('properties.cover_image')}
+                    {t('properties.photos', 'Photos (Select cover)')}
                   </Label>
                   <Input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={(e) => {
-                      if (e.target.files?.[0]) {
+                      if (e.target.files) {
+                        const files = Array.from(e.target.files)
+                        const newImages = files.map((file) =>
+                          URL.createObjectURL(file),
+                        )
+                        const currentGallery = newProp.gallery || []
+                        const updatedGallery = [...currentGallery, ...newImages]
+
                         setNewProp({
                           ...newProp,
-                          image: URL.createObjectURL(e.target.files[0]),
+                          gallery: updatedGallery,
+                          image: newProp.image || updatedGallery[0] || '',
                         })
                       }
                     }}
                     className="text-black"
                   />
-                  {newProp.image && (
-                    <img
-                      src={newProp.image}
-                      className="h-20 w-auto object-cover rounded"
-                      crossOrigin="anonymous"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg'
-                        e.currentTarget.onerror = null
-                      }}
-                    />
+                  {newProp.gallery && newProp.gallery.length > 0 && (
+                    <div className="flex gap-2 overflow-x-auto py-2">
+                      {newProp.gallery.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className={`relative w-24 h-24 flex-shrink-0 cursor-pointer rounded-md overflow-hidden border-2 transition-all ${newProp.image === img ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-slate-300'}`}
+                          onClick={() => setNewProp({ ...newProp, image: img })}
+                        >
+                          <img
+                            src={img}
+                            className="w-full h-full object-cover"
+                          />
+                          {newProp.image === img && (
+                            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                              <Badge className="bg-primary text-white text-[10px]">
+                                {t('properties.cover', 'Cover')}
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
 

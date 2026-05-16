@@ -44,6 +44,7 @@ import {
 } from 'recharts'
 import { ChartContainer } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Link } from 'react-router-dom'
 
 import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
@@ -706,19 +707,24 @@ export default function Dashboard() {
         {/* --- OPERATIONS --- */}
         <TabsContent value="operations" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="shadow-sm border-l-4 border-l-orange-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  {t('dashboard.operations_tab.pending_tasks', 'Pending Tasks')}{' '}
-                  <Wrench className="h-4 w-4 text-orange-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {pendingTasks || 24}
-                </div>
-              </CardContent>
-            </Card>
+            <Link to="/tasks" className="block outline-none">
+              <Card className="shadow-sm border-l-4 border-l-orange-500 hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground flex justify-between">
+                    {t(
+                      'dashboard.operations_tab.pending_tasks',
+                      'Pending Tasks',
+                    )}{' '}
+                    <Wrench className="h-4 w-4 text-orange-500" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {pendingTasks || 24}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
             <Card className="shadow-sm border-l-4 border-l-emerald-500">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-muted-foreground flex justify-between">
