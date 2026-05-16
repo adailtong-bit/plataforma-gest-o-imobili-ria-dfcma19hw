@@ -616,8 +616,14 @@ export function FinancialReports() {
               <div className="h-[400px] w-full">
                 <ChartContainer
                   config={{
-                    income: { label: 'Income', color: '#22c55e' },
-                    expenses: { label: 'Expenses', color: '#ef4444' },
+                    income: {
+                      label: t('common.revenue') || 'Receita',
+                      color: '#22c55e',
+                    },
+                    expenses: {
+                      label: t('financial.total_expenses') || 'Despesas',
+                      color: '#ef4444',
+                    },
                   }}
                   className="h-full w-full"
                 >
@@ -630,13 +636,13 @@ export function FinancialReports() {
                     <Bar
                       dataKey="income"
                       fill="#22c55e"
-                      name="Receita"
+                      name={t('common.revenue') || 'Receita'}
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar
                       dataKey="expenses"
                       fill="#ef4444"
-                      name="Despesas"
+                      name={t('financial.total_expenses') || 'Despesas'}
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>

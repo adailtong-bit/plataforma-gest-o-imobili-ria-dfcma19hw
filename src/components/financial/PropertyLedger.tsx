@@ -49,17 +49,21 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
       t('common.category') || 'Category',
       t('common.description') || 'Description',
       t('common.value') || 'Value',
-      'Running Balance',
+      t('financial.running_balance') || 'Saldo Acumulado',
       t('common.status') || 'Status',
     ]
     const rows = entriesWithBalance.map((e) => [
       formatDate(e.date, language),
-      e.type,
-      e.category,
+      e.type === 'income'
+        ? t('analytics.revenue') || 'Receita'
+        : t('analytics.expenses') || 'Despesa',
+      e.category || '',
       `"${e.description.replace(/"/g, '""')}"`,
       e.amount.toFixed(2),
       e.runningBalance.toFixed(2),
-      e.status,
+      e.status === 'cleared' || e.status === 'paid'
+        ? t('common.paid') || 'Pago'
+        : t('common.pending') || 'Pendente',
     ])
     exportToCSV(`property_${propertyId}_ledger.csv`, headers, rows)
   }
@@ -88,7 +92,8 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
             onClick={handleExport}
             className="gap-2"
           >
-            <Download className="h-4 w-4" /> Export for Accounting
+            <Download className="h-4 w-4" />{' '}
+            {t('automation.export_csv') || 'Exportar para Contabilidade (CSV)'}
           </Button>
         </div>
       </div>
@@ -102,9 +107,11 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
               <TableHead>{t('common.category') || 'Category'}</TableHead>
               <TableHead>{t('common.description') || 'Description'}</TableHead>
               <TableHead className="text-right">
-                {t('common.value') || 'Amount'}
+                {t('common.value') || 'Valor'}
               </TableHead>
-              <TableHead className="text-right">Running Balance</TableHead>
+              <TableHead className="text-right">
+                {t('financial.running_balance') || 'Saldo Acumulado'}
+              </TableHead>
               <TableHead className="text-right">
                 {t('common.status') || 'Status'}
               </TableHead>
@@ -172,7 +179,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-green-50 text-green-700 border-green-200"
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {t('common.paid') || 'Paid'}
+                        {t('common.paid') || 'Pago'}
                       </Badge>
                     ) : (
                       <Badge
@@ -180,7 +187,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-yellow-50 text-yellow-800 border-yellow-200"
                       >
                         <AlertCircle className="h-3 w-3 mr-1" />
-                        {t('common.pending') || 'Pending'}
+                        {t('common.pending') || 'Pendente'}
                       </Badge>
                     )}
                   </TableCell>

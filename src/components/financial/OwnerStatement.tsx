@@ -116,14 +116,14 @@ export function OwnerStatement({
 
   const handleDownloadCSV = () => {
     const headers = [
-      'Date',
-      'Property',
-      'Description',
-      'Category',
-      'Type',
-      'Status',
-      'Amount',
-      'Running Balance',
+      t('common.date') || 'Data',
+      t('common.property') || 'Propriedade',
+      t('common.description') || 'Descrição',
+      t('common.category') || 'Categoria',
+      t('common.type') || 'Tipo',
+      t('common.status') || 'Status',
+      t('common.value') || 'Valor',
+      t('financial.running_balance') || 'Saldo Acumulado',
     ]
     const rows = entriesWithBalance.map((e) => {
       const prop = properties.find((p) => p.id === e.propertyId)
@@ -140,8 +140,9 @@ export function OwnerStatement({
     })
     exportToCSV(`owner_${ownerId}_accounting.csv`, headers, rows)
     toast({
-      title: 'Export Successful',
-      description: 'Accounting report CSV downloaded successfully.',
+      title: t('common.export_success_title') || 'Exportação Iniciada',
+      description:
+        t('common.export_success') || 'Dados exportados com sucesso.',
     })
   }
 
@@ -157,7 +158,7 @@ export function OwnerStatement({
 
       <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
         <CardTitle>
-          {t('financial.owner_statement') || 'Owner Statement'}
+          {t('financial.owner_statement') || 'Extrato do Proprietário'}
         </CardTitle>
         <div className="flex gap-2 flex-wrap justify-end">
           <Select
@@ -170,7 +171,7 @@ export function OwnerStatement({
             <SelectContent>
               <SelectItem value="all">
                 {t('common.all_properties') ||
-                  'Total Portfolio Balance (All Accounts)'}
+                  'Saldo Total do Portfólio (Todas as Contas)'}
               </SelectItem>
               {ownerProperties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
@@ -186,22 +187,22 @@ export function OwnerStatement({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="current">
-                {t('financial.this_month') || 'This Month'}
+                {t('financial.this_month') || 'Mês Atual'}
               </SelectItem>
               <SelectItem value="last">
-                {t('financial.last_month') || 'Last Month'}
+                {t('financial.last_month') || 'Mês Passado'}
               </SelectItem>
               <SelectItem value="last3">
-                {t('financial.last_3_months') || 'Last 3 Months'}
+                {t('financial.last_3_months') || 'Últimos 3 Meses'}
               </SelectItem>
               <SelectItem value="semester">
-                {t('financial.semester') || 'Semester'}
+                {t('financial.semester') || 'Semestre'}
               </SelectItem>
               <SelectItem value="year">
-                {t('financial.current_year') || 'Current Year'} ({currentYear})
+                {t('financial.current_year') || 'Ano Atual'} ({currentYear})
               </SelectItem>
               <SelectItem value="prevYear">
-                {t('financial.previous_year') || 'Previous Year'} (
+                {t('financial.previous_year') || 'Ano Anterior'} (
                 {currentYear - 1})
               </SelectItem>
             </SelectContent>
@@ -211,7 +212,8 @@ export function OwnerStatement({
             onClick={handleDownloadCSV}
             className="gap-2 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200"
           >
-            <Download className="h-4 w-4" /> Export for Quickbooks (CSV)
+            <Download className="h-4 w-4" />{' '}
+            {t('automation.export_csv') || 'Exportar para Contabilidade (CSV)'}
           </Button>
         </div>
       </CardHeader>
@@ -219,7 +221,7 @@ export function OwnerStatement({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-green-50 rounded-lg border border-green-100">
             <p className="text-sm text-slate-600 font-medium">
-              {t('financial.gross_revenue') || 'Gross Revenue'}
+              {t('financial.gross_revenue') || 'Receita Bruta'}
             </p>
             <p className="text-2xl font-bold text-green-700">
               ${totalIncome.toFixed(2)}
@@ -227,7 +229,7 @@ export function OwnerStatement({
           </div>
           <div className="p-4 bg-red-50 rounded-lg border border-red-100">
             <p className="text-sm text-slate-600 font-medium">
-              {t('financial.total_expenses') || 'Expenses'}
+              {t('financial.total_expenses') || 'Despesas'}
             </p>
             <p className="text-2xl font-bold text-red-700">
               ${totalExpenses.toFixed(2)}
@@ -240,8 +242,8 @@ export function OwnerStatement({
               className={`text-sm font-medium ${netIncome < 0 ? 'text-red-800' : 'text-slate-600'}`}
             >
               {netIncome < 0
-                ? 'Negative Payout / Balance Due'
-                : t('financial.net_income') || 'Net Income (Payout)'}
+                ? t('financial.negative_payout') || 'Saldo Devedor / Retenção'
+                : t('financial.net_income') || 'Lucro Líquido (Repasse)'}
             </p>
             <p
               className={`text-2xl font-bold ${netIncome < 0 ? 'text-red-700' : 'text-blue-700'}`}
@@ -255,25 +257,25 @@ export function OwnerStatement({
           <TableHeader>
             <TableRow className="bg-slate-50 border-b-2 border-slate-200">
               <TableHead className="font-bold text-black">
-                {t('common.date') || 'Date'}
+                {t('common.date') || 'Data'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.property') || 'Property'}
+                {t('common.property') || 'Propriedade'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.description') || 'Description'}
+                {t('common.description') || 'Descrição'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.category') || 'Category'}
+                {t('common.category') || 'Categoria'}
               </TableHead>
               <TableHead className="font-bold text-black">
                 {t('common.status') || 'Status'}
               </TableHead>
               <TableHead className="text-right font-bold text-black">
-                {t('common.value') || 'Amount'}
+                {t('common.value') || 'Valor'}
               </TableHead>
               <TableHead className="text-right font-bold text-black">
-                Running Balance
+                {t('financial.running_balance') || 'Saldo Acumulado'}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -284,7 +286,7 @@ export function OwnerStatement({
                   colSpan={7}
                   className="text-center py-8 text-slate-500"
                 >
-                  {t('common.empty') || 'No entries found.'}
+                  {t('common.empty') || 'Nenhum registro encontrado.'}
                 </TableCell>
               </TableRow>
             ) : (
@@ -321,7 +323,7 @@ export function OwnerStatement({
                             onClick={() => setViewingTask(associatedTask)}
                           >
                             <ClipboardList className="h-3 w-3" />
-                            View Task
+                            {t('common.view_task') || 'Ver Tarefa'}
                           </div>
                         )}
                       </div>
@@ -338,14 +340,14 @@ export function OwnerStatement({
                     <TableCell>
                       {entry.status === 'cleared' ? (
                         <Badge className="bg-green-600">
-                          {t('common.paid') || 'Paid'}
+                          {t('common.paid') || 'Pago'}
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="text-black border-slate-300"
                         >
-                          {t('common.pending') || 'Pending'}
+                          {t('common.pending') || 'Pendente'}
                         </Badge>
                       )}
                     </TableCell>

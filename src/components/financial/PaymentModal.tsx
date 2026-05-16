@@ -31,7 +31,7 @@ export function PaymentModal({
   onSuccess,
 }: PaymentModalProps) {
   const { toast } = useToast()
-  const { language } = useLanguageStore()
+  const { language, t } = useLanguageStore()
   const [isProcessing, setIsProcessing] = useState(false)
 
   const handlePay = () => {
@@ -41,8 +41,8 @@ export function PaymentModal({
       onSuccess()
       onOpenChange(false)
       toast({
-        title: 'Payment Successful',
-        description: 'Transaction ID: 123456789',
+        title: t('financial.payment_successful') || 'Pagamento Realizado',
+        description: `${t('financial.transaction_id') || 'ID da Transação:'} 123456789`,
       })
     }, 2000)
   }
@@ -51,9 +51,11 @@ export function PaymentModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Secure Payment</DialogTitle>
+          <DialogTitle>
+            {t('financial.secure_payment') || 'Pagamento Seguro'}
+          </DialogTitle>
           <DialogDescription>
-            Complete payment for:{' '}
+            {t('financial.complete_payment_for') || 'Concluir pagamento de:'}{' '}
             <span className="font-semibold">{description}</span>
           </DialogDescription>
         </DialogHeader>
@@ -67,28 +69,31 @@ export function PaymentModal({
         <Tabs defaultValue="card" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="card">
-              <CreditCard className="h-4 w-4 mr-2" /> Card
+              <CreditCard className="h-4 w-4 mr-2" />{' '}
+              {t('financial.card') || 'Cartão'}
             </TabsTrigger>
             <TabsTrigger value="bank">
-              <Landmark className="h-4 w-4 mr-2" /> Bank
+              <Landmark className="h-4 w-4 mr-2" />{' '}
+              {t('financial.bank') || 'Banco'}
             </TabsTrigger>
             <TabsTrigger value="cash">
-              <Banknote className="h-4 w-4 mr-2" /> Other
+              <Banknote className="h-4 w-4 mr-2" />{' '}
+              {t('common.other') || 'Outro'}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="card" className="space-y-4 pt-4">
             <div className="grid gap-2">
-              <Label>Card Number</Label>
+              <Label>{t('financial.card_number') || 'Número do Cartão'}</Label>
               <Input placeholder="0000 0000 0000 0000" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Expiry</Label>
+                <Label>{t('financial.expiry') || 'Validade'}</Label>
                 <Input placeholder="MM/YY" />
               </div>
               <div className="grid gap-2">
-                <Label>CVC</Label>
+                <Label>{t('financial.cvc') || 'CVC'}</Label>
                 <Input placeholder="123" />
               </div>
             </div>
@@ -97,7 +102,9 @@ export function PaymentModal({
               onClick={handlePay}
               disabled={isProcessing}
             >
-              {isProcessing ? 'Processing...' : 'Pay Now'}
+              {isProcessing
+                ? t('common.loading') || 'Processando...'
+                : t('financial.pay_now') || 'Pagar Agora'}
             </Button>
           </TabsContent>
 
@@ -105,13 +112,14 @@ export function PaymentModal({
             value="bank"
             className="pt-4 text-center text-sm text-muted-foreground"
           >
-            Bank transfer details (ACH/Wire) would appear here.
+            {t('financial.bank_transfer_details') ||
+              'Detalhes da transferência bancária (PIX/TED) aparecerão aqui.'}
             <Button
               className="w-full mt-4"
               variant="outline"
               onClick={handlePay}
             >
-              Simulate Transfer
+              {t('financial.simulate_transfer') || 'Simular Transferência'}
             </Button>
           </TabsContent>
 
@@ -119,13 +127,14 @@ export function PaymentModal({
             value="cash"
             className="pt-4 text-center text-sm text-muted-foreground"
           >
-            Record manual payment (Cash/Check).
+            {t('financial.record_manual_payment') ||
+              'Registrar pagamento manual (Dinheiro/Cheque).'}
             <Button
               className="w-full mt-4"
               variant="outline"
               onClick={handlePay}
             >
-              Record Payment
+              {t('financial.record_payment') || 'Registrar Pagamento'}
             </Button>
           </TabsContent>
         </Tabs>

@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { useToast } from '@/hooks/use-toast'
 import { Task } from '@/lib/types'
 
@@ -25,13 +26,14 @@ export function TaskInvoiceDialog({
 }) {
   const { addInvoice, addLedgerEntry } = useFinancialStore()
   const { currentUser } = useAuthStore()
+  const { t } = useLanguageStore()
   const { toast } = useToast()
   const [form, setForm] = useState({ description: '', amount: '' })
 
   useEffect(() => {
     if (task && open) {
       let amt = 0
-      let desc = `Invoice for ${task.title}`
+      let desc = `Fatura para ${task.title}`
       const role = currentUser?.role
 
       if (
@@ -40,16 +42,16 @@ export function TaskInvoiceDialog({
         )
       ) {
         amt = task.price || 0
-        desc = `PM Invoice to Owner for ${task.title}`
+        desc = `Fatura PM para Proprietário por ${task.title}`
       } else if (role === 'partner') {
         amt = task.laborCost || 0
-        desc = `Partner Invoice to PM for ${task.title}`
+        desc = `Fatura do Parceiro para PM por ${task.title}`
       } else if (role === 'partner_employee') {
         amt = task.teamMemberPayout || 0
-        desc = `Team Member Invoice to Partner for ${task.title}`
+        desc = `Fatura do Membro da Equipe para Parceiro por ${task.title}`
       } else if (role === 'property_owner') {
         amt = task.price || 0
-        desc = `Owner Invoice record for ${task.title}`
+        desc = `Registro de Fatura do Proprietário por ${task.title}`
       }
 
       setForm({ description: desc, amount: amt.toString() })
@@ -61,8 +63,9 @@ export function TaskInvoiceDialog({
   const handleSave = () => {
     if (!form.description || !form.amount) {
       toast({
-        title: 'Error',
-        description: 'Please fill all fields',
+        title: t('common.error') || 'Erro',
+        description:
+          t('common.fill_all_fields') || 'Por favor preencha todos os campos',
         variant: 'destructive',
       })
       return
@@ -115,7 +118,10 @@ export function TaskInvoiceDialog({
       type: 'generic',
     })
 
-    toast({ title: 'Invoice Generated and Accounted' })
+    toast({
+      title:
+        t('financial.invoice_generated') || 'Fatura Gerada e Contabilizada',
+    })
     onOpenChange(false)
     setForm({ description: '', amount: '' })
   }
@@ -124,11 +130,13 @@ export function TaskInvoiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Generate Task Invoice</DialogTitle>
+          <DialogTitle>
+            {t('automation.generate_invoice') || 'Gerar Fatura da Tarefa'}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t('common.description') || 'Descrição'}</Label>
             <Input
               value={form.description}
               onChange={(e) =>
@@ -137,7 +145,10 @@ export function TaskInvoiceDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label>Total Amount (Charged to Owner)</Label>
+            <Label>
+              {t('financial.total_amount_charged') ||
+                'Valor Total (Cobrado do Proprietário)'}
+            </Label>
             <Input
               type="number"
               value={form.amount}
@@ -146,19 +157,25 @@ export function TaskInvoiceDialog({
           </div>
           {task?.laborCost && (
             <div className="text-xs text-muted-foreground bg-slate-50 p-2 rounded-md border mt-2">
-              <p>Partner Cost: ${task.laborCost}</p>
               <p>
-                Calculated PM Commission: $
-                {Math.max(0, Number(form.amount) - task.laborCost)}
+                {t('financial.partner_cost') || 'Custo do Parceiro:'} $
+                {task.laborCost}
+              </p>
+              <p>
+                {t('financial.calculated_pm_commission') ||
+                  'Comissão PM Calculada:'}{' '}
+                ${Math.max(0, Number(form.amount) - task.laborCost)}
               </p>
             </div>
           )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel') || 'Cancelar'}
           </Button>
-          <Button onClick={handleSave}>Generate & Account</Button>
+          <Button onClick={handleSave}>
+            {t('financial.generate_account') || 'Gerar & Contabilizar'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
