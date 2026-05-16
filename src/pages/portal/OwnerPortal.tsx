@@ -18,7 +18,7 @@ import {
   Landmark,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 
@@ -30,6 +30,20 @@ export default function OwnerPortal() {
   const { t } = useLanguageStore()
   const { ledgerEntries } = useFinancialStore()
   const { tenants, updateTenant } = useTenantStore()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialTab = searchParams.get('tab') || 'ledger'
+  const [activeTab, setActiveTab] = useState(initialTab)
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    setSearchParams({ tab }, { replace: true })
+    setTimeout(() => {
+      document
+        .getElementById('portal-tabs')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }
 
   let targetUserId = currentUser?.id
   let displayName = currentUser?.name
@@ -193,7 +207,10 @@ export default function OwnerPortal() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-slate-200 shadow-sm bg-white">
+        <Card
+          className="border-slate-200 shadow-sm bg-white cursor-pointer hover:border-blue-400 hover:shadow-md transition-all"
+          onClick={() => handleTabChange('properties')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
               {t('owner_portal.registered_properties') ||
@@ -207,7 +224,10 @@ export default function OwnerPortal() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 shadow-sm bg-white">
+        <Card
+          className="border-slate-200 shadow-sm bg-white cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all"
+          onClick={() => handleTabChange('hoa_taxes')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
               {t('owner_portal.pending_hoa') || 'Pending HOA & Taxes'}
@@ -220,7 +240,10 @@ export default function OwnerPortal() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 shadow-sm bg-white">
+        <Card
+          className="border-slate-200 shadow-sm bg-white cursor-pointer hover:border-orange-400 hover:shadow-md transition-all"
+          onClick={() => handleTabChange('tasks')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
               {t('owner_portal.pending_approvals') || 'Pending Cost Approvals'}
@@ -233,7 +256,10 @@ export default function OwnerPortal() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 shadow-sm bg-white">
+        <Card
+          className="border-slate-200 shadow-sm bg-white cursor-pointer hover:border-purple-400 hover:shadow-md transition-all"
+          onClick={() => handleTabChange('renewals')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-600">
               {t('owner_portal.pending_renewals') || 'Pending Renewals'}
@@ -248,7 +274,12 @@ export default function OwnerPortal() {
         </Card>
       </div>
 
-      <Tabs defaultValue="ledger" className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+        id="portal-tabs"
+      >
         <TabsList className="grid w-full grid-cols-5 lg:w-[750px] h-auto p-1 bg-slate-100/50 border shadow-sm">
           <TabsTrigger
             value="ledger"
