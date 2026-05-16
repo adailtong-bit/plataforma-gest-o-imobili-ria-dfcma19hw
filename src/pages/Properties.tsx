@@ -16,7 +16,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Trash2, Plus, Building, Home, Pencil } from 'lucide-react'
+import {
+  MapPin,
+  Trash2,
+  Plus,
+  Building,
+  Home,
+  Pencil,
+  LayoutGrid,
+  List,
+} from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -64,6 +73,9 @@ export default function Properties() {
   const [profileFilter, setProfileFilter] = useState<
     'all' | 'long_term' | 'short_term'
   >('all')
+  const [hotelFilter, setHotelFilter] = useState('all')
+  const [towerFilter, setTowerFilter] = useState('all')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -120,8 +132,9 @@ export default function Properties() {
     if (
       currentUser &&
       'allowedProfileTypes' in currentUser &&
-      Array.isArray(currentUser.allowedProfileTypes) &&
-      !currentUser.allowedProfileTypes.includes(p.profileType)
+      Array.isArray((currentUser as any).allowedProfileTypes) &&
+      (currentUser as any).allowedProfileTypes.length > 0 &&
+      !(currentUser as any).allowedProfileTypes.includes(p.profileType)
     ) {
       return false
     }
@@ -144,8 +157,16 @@ export default function Properties() {
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter
     const matchesProfile =
       profileFilter === 'all' || p.profileType === profileFilter
+    const matchesHotel = hotelFilter === 'all' || p.hotelId === hotelFilter
+    const matchesTower = towerFilter === 'all' || p.towerId === towerFilter
 
-    return matchesFilter && matchesStatus && matchesProfile
+    return (
+      matchesFilter &&
+      matchesStatus &&
+      matchesProfile &&
+      matchesHotel &&
+      matchesTower
+    )
   })
 
   const getStatusColor = (status: string) => {
@@ -961,15 +982,15 @@ export default function Properties() {
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center bg-white p-4 rounded-lg border shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 items-center flex-wrap bg-white p-4 rounded-lg border shadow-sm">
         <Input
           placeholder={t('properties.search_placeholder')}
-          className="md:w-[300px] text-black bg-white"
+          className="md:w-[250px] text-black bg-white"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full md:w-[200px] border-slate-300 text-black">
+          <SelectTrigger className="w-full md:w-[150px] border-slate-300 text-black">
             <SelectValue placeholder={t('common.status')} />
           </SelectTrigger>
           <SelectContent>
@@ -986,7 +1007,7 @@ export default function Properties() {
           value={profileFilter}
           onValueChange={(v: any) => setProfileFilter(v)}
         >
-          <SelectTrigger className="w-full md:w-[200px] border-slate-300 text-black">
+          <SelectTrigger className="w-full md:w-[160px] border-slate-300 text-black">
             <SelectValue placeholder={t('properties.profile_filter')} />
           </SelectTrigger>
           <SelectContent>
@@ -999,126 +1020,387 @@ export default function Properties() {
             </SelectItem>
           </SelectContent>
         </Select>
+
+        <Select
+          value={hotelFilter}
+          onValueChange={(v) => {
+            setHotelFilter(v)
+            setTowerFilter('all')
+          }}
+        >
+          <SelectTrigger className="w-full md:w-[180px] border-slate-300 text-black">
+            <SelectValue placeholder="Hotel" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os Hotéis</SelectItem>
+            {hotels.map((h) => (
+              <SelectItem key={h.id} value={h.id}>
+                {h.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {hotelFilter !== 'all' && (
+          <Select value={towerFilter} onValueChange={setTowerFilter}>
+            <SelectTrigger className="w-full md:w-[180px] border-slate-300 text-black">
+              <SelectValue placeholder="Torre" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Torres</SelectItem>
+              {towers
+                .filter((t) => t.hotelId === hotelFilter)
+                .map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        <div className="flex-1" />
+
+        <div className="flex items-center bg-slate-100 p-1 rounded-md gap-1">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`p-2 rounded-sm transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-black' : 'hover:bg-slate-200 text-slate-500'}`}
+            aria-label="Grid view"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`p-2 rounded-sm transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-black' : 'hover:bg-slate-200 text-slate-500'}`}
+            aria-label="List view"
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProperties.map((property) => (
-          <Card
-            key={property.id}
-            className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative bg-white"
-          >
-            <div className="relative h-48 w-full bg-slate-200">
-              {property.image ? (
-                <img
-                  src={property.image}
-                  alt={property.name}
-                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                  crossOrigin="anonymous"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg'
-                    e.currentTarget.onerror = null
-                  }}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-black font-medium">
-                  {t('properties.no_image')}
-                </div>
+      {viewMode === 'list' && (
+        <div className="bg-white border rounded-lg overflow-x-auto shadow-sm">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
+              <tr>
+                <th className="px-4 py-3 font-bold text-black w-[80px]">
+                  Foto
+                </th>
+                <th className="px-4 py-3 font-bold text-black">
+                  Nome / Identificação
+                </th>
+                <th className="px-4 py-3 font-bold text-black">
+                  Hotel / Condomínio
+                </th>
+                <th className="px-4 py-3 font-bold text-black">
+                  Torre / Andar / Quarto
+                </th>
+                <th className="px-4 py-3 font-bold text-black">Perfil</th>
+                <th className="px-4 py-3 font-bold text-black">Status</th>
+                <th className="px-4 py-3 font-bold text-black text-right">
+                  Ações
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredProperties.map((property) => {
+                const hotel = hotels.find((h) => h.id === property.hotelId)
+                const condo = condominiums.find(
+                  (c) => c.id === property.condominiumId,
+                )
+                const tower = towers.find((t) => t.id === property.towerId)
+
+                return (
+                  <tr
+                    key={property.id}
+                    className="hover:bg-slate-50 transition-colors bg-white"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="w-12 h-12 rounded-md overflow-hidden bg-slate-200">
+                        {property.image ? (
+                          <img
+                            src={property.image}
+                            alt={property.name}
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              e.currentTarget.src = '/placeholder.svg'
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center w-full h-full text-slate-400">
+                            <Home className="w-6 h-6" />
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-black">
+                        <DataMask>{property.name}</DataMask>
+                      </div>
+                      <div
+                        className="text-xs text-slate-500 max-w-[200px] truncate"
+                        title={property.address}
+                      >
+                        <DataMask>{property.address}</DataMask>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {hotel ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-blue-50 text-blue-700 border-blue-200"
+                        >
+                          <Building className="w-3 h-3 mr-1" /> {hotel.name}
+                        </Badge>
+                      ) : condo ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-purple-50 text-purple-700 border-purple-200"
+                        >
+                          <Home className="w-3 h-3 mr-1" /> {condo.name}
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400 text-sm">
+                          Independente
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm font-medium text-black flex flex-col gap-1">
+                        {tower && <span>Torre: {tower.name}</span>}
+                        {property.floor && (
+                          <span className="text-slate-600">
+                            Andar: {property.floor}
+                          </span>
+                        )}
+                        {property.roomNumber && (
+                          <span className="text-slate-600">
+                            Quarto: {property.roomNumber}
+                          </span>
+                        )}
+                        {!tower && !property.floor && !property.roomNumber && (
+                          <span className="text-slate-400">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge className="bg-black text-white border-none font-bold">
+                        {property.profileType === 'short_term' ? 'STR' : 'LTR'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge
+                        className={getStatusColor(
+                          property.status || 'available',
+                        )}
+                      >
+                        {t(`status.${property.status || 'available'}`)}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-2 items-center">
+                        {canEdit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => handleEditClick(e, property)}
+                            title="Alterar"
+                          >
+                            <Pencil className="h-4 w-4 text-blue-600" />
+                          </Button>
+                        )}
+                        {canDelete && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Excluir"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t('common.delete_title')}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('common.delete_desc')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {t('common.cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDelete(property.id)
+                                  }}
+                                >
+                                  {t('common.delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                        <Link to={`/properties/${property.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="ml-2 font-medium"
+                          >
+                            Ver
+                          </Button>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+              {filteredProperties.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-4 py-10 text-center text-muted-foreground border-dashed bg-slate-50"
+                  >
+                    {t('common.empty')}
+                  </td>
+                </tr>
               )}
-              <Badge
-                className={`absolute top-2 right-2 ${getStatusColor(property.status)}`}
-              >
-                {t(`status.${property.status}`)}
-              </Badge>
-              <Badge className="absolute bottom-2 left-2 bg-black text-white border-none font-bold">
-                {property.profileType === 'short_term' ? 'STR' : 'LTR'}
-              </Badge>
-            </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-black">
-                <DataMask>{property.name}</DataMask>
-              </CardTitle>
-              <p className="text-xs text-black mt-1 font-medium">
-                <DataMask>{property.community}</DataMask>
-              </p>
-            </CardHeader>
-            <CardContent className="flex-1 pb-2">
-              <div className="flex items-center gap-1 text-sm text-black mb-4">
-                <MapPin className="h-3 w-3 text-black" />
-                <span className="truncate font-medium">
-                  <DataMask>
-                    {property.address}
-                    {property.number ? `, ${property.number}` : ''}
-                  </DataMask>
-                </span>
-              </div>
-            </CardContent>
-            <CardFooter className="pt-4 border-t bg-white flex flex-col gap-2 z-10 relative">
-              <Link to={`/properties/${property.id}`} className="w-full">
-                <Button
-                  variant="outline"
-                  className="w-full text-black border-slate-300 font-medium"
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProperties.map((property) => (
+            <Card
+              key={property.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group relative bg-white"
+            >
+              <div className="relative h-48 w-full bg-slate-200">
+                {property.image ? (
+                  <img
+                    src={property.image}
+                    alt={property.name}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg'
+                      e.currentTarget.onerror = null
+                    }}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-black font-medium">
+                    {t('properties.no_image')}
+                  </div>
+                )}
+                <Badge
+                  className={`absolute top-2 right-2 ${getStatusColor(property.status || 'available')}`}
                 >
-                  {t('properties.view_details')}
-                </Button>
-              </Link>
-              <div className="flex w-full gap-2">
-                {canEdit && (
+                  {t(`status.${property.status || 'available'}`)}
+                </Badge>
+                <Badge className="absolute bottom-2 left-2 bg-black text-white border-none font-bold">
+                  {property.profileType === 'short_term' ? 'STR' : 'LTR'}
+                </Badge>
+              </div>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-black">
+                  <DataMask>{property.name}</DataMask>
+                </CardTitle>
+                <p className="text-xs text-black mt-1 font-medium">
+                  <DataMask>{property.community}</DataMask>
+                </p>
+              </CardHeader>
+              <CardContent className="flex-1 pb-2">
+                <div className="flex items-center gap-1 text-sm text-black mb-4">
+                  <MapPin className="h-3 w-3 text-black" />
+                  <span className="truncate font-medium">
+                    <DataMask>
+                      {property.address}
+                      {property.number ? `, ${property.number}` : ''}
+                    </DataMask>
+                  </span>
+                </div>
+              </CardContent>
+              <CardFooter className="pt-4 border-t bg-white flex flex-col gap-2 z-10 relative">
+                <Link to={`/properties/${property.id}`} className="w-full">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="flex-1 text-black font-medium"
-                    onClick={(e) => handleEditClick(e, property)}
+                    className="w-full text-black border-slate-300 font-medium"
                   >
-                    <Pencil className="h-4 w-4 mr-2" /> Alterar
+                    {t('properties.view_details')}
                   </Button>
-                )}
-                {canDelete && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="flex-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" /> Excluir
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t('common.delete_title')}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t('common.delete_desc')}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                          {t('common.cancel')}
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDelete(property.id)
-                          }}
+                </Link>
+                <div className="flex w-full gap-2">
+                  {canEdit && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-black font-medium"
+                      onClick={(e) => handleEditClick(e, property)}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" /> Alterar
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="flex-1"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          {t('common.delete')}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-        {filteredProperties.length === 0 && (
-          <div className="col-span-full py-10 text-center text-muted-foreground border rounded-lg bg-slate-50 border-dashed">
-            {t('common.empty')}
-          </div>
-        )}
-      </div>
+                          <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {t('common.delete_title')}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t('common.delete_desc')}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {t('common.cancel')}
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDelete(property.id)
+                            }}
+                          >
+                            {t('common.delete')}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
+          {filteredProperties.length === 0 && (
+            <div className="col-span-full py-10 text-center text-muted-foreground border rounded-lg bg-slate-50 border-dashed">
+              {t('common.empty')}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
