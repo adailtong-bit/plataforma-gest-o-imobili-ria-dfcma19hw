@@ -42,10 +42,22 @@ export function BookingModal({
       ? format(new Date(booking.check_out), 'yyyy-MM-dd')
       : format(addDays(date, 1), 'yyyy-MM-dd'),
     origin: booking?.origin || 'presential',
-    amount: booking?.total_amount || property.listing_price || 0,
+    discountAmount: booking?.discount_amount || 0,
   })
 
   const [loading, setLoading] = useState(false)
+
+  // Calculations
+  const checkInDate = new Date(formData.checkIn)
+  const checkOutDate = new Date(formData.checkOut)
+  const nights = Math.max(
+    1,
+    Math.ceil(
+      (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24),
+    ),
+  )
+  const baseAmount = (property.listing_price || 0) * nights
+  const totalAmount = Math.max(0, baseAmount - formData.discountAmount)
 
   const handleSave = async () => {
     setLoading(true)
@@ -75,15 +87,23 @@ export function BookingModal({
 
       if (guestErr) throw guestErr
 
+      const approvalStatus =
+        formData.discountAmount > 0 ? 'pending' : 'approved'
+      const status =
+        approvalStatus === 'pending' ? 'pending_approval' : 'confirmed'
+
       const { error: bookErr } = await supabase.from('bookings').insert({
         property_id: property.id,
         guest_id: guestData.id,
         check_in: new Date(formData.checkIn).toISOString(),
         check_out: new Date(formData.checkOut).toISOString(),
         origin: formData.origin,
-        total_amount: formData.amount,
-        status: 'confirmed',
-      })
+        total_amount: totalAmount,
+        base_amount: baseAmount,
+        discount_amount: formData.discountAmount,
+        approval_status: approvalStatus,
+        status: status,
+      } as any)
 
       if (bookErr) throw bookErr
 
@@ -196,16 +216,77 @@ export function BookingModal({
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Valor Total Previsto</Label>
+              <Label>Desconto Solicitado</Label>
               <Input
                 type="number"
-                value={formData.amount}
+                value={formData.discountAmount}
                 onChange={(e) =>
-                  setFormData({ ...formData, amount: Number(e.target.value) })
+                  setFormData({
+                    ...formData,
+                    discountAmount: Number(e.target.value),
+                  })
                 }
                 disabled={isExisting}
               />
             </div>
+          </div>
+
+          <div className="bg-slate-50 p-4 rounded-md border mt-2 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Diária Base:</span>
+              <span className="font-medium">
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                }).format(property.listing_price || 0)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Noites:</span>
+              <span className="font-medium">{nights}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Subtotal:</span>
+              <span className="font-medium">
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                }).format(baseAmount)}
+              </span>
+            </div>
+            {formData.discountAmount > 0 && (
+              <div className="flex justify-between text-sm text-red-600">
+                <span>Desconto Solicitado:</span>
+                <span className="font-medium">
+                  -{' '}
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(formData.discountAmount)}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between text-base font-bold pt-2 border-t">
+              <span>Total a Cobrar:</span>
+              <span>
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                }).format(totalAmount)}
+              </span>
+            </div>
+            {formData.discountAmount > 0 && (
+              <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-200 mt-2">
+                ⚠️ A aplicação de desconto requer aprovação do gerente. A
+                reserva ficará com status pendente.
+              </div>
+            )}
+            {!property.listing_price && (
+              <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-200 mt-2">
+                ⚠️ Quarto sem valor base configurado. Edite a unidade
+                (listing_price) para definir a tarifa.
+              </div>
+            )}
           </div>
         </div>
 
@@ -216,10 +297,12 @@ export function BookingModal({
           {!isExisting && (
             <Button
               onClick={handleSave}
-              disabled={loading}
+              disabled={loading || (!isExisting && !property.listing_price)}
               className="bg-trust-blue text-white"
             >
-              Confirmar Reserva
+              {formData.discountAmount > 0
+                ? 'Solicitar Aprovação'
+                : 'Confirmar Reserva'}
             </Button>
           )}
         </div>
