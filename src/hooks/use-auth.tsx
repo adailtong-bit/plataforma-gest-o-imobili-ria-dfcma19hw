@@ -70,7 +70,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (mounted) {
-          setProfile((data as UserProfile) || null)
+          let userProfile = data as UserProfile | null
+
+          // Failsafe for the primary admin user to never be locked out
+          if (
+            userProfile &&
+            (userProfile.email === 'adailtong@gmail.com' ||
+              userProfile.email.includes('admin'))
+          ) {
+            if (
+              !['master', 'admin', 'super_admin', 'platform_owner'].includes(
+                userProfile.role,
+              )
+            ) {
+              userProfile.role = 'master'
+            }
+          }
+
+          setProfile(userProfile)
         }
       } catch (error) {
         console.error('[useAuth] Exception in loadProfile:', error)

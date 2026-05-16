@@ -92,7 +92,11 @@ export function RequirePermission({
     currentUser?.role === 'master' ||
     currentUser?.role === 'super_admin' ||
     currentUser?.role === 'platform_owner' ||
-    currentUser?.role === 'admin'
+    currentUser?.role === 'admin' ||
+    effectiveUser?.role === 'master' ||
+    effectiveUser?.role === 'super_admin' ||
+    effectiveUser?.role === 'platform_owner' ||
+    effectiveUser?.role === 'admin'
 
   const isSoftwareTenant = effectiveUser?.role === 'software_tenant'
 
