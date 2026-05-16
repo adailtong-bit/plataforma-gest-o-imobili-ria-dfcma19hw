@@ -37,6 +37,7 @@ import Workflows from '@/pages/Workflows'
 import Renewals from '@/pages/Renewals'
 import PublicityAdmin from '@/pages/admin/PublicityAdmin'
 import MigrationHub from '@/pages/admin/MigrationHub'
+import FrontDesk from '@/pages/FrontDesk'
 import Analytics from '@/pages/admin/Analytics'
 import Automation from '@/pages/admin/Automation'
 import AuditPanel from '@/pages/admin/AuditPanel'
@@ -166,6 +167,7 @@ const App = () => {
                     path="/hotels/:id/towers/:towerId"
                     element={<TowerDetails />}
                   />
+                  <Route path="/front-desk" element={<FrontDesk />} />
                   <Route path="/short-term" element={<ShortTerm />} />
                   <Route path="/condominiums" element={<Condominiums />} />
                   <Route

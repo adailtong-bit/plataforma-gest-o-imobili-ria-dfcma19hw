@@ -649,70 +649,131 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle>
-                {t(
-                  'dashboard.hospitality_tab.metrics_6m',
-                  'Hospitality Metrics (Last 6 months)',
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="h-[350px]">
-              <ChartContainer config={{}}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                    <YAxis
-                      yAxisId="left"
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(v) => `${v}`}
-                    />
-                    <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(v) => `${v}%`}
-                    />
-                    <RechartsTooltip
-                      contentStyle={{ borderRadius: '8px', border: 'none' }}
-                    />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="adr"
-                      stroke="#8b5cf6"
-                      strokeWidth={3}
-                      name="ADR ($)"
-                    />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="revpar"
-                      stroke="#ec4899"
-                      strokeWidth={3}
-                      name="RevPAR ($)"
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="occupancy"
-                      stroke="#10b981"
-                      strokeDasharray="5 5"
-                      strokeWidth={2}
-                      name={t(
-                        'dashboard.hospitality_tab.occupancy_pct',
-                        'Occupancy (%)',
-                      )}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>Ocupação por Hotel (Live)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="font-medium text-slate-700">
+                      Hotel Plaza Central
+                    </span>
+                    <span className="font-bold text-slate-900">85%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-3">
+                    <div
+                      className="bg-emerald-500 h-3 rounded-full"
+                      style={{ width: '85%' }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    102 de 120 quartos ocupados
+                  </p>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="font-medium text-slate-700">
+                      Resort Beach View
+                    </span>
+                    <span className="font-bold text-slate-900">62%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-3">
+                    <div
+                      className="bg-blue-500 h-3 rounded-full"
+                      style={{ width: '62%' }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    93 de 150 quartos ocupados
+                  </p>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="font-medium text-slate-700">
+                      Urban Boutique
+                    </span>
+                    <span className="font-bold text-slate-900">92%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-3">
+                    <div
+                      className="bg-indigo-500 h-3 rounded-full"
+                      style={{ width: '92%' }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    46 de 50 quartos ocupados
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>
+                  {t(
+                    'dashboard.hospitality_tab.metrics_6m',
+                    'Hospitality Metrics (Last 6 months)',
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <ChartContainer config={{}}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                      <YAxis
+                        yAxisId="left"
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) => `${v}`}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <RechartsTooltip
+                        contentStyle={{ borderRadius: '8px', border: 'none' }}
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="adr"
+                        stroke="#8b5cf6"
+                        strokeWidth={3}
+                        name="ADR ($)"
+                      />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="revpar"
+                        stroke="#ec4899"
+                        strokeWidth={3}
+                        name="RevPAR ($)"
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="occupancy"
+                        stroke="#10b981"
+                        strokeDasharray="5 5"
+                        strokeWidth={2}
+                        name={t(
+                          'dashboard.hospitality_tab.occupancy_pct',
+                          'Occupancy (%)',
+                        )}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* --- OPERATIONS --- */}

@@ -33,6 +33,7 @@ import {
   MapPin,
   Hotel,
   MoonStar,
+  ConciergeBell,
   MonitorPlay,
   ShieldCheck,
 } from 'lucide-react'
@@ -178,6 +179,12 @@ export function AppSidebar() {
       url: '/tasks',
       icon: Wrench,
       resource: 'tasks',
+    },
+    {
+      title: getTitle('sidebar.front_desk', 'Front Desk'),
+      url: '/front-desk',
+      icon: ConciergeBell,
+      resource: 'short_term',
     },
     {
       title: getTitle('sidebar.housekeeping', 'Housekeeping'),
