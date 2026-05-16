@@ -240,83 +240,94 @@ export default function Dashboard() {
         {/* --- OVERVIEW --- */}
         <TabsContent value="overview" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="border-l-4 border-l-trust-blue shadow-sm bg-white">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t('dashboard.cards.total_revenue', 'Total Revenue (Month)')}
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-trust-blue" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {formatCurrency(totalRevenue || 124500)}
-                </div>
-                <p className="text-xs text-emerald-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +12.5%{' '}
-                  {t('dashboard.cards.vs_last_month', 'vs last month')}
-                </p>
-              </CardContent>
-            </Card>
+            <Link to="/financial" className="block outline-none">
+              <Card className="border-l-4 border-l-trust-blue shadow-sm bg-white hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t(
+                      'dashboard.cards.total_revenue',
+                      'Total Revenue (Month)',
+                    )}
+                  </CardTitle>
+                  <DollarSign className="h-4 w-4 text-trust-blue" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {formatCurrency(totalRevenue || 124500)}
+                  </div>
+                  <p className="text-xs text-emerald-600 flex items-center mt-1">
+                    <TrendingUp className="h-3 w-3 mr-1" /> +12.5%{' '}
+                    {t('dashboard.cards.vs_last_month', 'vs last month')}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card className="border-l-4 border-l-emerald-500 shadow-sm bg-white">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t('dashboard.cards.occupancy_rate', 'Occupancy Rate')}
-                </CardTitle>
-                <Percent className="h-4 w-4 text-emerald-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {occupancyRate > 0 ? occupancyRate.toFixed(1) : 84.2}%
-                </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  {rentedProperties || 122} {t('common.of', 'of')}{' '}
-                  {totalProperties || 145}{' '}
-                  {t(
-                    'dashboard.cards.occupied_properties',
-                    'occupied properties',
-                  )}
-                </p>
-              </CardContent>
-            </Card>
+            <Link to="/properties" className="block outline-none">
+              <Card className="border-l-4 border-l-emerald-500 shadow-sm bg-white hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t('dashboard.cards.occupancy_rate', 'Occupancy Rate')}
+                  </CardTitle>
+                  <Percent className="h-4 w-4 text-emerald-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {occupancyRate > 0 ? occupancyRate.toFixed(1) : 84.2}%
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {rentedProperties || 122} {t('common.of', 'of')}{' '}
+                    {totalProperties || 145}{' '}
+                    {t(
+                      'dashboard.cards.occupied_properties',
+                      'occupied properties',
+                    )}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card className="border-l-4 border-l-orange-500 shadow-sm bg-white">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t('dashboard.cards.default_rate', 'Default Rate')}
-                </CardTitle>
-                <AlertTriangle className="h-4 w-4 text-orange-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {defaultRate > 0 ? defaultRate.toFixed(1) : 3.4}%
-                </div>
-                <p className="text-xs text-orange-600 mt-1">
-                  {formatCurrency(defaultAmount || 4250)}{' '}
-                  {t('dashboard.cards.pending_amount', 'pending')}
-                </p>
-              </CardContent>
-            </Card>
+            <Link to="/financial" className="block outline-none">
+              <Card className="border-l-4 border-l-orange-500 shadow-sm bg-white hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t('dashboard.cards.default_rate', 'Default Rate')}
+                  </CardTitle>
+                  <AlertTriangle className="h-4 w-4 text-orange-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {defaultRate > 0 ? defaultRate.toFixed(1) : 3.4}%
+                  </div>
+                  <p className="text-xs text-orange-600 mt-1">
+                    {formatCurrency(defaultAmount || 4250)}{' '}
+                    {t('dashboard.cards.pending_amount', 'pending')}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card className="border-l-4 border-l-indigo-500 shadow-sm bg-white">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t('dashboard.cards.portfolio', 'Portfolio')}
-                </CardTitle>
-                <Building2 className="h-4 w-4 text-indigo-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {totalProperties || 145}
-                </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  {t(
-                    'dashboard.cards.active_properties',
-                    'Properties under active management',
-                  )}
-                </p>
-              </CardContent>
-            </Card>
+            <Link to="/properties" className="block outline-none">
+              <Card className="border-l-4 border-l-indigo-500 shadow-sm bg-white hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t('dashboard.cards.portfolio', 'Portfolio')}
+                  </CardTitle>
+                  <Building2 className="h-4 w-4 text-indigo-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {totalProperties || 145}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {t(
+                      'dashboard.cards.active_properties',
+                      'Properties under active management',
+                    )}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -725,54 +736,60 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </Link>
-            <Card className="shadow-sm border-l-4 border-l-emerald-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  {t(
-                    'dashboard.operations_tab.completed_tasks',
-                    'Completed Tasks',
-                  )}{' '}
-                  <Activity className="h-4 w-4 text-emerald-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {completedTasks || 156}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="shadow-sm border-l-4 border-l-blue-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  {t(
-                    'dashboard.operations_tab.active_tenants',
-                    'Active Tenants',
-                  )}{' '}
-                  <Users className="h-4 w-4 text-blue-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {tenants.length || 112}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="shadow-sm border-l-4 border-l-purple-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  {t(
-                    'dashboard.operations_tab.pending_renewals',
-                    'Pending Renewals',
-                  )}{' '}
-                  <Briefcase className="h-4 w-4 text-purple-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {pendingRenewals || 8}
-                </div>
-              </CardContent>
-            </Card>
+            <Link to="/tasks" className="block outline-none">
+              <Card className="shadow-sm border-l-4 border-l-emerald-500 hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground flex justify-between">
+                    {t(
+                      'dashboard.operations_tab.completed_tasks',
+                      'Completed Tasks',
+                    )}{' '}
+                    <Activity className="h-4 w-4 text-emerald-500" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {completedTasks || 156}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/tenants" className="block outline-none">
+              <Card className="shadow-sm border-l-4 border-l-blue-500 hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground flex justify-between">
+                    {t(
+                      'dashboard.operations_tab.active_tenants',
+                      'Active Tenants',
+                    )}{' '}
+                    <Users className="h-4 w-4 text-blue-500" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {tenants.length || 112}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/renewals" className="block outline-none">
+              <Card className="shadow-sm border-l-4 border-l-purple-500 hover:bg-slate-50 transition-colors cursor-pointer h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground flex justify-between">
+                    {t(
+                      'dashboard.operations_tab.pending_renewals',
+                      'Pending Renewals',
+                    )}{' '}
+                    <Briefcase className="h-4 w-4 text-purple-500" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {pendingRenewals || 8}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -824,36 +841,51 @@ export default function Dashboard() {
               </CardContent>
             </Card>
             <Card className="shadow-sm">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>
                   {t('dashboard.operations_tab.latest_issues', 'Latest Issues')}
                 </CardTitle>
+                <Link
+                  to="/tasks"
+                  className="text-xs font-medium text-trust-blue hover:underline"
+                >
+                  {t('common.view', 'View')} {t('common.all', 'All')}
+                </Link>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0 last:pb-0"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-slate-900">
-                          {t(
-                            'dashboard.operations_tab.maintenance_ac',
-                            'AC Maintenance',
-                          )}{' '}
-                          #{100 + i}
-                        </span>
-                        <span className="text-xs text-slate-500">
-                          {t('dashboard.operations_tab.unit', 'Unit')} {300 + i}{' '}
-                          • Villa Ocean
-                        </span>
-                      </div>
-                      <div className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-md font-medium">
-                        {t('common.pending', 'Pending')}
-                      </div>
+                <div className="space-y-2">
+                  {tasks
+                    .filter(
+                      (t) =>
+                        t.status === 'pending' || t.status === 'in_progress',
+                    )
+                    .slice(0, 4)
+                    .map((task) => (
+                      <Link
+                        key={task.id}
+                        to="/tasks"
+                        className="flex items-center justify-between border-b border-slate-100 pb-2 pt-2 last:border-0 hover:bg-slate-50 rounded-md transition-colors group cursor-pointer"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-slate-900 group-hover:text-trust-blue transition-colors">
+                            {task.title}
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {task.property_name || 'General'}
+                          </span>
+                        </div>
+                        <div className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-md font-medium capitalize">
+                          {t(`status.${task.status}`, task.status || 'Pending')}
+                        </div>
+                      </Link>
+                    ))}
+                  {tasks.filter(
+                    (t) => t.status === 'pending' || t.status === 'in_progress',
+                  ).length === 0 && (
+                    <div className="text-sm text-slate-500 text-center py-4">
+                      {t('common.empty', 'Empty')}
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
