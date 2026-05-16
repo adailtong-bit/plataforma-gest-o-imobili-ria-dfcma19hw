@@ -256,20 +256,36 @@ export default function Properties() {
     if (selectedHotel) comm = selectedHotel.name
     else if (selectedCondo) comm = selectedCondo.name
 
+    const finalAddress = isHotelLinkedLocal
+      ? selectedHotel?.address || selectedHotel?.name || ''
+      : newProp.address || ''
+    const finalZipCode = isHotelLinkedLocal
+      ? selectedHotel?.zipCode || ''
+      : newProp.zipCode || ''
+    const finalCity = isHotelLinkedLocal
+      ? selectedHotel?.city || ''
+      : newProp.city || ''
+    const finalState = isHotelLinkedLocal
+      ? selectedHotel?.state || ''
+      : newProp.state || ''
+    const finalCountry = isHotelLinkedLocal
+      ? selectedHotel?.country || 'US'
+      : selectedCountry
+
     if (editingId) {
       const existing = properties.find((p) => p.id === editingId)
       if (existing) {
         updateProperty({
           ...existing,
           name: newProp.name || '',
-          address: newProp.address || '',
+          address: finalAddress,
           number: newProp.number || '',
           neighborhood: newProp.neighborhood || '',
-          city: newProp.city || '',
-          state: newProp.state || '',
-          zipCode: newProp.zipCode || '',
+          city: finalCity,
+          state: finalState,
+          zipCode: finalZipCode,
           additionalInfo: newProp.additionalInfo || '',
-          country: selectedCountry,
+          country: finalCountry,
           profileType: newProp.profileType,
           condominiumId: newProp.condominiumId,
           hotelId: newProp.hotelId,
@@ -290,14 +306,14 @@ export default function Properties() {
     } else {
       addProperty({
         name: newProp.name || '',
-        address: newProp.address || '',
+        address: finalAddress,
         number: newProp.number || '',
         neighborhood: newProp.neighborhood || '',
-        city: newProp.city || '',
-        state: newProp.state || '',
-        zipCode: newProp.zipCode || '',
+        city: finalCity,
+        state: finalState,
+        zipCode: finalZipCode,
         additionalInfo: newProp.additionalInfo || '',
-        country: selectedCountry,
+        country: finalCountry,
         type: newProp.type || 'House',
         profileType: newProp.profileType,
         community: comm,
@@ -714,7 +730,9 @@ export default function Properties() {
                   <div className="grid gap-2 col-span-3">
                     <Label className="text-black font-bold">
                       {t('common.address')}{' '}
-                      <span className="text-red-500">*</span>
+                      {!isHotelLinked && (
+                        <span className="text-red-500">*</span>
+                      )}
                     </Label>
                     <Input
                       value={newProp.address}
@@ -758,7 +776,9 @@ export default function Properties() {
                   <div className="grid gap-1">
                     <Label className="text-xs text-black font-bold">
                       {t('properties.zip_code')}{' '}
-                      <span className="text-red-500">*</span>
+                      {!isHotelLinked && (
+                        <span className="text-red-500">*</span>
+                      )}
                     </Label>
                     <Input
                       value={newProp.zipCode}
