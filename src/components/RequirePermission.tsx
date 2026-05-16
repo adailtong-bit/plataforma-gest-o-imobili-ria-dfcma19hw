@@ -87,13 +87,12 @@ export function RequirePermission({
       : (currentUser as User)
 
   // ENHANCED PERMISSION HANDLING: Testers/admins have unrestricted access to all modules during validation phase.
-  // If we are actively simulating another role, disable the bypass so the simulation works exactly like the target role.
+  // As requested, Master Admin has unrestricted access to all areas, overriding any specific profile restriction (like "Owner") or simulation.
   const isDeveloperBypass =
-    effectiveUser?.role === currentUser?.role &&
-    (currentUser?.role === 'master' ||
-      currentUser?.role === 'super_admin' ||
-      currentUser?.role === 'platform_owner' ||
-      currentUser?.role === 'admin')
+    currentUser?.role === 'master' ||
+    currentUser?.role === 'super_admin' ||
+    currentUser?.role === 'platform_owner' ||
+    currentUser?.role === 'admin'
 
   const isSoftwareTenant = effectiveUser?.role === 'software_tenant'
 

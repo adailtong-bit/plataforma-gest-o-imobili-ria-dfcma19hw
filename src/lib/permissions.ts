@@ -3,9 +3,41 @@ import { User, UserRole, Resource, Action } from './types'
 const FULL_ACCESS: Action[] = ['view', 'create', 'edit', 'delete']
 
 export const DEFAULT_PERMISSIONS_MATRIX: Record<
-  UserRole,
+  string,
   Partial<Record<Resource, Action[]>>
 > = {
+  admin: {
+    dashboard: FULL_ACCESS,
+    properties: FULL_ACCESS,
+    condominiums: FULL_ACCESS,
+    tenants: FULL_ACCESS,
+    owners: FULL_ACCESS,
+    partners: FULL_ACCESS,
+    calendar: FULL_ACCESS,
+    tasks: FULL_ACCESS,
+    financial: FULL_ACCESS,
+    messages: FULL_ACCESS,
+    users: FULL_ACCESS,
+    settings: FULL_ACCESS,
+    audit_logs: FULL_ACCESS,
+    portal: FULL_ACCESS,
+    market_analysis: FULL_ACCESS,
+    workflows: FULL_ACCESS,
+    renewals: FULL_ACCESS,
+    publicity: FULL_ACCESS,
+    short_term: FULL_ACCESS,
+    migration: FULL_ACCESS,
+    analytics: FULL_ACCESS,
+    automation: FULL_ACCESS,
+    reports: FULL_ACCESS,
+    visits: FULL_ACCESS,
+    hotels: FULL_ACCESS,
+    performance: FULL_ACCESS,
+    guest_services: FULL_ACCESS,
+    pos: FULL_ACCESS,
+    marketing: FULL_ACCESS,
+    service_pricing: FULL_ACCESS,
+  },
   master: {
     dashboard: FULL_ACCESS,
     properties: FULL_ACCESS,
@@ -184,7 +216,8 @@ export const hasPermission = (
   if (
     user.role === 'platform_owner' ||
     user.role === 'super_admin' ||
-    user.role === 'master'
+    user.role === 'master' ||
+    user.role === 'admin'
   )
     return true
 
