@@ -256,6 +256,8 @@ export default function Properties() {
     if (selectedHotel) comm = selectedHotel.name
     else if (selectedCondo) comm = selectedCondo.name
 
+    const isHotelLinkedLocal = !!newProp.hotelId && newProp.hotelId !== 'none'
+
     const finalAddress = isHotelLinkedLocal
       ? selectedHotel?.address || selectedHotel?.name || ''
       : newProp.address || ''
