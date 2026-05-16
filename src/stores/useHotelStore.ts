@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Hotel } from '@/lib/types'
+import useAuthStore from '@/stores/useAuthStore'
 
 let globalHotels: Hotel[] = []
 let globalTowers: any[] = []
@@ -35,6 +36,13 @@ fetchHotels()
 const useHotelStore = () => {
   const [hotels, setHotels] = useState<Hotel[]>(globalHotels)
   const [towers, setTowers] = useState<any[]>(globalTowers)
+  const { currentUser } = useAuthStore()
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchHotels()
+    }
+  }, [currentUser])
 
   useEffect(() => {
     const l = () => {
