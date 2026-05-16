@@ -81,17 +81,19 @@ export function RequirePermission({
 
   const [hasAlerted, setHasAlerted] = useState(false)
 
-  // ENHANCED PERMISSION HANDLING: Testers/admins have unrestricted access to all modules during validation phase.
-  const isDeveloperBypass =
-    currentUser?.role === 'master' ||
-    currentUser?.role === 'super_admin' ||
-    currentUser?.role === 'platform_owner' ||
-    currentUser?.role === 'admin'
-
   const effectiveUser =
     simulationMode && simulationRole && !ignoreSimulation && currentUser
       ? ({ ...currentUser, role: simulationRole, permissions: [] } as User)
       : (currentUser as User)
+
+  // ENHANCED PERMISSION HANDLING: Testers/admins have unrestricted access to all modules during validation phase.
+  // If we are actively simulating another role, disable the bypass so the simulation works exactly like the target role.
+  const isDeveloperBypass =
+    effectiveUser?.role === currentUser?.role &&
+    (currentUser?.role === 'master' ||
+      currentUser?.role === 'super_admin' ||
+      currentUser?.role === 'platform_owner' ||
+      currentUser?.role === 'admin')
 
   const isSoftwareTenant = effectiveUser?.role === 'software_tenant'
 
@@ -191,12 +193,9 @@ export function RequirePermission({
           ? '/portal/partner'
           : '/portal/tenant'
 
-    const isAllowedPath =
-      location.pathname.startsWith(portalPath) ||
-      location.pathname.startsWith('/messages') ||
-      location.pathname.startsWith('/help')
-
-    if (!isAllowedPath) {
+    // Only force redirect if they are trying to access the main admin dashboard.
+    // Allow navigation to other routes, letting the 'allowed' logic determine access.
+    if (location.pathname === '/' || location.pathname === '/dashboard') {
       return <Navigate to={portalPath} replace />
     }
   }
