@@ -248,8 +248,6 @@ export default function Financial() {
 
     let currentBalance = initialBalance
     const calculated = sortedAsc.map((entry) => {
-      // We only update the running real bank balance for cleared items,
-      // but for projection purposes we might want to include pending. Let's include all in running balance for the view.
       currentBalance += entry.type === 'income' ? entry.amount : -entry.amount
       return {
         ...entry,
@@ -303,23 +301,26 @@ export default function Financial() {
   const handleAdd = () => {
     if (Number(form.amount) <= 0) {
       toast({
-        title: 'Valor inválido',
-        description: 'O valor deve ser maior que zero.',
+        title: t('financial.invalid_amount') || 'Invalid amount',
+        description:
+          t('financial.invalid_amount_desc') ||
+          'Amount must be greater than zero.',
         variant: 'destructive',
       })
       return
     }
     if (!form.description) {
       toast({
-        title: 'Descrição inválida',
-        description: 'A descrição é obrigatória.',
+        title: t('financial.invalid_desc') || 'Invalid description',
+        description:
+          t('financial.invalid_desc_hint') || 'Description is required.',
         variant: 'destructive',
       })
       return
     }
 
     addLedgerEntry({
-      description: form.description || 'Nova transação',
+      description: form.description || 'New transaction',
       amount: Number(form.amount) || 0,
       type: form.type as 'income' | 'expense',
       date: new Date(form.date).toISOString(),
@@ -333,14 +334,18 @@ export default function Financial() {
     })
     setIsAddOpen(false)
     resetForm()
-    toast({ title: 'Transação incluída com sucesso' })
+    toast({
+      title: t('financial.success_add') || 'Transaction added successfully',
+    })
   }
 
   const handleEdit = () => {
     if (Number(form.amount) <= 0) {
       toast({
-        title: 'Valor inválido',
-        description: 'O valor deve ser maior que zero.',
+        title: t('financial.invalid_amount') || 'Invalid amount',
+        description:
+          t('financial.invalid_amount_desc') ||
+          'Amount must be greater than zero.',
         variant: 'destructive',
       })
       return
@@ -362,7 +367,9 @@ export default function Financial() {
       })
     }
     setEditingRecord(null)
-    toast({ title: 'Transação alterada com sucesso' })
+    toast({
+      title: t('financial.success_edit') || 'Transaction updated successfully',
+    })
   }
 
   const openEdit = (entry: any) => {
@@ -383,7 +390,10 @@ export default function Financial() {
 
   const handleDelete = (id: string) => {
     deleteLedgerEntry(id)
-    toast({ title: 'Transação excluída com sucesso' })
+    toast({
+      title:
+        t('financial.success_delete') || 'Transaction deleted successfully',
+    })
   }
 
   const markAsPaid = (entry: any) => {
@@ -392,35 +402,41 @@ export default function Financial() {
       status: 'cleared',
       paymentDate: new Date().toISOString(),
     })
-    toast({ title: 'Transação marcada como paga' })
+    toast({
+      title: t('financial.success_paid') || 'Transaction marked as paid',
+    })
   }
 
   const handleExport = () => {
     const headers = [
-      'Data',
-      'Propriedade',
-      'Tipo',
-      'Categoria',
-      'Descrição',
-      'Valor',
-      'Status',
+      t('financial.table_date') || 'Date',
+      t('common.property') || 'Property',
+      t('financial.type') || 'Type',
+      t('financial.category') || 'Category',
+      t('financial.description') || 'Description',
+      t('financial.amount') || 'Amount',
+      t('financial.table_status') || 'Status',
     ]
     const rows = filteredData.entries.map((entry) => {
       const property = properties.find((p) => p.id === entry.propertyId)
       return [
         format(new Date(entry.date), 'yyyy-MM-dd'),
-        property?.name || 'Geral/Desconhecido',
-        entry.type === 'income' ? 'Receita' : 'Despesa',
+        property?.name || t('common.unknown') || 'Unknown',
+        entry.type === 'income'
+          ? t('financial.income') || 'Income'
+          : t('financial.expense') || 'Expense',
         entry.category || '',
         `"${entry.description.replace(/"/g, '""')}"`,
         entry.amount.toFixed(2),
-        entry.status === 'cleared' ? 'Pago' : 'Pendente',
+        entry.status === 'cleared'
+          ? t('common.paid') || 'Paid'
+          : t('common.pending') || 'Pending',
       ]
     })
-    exportToCSV('extrato_financeiro', headers, rows)
+    exportToCSV('financial_statement', headers, rows)
     toast({
-      title: 'Sucesso',
-      description: 'Extrato financeiro exportado com sucesso.',
+      title: t('common.success') || 'Success',
+      description: t('common.export_success') || 'Data exported successfully.',
     })
   }
 
@@ -429,15 +445,17 @@ export default function Financial() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.financial') || 'Financeiro'}
+            {t('sidebar.financial') || 'Financial'}
           </h1>
           <p className="text-muted-foreground">
-            Gestão de contas correntes, custos fixos e variáveis.
+            {t('financial.management_desc') ||
+              'Current accounts, fixed and variable costs management.'}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" /> Exportar (CSV)
+            <Download className="h-4 w-4" />{' '}
+            {t('financial.export_csv') || 'Export (CSV)'}
           </Button>
           <Dialog
             open={isAddOpen}
@@ -448,17 +466,20 @@ export default function Financial() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white">
-                <Plus className="h-4 w-4" /> Incluir Lançamento
+                <Plus className="h-4 w-4" />{' '}
+                {t('financial.add_transaction') || 'Add Transaction'}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Incluir Transação</DialogTitle>
+                <DialogTitle>
+                  {t('financial.add_title') || 'Include Transaction'}
+                </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Tipo</Label>
+                    <Label>{t('financial.type') || 'Type'}</Label>
                     <Select
                       value={form.type}
                       onValueChange={(v) => setForm({ ...form, type: v })}
@@ -467,13 +488,17 @@ export default function Financial() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="income">Receita</SelectItem>
-                        <SelectItem value="expense">Despesa</SelectItem>
+                        <SelectItem value="income">
+                          {t('financial.income') || 'Income'}
+                        </SelectItem>
+                        <SelectItem value="expense">
+                          {t('financial.expense') || 'Expense'}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label>Data</Label>
+                    <Label>{t('financial.date') || 'Date'}</Label>
                     <Input
                       type="date"
                       value={form.date}
@@ -486,9 +511,12 @@ export default function Financial() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Descrição</Label>
+                    <Label>{t('financial.description') || 'Description'}</Label>
                     <Input
-                      placeholder="Ex: Conta de Luz, Aluguel..."
+                      placeholder={
+                        t('financial.description_placeholder') ||
+                        'E.g: Electric Bill, Rent...'
+                      }
                       value={form.description}
                       onChange={(e) =>
                         setForm({ ...form, description: e.target.value })
@@ -496,7 +524,7 @@ export default function Financial() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Categoria</Label>
+                    <Label>{t('financial.category') || 'Category'}</Label>
                     <Select
                       value={form.category}
                       onValueChange={(v) => setForm({ ...form, category: v })}
@@ -505,14 +533,27 @@ export default function Financial() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="other">Outros</SelectItem>
-                        <SelectItem value="rent">Aluguel</SelectItem>
-                        <SelectItem value="maintenance">Manutenção</SelectItem>
-                        <SelectItem value="cleaning">Limpeza</SelectItem>
-                        <SelectItem value="hoa">HOA / Condomínio</SelectItem>
-                        <SelectItem value="tax">Impostos</SelectItem>
+                        <SelectItem value="other">
+                          {t('financial.categories.other') || 'Other'}
+                        </SelectItem>
+                        <SelectItem value="rent">
+                          {t('financial.categories.rent') || 'Rent'}
+                        </SelectItem>
+                        <SelectItem value="maintenance">
+                          {t('financial.categories.maintenance') ||
+                            'Maintenance'}
+                        </SelectItem>
+                        <SelectItem value="cleaning">
+                          {t('financial.categories.cleaning') || 'Cleaning'}
+                        </SelectItem>
+                        <SelectItem value="hoa">
+                          {t('financial.categories.hoa') || 'HOA / Condo'}
+                        </SelectItem>
+                        <SelectItem value="tax">
+                          {t('financial.categories.tax') || 'Taxes'}
+                        </SelectItem>
                         <SelectItem value="utilities">
-                          Utilidades (Água, Luz)
+                          {t('financial.categories.utilities') || 'Utilities'}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -521,7 +562,7 @@ export default function Financial() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>Valor</Label>
+                    <Label>{t('financial.amount') || 'Amount'}</Label>
                     <Input
                       type="number"
                       min="0"
@@ -536,17 +577,22 @@ export default function Financial() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Propriedade (Opcional)</Label>
+                    <Label>
+                      {t('financial.property_optional') ||
+                        'Property (Optional)'}
+                    </Label>
                     <Select
                       value={form.propertyId}
                       onValueChange={(v) => setForm({ ...form, propertyId: v })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Geral" />
+                        <SelectValue placeholder={t('common.all') || 'All'} />
                       </SelectTrigger>
                       <SelectContent>
                         {!isOwner && (
-                          <SelectItem value="none">Geral (PM)</SelectItem>
+                          <SelectItem value="none">
+                            {t('financial.pm_general') || 'PM (General)'}
+                          </SelectItem>
                         )}
                         {properties
                           .filter(
@@ -564,7 +610,9 @@ export default function Financial() {
 
                 {form.type === 'expense' && (
                   <div className="grid gap-2">
-                    <Label>Categoria de Custo</Label>
+                    <Label>
+                      {t('financial.cost_category') || 'Cost Category'}
+                    </Label>
                     <Select
                       value={form.costType}
                       onValueChange={(v) => setForm({ ...form, costType: v })}
@@ -574,10 +622,10 @@ export default function Financial() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="fixed">
-                          Custo Fixo (Condomínio, Água, Luz)
+                          {t('financial.fixed_cost') || 'Fixed Cost'}
                         </SelectItem>
                         <SelectItem value="variable">
-                          Custo Variável (Limpeza, Manutenção)
+                          {t('financial.variable_cost') || 'Variable Cost'}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -591,12 +639,17 @@ export default function Financial() {
                       setForm({ ...form, isRecurring: v })
                     }
                   />
-                  <Label>É uma despesa/receita recorrente?</Label>
+                  <Label>
+                    {t('financial.is_recurring') ||
+                      'Is this a recurring expense/income?'}
+                  </Label>
                 </div>
 
                 {form.isRecurring && (
                   <div className="grid gap-2">
-                    <Label>Frequência de Repetição</Label>
+                    <Label>
+                      {t('financial.recurrence_freq') || 'Recurrence Frequency'}
+                    </Label>
                     <Select
                       value={form.recurrenceFrequency}
                       onValueChange={(v) =>
@@ -607,19 +660,25 @@ export default function Financial() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="monthly">Mensalmente</SelectItem>
-                        <SelectItem value="yearly">Anualmente</SelectItem>
+                        <SelectItem value="monthly">
+                          {t('financial.monthly') || 'Monthly'}
+                        </SelectItem>
+                        <SelectItem value="yearly">
+                          {t('financial.yearly') || 'Yearly'}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Ao marcar este item como "Pago", o sistema irá gerar
-                      automaticamente o lançamento do próximo mês/ano.
+                      {t('financial.recurring_hint') ||
+                        'When marking this item as "Paid", the system will automatically generate the entry for the next month/year.'}
                     </p>
                   </div>
                 )}
 
                 <div className="grid gap-2">
-                  <Label>Status Inicial</Label>
+                  <Label>
+                    {t('financial.initial_status') || 'Initial Status'}
+                  </Label>
                   <Select
                     value={form.status}
                     onValueChange={(v) => setForm({ ...form, status: v })}
@@ -628,14 +687,20 @@ export default function Financial() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">Pendente</SelectItem>
-                      <SelectItem value="cleared">Pago/Recebido</SelectItem>
+                      <SelectItem value="pending">
+                        {t('common.pending') || 'Pending'}
+                      </SelectItem>
+                      <SelectItem value="cleared">
+                        {t('financial.cleared') || 'Paid/Received'}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleAdd}>Salvar Lançamento</Button>
+                <Button onClick={handleAdd}>
+                  {t('financial.save_transaction') || 'Save Transaction'}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -645,10 +710,11 @@ export default function Financial() {
       <Card className="border-slate-200">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg">
-            Painel de Saldos e Relatórios
+            {t('financial.balances_panel') || 'Balances and Reports Panel'}
           </CardTitle>
           <CardDescription>
-            Visualize o saldo da conta corrente filtrado pela sua preferência.
+            {t('financial.balances_desc') ||
+              'View the current account balance filtered by your preference.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -665,15 +731,16 @@ export default function Financial() {
                 >
                   <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
                     <TabsTrigger value="pm" className="gap-2">
-                      <Building className="w-4 h-4 hidden sm:block" /> PM
-                      (Geral)
+                      <Building className="w-4 h-4 hidden sm:block" />{' '}
+                      {t('financial.pm_general') || 'PM (General)'}
                     </TabsTrigger>
                     <TabsTrigger value="owner" className="gap-2">
-                      <User className="w-4 h-4 hidden sm:block" /> Proprietário
+                      <User className="w-4 h-4 hidden sm:block" />{' '}
+                      {t('financial.owner') || 'Owner'}
                     </TabsTrigger>
                     <TabsTrigger value="property" className="gap-2">
                       <Building className="w-4 h-4 hidden sm:block" />{' '}
-                      Propriedade
+                      {t('common.property') || 'Property'}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -686,11 +753,15 @@ export default function Financial() {
                     onValueChange={setSelectedOwnerId}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o Proprietário" />
+                      <SelectValue
+                        placeholder={
+                          t('financial.select_owner') || 'Select Owner'
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">
-                        Todos os Proprietários
+                        {t('financial.all_owners') || 'All Owners'}
                       </SelectItem>
                       {owners.map((o) => (
                         <SelectItem key={o.id} value={o.id}>
@@ -709,10 +780,16 @@ export default function Financial() {
                     onValueChange={setSelectedPropertyId}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione a Propriedade" />
+                      <SelectValue
+                        placeholder={
+                          t('financial.select_property') || 'Select Property'
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todas as Propriedades</SelectItem>
+                      <SelectItem value="all">
+                        {t('financial.all_properties') || 'All Properties'}
+                      </SelectItem>
                       {properties.map((p) => {
                         if (isOwner && p.ownerId !== effectiveUserId)
                           return null
@@ -728,7 +805,9 @@ export default function Financial() {
               )}
               {isOwner && viewMode === 'owner' && (
                 <div className="flex items-center gap-2 text-sm font-medium bg-blue-50 text-blue-700 px-4 py-2 rounded-md border border-blue-200">
-                  <User className="w-4 h-4" /> Visualizando Suas Propriedades
+                  <User className="w-4 h-4" />{' '}
+                  {t('financial.viewing_your_properties') ||
+                    'Viewing Your Properties'}
                 </div>
               )}
             </div>
@@ -736,7 +815,9 @@ export default function Financial() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 w-full lg:w-auto">
               <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
                 <Filter className="w-4 h-4" />
-                <span className="hidden xl:inline">Filtros:</span>
+                <span className="hidden xl:inline">
+                  {t('financial.filters') || 'Filters:'}
+                </span>
               </div>
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Select
@@ -744,29 +825,55 @@ export default function Financial() {
                   onValueChange={setFilterCategory}
                 >
                   <SelectTrigger className="w-[140px] sm:w-[160px] bg-white">
-                    <SelectValue placeholder="Categoria" />
+                    <SelectValue
+                      placeholder={t('common.category') || 'Category'}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todas Categorias</SelectItem>
-                    <SelectItem value="income">Receitas</SelectItem>
-                    <SelectItem value="expense">Despesas</SelectItem>
-                    <SelectItem value="maintenance">Manutenções</SelectItem>
-                    <SelectItem value="cleaning">Limpezas</SelectItem>
-                    <SelectItem value="hoa">HOA / Condomínio</SelectItem>
-                    <SelectItem value="tax">Impostos</SelectItem>
+                    <SelectItem value="all">
+                      {t('financial.all_categories') || 'All Categories'}
+                    </SelectItem>
+                    <SelectItem value="income">
+                      {t('financial.incomes') || 'Incomes'}
+                    </SelectItem>
+                    <SelectItem value="expense">
+                      {t('financial.expenses') || 'Expenses'}
+                    </SelectItem>
+                    <SelectItem value="maintenance">
+                      {t('financial.maintenances') || 'Maintenances'}
+                    </SelectItem>
+                    <SelectItem value="cleaning">
+                      {t('financial.cleanings') || 'Cleanings'}
+                    </SelectItem>
+                    <SelectItem value="hoa">
+                      {t('financial.hoa_condo') || 'HOA / Condo'}
+                    </SelectItem>
+                    <SelectItem value="tax">
+                      {t('financial.taxes') || 'Taxes'}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select value={filterPeriod} onValueChange={setFilterPeriod}>
                   <SelectTrigger className="w-[140px] sm:w-[160px] bg-white">
-                    <SelectValue placeholder="Período" />
+                    <SelectValue placeholder={t('common.period') || 'Period'} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todo o Período</SelectItem>
-                    <SelectItem value="month">Mês Atual</SelectItem>
-                    <SelectItem value="semester">Semestre</SelectItem>
-                    <SelectItem value="year">Ano Fiscal</SelectItem>
-                    <SelectItem value="custom">Personalizado</SelectItem>
+                    <SelectItem value="all">
+                      {t('financial.all_period') || 'All Period'}
+                    </SelectItem>
+                    <SelectItem value="month">
+                      {t('financial.current_month') || 'Current Month'}
+                    </SelectItem>
+                    <SelectItem value="semester">
+                      {t('financial.semester') || 'Semester'}
+                    </SelectItem>
+                    <SelectItem value="year">
+                      {t('financial.fiscal_year') || 'Fiscal Year'}
+                    </SelectItem>
+                    <SelectItem value="custom">
+                      {t('financial.custom') || 'Custom'}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -793,7 +900,8 @@ export default function Financial() {
             >
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Saldo Final Projetado
+                  {t('financial.projected_balance') ||
+                    'Projected Final Balance'}
                 </div>
                 <div
                   className={cn(
@@ -806,21 +914,23 @@ export default function Financial() {
                   {formatAppCurrency(balances.currentBalance)}
                 </div>
                 <div className="text-xs text-slate-500 mt-2">
-                  Saldo projetado incluindo o histórico filtrado
+                  {t('financial.projected_balance_desc') ||
+                    'Projected balance including the filtered history'}
                 </div>
               </CardContent>
             </Card>
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Total Receitas (No Período)
+                  {t('financial.total_incomes') || 'Total Incomes (In Period)'}
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
                   {formatAppCurrency(balances.income)}
                 </div>
                 {balances.pendingIncome > 0 && (
                   <div className="text-xs text-blue-600 mt-2">
-                    +{formatAppCurrency(balances.pendingIncome)} pendentes
+                    +{formatAppCurrency(balances.pendingIncome)}{' '}
+                    {t('financial.pending_suffix') || 'pending'}
                   </div>
                 )}
               </CardContent>
@@ -828,14 +938,16 @@ export default function Financial() {
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  Total Despesas (No Período)
+                  {t('financial.total_expenses') ||
+                    'Total Expenses (In Period)'}
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
                   {formatAppCurrency(balances.expense)}
                 </div>
                 {balances.pendingExpense > 0 && (
                   <div className="text-xs text-orange-600 mt-2">
-                    +{formatAppCurrency(balances.pendingExpense)} pendentes
+                    +{formatAppCurrency(balances.pendingExpense)}{' '}
+                    {t('financial.pending_suffix') || 'pending'}
                   </div>
                 )}
               </CardContent>
@@ -846,19 +958,31 @@ export default function Financial() {
 
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader className="pb-2 border-b">
-          <CardTitle className="text-lg">Extrato de Lançamentos</CardTitle>
+          <CardTitle className="text-lg">
+            {t('financial.statement') || 'Transaction Statement'}
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Tipo / Categoria</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
-                <TableHead className="text-right">Saldo</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('financial.table_date') || 'Date'}</TableHead>
+                <TableHead>
+                  {t('financial.table_desc') || 'Description'}
+                </TableHead>
+                <TableHead>
+                  {t('financial.table_type_cat') || 'Type / Category'}
+                </TableHead>
+                <TableHead>{t('financial.table_status') || 'Status'}</TableHead>
+                <TableHead className="text-right">
+                  {t('financial.table_amount') || 'Amount'}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t('financial.table_balance') || 'Balance'}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t('financial.table_actions') || 'Actions'}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -877,15 +1001,19 @@ export default function Financial() {
                         {entry.propertyId && (
                           <span className="text-xs text-slate-500">
                             {properties.find((p) => p.id === entry.propertyId)
-                              ?.name || 'Propriedade Excluída'}
+                              ?.name ||
+                              t(
+                                'financial.deleted_property',
+                                'Deleted Property',
+                              )}
                           </span>
                         )}
                         {entry.isRecurring && (
                           <span className="text-xs text-blue-600 flex items-center gap-1 mt-1">
                             <Clock className="w-3 h-3" />
                             {entry.recurrenceFrequency === 'monthly'
-                              ? 'Mensal'
-                              : 'Anual'}
+                              ? t('financial.monthly') || 'Monthly'
+                              : t('financial.yearly') || 'Yearly'}
                           </span>
                         )}
                       </div>
@@ -905,7 +1033,9 @@ export default function Financial() {
                           ) : (
                             <ArrowDownCircle className="w-3 h-3 mr-1" />
                           )}
-                          {isIncome ? 'Receita' : 'Despesa'}
+                          {isIncome
+                            ? t('financial.income') || 'Income'
+                            : t('financial.expense') || 'Expense'}
                         </Badge>
                         {!isIncome && entry.costType && (
                           <Badge
@@ -913,8 +1043,8 @@ export default function Financial() {
                             className="text-xs border-slate-300"
                           >
                             {entry.costType === 'fixed'
-                              ? 'Custo Fixo'
-                              : 'Custo Variável'}
+                              ? t('financial.fixed_cost') || 'Fixed Cost'
+                              : t('financial.variable_cost') || 'Variable Cost'}
                           </Badge>
                         )}
                         {entry.category && entry.category !== 'other' && (
@@ -927,14 +1057,16 @@ export default function Financial() {
                     <TableCell>
                       {entry.status === 'cleared' ? (
                         <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200">
-                          <CheckCircle2 className="w-3 h-3 mr-1" /> Pago
+                          <CheckCircle2 className="w-3 h-3 mr-1" />{' '}
+                          {t('common.paid') || 'Paid'}
                         </Badge>
                       ) : (
                         <Badge
                           variant="secondary"
                           className="bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200"
                         >
-                          <AlertCircle className="w-3 h-3 mr-1" /> Pendente
+                          <AlertCircle className="w-3 h-3 mr-1" />{' '}
+                          {t('common.pending') || 'Pending'}
                         </Badge>
                       )}
                     </TableCell>
@@ -966,7 +1098,8 @@ export default function Financial() {
                             className="h-8 border-green-200 text-green-700 hover:bg-green-50"
                             onClick={() => markAsPaid(entry)}
                           >
-                            <CheckCircle2 className="h-4 w-4 mr-1" /> Pagar
+                            <CheckCircle2 className="h-4 w-4 mr-1" />{' '}
+                            {t('financial.pay') || 'Pay'}
                           </Button>
                         )}
                         <>
@@ -988,12 +1121,17 @@ export default function Financial() {
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl">
                               <DialogHeader>
-                                <DialogTitle>Alterar Transação</DialogTitle>
+                                <DialogTitle>
+                                  {t('financial.edit_transaction') ||
+                                    'Edit Transaction'}
+                                </DialogTitle>
                               </DialogHeader>
                               <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="grid gap-2">
-                                    <Label>Tipo</Label>
+                                    <Label>
+                                      {t('financial.type') || 'Type'}
+                                    </Label>
                                     <Select
                                       value={form.type}
                                       onValueChange={(v) =>
@@ -1005,16 +1143,18 @@ export default function Financial() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="income">
-                                          Receita
+                                          {t('financial.income') || 'Income'}
                                         </SelectItem>
                                         <SelectItem value="expense">
-                                          Despesa
+                                          {t('financial.expense') || 'Expense'}
                                         </SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
                                   <div className="grid gap-2">
-                                    <Label>Data</Label>
+                                    <Label>
+                                      {t('financial.date') || 'Date'}
+                                    </Label>
                                     <Input
                                       type="date"
                                       value={form.date}
@@ -1030,7 +1170,10 @@ export default function Financial() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="grid gap-2">
-                                    <Label>Descrição</Label>
+                                    <Label>
+                                      {t('financial.description') ||
+                                        'Description'}
+                                    </Label>
                                     <Input
                                       value={form.description}
                                       onChange={(e) =>
@@ -1042,7 +1185,9 @@ export default function Financial() {
                                     />
                                   </div>
                                   <div className="grid gap-2">
-                                    <Label>Categoria</Label>
+                                    <Label>
+                                      {t('financial.category') || 'Category'}
+                                    </Label>
                                     <Select
                                       value={form.category}
                                       onValueChange={(v) =>
@@ -1054,25 +1199,34 @@ export default function Financial() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="other">
-                                          Outros
+                                          {t('financial.categories.other') ||
+                                            'Other'}
                                         </SelectItem>
                                         <SelectItem value="rent">
-                                          Aluguel
+                                          {t('financial.categories.rent') ||
+                                            'Rent'}
                                         </SelectItem>
                                         <SelectItem value="maintenance">
-                                          Manutenção
+                                          {t(
+                                            'financial.categories.maintenance',
+                                          ) || 'Maintenance'}
                                         </SelectItem>
                                         <SelectItem value="cleaning">
-                                          Limpeza
+                                          {t('financial.categories.cleaning') ||
+                                            'Cleaning'}
                                         </SelectItem>
                                         <SelectItem value="hoa">
-                                          HOA / Condomínio
+                                          {t('financial.categories.hoa') ||
+                                            'HOA / Condo'}
                                         </SelectItem>
                                         <SelectItem value="tax">
-                                          Impostos
+                                          {t('financial.categories.tax') ||
+                                            'Taxes'}
                                         </SelectItem>
                                         <SelectItem value="utilities">
-                                          Utilidades (Água, Luz)
+                                          {t(
+                                            'financial.categories.utilities',
+                                          ) || 'Utilities'}
                                         </SelectItem>
                                       </SelectContent>
                                     </Select>
@@ -1081,7 +1235,9 @@ export default function Financial() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                   <div className="grid gap-2">
-                                    <Label>Valor</Label>
+                                    <Label>
+                                      {t('financial.amount') || 'Amount'}
+                                    </Label>
                                     <Input
                                       type="number"
                                       min="0"
@@ -1098,7 +1254,9 @@ export default function Financial() {
                                     />
                                   </div>
                                   <div className="grid gap-2">
-                                    <Label>Propriedade</Label>
+                                    <Label>
+                                      {t('common.property') || 'Property'}
+                                    </Label>
                                     <Select
                                       value={form.propertyId}
                                       onValueChange={(v) =>
@@ -1111,7 +1269,8 @@ export default function Financial() {
                                       <SelectContent>
                                         {!isOwner && (
                                           <SelectItem value="none">
-                                            Geral (PM)
+                                            {t('financial.pm_general') ||
+                                              'PM (General)'}
                                           </SelectItem>
                                         )}
                                         {properties
@@ -1132,7 +1291,10 @@ export default function Financial() {
 
                                 {form.type === 'expense' && (
                                   <div className="grid gap-2">
-                                    <Label>Categoria de Custo</Label>
+                                    <Label>
+                                      {t('financial.cost_category') ||
+                                        'Cost Category'}
+                                    </Label>
                                     <Select
                                       value={form.costType}
                                       onValueChange={(v) =>
@@ -1144,10 +1306,12 @@ export default function Financial() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="fixed">
-                                          Custo Fixo
+                                          {t('financial.fixed_cost') ||
+                                            'Fixed Cost'}
                                         </SelectItem>
                                         <SelectItem value="variable">
-                                          Custo Variável
+                                          {t('financial.variable_cost') ||
+                                            'Variable Cost'}
                                         </SelectItem>
                                       </SelectContent>
                                     </Select>
@@ -1162,13 +1326,17 @@ export default function Financial() {
                                     }
                                   />
                                   <Label>
-                                    É uma despesa/receita recorrente?
+                                    {t('financial.is_recurring') ||
+                                      'Is this a recurring expense/income?'}
                                   </Label>
                                 </div>
 
                                 {form.isRecurring && (
                                   <div className="grid gap-2">
-                                    <Label>Frequência</Label>
+                                    <Label>
+                                      {t('financial.recurrence_freq') ||
+                                        'Recurrence Frequency'}
+                                    </Label>
                                     <Select
                                       value={form.recurrenceFrequency}
                                       onValueChange={(v) =>
@@ -1183,10 +1351,10 @@ export default function Financial() {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="monthly">
-                                          Mensal
+                                          {t('financial.monthly') || 'Monthly'}
                                         </SelectItem>
                                         <SelectItem value="yearly">
-                                          Anual
+                                          {t('financial.yearly') || 'Yearly'}
                                         </SelectItem>
                                       </SelectContent>
                                     </Select>
@@ -1194,7 +1362,10 @@ export default function Financial() {
                                 )}
 
                                 <div className="grid gap-2">
-                                  <Label>Status</Label>
+                                  <Label>
+                                    {t('financial.initial_status') ||
+                                      'Initial Status'}
+                                  </Label>
                                   <Select
                                     value={form.status}
                                     onValueChange={(v) =>
@@ -1206,10 +1377,11 @@ export default function Financial() {
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="pending">
-                                        Pendente
+                                        {t('common.pending') || 'Pending'}
                                       </SelectItem>
                                       <SelectItem value="cleared">
-                                        Pago/Recebido
+                                        {t('financial.cleared') ||
+                                          'Paid/Received'}
                                       </SelectItem>
                                     </SelectContent>
                                   </Select>
@@ -1217,7 +1389,8 @@ export default function Financial() {
                               </div>
                               <DialogFooter>
                                 <Button onClick={handleEdit}>
-                                  Salvar Alterações
+                                  {t('financial.save_changes') ||
+                                    'Save Changes'}
                                 </Button>
                               </DialogFooter>
                             </DialogContent>
@@ -1235,20 +1408,23 @@ export default function Financial() {
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>
-                                  Excluir Transação
+                                  {t('financial.delete_transaction') ||
+                                    'Delete Transaction'}
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir esta transação?
-                                  Esta ação não pode ser desfeita.
+                                  {t('financial.delete_confirm') ||
+                                    'Are you sure you want to delete this transaction? This action cannot be undone.'}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel>
+                                  {t('common.cancel') || 'Cancel'}
+                                </AlertDialogCancel>
                                 <AlertDialogAction
                                   className="bg-red-600 hover:bg-red-700"
                                   onClick={() => handleDelete(entry.id)}
                                 >
-                                  Excluir
+                                  {t('common.delete') || 'Delete'}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -1265,7 +1441,8 @@ export default function Financial() {
                     colSpan={7}
                     className="text-center py-12 text-muted-foreground"
                   >
-                    Nenhuma transação encontrada para os filtros selecionados.
+                    {t('financial.no_transactions') ||
+                      'No transactions found for the selected filters.'}
                   </TableCell>
                 </TableRow>
               )}

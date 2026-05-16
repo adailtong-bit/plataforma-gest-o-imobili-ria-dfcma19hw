@@ -29,16 +29,16 @@ export function InvoiceViewer({
       <DialogContent className="max-w-2xl bg-white text-black p-0 overflow-hidden">
         <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
           <DialogTitle>
-            {t('invoices.invoice_viewer.title') || 'Detalhes da Fatura'}
+            {t('invoices.invoice_viewer.title') || 'Invoice Viewer'}
           </DialogTitle>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
               <Printer className="h-4 w-4 mr-2" />{' '}
-              {t('invoices.invoice_viewer.print') || 'Imprimir'}
+              {t('invoices.invoice_viewer.print') || 'Print'}
             </Button>
             <Button variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />{' '}
-              {t('invoices.invoice_viewer.download') || 'Baixar PDF'}
+              {t('invoices.invoice_viewer.download') || 'Download PDF'}
             </Button>
           </div>
         </div>
@@ -46,12 +46,12 @@ export function InvoiceViewer({
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold text-trust-blue">
-                {t('common.invoices')?.toUpperCase() || 'FATURA'}
+                {t('common.invoices')?.toUpperCase() || 'INVOICE'}
               </h2>
               <p className="text-sm text-slate-500 mt-1">#{invoice.id}</p>
             </div>
             <div className="text-right text-sm">
-              <p className="font-semibold">{t('common.date') || 'Data'}</p>
+              <p className="font-semibold">{t('common.date') || 'Date'}</p>
               <p>{format(new Date(invoice.date), 'dd/MM/yyyy')}</p>
             </div>
           </div>
@@ -59,10 +59,10 @@ export function InvoiceViewer({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="font-semibold text-slate-500 mb-1">
-                  {t('invoices.bill_to') || 'Faturar Para:'}
+                  {t('invoices.bill_to') || 'Bill To:'}
                 </p>
                 <p className="font-medium">
-                  {t('roles.property_owner') || 'Cliente / Proprietário'}
+                  {t('roles.property_owner') || 'Client / Owner'}
                 </p>
               </div>
               <div className="text-right">
@@ -71,8 +71,8 @@ export function InvoiceViewer({
                 </p>
                 <p className="uppercase font-bold text-slate-800">
                   {invoice.status === 'paid'
-                    ? t('common.paid') || 'Pago'
-                    : t('common.pending') || 'Pendente'}
+                    ? t('common.paid') || 'Paid'
+                    : t('common.pending') || 'Pending'}
                 </p>
               </div>
             </div>
@@ -81,10 +81,10 @@ export function InvoiceViewer({
             <thead>
               <tr className="border-b border-slate-200">
                 <th className="text-left py-2 font-semibold text-slate-600">
-                  {t('common.description') || 'Descrição'}
+                  {t('common.description') || 'Description'}
                 </th>
                 <th className="text-right py-2 font-semibold text-slate-600">
-                  {t('common.value') || 'Valor'}
+                  {t('common.value') || 'Value'}
                 </th>
               </tr>
             </thead>

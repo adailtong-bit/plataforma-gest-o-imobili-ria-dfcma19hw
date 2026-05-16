@@ -49,21 +49,21 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
       t('common.category') || 'Category',
       t('common.description') || 'Description',
       t('common.value') || 'Value',
-      t('financial.running_balance') || 'Saldo Acumulado',
+      t('financial.running_balance') || 'Running Balance',
       t('common.status') || 'Status',
     ]
     const rows = entriesWithBalance.map((e) => [
       formatDate(e.date, language),
       e.type === 'income'
-        ? t('analytics.revenue') || 'Receita'
-        : t('analytics.expenses') || 'Despesa',
+        ? t('analytics.revenue') || 'Revenue'
+        : t('analytics.expenses') || 'Expense',
       e.category || '',
       `"${e.description.replace(/"/g, '""')}"`,
       e.amount.toFixed(2),
       e.runningBalance.toFixed(2),
       e.status === 'cleared' || e.status === 'paid'
-        ? t('common.paid') || 'Pago'
-        : t('common.pending') || 'Pendente',
+        ? t('common.paid') || 'Paid'
+        : t('common.pending') || 'Pending',
     ])
     exportToCSV(`property_${propertyId}_ledger.csv`, headers, rows)
   }
@@ -93,7 +93,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
             className="gap-2"
           >
             <Download className="h-4 w-4" />{' '}
-            {t('automation.export_csv') || 'Exportar para Contabilidade (CSV)'}
+            {t('automation.export_csv') || 'Export for Accounting (CSV)'}
           </Button>
         </div>
       </div>
@@ -107,10 +107,10 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
               <TableHead>{t('common.category') || 'Category'}</TableHead>
               <TableHead>{t('common.description') || 'Description'}</TableHead>
               <TableHead className="text-right">
-                {t('common.value') || 'Valor'}
+                {t('common.value') || 'Value'}
               </TableHead>
               <TableHead className="text-right">
-                {t('financial.running_balance') || 'Saldo Acumulado'}
+                {t('financial.running_balance') || 'Running Balance'}
               </TableHead>
               <TableHead className="text-right">
                 {t('common.status') || 'Status'}
@@ -149,9 +149,9 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                   </TableCell>
                   <TableCell className="capitalize">
                     {entry.category === 'hoa'
-                      ? 'HOA / Condomínio'
+                      ? 'HOA / Condo'
                       : entry.category === 'tax'
-                        ? 'Impostos'
+                        ? 'Taxes'
                         : entry.category}
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate text-slate-700">
@@ -179,7 +179,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-green-50 text-green-700 border-green-200"
                       >
                         <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {t('common.paid') || 'Pago'}
+                        {t('common.paid') || 'Paid'}
                       </Badge>
                     ) : (
                       <Badge
@@ -187,7 +187,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                         className="bg-yellow-50 text-yellow-800 border-yellow-200"
                       >
                         <AlertCircle className="h-3 w-3 mr-1" />
-                        {t('common.pending') || 'Pendente'}
+                        {t('common.pending') || 'Pending'}
                       </Badge>
                     )}
                   </TableCell>

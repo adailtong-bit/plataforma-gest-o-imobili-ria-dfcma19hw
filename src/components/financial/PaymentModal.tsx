@@ -41,8 +41,8 @@ export function PaymentModal({
       onSuccess()
       onOpenChange(false)
       toast({
-        title: t('financial.payment_successful') || 'Pagamento Realizado',
-        description: `${t('financial.transaction_id') || 'ID da Transação:'} 123456789`,
+        title: t('financial.payment_successful') || 'Payment Successful',
+        description: `${t('financial.transaction_id') || 'Transaction ID:'} 123456789`,
       })
     }, 2000)
   }
@@ -52,10 +52,10 @@ export function PaymentModal({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {t('financial.secure_payment') || 'Pagamento Seguro'}
+            {t('financial.secure_payment') || 'Secure Payment'}
           </DialogTitle>
           <DialogDescription>
-            {t('financial.complete_payment_for') || 'Concluir pagamento de:'}{' '}
+            {t('financial.complete_payment_for') || 'Complete payment for:'}{' '}
             <span className="font-semibold">{description}</span>
           </DialogDescription>
         </DialogHeader>
@@ -70,26 +70,26 @@ export function PaymentModal({
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="card">
               <CreditCard className="h-4 w-4 mr-2" />{' '}
-              {t('financial.card') || 'Cartão'}
+              {t('financial.card') || 'Card'}
             </TabsTrigger>
             <TabsTrigger value="bank">
               <Landmark className="h-4 w-4 mr-2" />{' '}
-              {t('financial.bank') || 'Banco'}
+              {t('financial.bank') || 'Bank'}
             </TabsTrigger>
             <TabsTrigger value="cash">
               <Banknote className="h-4 w-4 mr-2" />{' '}
-              {t('common.other') || 'Outro'}
+              {t('common.other') || 'Other'}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="card" className="space-y-4 pt-4">
             <div className="grid gap-2">
-              <Label>{t('financial.card_number') || 'Número do Cartão'}</Label>
+              <Label>{t('financial.card_number') || 'Card Number'}</Label>
               <Input placeholder="0000 0000 0000 0000" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('financial.expiry') || 'Validade'}</Label>
+                <Label>{t('financial.expiry') || 'Expiry'}</Label>
                 <Input placeholder="MM/YY" />
               </div>
               <div className="grid gap-2">
@@ -103,8 +103,8 @@ export function PaymentModal({
               disabled={isProcessing}
             >
               {isProcessing
-                ? t('common.loading') || 'Processando...'
-                : t('financial.pay_now') || 'Pagar Agora'}
+                ? t('common.loading') || 'Processing...'
+                : t('financial.pay_now') || 'Pay Now'}
             </Button>
           </TabsContent>
 
@@ -113,13 +113,13 @@ export function PaymentModal({
             className="pt-4 text-center text-sm text-muted-foreground"
           >
             {t('financial.bank_transfer_details') ||
-              'Detalhes da transferência bancária (PIX/TED) aparecerão aqui.'}
+              'Bank transfer details will appear here.'}
             <Button
               className="w-full mt-4"
               variant="outline"
               onClick={handlePay}
             >
-              {t('financial.simulate_transfer') || 'Simular Transferência'}
+              {t('financial.simulate_transfer') || 'Simulate Transfer'}
             </Button>
           </TabsContent>
 
@@ -128,13 +128,13 @@ export function PaymentModal({
             className="pt-4 text-center text-sm text-muted-foreground"
           >
             {t('financial.record_manual_payment') ||
-              'Registrar pagamento manual (Dinheiro/Cheque).'}
+              'Record manual payment (Cash/Check).'}
             <Button
               className="w-full mt-4"
               variant="outline"
               onClick={handlePay}
             >
-              {t('financial.record_payment') || 'Registrar Pagamento'}
+              {t('financial.record_payment') || 'Record Payment'}
             </Button>
           </TabsContent>
         </Tabs>

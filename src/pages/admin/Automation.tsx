@@ -20,10 +20,11 @@ export default function Automation() {
     <div className="flex flex-col gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('common.automation_rules')}
+          {t('common.automation_rules') || 'Automation Rules'}
         </h1>
         <p className="text-muted-foreground">
-          Configure system automation rules.
+          {t('settings.automation_desc') ||
+            'Configure system automation rules.'}
         </p>
       </div>
       <Card className="border-slate-200 shadow-sm bg-white">
@@ -31,10 +32,10 @@ export default function Automation() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Rule Type</TableHead>
-                <TableHead>Conditions</TableHead>
+                <TableHead>{t('common.type') || 'Rule Type'}</TableHead>
+                <TableHead>{t('common.description') || 'Conditions'}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.status')}
+                  {t('common.status') || 'Status'}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -51,7 +52,9 @@ export default function Automation() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Badge variant={rule.enabled ? 'default' : 'secondary'}>
-                      {rule.enabled ? 'Enabled' : 'Disabled'}
+                      {rule.enabled
+                        ? t('common.active') || 'Enabled'
+                        : t('common.inactive') || 'Disabled'}
                     </Badge>
                   </TableCell>
                 </TableRow>
@@ -62,7 +65,7 @@ export default function Automation() {
                     colSpan={3}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    {t('common.empty') || 'No records found.'}
                   </TableCell>
                 </TableRow>
               )}

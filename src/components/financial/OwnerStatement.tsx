@@ -116,14 +116,14 @@ export function OwnerStatement({
 
   const handleDownloadCSV = () => {
     const headers = [
-      t('common.date') || 'Data',
-      t('common.property') || 'Propriedade',
-      t('common.description') || 'Descrição',
-      t('common.category') || 'Categoria',
-      t('common.type') || 'Tipo',
+      t('common.date') || 'Date',
+      t('common.property') || 'Property',
+      t('common.description') || 'Description',
+      t('common.category') || 'Category',
+      t('common.type') || 'Type',
       t('common.status') || 'Status',
-      t('common.value') || 'Valor',
-      t('financial.running_balance') || 'Saldo Acumulado',
+      t('common.value') || 'Value',
+      t('financial.running_balance') || 'Running Balance',
     ]
     const rows = entriesWithBalance.map((e) => {
       const prop = properties.find((p) => p.id === e.propertyId)
@@ -140,9 +140,8 @@ export function OwnerStatement({
     })
     exportToCSV(`owner_${ownerId}_accounting.csv`, headers, rows)
     toast({
-      title: t('common.export_success_title') || 'Exportação Iniciada',
-      description:
-        t('common.export_success') || 'Dados exportados com sucesso.',
+      title: t('common.export_success_title') || 'Export Started',
+      description: t('common.export_success') || 'Data exported successfully.',
     })
   }
 
@@ -158,7 +157,7 @@ export function OwnerStatement({
 
       <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
         <CardTitle>
-          {t('financial.owner_statement') || 'Extrato do Proprietário'}
+          {t('financial.owner_statement') || 'Owner Statement'}
         </CardTitle>
         <div className="flex gap-2 flex-wrap justify-end">
           <Select
@@ -170,8 +169,8 @@ export function OwnerStatement({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
-                {t('common.all_properties') ||
-                  'Saldo Total do Portfólio (Todas as Contas)'}
+                {t('financial.all_portfolio_balance') ||
+                  'Total Portfolio Balance (All Accounts)'}
               </SelectItem>
               {ownerProperties.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
@@ -187,22 +186,22 @@ export function OwnerStatement({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="current">
-                {t('financial.this_month') || 'Mês Atual'}
+                {t('financial.this_month') || 'Current Month'}
               </SelectItem>
               <SelectItem value="last">
-                {t('financial.last_month') || 'Mês Passado'}
+                {t('financial.last_month') || 'Last Month'}
               </SelectItem>
               <SelectItem value="last3">
-                {t('financial.last_3_months') || 'Últimos 3 Meses'}
+                {t('financial.last_3_months') || 'Last 3 Months'}
               </SelectItem>
               <SelectItem value="semester">
-                {t('financial.semester') || 'Semestre'}
+                {t('financial.semester') || 'Semester'}
               </SelectItem>
               <SelectItem value="year">
-                {t('financial.current_year') || 'Ano Atual'} ({currentYear})
+                {t('financial.current_year') || 'Current Year'} ({currentYear})
               </SelectItem>
               <SelectItem value="prevYear">
-                {t('financial.previous_year') || 'Ano Anterior'} (
+                {t('financial.previous_year') || 'Previous Year'} (
                 {currentYear - 1})
               </SelectItem>
             </SelectContent>
@@ -213,7 +212,7 @@ export function OwnerStatement({
             className="gap-2 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200"
           >
             <Download className="h-4 w-4" />{' '}
-            {t('automation.export_csv') || 'Exportar para Contabilidade (CSV)'}
+            {t('automation.export_csv') || 'Export for Accounting (CSV)'}
           </Button>
         </div>
       </CardHeader>
@@ -221,7 +220,7 @@ export function OwnerStatement({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-green-50 rounded-lg border border-green-100">
             <p className="text-sm text-slate-600 font-medium">
-              {t('financial.gross_revenue') || 'Receita Bruta'}
+              {t('financial.gross_revenue') || 'Gross Revenue'}
             </p>
             <p className="text-2xl font-bold text-green-700">
               ${totalIncome.toFixed(2)}
@@ -229,7 +228,7 @@ export function OwnerStatement({
           </div>
           <div className="p-4 bg-red-50 rounded-lg border border-red-100">
             <p className="text-sm text-slate-600 font-medium">
-              {t('financial.total_expenses') || 'Despesas'}
+              {t('financial.total_expenses') || 'Expenses'}
             </p>
             <p className="text-2xl font-bold text-red-700">
               ${totalExpenses.toFixed(2)}
@@ -242,8 +241,8 @@ export function OwnerStatement({
               className={`text-sm font-medium ${netIncome < 0 ? 'text-red-800' : 'text-slate-600'}`}
             >
               {netIncome < 0
-                ? t('financial.negative_payout') || 'Saldo Devedor / Retenção'
-                : t('financial.net_income') || 'Lucro Líquido (Repasse)'}
+                ? t('financial.negative_payout') || 'Debt Balance / Retention'
+                : t('financial.net_income') || 'Net Income (Payout)'}
             </p>
             <p
               className={`text-2xl font-bold ${netIncome < 0 ? 'text-red-700' : 'text-blue-700'}`}
@@ -257,25 +256,25 @@ export function OwnerStatement({
           <TableHeader>
             <TableRow className="bg-slate-50 border-b-2 border-slate-200">
               <TableHead className="font-bold text-black">
-                {t('common.date') || 'Data'}
+                {t('common.date') || 'Date'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.property') || 'Propriedade'}
+                {t('common.property') || 'Property'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.description') || 'Descrição'}
+                {t('common.description') || 'Description'}
               </TableHead>
               <TableHead className="font-bold text-black">
-                {t('common.category') || 'Categoria'}
+                {t('common.category') || 'Category'}
               </TableHead>
               <TableHead className="font-bold text-black">
                 {t('common.status') || 'Status'}
               </TableHead>
               <TableHead className="text-right font-bold text-black">
-                {t('common.value') || 'Valor'}
+                {t('common.value') || 'Value'}
               </TableHead>
               <TableHead className="text-right font-bold text-black">
-                {t('financial.running_balance') || 'Saldo Acumulado'}
+                {t('financial.running_balance') || 'Running Balance'}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -286,7 +285,7 @@ export function OwnerStatement({
                   colSpan={7}
                   className="text-center py-8 text-slate-500"
                 >
-                  {t('common.empty') || 'Nenhum registro encontrado.'}
+                  {t('common.empty') || 'No records found.'}
                 </TableCell>
               </TableRow>
             ) : (
@@ -323,7 +322,7 @@ export function OwnerStatement({
                             onClick={() => setViewingTask(associatedTask)}
                           >
                             <ClipboardList className="h-3 w-3" />
-                            {t('common.view_task') || 'Ver Tarefa'}
+                            {t('common.view_task') || 'View Task'}
                           </div>
                         )}
                       </div>
@@ -331,23 +330,23 @@ export function OwnerStatement({
                     <TableCell>
                       <span className="capitalize text-black">
                         {entry.category === 'hoa'
-                          ? 'HOA / Condomínio'
+                          ? 'HOA / Condo'
                           : entry.category === 'tax'
-                            ? 'Impostos'
+                            ? 'Taxes'
                             : entry.category}
                       </span>
                     </TableCell>
                     <TableCell>
                       {entry.status === 'cleared' ? (
                         <Badge className="bg-green-600">
-                          {t('common.paid') || 'Pago'}
+                          {t('common.paid') || 'Paid'}
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="text-black border-slate-300"
                         >
-                          {t('common.pending') || 'Pendente'}
+                          {t('common.pending') || 'Pending'}
                         </Badge>
                       )}
                     </TableCell>

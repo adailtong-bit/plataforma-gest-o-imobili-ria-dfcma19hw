@@ -52,11 +52,11 @@ export function ServiceProfitabilityReport() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {t('reports.service_profitability') || 'Rentabilidade de Serviços'}
+            {t('reports.service_profitability') || 'Service Profitability'}
           </CardTitle>
           <CardDescription>
             {t('reports.top_performing_services') ||
-              'Serviços de hóspedes com melhor desempenho'}
+              'Top performing guest services'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -64,11 +64,11 @@ export function ServiceProfitabilityReport() {
             <ChartContainer
               config={{
                 revenue: {
-                  label: t('common.revenue') || 'Receita',
+                  label: t('common.revenue') || 'Revenue',
                   color: '#3b82f6',
                 },
                 profit: {
-                  label: t('common.profit') || 'Lucro',
+                  label: t('common.profit') || 'Profit',
                   color: '#10b981',
                 },
               }}
@@ -89,13 +89,13 @@ export function ServiceProfitabilityReport() {
                     dataKey="revenue"
                     fill="#3b82f6"
                     radius={[4, 4, 0, 0]}
-                    name={t('common.revenue') || 'Receita'}
+                    name={t('common.revenue') || 'Revenue'}
                   />
                   <Bar
                     dataKey="profit"
                     fill="#10b981"
                     radius={[4, 4, 0, 0]}
-                    name={t('common.net_profit') || 'Lucro Líquido'}
+                    name={t('common.net_profit') || 'Net Profit'}
                   />
                 </BarChart>
               </ResponsiveContainer>
