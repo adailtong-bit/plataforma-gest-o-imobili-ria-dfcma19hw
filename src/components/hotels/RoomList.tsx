@@ -152,11 +152,11 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead>Number/Name</TableHead>
-              <TableHead>Category/Type</TableHead>
+              <TableHead>Room Number / Name</TableHead>
+              <TableHead>Pricing Category (Link)</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Base Price</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>Current Price</TableHead>
+              <TableHead className="text-right">Manage</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -180,15 +180,15 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                         handleUpdateCategory(room.id, val)
                       }
                     >
-                      <SelectTrigger className="w-[200px] h-9 text-sm bg-white">
-                        <SelectValue placeholder="Select Category" />
+                      <SelectTrigger className="w-[220px] h-9 text-sm bg-white border-slate-300">
+                        <SelectValue placeholder="Select Pricing Category" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
                           value="custom"
                           className="text-sm text-slate-500 italic"
                         >
-                          Custom / Uncategorized
+                          None / Custom Price
                         </SelectItem>
                         {roomTypes.map((rt) => (
                           <SelectItem
@@ -196,7 +196,7 @@ export function RoomList({ hotelId, towerId }: RoomListProps) {
                             value={rt.id}
                             className="text-sm font-medium text-slate-900"
                           >
-                            {rt.name}
+                            {rt.name} - ${rt.base_price}/night
                           </SelectItem>
                         ))}
                       </SelectContent>
