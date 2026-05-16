@@ -63,85 +63,85 @@ export function AppSidebar() {
 
   const mainNavItems = [
     {
-      title: getTitle('sidebar.dashboard', 'Painel'),
+      title: getTitle('sidebar.dashboard', 'Dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
     },
     {
-      title: getTitle('sidebar.units', 'Propriedades'),
+      title: getTitle('sidebar.units', 'Properties'),
       url: '/properties',
       icon: Building2,
       resource: 'properties',
     },
     {
-      title: getTitle('hotels.title', 'Hotéis'),
+      title: getTitle('hotels.title', 'Hotels'),
       url: '/hotels',
       icon: Hotel,
       resource: 'hotels',
     },
     {
-      title: getTitle('sidebar.condominiums', 'Condomínios'),
+      title: getTitle('sidebar.condominiums', 'Condominiums'),
       url: '/condominiums',
       icon: MapPin,
       resource: 'condominiums',
     },
     {
-      title: getTitle('sidebar.owners', 'Proprietários'),
+      title: getTitle('sidebar.owners', 'Owners'),
       url: '/owners',
       icon: Briefcase,
       resource: 'owners',
     },
     {
-      title: getTitle('sidebar.tenants', 'Inquilinos'),
+      title: getTitle('sidebar.tenants', 'Tenants'),
       url: '/tenants',
       icon: Users,
       resource: 'tenants',
     },
     {
-      title: getTitle('sidebar.calendar', 'Calendário'),
+      title: getTitle('sidebar.calendar', 'Calendar'),
       url: '/calendar',
       icon: Calendar,
       resource: 'calendar',
     },
     {
-      title: getTitle('sidebar.financial', 'Financeiro'),
+      title: getTitle('sidebar.financial', 'Financial'),
       url: '/financial',
       icon: DollarSign,
       resource: 'financial',
     },
     {
-      title: getTitle('common.invoices', 'Faturas'),
+      title: getTitle('common.invoices', 'Invoices'),
       url: '/invoices',
       icon: FileText,
       resource: 'financial',
     },
     {
-      title: getTitle('common.short_term', 'Aluguel Temporada'),
+      title: getTitle('common.short_term', 'Short Term Rental'),
       url: '/short-term',
       icon: Building2,
       resource: 'short_term',
     },
     {
-      title: getTitle('common.visits', 'Visitas'),
+      title: getTitle('common.visits', 'Visits'),
       url: '/visits',
       icon: MapPin,
       resource: 'visits',
     },
     {
-      title: getTitle('common.renewals', 'Renovações'),
+      title: getTitle('common.renewals', 'Renewals'),
       url: '/renewals',
       icon: Repeat,
       resource: 'renewals',
     },
     {
-      title: getTitle('sidebar.reports', 'Relatórios'),
+      title: getTitle('sidebar.reports', 'Reports'),
       url: '/reports',
       icon: FileText,
       resource: 'reports',
     },
     {
-      title: getTitle('common.market_analysis', 'Análise de Mercado'),
+      title: getTitle('common.market_analysis', 'Market Analysis'),
       url: '/market-analysis',
       icon: PieChart,
       resource: 'market_analysis',
@@ -150,19 +150,19 @@ export function AppSidebar() {
 
   const operationsItems = [
     {
-      title: getTitle('sidebar.performance', 'Desempenho'),
+      title: getTitle('sidebar.performance', 'Performance'),
       url: '/performance',
       icon: Activity,
       resource: 'performance',
     },
     {
-      title: getTitle('sidebar.guest_services', 'Serviços Hóspede'),
+      title: getTitle('sidebar.guest_services', 'Guest Services'),
       url: '/guest-services',
       icon: HeartHandshake,
       resource: 'guest_services',
     },
     {
-      title: getTitle('sidebar.pos', 'PDV'),
+      title: getTitle('sidebar.pos', 'POS'),
       url: '/pos',
       icon: ShoppingCart,
       resource: 'pos',
@@ -174,37 +174,37 @@ export function AppSidebar() {
       resource: 'marketing',
     },
     {
-      title: getTitle('common.tasks', 'Tarefas'),
+      title: getTitle('common.tasks', 'Tasks'),
       url: '/tasks',
       icon: Wrench,
       resource: 'tasks',
     },
     {
-      title: getTitle('sidebar.housekeeping', 'Limpeza'),
+      title: getTitle('sidebar.housekeeping', 'Housekeeping'),
       url: '/housekeeping',
       icon: HardHat,
       resource: 'tasks',
     },
     {
-      title: getTitle('sidebar.night_audit', 'Auditoria Noturna'),
+      title: getTitle('sidebar.night_audit', 'Night Audit'),
       url: '/night-audit',
       icon: MoonStar,
       resource: 'financial',
     },
     {
-      title: getTitle('sidebar.partners', 'Parceiros'),
+      title: getTitle('sidebar.partners', 'Partners'),
       url: '/partners',
       icon: HardHat,
       resource: 'partners',
     },
     {
-      title: getTitle('common.messages', 'Mensagens'),
+      title: getTitle('common.messages', 'Messages'),
       url: '/messages',
       icon: MessageSquare,
       resource: 'messages',
     },
     {
-      title: getTitle('common.workflows', 'Fluxos de Trabalho'),
+      title: getTitle('common.workflows', 'Workflows'),
       url: '/workflows',
       icon: Repeat,
       resource: 'workflows',
@@ -213,59 +213,56 @@ export function AppSidebar() {
 
   const systemItems = [
     {
-      title: getTitle('sidebar.settings', 'Configurações'),
+      title: getTitle('sidebar.settings', 'Settings'),
       url: '/settings',
       icon: Settings,
       resource: 'settings',
     },
     {
-      title: getTitle('common.service_pricing', 'Catálogo de Preços'),
+      title: getTitle('common.service_pricing', 'Price Catalog'),
       url: '/service-pricing',
       icon: DollarSign,
       resource: 'service_pricing',
     },
     {
-      title: getTitle('sidebar.users', 'Usuários'),
+      title: getTitle('sidebar.users', 'Users'),
       url: '/users',
       icon: Users,
       resource: 'users',
     },
     {
-      title: getTitle(
-        'sidebar.publicity_admin',
-        'Administração de Publicidade',
-      ),
+      title: getTitle('sidebar.publicity_admin', 'Publicity Administration'),
       url: '/admin/publicity',
       icon: Megaphone,
       resource: 'publicity',
     },
     {
-      title: getTitle('sidebar.migration_hub', 'Migração'),
+      title: getTitle('sidebar.migration_hub', 'Migration Hub'),
       url: '/admin/migration',
       icon: Database,
       resource: 'migration',
     },
     {
-      title: getTitle('common.advanced_analytics', 'Análise Avançada'),
+      title: getTitle('common.advanced_analytics', 'Advanced Analytics'),
       url: '/admin/analytics',
       icon: PieChart,
       resource: 'analytics',
     },
     {
-      title: getTitle('common.automation_rules', 'Regras de Automação'),
+      title: getTitle('common.automation_rules', 'Automation Rules'),
       url: '/admin/automation',
       icon: Zap,
       resource: 'automation',
     },
     {
-      title: getTitle('sidebar.audit_panel', 'Painel de Auditoria'),
+      title: getTitle('sidebar.audit_panel', 'Audit Panel'),
       url: '/admin/audit',
       icon: ShieldCheck,
       resource: 'audit_logs',
       roles: ['platform_owner'],
     },
     {
-      title: getTitle('sidebar.environment', 'Ambiente'),
+      title: getTitle('sidebar.environment', 'Environment'),
       url: '/admin/environment',
       icon: MonitorPlay,
       resource: 'settings',
@@ -275,28 +272,28 @@ export function AppSidebar() {
 
   const portalItems = [
     {
-      title: getTitle('sidebar.dashboard', 'Painel Principal'),
+      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
       role: 'tenant',
     },
     {
-      title: getTitle('sidebar.dashboard', 'Painel Principal'),
+      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
       role: 'property_owner',
     },
     {
-      title: getTitle('sidebar.dashboard', 'Painel Principal'),
+      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
       role: 'partner',
     },
     {
-      title: getTitle('sidebar.dashboard', 'Painel Principal'),
+      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
       url: '/',
       icon: Home,
       resource: 'dashboard',
@@ -392,7 +389,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.messages', 'Mensagens')} (PM Sync)
+                            {getTitle('common.messages', 'Messages')} (PM Sync)
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -409,7 +406,7 @@ export function AppSidebar() {
                       <Link to="/messages" className="px-4 py-2.5">
                         <MessageSquare className="h-4 w-4 mr-3" />
                         <span className="font-medium text-sm">
-                          {getTitle('common.messages', 'Mensagens')}
+                          {getTitle('common.messages', 'Messages')}
                         </span>{' '}
                       </Link>
                     </SidebarMenuButton>
@@ -427,7 +424,7 @@ export function AppSidebar() {
                         <Link to="/tasks" className="px-4 py-2.5">
                           <Wrench className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.tasks', 'Tarefas')}
+                            {getTitle('common.tasks', 'Tasks')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -441,7 +438,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.messages', 'Mensagens')}
+                            {getTitle('common.messages', 'Messages')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -456,7 +453,7 @@ export function AppSidebar() {
             {filteredMain.length > 0 && (
               <SidebarGroup>
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('sidebar.main_menu', 'Menu Principal')}
+                  {getTitle('sidebar.main_menu', 'Main Menu')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
@@ -484,7 +481,7 @@ export function AppSidebar() {
             {filteredOps.length > 0 && (
               <SidebarGroup className="mt-4">
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('common.operations', 'Operações')}
+                  {getTitle('common.operations', 'Operations')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
@@ -512,7 +509,7 @@ export function AppSidebar() {
             {filteredSystem.length > 0 && (
               <SidebarGroup className="mt-4">
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('sidebar.system', 'Sistema')}
+                  {getTitle('sidebar.system', 'System')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
