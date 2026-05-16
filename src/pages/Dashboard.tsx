@@ -10,6 +10,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import useTaskStore from '@/stores/useTaskStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useLanguageStore from '@/stores/useLanguageStore'
 import { formatCurrency } from '@/lib/utils'
 import {
   Building2,
@@ -54,6 +55,7 @@ export default function Dashboard() {
   const { tasks } = useTaskStore()
   const { tenants } = useTenantStore()
   const { currentUser, simulationMode, simulationRole } = useAuthStore()
+  const { t } = useLanguageStore()
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
@@ -108,26 +110,42 @@ export default function Dashboard() {
 
   // Charts Data
   const propertyStatusData = [
-    { name: 'Alugado', value: rentedProperties, color: '#10b981' },
-    { name: 'Disponível', value: availableProperties, color: '#3b82f6' },
-    { name: 'Manutenção', value: maintenanceProperties, color: '#f59e0b' },
+    {
+      name: t('dashboard.status.rented', 'Rented'),
+      value: rentedProperties,
+      color: '#10b981',
+    },
+    {
+      name: t('dashboard.status.available', 'Available'),
+      value: availableProperties,
+      color: '#3b82f6',
+    },
+    {
+      name: t('dashboard.status.maintenance', 'Maintenance'),
+      value: maintenanceProperties,
+      color: '#f59e0b',
+    },
   ]
 
   // Mock historical data for charts
-  const months = [
-    'Jan',
-    'Fev',
-    'Mar',
-    'Abr',
-    'Mai',
-    'Jun',
-    'Jul',
-    'Ago',
-    'Set',
-    'Out',
-    'Nov',
-    'Dez',
-  ]
+  const rawMonths = t('dashboard.months')
+  const months = Array.isArray(rawMonths)
+    ? rawMonths
+    : [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ]
+
   const currentMonthIdx = new Date().getMonth()
   const last6Months = months.slice(
     Math.max(0, currentMonthIdx - 5),
@@ -152,9 +170,21 @@ export default function Dashboard() {
   }))
 
   const tenantDemographics = [
-    { name: 'Longo Prazo', value: 65, color: '#6366f1' },
-    { name: 'Curto Prazo', value: 25, color: '#ec4899' },
-    { name: 'Comercial', value: 10, color: '#14b8a6' },
+    {
+      name: t('dashboard.demographics.long_term', 'Long Term'),
+      value: 65,
+      color: '#6366f1',
+    },
+    {
+      name: t('dashboard.demographics.short_term', 'Short Term'),
+      value: 25,
+      color: '#ec4899',
+    },
+    {
+      name: t('dashboard.demographics.commercial', 'Commercial'),
+      value: 10,
+      color: '#14b8a6',
+    },
   ]
 
   return (
@@ -162,16 +192,18 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Painel de Controle Central
+            {t('dashboard.title', 'Central Control Panel')}
           </h1>
           <p className="text-muted-foreground">
-            Visão gerencial completa: Performance, Finanças, Hospitalidade e
-            Operações.
+            {t(
+              'dashboard.desc_main',
+              'Complete managerial view: Performance, Financials, Hospitality and Operations.',
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-            Gestão Integrada
+            {t('dashboard.integrated_management', 'Integrated Management')}
           </div>
         </div>
       </div>
@@ -182,35 +214,35 @@ export default function Dashboard() {
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
-            Visão Geral
+            {t('dashboard.tabs.overview', 'Overview')}
           </TabsTrigger>
           <TabsTrigger
             value="financial"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
-            Financeiro
+            {t('dashboard.tabs.financial', 'Financial')}
           </TabsTrigger>
           <TabsTrigger
             value="hospitality"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
-            Hospitalidade
+            {t('dashboard.tabs.hospitality', 'Hospitality')}
           </TabsTrigger>
           <TabsTrigger
             value="operations"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
-            Operações & Equipe
+            {t('dashboard.tabs.operations', 'Operations & Team')}
           </TabsTrigger>
         </TabsList>
 
-        {/* --- VISÃO GERAL --- */}
+        {/* --- OVERVIEW --- */}
         <TabsContent value="overview" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="border-l-4 border-l-trust-blue shadow-sm bg-white">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Receita Total (Mês)
+                  {t('dashboard.cards.total_revenue', 'Total Revenue (Month)')}
                 </CardTitle>
                 <DollarSign className="h-4 w-4 text-trust-blue" />
               </CardHeader>
@@ -219,8 +251,8 @@ export default function Dashboard() {
                   {formatCurrency(totalRevenue || 124500)}
                 </div>
                 <p className="text-xs text-emerald-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" /> +12.5% em relação ao
-                  mês anterior
+                  <TrendingUp className="h-3 w-3 mr-1" /> +12.5%{' '}
+                  {t('dashboard.cards.vs_last_month', 'vs last month')}
                 </p>
               </CardContent>
             </Card>
@@ -228,7 +260,7 @@ export default function Dashboard() {
             <Card className="border-l-4 border-l-emerald-500 shadow-sm bg-white">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Taxa de Ocupação
+                  {t('dashboard.cards.occupancy_rate', 'Occupancy Rate')}
                 </CardTitle>
                 <Percent className="h-4 w-4 text-emerald-500" />
               </CardHeader>
@@ -237,8 +269,12 @@ export default function Dashboard() {
                   {occupancyRate > 0 ? occupancyRate.toFixed(1) : 84.2}%
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  {rentedProperties || 122} de {totalProperties || 145} imóveis
-                  ocupados
+                  {rentedProperties || 122} {t('common.of', 'of')}{' '}
+                  {totalProperties || 145}{' '}
+                  {t(
+                    'dashboard.cards.occupied_properties',
+                    'occupied properties',
+                  )}
                 </p>
               </CardContent>
             </Card>
@@ -246,7 +282,7 @@ export default function Dashboard() {
             <Card className="border-l-4 border-l-orange-500 shadow-sm bg-white">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Inadimplência
+                  {t('dashboard.cards.default_rate', 'Default Rate')}
                 </CardTitle>
                 <AlertTriangle className="h-4 w-4 text-orange-500" />
               </CardHeader>
@@ -255,7 +291,8 @@ export default function Dashboard() {
                   {defaultRate > 0 ? defaultRate.toFixed(1) : 3.4}%
                 </div>
                 <p className="text-xs text-orange-600 mt-1">
-                  {formatCurrency(defaultAmount || 4250)} pendente
+                  {formatCurrency(defaultAmount || 4250)}{' '}
+                  {t('dashboard.cards.pending_amount', 'pending')}
                 </p>
               </CardContent>
             </Card>
@@ -263,7 +300,7 @@ export default function Dashboard() {
             <Card className="border-l-4 border-l-indigo-500 shadow-sm bg-white">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Portfólio
+                  {t('dashboard.cards.portfolio', 'Portfolio')}
                 </CardTitle>
                 <Building2 className="h-4 w-4 text-indigo-500" />
               </CardHeader>
@@ -272,7 +309,10 @@ export default function Dashboard() {
                   {totalProperties || 145}
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Propriedades sob gestão ativa
+                  {t(
+                    'dashboard.cards.active_properties',
+                    'Properties under active management',
+                  )}
                 </p>
               </CardContent>
             </Card>
@@ -281,9 +321,14 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4 shadow-sm bg-white">
               <CardHeader>
-                <CardTitle>Fluxo de Caixa Consolidado</CardTitle>
+                <CardTitle>
+                  {t('dashboard.charts.cash_flow', 'Consolidated Cash Flow')}
+                </CardTitle>
                 <CardDescription>
-                  Receitas e Despesas ao longo do tempo
+                  {t(
+                    'dashboard.charts.cash_flow_desc',
+                    'Revenues and Expenses over time',
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pl-2 h-[300px]">
@@ -305,7 +350,7 @@ export default function Dashboard() {
                         axisLine={false}
                         tickLine={false}
                         tick={{ fill: '#64748b', fontSize: 12 }}
-                        tickFormatter={(value) => `$${value / 1000}k`}
+                        tickFormatter={(value) => `${value / 1000}k`}
                       />
                       <RechartsTooltip
                         cursor={{ fill: '#f1f5f9' }}
@@ -319,14 +364,14 @@ export default function Dashboard() {
                         dataKey="revenue"
                         fill="#10b981"
                         radius={[4, 4, 0, 0]}
-                        name="Receita"
+                        name={t('dashboard.charts.revenue', 'Revenue')}
                         barSize={30}
                       />
                       <Bar
                         dataKey="expenses"
                         fill="#ef4444"
                         radius={[4, 4, 0, 0]}
-                        name="Despesa"
+                        name={t('dashboard.charts.expense', 'Expense')}
                         barSize={30}
                       />
                       <Line
@@ -335,7 +380,7 @@ export default function Dashboard() {
                         stroke="#3b82f6"
                         strokeWidth={3}
                         dot={{ r: 4, fill: '#3b82f6' }}
-                        name="Lucro Líquido"
+                        name={t('dashboard.charts.net_profit', 'Net Profit')}
                       />
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -345,8 +390,15 @@ export default function Dashboard() {
 
             <Card className="col-span-3 shadow-sm bg-white">
               <CardHeader>
-                <CardTitle>Status do Portfólio</CardTitle>
-                <CardDescription>Distribuição de ocupação</CardDescription>
+                <CardTitle>
+                  {t('dashboard.charts.portfolio_status', 'Portfolio Status')}
+                </CardTitle>
+                <CardDescription>
+                  {t(
+                    'dashboard.charts.portfolio_status_desc',
+                    'Occupancy distribution',
+                  )}
+                </CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center relative">
                 <ChartContainer config={{}}>
@@ -387,7 +439,8 @@ export default function Dashboard() {
                           {item.name}
                         </span>
                         <span className="text-xs font-bold text-slate-500">
-                          {item.value || Math.floor(Math.random() * 50)} unid.
+                          {item.value || Math.floor(Math.random() * 50)}{' '}
+                          {t('dashboard.operations_tab.unit', 'Unit')}
                         </span>
                       </div>
                     </div>
@@ -398,13 +451,16 @@ export default function Dashboard() {
           </div>
         </TabsContent>
 
-        {/* --- FINANCEIRO --- */}
+        {/* --- FINANCIAL --- */}
         <TabsContent value="financial" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-slate-500">
-                  Lucro Operacional Líquido (NOI)
+                  {t(
+                    'dashboard.financial_tab.noi',
+                    'Net Operating Income (NOI)',
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -412,14 +468,18 @@ export default function Dashboard() {
                   {formatCurrency(totalRevenue - totalExpenses || 82000)}
                 </div>
                 <div className="mt-2 text-sm text-emerald-600 flex items-center">
-                  <TrendingUp className="h-4 w-4 mr-1" /> +8.2% este mês
+                  <TrendingUp className="h-4 w-4 mr-1" /> +8.2%{' '}
+                  {t('dashboard.financial_tab.this_month', 'this month')}
                 </div>
               </CardContent>
             </Card>
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-slate-500">
-                  Despesas Totais
+                  {t(
+                    'dashboard.financial_tab.total_expenses',
+                    'Total Expenses',
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -427,15 +487,15 @@ export default function Dashboard() {
                   {formatCurrency(totalExpenses || 42500)}
                 </div>
                 <div className="mt-2 text-sm text-orange-600 flex items-center">
-                  <AlertTriangle className="h-4 w-4 mr-1" /> +2.1% (Acima da
-                  meta)
+                  <AlertTriangle className="h-4 w-4 mr-1" /> +2.1%{' '}
+                  {t('dashboard.financial_tab.above_target', '(Above target)')}
                 </div>
               </CardContent>
             </Card>
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-slate-500">
-                  Margem de Lucro
+                  {t('dashboard.financial_tab.profit_margin', 'Profit Margin')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -449,14 +509,22 @@ export default function Dashboard() {
                   %
                 </div>
                 <div className="mt-2 text-sm text-slate-500">
-                  Média saudável da indústria: 50-60%
+                  {t(
+                    'dashboard.financial_tab.industry_avg',
+                    'Healthy industry average: 50-60%',
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>Crescimento de Receita (Evolução Contínua)</CardTitle>
+              <CardTitle>
+                {t(
+                  'dashboard.financial_tab.revenue_growth',
+                  'Revenue Growth (Continuous Evolution)',
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent className="h-[350px]">
               <ChartContainer config={{}}>
@@ -490,7 +558,7 @@ export default function Dashboard() {
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v) => `$${v / 1000}k`}
+                      tickFormatter={(v) => `${v / 1000}k`}
                     />
                     <RechartsTooltip
                       contentStyle={{ borderRadius: '8px', border: 'none' }}
@@ -502,7 +570,10 @@ export default function Dashboard() {
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorRev)"
-                      name="Receita Bruta"
+                      name={t(
+                        'dashboard.financial_tab.gross_revenue',
+                        'Gross Revenue',
+                      )}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -511,13 +582,17 @@ export default function Dashboard() {
           </Card>
         </TabsContent>
 
-        {/* --- HOSPITALIDADE --- */}
+        {/* --- HOSPITALITY --- */}
         <TabsContent value="hospitality" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-4">
             <Card className="shadow-sm bg-gradient-to-br from-indigo-50 to-white border-indigo-100">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-indigo-700 flex items-center gap-2">
-                  <Hotel className="h-4 w-4" /> Hotéis Ativos
+                  <Hotel className="h-4 w-4" />{' '}
+                  {t(
+                    'dashboard.hospitality_tab.active_hotels',
+                    'Active Hotels',
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -527,7 +602,11 @@ export default function Dashboard() {
             <Card className="shadow-sm bg-gradient-to-br from-cyan-50 to-white border-cyan-100">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-cyan-700 flex items-center gap-2">
-                  <CalendarCheck className="h-4 w-4" /> Reservas (Hoje)
+                  <CalendarCheck className="h-4 w-4" />{' '}
+                  {t(
+                    'dashboard.hospitality_tab.bookings_today',
+                    'Bookings (Today)',
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -537,7 +616,10 @@ export default function Dashboard() {
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-slate-500">
-                  ADR (Diária Média)
+                  {t(
+                    'dashboard.hospitality_tab.adr',
+                    'ADR (Average Daily Rate)',
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -546,7 +628,9 @@ export default function Dashboard() {
             </Card>
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-slate-500">RevPAR</CardTitle>
+                <CardTitle className="text-sm text-slate-500">
+                  {t('dashboard.hospitality_tab.revpar', 'RevPAR')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-slate-900">$142.30</div>
@@ -555,7 +639,12 @@ export default function Dashboard() {
           </div>
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle>Métricas de Hospitalidade (Últimos 6 meses)</CardTitle>
+              <CardTitle>
+                {t(
+                  'dashboard.hospitality_tab.metrics_6m',
+                  'Hospitality Metrics (Last 6 months)',
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent className="h-[350px]">
               <ChartContainer config={{}}>
@@ -567,7 +656,7 @@ export default function Dashboard() {
                       yAxisId="left"
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v) => `$${v}`}
+                      tickFormatter={(v) => `${v}`}
                     />
                     <YAxis
                       yAxisId="right"
@@ -602,7 +691,10 @@ export default function Dashboard() {
                       stroke="#10b981"
                       strokeDasharray="5 5"
                       strokeWidth={2}
-                      name="Ocupação (%)"
+                      name={t(
+                        'dashboard.hospitality_tab.occupancy_pct',
+                        'Occupancy (%)',
+                      )}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -611,13 +703,13 @@ export default function Dashboard() {
           </Card>
         </TabsContent>
 
-        {/* --- OPERAÇÕES --- */}
+        {/* --- OPERATIONS --- */}
         <TabsContent value="operations" className="space-y-6 outline-none">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="shadow-sm border-l-4 border-l-orange-500">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  Tarefas Pendentes{' '}
+                  {t('dashboard.operations_tab.pending_tasks', 'Pending Tasks')}{' '}
                   <Wrench className="h-4 w-4 text-orange-500" />
                 </CardTitle>
               </CardHeader>
@@ -630,7 +722,10 @@ export default function Dashboard() {
             <Card className="shadow-sm border-l-4 border-l-emerald-500">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  Tarefas Concluídas{' '}
+                  {t(
+                    'dashboard.operations_tab.completed_tasks',
+                    'Completed Tasks',
+                  )}{' '}
                   <Activity className="h-4 w-4 text-emerald-500" />
                 </CardTitle>
               </CardHeader>
@@ -643,7 +738,11 @@ export default function Dashboard() {
             <Card className="shadow-sm border-l-4 border-l-blue-500">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  Inquilinos Ativos <Users className="h-4 w-4 text-blue-500" />
+                  {t(
+                    'dashboard.operations_tab.active_tenants',
+                    'Active Tenants',
+                  )}{' '}
+                  <Users className="h-4 w-4 text-blue-500" />
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -655,7 +754,10 @@ export default function Dashboard() {
             <Card className="shadow-sm border-l-4 border-l-purple-500">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-muted-foreground flex justify-between">
-                  Renovações Pendentes{' '}
+                  {t(
+                    'dashboard.operations_tab.pending_renewals',
+                    'Pending Renewals',
+                  )}{' '}
                   <Briefcase className="h-4 w-4 text-purple-500" />
                 </CardTitle>
               </CardHeader>
@@ -670,7 +772,12 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle>Perfil de Inquilinos</CardTitle>
+                <CardTitle>
+                  {t(
+                    'dashboard.operations_tab.tenant_profile',
+                    'Tenant Profile',
+                  )}
+                </CardTitle>
               </CardHeader>
               <CardContent className="h-[250px] flex items-center justify-center">
                 <ChartContainer config={{}}>
@@ -712,7 +819,9 @@ export default function Dashboard() {
             </Card>
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle>Últimas Ocorrências</CardTitle>
+                <CardTitle>
+                  {t('dashboard.operations_tab.latest_issues', 'Latest Issues')}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -723,14 +832,19 @@ export default function Dashboard() {
                     >
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-slate-900">
-                          Manutenção Ar Condicionado #{100 + i}
+                          {t(
+                            'dashboard.operations_tab.maintenance_ac',
+                            'AC Maintenance',
+                          )}{' '}
+                          #{100 + i}
                         </span>
                         <span className="text-xs text-slate-500">
-                          Unidade {300 + i} • Villa Ocean
+                          {t('dashboard.operations_tab.unit', 'Unit')} {300 + i}{' '}
+                          • Villa Ocean
                         </span>
                       </div>
                       <div className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-md font-medium">
-                        Pendente
+                        {t('common.pending', 'Pending')}
                       </div>
                     </div>
                   ))}
