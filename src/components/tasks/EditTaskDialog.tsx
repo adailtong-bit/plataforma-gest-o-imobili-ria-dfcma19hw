@@ -66,6 +66,18 @@ export function EditTaskDialog({
   }, [task])
 
   const handleSave = () => {
+    if (
+      Number(form.laborCost || 0) + Number(form.teamMemberPayout || 0) >
+      Number(form.price || 0)
+    ) {
+      toast({
+        title: 'Financial Error',
+        description: 'Total payouts cannot exceed the Owner Price.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (task) {
       const partner = partners.find((p) => p.id === form.assigneeId)
       const emp = partner?.employees?.find(
@@ -190,6 +202,10 @@ export function EditTaskDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="pending_acceptance">
+                    Pending Acceptance
+                  </SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="pending_approval">
@@ -320,7 +336,16 @@ export function EditTaskDialog({
 
           {/* Financials Section */}
           <div className="space-y-4 border-t pt-4 mt-4">
-            <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+              {Number(form.laborCost || 0) +
+                Number(form.teamMemberPayout || 0) >
+                Number(form.price || 0) && (
+                <span className="text-xs text-red-500 font-medium">
+                  Error: Total payouts cannot exceed Owner Price
+                </span>
+              )}
+            </div>
 
             {canSetPricingModel && (
               <div className="space-y-2">
@@ -391,7 +416,14 @@ export function EditTaskDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-trust-blue text-white">
+          <Button
+            onClick={handleSave}
+            className="bg-trust-blue text-white"
+            disabled={
+              Number(form.laborCost || 0) + Number(form.teamMemberPayout || 0) >
+              Number(form.price || 0)
+            }
+          >
             Save Changes
           </Button>
         </DialogFooter>

@@ -159,13 +159,29 @@ export function CreateTaskDialog() {
       form.pricingModel === 'pm_driven' ? form.price : form.laborCost
     const isAboveThreshold = priceToCheck >= 100
 
-    const isOpporjob =
-      partner?.source === 'opporjob' ||
-      partner?.origin === 'opporjob' ||
-      partner?.tags?.includes('opporjob') ||
-      partner?.name?.toLowerCase().includes('opporjob')
+    if (
+      Number(form.laborCost || 0) + Number(form.teamMemberPayout || 0) >
+      Number(form.price || 0)
+    ) {
+      toast({
+        title: 'Financial Error',
+        description: 'Total payouts cannot exceed the Owner Price.',
+        variant: 'destructive',
+      })
+      return
+    }
 
-    const initialStatus = isOpporjob
+    const isExternalPartner = !!(
+      partner &&
+      (partner.source === 'opporjob' ||
+        partner.origin === 'opporjob' ||
+        partner.tags?.includes('opporjob') ||
+        partner.name?.toLowerCase().includes('opporjob') ||
+        partner.role === 'partner' ||
+        partner.source === 'promoted')
+    )
+
+    const initialStatus = isExternalPartner
       ? 'pending_acceptance'
       : isAboveThreshold
         ? 'pending_approval'
@@ -199,8 +215,8 @@ export function CreateTaskDialog() {
 
     toast({
       title: 'Task created successfully',
-      description: isOpporjob
-        ? 'Task assigned to Opporjob partner. Waiting for their acceptance.'
+      description: isExternalPartner
+        ? 'Task assigned to external partner. Waiting for their acceptance.'
         : isAboveThreshold
           ? 'Task value exceeds $100 and requires Owner Approval.'
           : undefined,
@@ -450,7 +466,16 @@ export function CreateTaskDialog() {
           </div>
 
           <div className="space-y-4 border-t pt-4 mt-4">
-            <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm">Financials & Pricing</h4>
+              {Number(form.laborCost || 0) +
+                Number(form.teamMemberPayout || 0) >
+                Number(form.price || 0) && (
+                <span className="text-xs text-red-500 font-medium">
+                  Error: Total payouts cannot exceed Owner Price
+                </span>
+              )}
+            </div>
 
             {canSetPricingModel && (
               <div className="space-y-2">
@@ -575,7 +600,14 @@ export function CreateTaskDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-trust-blue text-white">
+          <Button
+            onClick={handleSave}
+            className="bg-trust-blue text-white"
+            disabled={
+              Number(form.laborCost || 0) + Number(form.teamMemberPayout || 0) >
+              Number(form.price || 0)
+            }
+          >
             Create Task
           </Button>
         </DialogFooter>
