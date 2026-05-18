@@ -49,26 +49,36 @@ const useTaskStore = () => {
   const addTask = async (task: any) => {
     const dbTask = {
       title: task.title,
-      property_id: task.propertyId,
-      property_name: task.propertyName,
-      property_address: task.propertyAddress,
-      type: task.type,
-      priority: task.priority,
-      status: task.status,
-      approval_status: task.approvalStatus,
-      date: task.date,
-      assignee_id: task.assigneeId,
-      partner_employee_id: task.partnerEmployeeId,
-      assignee: task.assignee,
-      pricing_model: task.pricingModel,
-      price: task.price,
-      labor_cost: task.laborCost,
-      team_member_payout: task.teamMemberPayout,
-      source: task.source,
+      property_id: task.propertyId || null,
+      property_name: task.propertyName || null,
+      property_address: task.propertyAddress || null,
+      type: task.type || null,
+      priority: task.priority || null,
+      status: task.status || 'pending',
+      approval_status: task.approvalStatus || null,
+      date: task.date || null,
+      assignee_id: task.assigneeId || null,
+      partner_employee_id: task.partnerEmployeeId || null,
+      assignee: task.assignee || null,
+      pricing_model: task.pricingModel || null,
+      price: task.price || 0,
+      labor_cost: task.laborCost || 0,
+      team_member_payout: task.teamMemberPayout || 0,
+      source: task.source || 'manual',
       images: task.images || [],
     }
-    const { error } = await supabase.from('tasks').insert(dbTask)
-    if (!error) await fetchTasks()
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(dbTask)
+      .select()
+      .single()
+    if (!error) {
+      await fetchTasks()
+      return { success: true, data }
+    } else {
+      console.error('Error adding task:', error)
+      return { success: false, error }
+    }
   }
   const updateTask = async (task: any) => {
     const dbTask = {

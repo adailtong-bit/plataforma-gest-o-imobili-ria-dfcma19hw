@@ -101,10 +101,11 @@ export default function Tasks() {
   }, [tasks, filterType, filterStatus, isOwner, currentUser, properties])
 
   const pendingTasks = useMemo(
-    () =>
-      filteredTasks.filter(
-        (t) => t.status === 'pending' || t.status === 'pending_acceptance',
-      ),
+    () => filteredTasks.filter((t) => t.status === 'pending'),
+    [filteredTasks],
+  )
+  const pendingAcceptanceTasks = useMemo(
+    () => filteredTasks.filter((t) => t.status === 'pending_acceptance'),
     [filteredTasks],
   )
   const inProgressTasks = useMemo(
@@ -148,7 +149,7 @@ export default function Tasks() {
           ? t('tasks.status_wait_owner')
           : t('tasks.status_wait_pm')
       case 'pending_acceptance':
-        return 'Pending Acceptance'
+        return t('tasks.pending_acceptance', 'Aguardando Aceite')
       default:
         return status
     }
@@ -238,7 +239,7 @@ export default function Tasks() {
               <SelectItem value="all">{t('common.all')}</SelectItem>
               <SelectItem value="pending">{t('common.pending')}</SelectItem>
               <SelectItem value="pending_acceptance">
-                Pending Acceptance
+                {t('tasks.pending_acceptance', 'Aguardando Aceite')}
               </SelectItem>
               <SelectItem value="in_progress">
                 {t('tasks.in_progress')}
@@ -316,7 +317,7 @@ export default function Tasks() {
         </div>
 
         <TabsContent value="board" className="flex-1 min-h-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 h-full">
             <div className="bg-orange-50 p-4 rounded-lg flex flex-col gap-4 border border-orange-100 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-orange-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-orange-900">
@@ -355,6 +356,30 @@ export default function Tasks() {
               </div>
               <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
                 {pendingTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onStatusChange={(status) =>
+                      updateTaskStatus(task.id, status)
+                    }
+                    onAddEvidence={addTaskEvidence}
+                    canEdit={true}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-indigo-50 p-4 rounded-lg flex flex-col gap-4 border border-indigo-100 h-full">
+              <div className="flex items-center justify-between pb-2 border-b border-indigo-200 shrink-0">
+                <h3 className="font-bold text-sm uppercase text-indigo-900">
+                  {t('tasks.pending_acceptance', 'Aguardando Aceite')}
+                </h3>
+                <Badge className="bg-indigo-100 text-indigo-900 font-bold border-indigo-300 hover:bg-indigo-200">
+                  <DataMask>{pendingAcceptanceTasks.length}</DataMask>
+                </Badge>
+              </div>
+              <div className="flex flex-col gap-3 overflow-y-auto pr-1 custom-scrollbar flex-1 min-h-0">
+                {pendingAcceptanceTasks.map((task) => (
                   <TaskCard
                     key={task.id}
                     task={task}
@@ -474,7 +499,7 @@ export default function Tasks() {
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-yellow-100 text-yellow-800'
                               : task.status === 'pending_acceptance'
-                                ? 'bg-blue-100 text-blue-800'
+                                ? 'bg-indigo-100 text-indigo-800'
                                 : task.status === 'rejected'
                                   ? 'bg-red-100 text-red-800'
                                   : ''

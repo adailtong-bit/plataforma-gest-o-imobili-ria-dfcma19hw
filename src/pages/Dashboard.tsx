@@ -11,6 +11,7 @@ import useTaskStore from '@/stores/useTaskStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { formatCurrency } from '@/lib/utils'
 import {
   Building2,
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const { ledgerEntries } = useFinancialStore()
   const { tasks } = useTaskStore()
   const { tenants } = useTenantStore()
+  const { partners } = usePartnerStore()
   const { currentUser, simulationMode, simulationRole } = useAuthStore()
   const { t } = useLanguageStore()
 
@@ -120,6 +122,23 @@ export default function Dashboard() {
   const completedTasks = tasks.filter((t) => t.status === 'completed').length
   const pendingRenewals = tenants.filter(
     (t) => t.ownerDecision === 'pending' || t.status === 'expiring_soon',
+  ).length
+
+  // Opporjob Metrics
+  const opporjobPartners = partners.filter(
+    (p) =>
+      p.source === 'opporjob' ||
+      p.origin === 'opporjob' ||
+      p.tags?.includes('opporjob') ||
+      p.name?.toLowerCase().includes('opporjob'),
+  ).length
+  const opporjobTasks = tasks.filter(
+    (t) =>
+      t.status === 'pending_acceptance' ||
+      (t.assignee && t.assignee.toLowerCase().includes('opporjob')),
+  ).length
+  const promotedTenants = tenants.filter((t) =>
+    t.tags?.includes('promoted'),
   ).length
 
   // Charts Data
@@ -999,7 +1018,9 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-slate-900">24</div>
+                    <div className="text-3xl font-bold text-slate-900">
+                      {opporjobPartners}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card className="bg-white shadow-sm">
@@ -1009,7 +1030,9 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-slate-900">3</div>
+                    <div className="text-3xl font-bold text-slate-900">
+                      {promotedTenants}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card className="bg-white shadow-sm">
@@ -1019,7 +1042,9 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-slate-900">12</div>
+                    <div className="text-3xl font-bold text-slate-900">
+                      {opporjobTasks}
+                    </div>
                   </CardContent>
                 </Card>
               </div>

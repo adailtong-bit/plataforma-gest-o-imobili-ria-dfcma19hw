@@ -137,7 +137,7 @@ export function CreateTaskDialog() {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title || !form.propertyId || !form.type) {
       toast({
         title: 'Validation Error',
@@ -188,7 +188,7 @@ export function CreateTaskDialog() {
         : 'pending'
     const initialApprovalStatus = isAboveThreshold ? 'owner_pending' : undefined
 
-    addTask({
+    const result = await addTask({
       title: form.title,
       propertyId: form.propertyId,
       propertyName: prop?.name || '',
@@ -208,6 +208,15 @@ export function CreateTaskDialog() {
       source: 'manual',
       images: images,
     })
+
+    if (result && result.success === false) {
+      toast({
+        title: 'Database Error',
+        description: result.error?.message || 'Failed to create task.',
+        variant: 'destructive',
+      })
+      return
+    }
 
     if (form.assigneeId) {
       importPartnerIfNeeded(form.assigneeId)
