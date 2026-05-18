@@ -46,10 +46,16 @@ const useTaskStore = () => {
     }
   }, [])
 
+  const isValidUUID = (uuid: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid)
+
   const addTask = async (task: any) => {
     const dbTask = {
       title: task.title,
-      property_id: task.propertyId || null,
+      property_id:
+        task.propertyId && isValidUUID(task.propertyId)
+          ? task.propertyId
+          : null,
       property_name: task.propertyName || null,
       property_address: task.propertyAddress || null,
       type: task.type || null,
@@ -57,7 +63,10 @@ const useTaskStore = () => {
       status: task.status || 'pending',
       approval_status: task.approvalStatus || null,
       date: task.date || null,
-      assignee_id: task.assigneeId || null,
+      assignee_id:
+        task.assigneeId && isValidUUID(task.assigneeId)
+          ? task.assigneeId
+          : null,
       partner_employee_id: task.partnerEmployeeId || null,
       assignee: task.assignee || null,
       pricing_model: task.pricingModel || null,
