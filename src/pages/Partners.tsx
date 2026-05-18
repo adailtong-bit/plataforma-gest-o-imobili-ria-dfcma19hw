@@ -1,5 +1,5 @@
-import { useContext, useState, useMemo } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState } from 'react'
+import usePartnerStore from '@/stores/usePartnerStore'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -52,11 +52,8 @@ import { Link } from 'react-router-dom'
 import { AddressInput } from '@/components/ui/address-input'
 
 export default function Partners() {
-  const context = useContext(AppContext)
-  const contextPartners = context?.partners || []
-  const addPartner = context?.addPartner
-  const updatePartner = context?.updatePartner
-  const deletePartner = context?.deletePartner
+  const { partners, addPartner, updatePartner, deletePartner } =
+    usePartnerStore()
 
   const { t } = useLanguageStore()
   const { toast } = useToast()
@@ -80,54 +77,7 @@ export default function Partners() {
   }
   const [form, setForm] = useState<Partial<Partner>>(initialFormState)
 
-  const opporjobPartners = useMemo(
-    () =>
-      [
-        {
-          id: 'opporjob-1',
-          name: 'John Maintenance',
-          companyName: 'John Fixes LLC',
-          type: 'General Maintenance',
-          entityType: 'individual',
-          email: 'john@opporjob.local',
-          phone: '+1 555 010 2020',
-          cpfCnpj: '',
-          address: '100 Service Rd',
-          city: 'Orlando',
-          state: 'FL',
-          zipCode: '32801',
-          status: 'active',
-          role: 'partner',
-          origin: 'opporjob',
-          serviceRates: [],
-          employees: [],
-        },
-        {
-          id: 'opporjob-2',
-          name: 'Pro Cleaners',
-          companyName: 'Pro Cleaners Inc',
-          type: 'Cleaning',
-          entityType: 'company',
-          email: 'contact@procleaners.local',
-          phone: '+1 555 020 3030',
-          cpfCnpj: '',
-          address: '200 Clean Ave',
-          city: 'Kissimmee',
-          state: 'FL',
-          zipCode: '34741',
-          status: 'active',
-          role: 'partner',
-          origin: 'opporjob',
-          serviceRates: [],
-          employees: [],
-        },
-      ] as unknown as Partner[],
-    [],
-  )
-
-  const allPartners = [...contextPartners, ...opporjobPartners]
-
-  const filteredPartners = allPartners.filter((p) => {
+  const filteredPartners = partners.filter((p) => {
     const term = search.toLowerCase()
     return (
       (p?.name || '').toLowerCase().includes(term) ||

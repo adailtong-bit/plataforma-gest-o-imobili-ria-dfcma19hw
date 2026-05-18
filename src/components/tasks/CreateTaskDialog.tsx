@@ -31,7 +31,7 @@ export function CreateTaskDialog() {
   const [open, setOpen] = useState(false)
   const { addTask } = useTaskStore()
   const { properties } = usePropertyStore()
-  const { partners } = usePartnerStore()
+  const { partners, importPartnerIfNeeded } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { toast } = useToast()
 
@@ -182,6 +182,10 @@ export function CreateTaskDialog() {
       source: 'manual',
       images: images,
     })
+
+    if (form.assigneeId) {
+      importPartnerIfNeeded(form.assigneeId)
+    }
 
     toast({
       title: 'Task created successfully',

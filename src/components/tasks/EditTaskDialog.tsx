@@ -35,7 +35,7 @@ export function EditTaskDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const { updateTask } = useTaskStore()
-  const { partners } = usePartnerStore()
+  const { partners, importPartnerIfNeeded } = usePartnerStore()
   const { currentUser } = useAuthStore()
   const { toast } = useToast()
   const [form, setForm] = useState<Partial<Task>>({})
@@ -75,6 +75,10 @@ export function EditTaskDialog({
       let assigneeName = 'Unassigned'
       if (emp) assigneeName = `${emp.name} - ${partner?.name}`
       else if (partner) assigneeName = partner.name
+
+      if (form.assigneeId) {
+        importPartnerIfNeeded(form.assigneeId)
+      }
 
       updateTask({ ...task, ...form, assignee: assigneeName } as Task)
       toast({ title: 'Task updated successfully' })
