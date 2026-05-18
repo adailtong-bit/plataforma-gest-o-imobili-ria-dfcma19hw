@@ -138,10 +138,10 @@ export function CreateTaskDialog() {
   }
 
   const handleSave = async () => {
-    if (!form.title || !form.propertyId || !form.type) {
+    if (!form.title) {
       toast({
         title: 'Validation Error',
-        description: 'Please fill all required fields',
+        description: 'Task Title is required.',
         variant: 'destructive',
       })
       return
@@ -190,6 +190,7 @@ export function CreateTaskDialog() {
 
     const result = await addTask({
       title: form.title,
+      createdBy: currentUser?.id,
       propertyId: form.propertyId,
       propertyName: prop?.name || '',
       propertyAddress: prop?.address,
@@ -290,22 +291,32 @@ export function CreateTaskDialog() {
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Title *</Label>
+            <Label className={!form.title ? 'text-red-500' : ''}>Title *</Label>
             <Input
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className={!form.title ? 'border-red-500' : ''}
+              placeholder="e.g. Fix plumbing issue"
             />
+            {!form.title && (
+              <p className="text-xs text-red-500">
+                Title is required to create a task.
+              </p>
+            )}
           </div>
           <div className="space-y-2">
-            <Label>Property *</Label>
+            <Label>Property</Label>
             <Select
-              value={form.propertyId}
-              onValueChange={(v) => setForm({ ...form, propertyId: v })}
+              value={form.propertyId || 'none'}
+              onValueChange={(v) =>
+                setForm({ ...form, propertyId: v === 'none' ? '' : v })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Property" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">No Property / General</SelectItem>
                 {availableProperties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -316,15 +327,18 @@ export function CreateTaskDialog() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Type *</Label>
+              <Label>Type</Label>
               <Select
-                value={form.type}
-                onValueChange={(v) => setForm({ ...form, type: v })}
+                value={form.type || 'none'}
+                onValueChange={(v) =>
+                  setForm({ ...form, type: v === 'none' ? '' : v })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">General</SelectItem>
                   <SelectItem value="cleaning">Cleaning</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="inspection">Inspection</SelectItem>

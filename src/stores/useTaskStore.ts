@@ -75,6 +75,7 @@ const useTaskStore = () => {
       team_member_payout: task.teamMemberPayout || 0,
       source: task.source || 'manual',
       images: task.images || [],
+      created_by: task.createdBy || null,
     }
     const { data, error } = await supabase
       .from('tasks')
