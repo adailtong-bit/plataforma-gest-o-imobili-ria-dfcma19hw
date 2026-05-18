@@ -53,15 +53,16 @@ import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
 import { DataMask } from '@/components/DataMask'
 
 export default function Invoices() {
-  const {
-    financials,
-    ledgerEntries,
-    addInvoice,
-    updateInvoice,
-    deleteInvoice,
-    updateLedgerEntry,
-    formatAppCurrency,
-  } = useContext(AppContext)!
+  const context = useContext(AppContext)
+  const financials = context?.financials || { invoices: [] }
+  const ledgerEntries = context?.ledgerEntries || []
+  const addInvoice = context?.addInvoice || (() => {})
+  const updateInvoice = context?.updateInvoice || (() => {})
+  const deleteInvoice = context?.deleteInvoice || (() => {})
+  const updateLedgerEntry = context?.updateLedgerEntry || (() => {})
+  const formatAppCurrency =
+    context?.formatAppCurrency || ((v: number) => `$${v}`)
+
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -79,10 +80,13 @@ export default function Invoices() {
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filteredInvoices = financials.invoices.filter(
-    (inv) =>
-      inv.description.toLowerCase().includes(search.toLowerCase()) ||
-      inv.id.toLowerCase().includes(search.toLowerCase()),
+  const invoiceList = Array.isArray(financials)
+    ? financials
+    : financials?.invoices || []
+  const filteredInvoices = invoiceList.filter(
+    (inv: Invoice) =>
+      (inv?.description || '').toLowerCase().includes(search.toLowerCase()) ||
+      (inv?.id || '').toLowerCase().includes(search.toLowerCase()),
   )
 
   const handleSave = () => {

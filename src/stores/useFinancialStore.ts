@@ -4,6 +4,26 @@ import { ENV } from '@/lib/env'
 import useAuthStore from '@/stores/useAuthStore'
 
 let globalLedger: any[] = []
+let globalInvoices: any[] = [
+  {
+    id: 'inv-1001',
+    description: 'Limpeza de rotina - Apto 101',
+    amount: 150,
+    status: 'pending',
+    date: new Date().toISOString(),
+    bookingId: 'bk-5521',
+    type: 'service',
+  },
+  {
+    id: 'inv-1002',
+    description: 'Manutenção de Ar Condicionado',
+    amount: 300,
+    status: 'paid',
+    date: new Date(Date.now() - 86400000 * 2).toISOString(),
+    bookingId: '-',
+    type: 'maintenance',
+  },
+]
 let listeners: (() => void)[] = []
 const notify = () => listeners.forEach((l) => l())
 
@@ -25,16 +45,35 @@ fetchFinancials()
 
 const useFinancialStore = () => {
   const [ledgerEntries, setLedgerEntries] = useState<any[]>(globalLedger)
+  const [invoices, setInvoices] = useState<any[]>(globalInvoices)
   const { currentUser, simulationMode, simulationRole, allUsers } =
     useAuthStore()
 
   useEffect(() => {
-    const l = () => setLedgerEntries(globalLedger)
+    const l = () => {
+      setLedgerEntries(globalLedger)
+      setInvoices(globalInvoices)
+    }
     listeners.push(l)
     return () => {
       listeners = listeners.filter((x) => x !== l)
     }
   }, [])
+
+  const addInvoice = (inv: any) => {
+    globalInvoices = [inv, ...globalInvoices]
+    notify()
+  }
+
+  const updateInvoice = (inv: any) => {
+    globalInvoices = globalInvoices.map((i) => (i.id === inv.id ? inv : i))
+    notify()
+  }
+
+  const deleteInvoice = (id: string) => {
+    globalInvoices = globalInvoices.filter((i) => i.id !== id)
+    notify()
+  }
 
   const addLedgerEntry = async (entry: any) => {
     const dbEntry = {
@@ -143,7 +182,10 @@ const useFinancialStore = () => {
     updateLedgerEntry,
     deleteLedgerEntry,
     formatAppCurrency,
-    financials: [],
+    financials: { invoices },
+    addInvoice,
+    updateInvoice,
+    deleteInvoice,
     financialSettings: {},
     bankStatements: [],
     currency: 'USD',
