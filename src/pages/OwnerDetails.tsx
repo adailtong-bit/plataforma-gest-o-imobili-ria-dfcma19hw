@@ -15,6 +15,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { OwnerStatement } from '@/components/financial/OwnerStatement'
+import { BillingManager } from '@/components/users/BillingManager'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Owner } from '@/lib/types'
 
@@ -96,9 +97,10 @@ export default function OwnerDetails() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px] mb-6">
+        <TabsList className="grid w-full grid-cols-3 md:w-[500px] mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="financials">Financials</TabsTrigger>
+          <TabsTrigger value="agreements">Agreements</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -165,6 +167,22 @@ export default function OwnerDetails() {
             properties={properties}
             ledgerEntries={ledgerEntries}
           />
+        </TabsContent>
+
+        <TabsContent value="agreements">
+          <Card className="shadow-sm border-slate-200">
+            <CardHeader>
+              <CardTitle>Service Agreements & Billing</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-6">
+                Configure the financial agreements and billing periods for this
+                owner. These rules dictate management fees, maintenance markups,
+                and other automated charges.
+              </div>
+              <BillingManager targetId={owner.id} targetRole="property_owner" />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

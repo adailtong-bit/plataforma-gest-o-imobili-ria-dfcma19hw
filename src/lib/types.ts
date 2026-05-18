@@ -1303,3 +1303,37 @@ export interface PMSpecificPricing {
   pmId: string
   fixedRate: number
 }
+
+export interface BillingAgreement {
+  id: string
+  targetId: string
+  targetName?: string
+  targetRole: UserRole
+  name: string
+  type:
+    | 'fixed_admin_fee'
+    | 'booking_percentage'
+    | 'markup_maintenance'
+    | 'markup_cleaning'
+    | 'markup_purchases'
+    | 'custom'
+  valueType: 'fixed' | 'percentage'
+  value: number
+  frequency: 'monthly' | 'per_booking' | 'per_task' | 'per_item'
+  validFrom: string
+  validTo?: string
+  status: 'active' | 'historical'
+  organizationId?: string
+}
+
+export interface BillingPeriod {
+  id: string
+  targetId: string
+  targetName?: string
+  startDate: string
+  endDate: string
+  status: 'open' | 'closed' | 'paid'
+  totalAmount: number
+  invoiceId?: string
+  organizationId?: string
+}

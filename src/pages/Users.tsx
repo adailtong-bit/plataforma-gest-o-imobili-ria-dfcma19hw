@@ -47,6 +47,7 @@ import { DataMask } from '@/components/DataMask'
 import { UserRole, Permission } from '@/lib/types'
 import { PermissionSelector } from '@/components/users/PermissionSelector'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { BillingManager } from '@/components/users/BillingManager'
 
 export default function Users() {
   const { currentUser } = useContext(AppContext)!
@@ -266,10 +267,11 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.users') || 'Usuários'}
+            Identity & Players Management
           </h1>
           <p className="text-muted-foreground">
-            Manage your team members, permissions, and organizations.
+            Manage team members, permissions, property managers, and financial
+            agreements.
           </p>
         </div>
         <Button
@@ -290,118 +292,166 @@ export default function Users() {
           if (!v) resetForm()
         }}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingRecord ? 'Edit' : 'Add'}{' '}
-              {activeTab === 'pms' ? 'Property Manager' : 'Team Member'}
+              {editingRecord ? 'Edit Player Configuration' : 'Add New Player'}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <Label>Name</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <Label>Email</Label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2 col-span-2">
-              <Label>Role</Label>
-              <Select
-                value={form.role}
-                onValueChange={(v) => setForm({ ...form, role: v })}
-                disabled={activeTab === 'pms'}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableRoles.map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r.replace('_', ' ')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
-            {activeTab === 'pms' && form.role === 'software_tenant' && (
-              <>
+          <Tabs defaultValue="profile" className="w-full mt-2">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
+              <TabsTrigger value="profile">Profile Details</TabsTrigger>
+              <TabsTrigger
+                value="permissions"
+                disabled={form.role !== 'internal_user'}
+              >
+                Permissions
+              </TabsTrigger>
+              <TabsTrigger
+                value="billing"
+                disabled={
+                  !editingRecord ||
+                  !['software_tenant', 'property_owner'].includes(form.role)
+                }
+              >
+                Billing Agreements
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label>Company Name</Label>
+                  <Label>Name</Label>
                   <Input
-                    value={pmForm.companyName}
-                    onChange={(e) =>
-                      setPmForm({ ...pmForm, companyName: e.target.value })
-                    }
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label>Tax ID</Label>
+                  <Label>Email</Label>
                   <Input
-                    value={pmForm.taxId}
+                    type="email"
+                    value={form.email}
                     onChange={(e) =>
-                      setPmForm({ ...pmForm, taxId: e.target.value })
+                      setForm({ ...form, email: e.target.value })
                     }
                   />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <Label>Billing Address</Label>
-                  <Input
-                    value={pmForm.address}
-                    onChange={(e) =>
-                      setPmForm({ ...pmForm, address: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2 col-span-2">
-                  <Label>Subscription Plan</Label>
+                  <Label>Role</Label>
                   <Select
-                    value={pmForm.subscriptionPlan}
-                    onValueChange={(v) =>
-                      setPmForm({ ...pmForm, subscriptionPlan: v })
-                    }
+                    value={form.role}
+                    onValueChange={(v) => setForm({ ...form, role: v })}
+                    disabled={activeTab === 'pms'}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select Role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pay_per_house">
-                        Pay Per House
-                      </SelectItem>
-                      <SelectItem value="unlimited">Unlimited</SelectItem>
+                      {availableRoles.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {r.replace('_', ' ')}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
-              </>
-            )}
 
-            {activeTab === 'team' && form.role === 'internal_user' && (
-              <div className="space-y-2 col-span-2 mt-4">
-                <Label className="text-base font-bold">
-                  Permissions (CRUD)
-                </Label>
+                {activeTab === 'pms' && form.role === 'software_tenant' && (
+                  <>
+                    <div className="space-y-2 col-span-2 md:col-span-1">
+                      <Label>Company Name</Label>
+                      <Input
+                        value={pmForm.companyName}
+                        onChange={(e) =>
+                          setPmForm({ ...pmForm, companyName: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-2 md:col-span-1">
+                      <Label>Tax ID</Label>
+                      <Input
+                        value={pmForm.taxId}
+                        onChange={(e) =>
+                          setPmForm({ ...pmForm, taxId: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <Label>Billing Address</Label>
+                      <Input
+                        value={pmForm.address}
+                        onChange={(e) =>
+                          setPmForm({ ...pmForm, address: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <Label>Subscription Plan</Label>
+                      <Select
+                        value={pmForm.subscriptionPlan}
+                        onValueChange={(v) =>
+                          setPmForm({ ...pmForm, subscriptionPlan: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pay_per_house">
+                            Pay Per House
+                          </SelectItem>
+                          <SelectItem value="unlimited">Unlimited</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex justify-end pt-4">
+                <Button onClick={editingRecord ? handleEdit : handleAdd}>
+                  Save Profile
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="permissions">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Access Control (CRUD)</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Define exactly what this team member can view and edit across
+                  the platform.
+                </p>
                 <PermissionSelector
                   role={form.role as UserRole}
                   currentPermissions={permissions}
                   onChange={setPermissions}
                 />
+                <div className="flex justify-end pt-4">
+                  <Button onClick={editingRecord ? handleEdit : handleAdd}>
+                    Save Permissions
+                  </Button>
+                </div>
               </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={editingRecord ? handleEdit : handleAdd}>
-              Save
-            </Button>
-          </DialogFooter>
+            </TabsContent>
+
+            <TabsContent value="billing">
+              {editingRecord && (
+                <div className="space-y-4">
+                  <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
+                    Configure the financial agreements and billing periods for
+                    this player. These rules will be used automatically when
+                    generating period invoices.
+                  </div>
+                  <BillingManager
+                    targetId={editingRecord.id}
+                    targetRole={editingRecord.role as UserRole}
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
