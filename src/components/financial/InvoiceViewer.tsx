@@ -25,7 +25,7 @@ export function InvoiceViewer({
   const formatDateSafe = (d?: string) => {
     if (!d) return ''
     const dt = new Date(d)
-    return isValid(dt) ? format(dt, 'dd/MM/yyyy') : ''
+    return isValid(dt) ? format(dt, 'MM/dd/yyyy') : ''
   }
 
   return (
@@ -33,12 +33,12 @@ export function InvoiceViewer({
       <DialogContent className="max-w-4xl bg-white text-black p-0 overflow-hidden shadow-2xl sm:rounded-xl">
         <div className="p-4 border-b bg-slate-50 flex justify-between items-center print:hidden">
           <DialogTitle className="text-lg text-slate-800">
-            Fatura{' '}
+            Invoice{' '}
             {invoice.id ? `#${invoice.id.split('-')[0].substring(0, 8)}` : ''}
           </DialogTitle>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.print()}>
-              <Printer className="h-4 w-4 mr-2" /> Imprimir
+              <Printer className="h-4 w-4 mr-2" /> Print
             </Button>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function InvoiceViewer({
             <div className="text-right space-y-1">
               <div className="text-sm">
                 <span className="font-semibold text-slate-500 mr-2">
-                  Data da Emissão:
+                  Issue Date:
                 </span>
                 <span className="font-medium text-slate-800">
                   {formatDateSafe(invoice.date)}
@@ -66,7 +66,7 @@ export function InvoiceViewer({
               {invoice.dueDate && (
                 <div className="text-sm">
                   <span className="font-semibold text-slate-500 mr-2">
-                    Vencimento:
+                    Due Date:
                   </span>
                   <span className="font-medium text-red-600">
                     {formatDateSafe(invoice.dueDate)}
@@ -79,7 +79,7 @@ export function InvoiceViewer({
           <div className="grid grid-cols-2 gap-12 border-t border-b border-slate-100 py-8">
             <div className="space-y-3">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Emissor
+                From (Sender)
               </p>
               <div>
                 <p className="font-bold text-slate-800 text-lg">
@@ -102,7 +102,7 @@ export function InvoiceViewer({
             </div>
             <div className="space-y-3">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Faturado para
+                Bill To (Recipient)
               </p>
               <div>
                 <p className="font-bold text-slate-800 text-lg">
@@ -129,7 +129,7 @@ export function InvoiceViewer({
           {invoice.description && (
             <div className="bg-slate-50 p-4 rounded-lg">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-                Referência / Descrição Geral
+                Reference / General Description
               </p>
               <p className="text-slate-800 text-sm font-medium">
                 {invoice.description}
@@ -143,13 +143,13 @@ export function InvoiceViewer({
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="py-3 px-4 font-semibold text-slate-700">
-                    Descrição do Serviço / Item
+                    Service / Item Description
                   </th>
                   <th className="py-3 px-4 font-semibold text-slate-700 text-right w-24">
-                    Qtd
+                    Qty
                   </th>
                   <th className="py-3 px-4 font-semibold text-slate-700 text-right w-32">
-                    Preço Unit.
+                    Unit Price
                   </th>
                   <th className="py-3 px-4 font-semibold text-slate-700 text-right w-32">
                     Total
@@ -177,7 +177,7 @@ export function InvoiceViewer({
                 ) : (
                   <tr className="bg-white">
                     <td className="py-4 px-4 text-slate-800 font-medium">
-                      Serviços Gerais / Cobrança Única
+                      General Services / Single Charge
                     </td>
                     <td className="py-4 px-4 text-slate-600 text-right">1</td>
                     <td className="py-4 px-4 text-slate-600 text-right">
@@ -208,7 +208,7 @@ export function InvoiceViewer({
           {invoice.notes && (
             <div className="pt-8 border-t border-slate-100 mt-8">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Observações / Termos
+                Notes / Terms
               </p>
               <p className="text-slate-600 text-sm whitespace-pre-wrap">
                 {invoice.notes}
@@ -218,8 +218,7 @@ export function InvoiceViewer({
 
           <div className="pt-8 text-center text-xs text-slate-400">
             <p>
-              Documento gerado eletronicamente. Obrigado por fazer negócios
-              conosco.
+              Electronically generated document. Thank you for your business.
             </p>
           </div>
         </div>

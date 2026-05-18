@@ -20,13 +20,13 @@ import {
   CheckCircle2,
   FileText,
   PlusCircle,
+  User as UserIcon,
 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
@@ -48,10 +48,18 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { format, isValid } from 'date-fns'
 import { Invoice, InvoiceItem } from '@/lib/types'
 import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
+import useAuthStore from '@/stores/useAuthStore'
 
 const emptyForm = (): Partial<Invoice> => ({
   description: '',
@@ -83,6 +91,7 @@ export default function Invoices() {
     context?.formatAppCurrency || ((v: number) => `$${v}`)
 
   const { toast } = useToast()
+  const { currentUser, allUsers } = useAuthStore()
 
   const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -143,8 +152,8 @@ export default function Invoices() {
   const handleSave = () => {
     if (!form.toName) {
       toast({
-        title: 'Atenção',
-        description: 'O nome do pagador é obrigatório',
+        title: 'Attention',
+        description: 'Billed To (Name) is required',
         variant: 'destructive',
       })
       return
@@ -152,13 +161,10 @@ export default function Invoices() {
 
     if (editingRecord) {
       updateInvoice({ ...editingRecord, ...form } as Invoice)
-      toast({ title: 'Sucesso', description: 'Fatura atualizada com sucesso' })
+      toast({ title: 'Success', description: 'Invoice updated successfully' })
     } else {
-      addInvoice({
-        ...form,
-        type: 'generic',
-      } as Invoice)
-      toast({ title: 'Sucesso', description: 'Fatura criada com sucesso' })
+      addInvoice({ ...form, type: 'generic' } as Invoice)
+      toast({ title: 'Success', description: 'Invoice created successfully' })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
@@ -168,7 +174,7 @@ export default function Invoices() {
   const handleDelete = () => {
     if (deleteId) {
       deleteInvoice(deleteId)
-      toast({ title: 'Sucesso', description: 'Fatura excluída com sucesso' })
+      toast({ title: 'Success', description: 'Invoice deleted successfully' })
       setDeleteId(null)
     }
   }
@@ -186,16 +192,25 @@ export default function Invoices() {
         updatedCount++
       }
     })
-    toast({
-      title: 'Sucesso',
-      description: `Fatura marcada como paga.`,
-    })
+    toast({ title: 'Success', description: `Invoice marked as paid.` })
   }
 
   const formatDateSafe = (dateString?: string) => {
     if (!dateString) return '-'
     const d = new Date(dateString)
-    return isValid(d) ? format(d, 'dd/MM/yyyy') : '-'
+    return isValid(d) ? format(d, 'MM/dd/yyyy') : '-'
+  }
+
+  const openNewInvoice = () => {
+    setEditingRecord(null)
+    setForm({
+      ...emptyForm(),
+      fromName: currentUser?.companyName || currentUser?.name || '',
+      fromEmail: currentUser?.email || '',
+      fromPhone: currentUser?.phone || '',
+      fromAddress: currentUser?.address || '',
+    })
+    setIsAddOpen(true)
   }
 
   return (
@@ -203,20 +218,27 @@ export default function Invoices() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Faturas
+            Invoices
           </h1>
           <p className="text-muted-foreground">
-            Gerencie faturas de serviços, taxas e manutenções com detalhamento
-            completo.
+            Manage service invoices, fees, and maintenance with complete
+            details.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Buscar faturas (Nome, ID)..."
+            placeholder="Search invoices (Name, ID)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
           />
+          <Button
+            onClick={openNewInvoice}
+            className="bg-trust-blue gap-2 text-white hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4" /> New Invoice
+          </Button>
+
           <Dialog
             open={isAddOpen}
             onOpenChange={(v) => {
@@ -227,35 +249,30 @@ export default function Invoices() {
               }
             }}
           >
-            <DialogTrigger asChild>
-              <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
-                <Plus className="h-4 w-4" /> Nova Fatura
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
               <DialogHeader>
                 <DialogTitle className="text-xl">
                   {editingRecord
-                    ? 'Editar Fatura Profissional'
-                    : 'Nova Fatura Profissional'}
+                    ? 'Edit Professional Invoice'
+                    : 'New Professional Invoice'}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-8 py-4">
-                {/* Informações Básicas */}
+                {/* Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg">
                   <div className="space-y-2">
-                    <Label>Referência / Título</Label>
+                    <Label>Reference / Title</Label>
                     <Input
                       value={form.description || ''}
                       onChange={(e) =>
                         setForm({ ...form, description: e.target.value })
                       }
-                      placeholder="Ex: Fatura Quinzenal - Maio"
+                      placeholder="E.g. Bi-weekly Invoice - May"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Data de Emissão</Label>
+                    <Label>Issue Date</Label>
                     <Input
                       type="date"
                       value={form.date?.split('T')[0] || ''}
@@ -265,7 +282,7 @@ export default function Invoices() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Data de Vencimento</Label>
+                    <Label>Due Date</Label>
                     <Input
                       type="date"
                       value={form.dueDate?.split('T')[0] || ''}
@@ -276,22 +293,22 @@ export default function Invoices() {
                   </div>
                 </div>
 
-                {/* Emissor e Pagador */}
+                {/* Sender and Billed To */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4 border rounded-lg p-4">
                     <h3 className="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2">
-                      <FileText className="h-4 w-4 text-trust-blue" /> Dados do
-                      Emissor (Você)
+                      <FileText className="h-4 w-4 text-trust-blue" /> Sender
+                      Details (You)
                     </h3>
                     <div className="space-y-3">
                       <div className="space-y-1">
-                        <Label>Nome / Empresa</Label>
+                        <Label>Name / Company</Label>
                         <Input
                           value={form.fromName || ''}
                           onChange={(e) =>
                             setForm({ ...form, fromName: e.target.value })
                           }
-                          placeholder="Sua Empresa LLC"
+                          placeholder="Your Company LLC"
                         />
                       </div>
                       <div className="space-y-1">
@@ -301,11 +318,11 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, fromEmail: e.target.value })
                           }
-                          placeholder="contato@empresa.com"
+                          placeholder="contact@company.com"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label>Telefone</Label>
+                        <Label>Phone</Label>
                         <Input
                           value={form.fromPhone || ''}
                           onChange={(e) =>
@@ -315,7 +332,7 @@ export default function Invoices() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label>Endereço</Label>
+                        <Label>Address</Label>
                         <Input
                           value={form.fromAddress || ''}
                           onChange={(e) =>
@@ -328,19 +345,60 @@ export default function Invoices() {
                   </div>
 
                   <div className="space-y-4 border rounded-lg p-4">
-                    <h3 className="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2">
-                      <FileText className="h-4 w-4 text-trust-blue" /> Dados do
-                      Pagador (Cliente)
-                    </h3>
-                    <div className="space-y-3">
+                    <div className="flex justify-between items-center border-b pb-2">
+                      <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                        <UserIcon className="h-4 w-4 text-trust-blue" /> Billed
+                        To (Client)
+                      </h3>
+                    </div>
+
+                    <div className="space-y-3 mt-2">
                       <div className="space-y-1">
-                        <Label>Nome / Empresa *</Label>
+                        <Label className="text-xs text-muted-foreground">
+                          Import from contacts
+                        </Label>
+                        <Select
+                          onValueChange={(val) => {
+                            const user = allUsers.find((u) => u.id === val)
+                            if (user) {
+                              setForm((prev) => ({
+                                ...prev,
+                                toName: user.companyName || user.name || '',
+                                toEmail: user.email || '',
+                                toPhone: user.phone || '',
+                                toAddress: user.address || '',
+                                toId: user.id,
+                              }))
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="h-8 bg-slate-50">
+                            <SelectValue placeholder="Select Owner or Tenant..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allUsers
+                              .filter(
+                                (u) =>
+                                  u.role === 'property_owner' ||
+                                  u.role === 'tenant',
+                              )
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id}>
+                                  {u.name} ({u.role})
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label>Name / Company *</Label>
                         <Input
                           value={form.toName || ''}
                           onChange={(e) =>
                             setForm({ ...form, toName: e.target.value })
                           }
-                          placeholder="Nome do Owner ou Inquilino"
+                          placeholder="Owner or Tenant Name"
                         />
                       </div>
                       <div className="space-y-1">
@@ -350,11 +408,11 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, toEmail: e.target.value })
                           }
-                          placeholder="cliente@email.com"
+                          placeholder="client@email.com"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label>Telefone</Label>
+                        <Label>Phone</Label>
                         <Input
                           value={form.toPhone || ''}
                           onChange={(e) =>
@@ -364,24 +422,24 @@ export default function Invoices() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label>Endereço</Label>
+                        <Label>Address</Label>
                         <Input
                           value={form.toAddress || ''}
                           onChange={(e) =>
                             setForm({ ...form, toAddress: e.target.value })
                           }
-                          placeholder="Endereço do cliente"
+                          placeholder="Client address"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Itens da Fatura */}
+                {/* Items */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
                     <h3 className="font-semibold text-slate-800">
-                      Itens Cobrados
+                      Billed Items
                     </h3>
                     <Button
                       variant="outline"
@@ -389,7 +447,7 @@ export default function Invoices() {
                       onClick={handleAddItem}
                       className="gap-2"
                     >
-                      <PlusCircle className="h-4 w-4" /> Adicionar Serviço
+                      <PlusCircle className="h-4 w-4" /> Add Item
                     </Button>
                   </div>
 
@@ -399,11 +457,9 @@ export default function Invoices() {
                         <Table>
                           <TableHeader className="bg-slate-50">
                             <TableRow>
-                              <TableHead>Descrição</TableHead>
-                              <TableHead className="w-24">Qtd</TableHead>
-                              <TableHead className="w-32">
-                                Preço Unit.
-                              </TableHead>
+                              <TableHead>Description</TableHead>
+                              <TableHead className="w-24">Qty</TableHead>
+                              <TableHead className="w-32">Unit Price</TableHead>
                               <TableHead className="w-32 text-right">
                                 Total
                               </TableHead>
@@ -423,7 +479,7 @@ export default function Invoices() {
                                         e.target.value,
                                       )
                                     }
-                                    placeholder="Ex: Taxa Administrativa 20%"
+                                    placeholder="E.g. Management Fee 20%"
                                     className="border-0 shadow-none focus-visible:ring-1 bg-transparent"
                                   />
                                 </TableCell>
@@ -479,8 +535,7 @@ export default function Invoices() {
                       </div>
                     ) : (
                       <div className="text-center py-6 text-slate-500 border border-dashed rounded-lg bg-slate-50">
-                        Nenhum item adicionado. Adicione os serviços ou taxas a
-                        serem cobradas.
+                        No items added. Add the services or fees to be billed.
                       </div>
                     )}
                   </div>
@@ -488,7 +543,7 @@ export default function Invoices() {
                   <div className="flex justify-end">
                     <div className="w-64 bg-slate-50 p-4 rounded-lg flex justify-between items-center border border-slate-200 shadow-sm">
                       <span className="font-semibold text-slate-600">
-                        Total da Fatura
+                        Invoice Total
                       </span>
                       <span className="text-xl font-bold text-trust-blue">
                         {formatAppCurrency(form.amount || 0)}
@@ -497,28 +552,28 @@ export default function Invoices() {
                   </div>
                 </div>
 
-                {/* Observações */}
+                {/* Notes */}
                 <div className="space-y-2">
-                  <Label>Observações / Termos</Label>
+                  <Label>Notes / Terms</Label>
                   <Textarea
                     value={form.notes || ''}
                     onChange={(e) =>
                       setForm({ ...form, notes: e.target.value })
                     }
-                    placeholder="Termos de pagamento, agradecimentos, detalhes bancários (se não incluídos no perfil), etc."
+                    placeholder="Payment terms, bank details, or additional messages..."
                     rows={3}
                   />
                 </div>
               </div>
               <DialogFooter className="sticky bottom-0 bg-white pt-4 pb-2 border-t mt-4">
                 <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                  Cancelar
+                  Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
                   className="bg-trust-blue text-white hover:bg-blue-700 min-w-32"
                 >
-                  Salvar Fatura
+                  Save Invoice
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -531,13 +586,13 @@ export default function Invoices() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="w-24">Nº Fatura</TableHead>
-                <TableHead>Pagador</TableHead>
-                <TableHead>Referência</TableHead>
-                <TableHead>Data Emissão</TableHead>
+                <TableHead className="w-24">Invoice No.</TableHead>
+                <TableHead>Billed To</TableHead>
+                <TableHead>Reference</TableHead>
+                <TableHead>Issue Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Valor Total</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-right">Total Amount</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -549,7 +604,7 @@ export default function Invoices() {
                   <TableCell className="font-medium text-slate-900">
                     {inv.toName || (
                       <span className="text-slate-400 italic">
-                        Não informado
+                        Not provided
                       </span>
                     )}
                   </TableCell>
@@ -587,15 +642,15 @@ export default function Invoices() {
                             setViewerOpen(true)
                           }}
                         >
-                          <Eye className="h-4 w-4 mr-2 text-blue-600" />{' '}
-                          Visualizar Fatura
+                          <Eye className="h-4 w-4 mr-2 text-blue-600" /> View
+                          Invoice
                         </DropdownMenuItem>
                         {inv.status !== 'paid' && (
                           <DropdownMenuItem
                             onClick={() => handleMarkAsPaid(inv)}
                           >
                             <CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />{' '}
-                            Marcar como Paga
+                            Mark as Paid
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -606,13 +661,13 @@ export default function Invoices() {
                           }}
                         >
                           <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
-                          Editar Fatura
+                          Edit Invoice
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600 focus:bg-red-50"
                           onClick={() => setDeleteId(inv.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" /> Excluir Fatura
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete Invoice
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -627,13 +682,13 @@ export default function Invoices() {
                   >
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <FileText className="h-10 w-10 text-slate-300" />
-                      <p>Nenhuma fatura encontrada com base na sua busca.</p>
+                      <p>No invoices found based on your search.</p>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setIsAddOpen(true)}
+                        onClick={openNewInvoice}
                       >
-                        Criar primeira fatura
+                        Create first invoice
                       </Button>
                     </div>
                   </TableCell>
@@ -656,19 +711,19 @@ export default function Invoices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir esta fatura? Esta ação não pode ser
-              desfeita e os dados do detalhamento serão perdidos.
+              Are you sure you want to delete this invoice? This action cannot
+              be undone and the detailed data will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Excluir Fatura
+              Delete Invoice
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
