@@ -4,41 +4,45 @@ import { ENV } from '@/lib/env'
 import useAuthStore from '@/stores/useAuthStore'
 
 let globalLedger: any[] = []
-let globalInvoices: any[] = [
-  {
-    id: 'inv-1001',
-    description: 'Limpeza de rotina - Apto 101',
-    amount: 150,
-    status: 'pending',
-    date: new Date().toISOString(),
-    bookingId: 'bk-5521',
-    type: 'service',
-  },
-  {
-    id: 'inv-1002',
-    description: 'Manutenção de Ar Condicionado',
-    amount: 300,
-    status: 'paid',
-    date: new Date(Date.now() - 86400000 * 2).toISOString(),
-    bookingId: '-',
-    type: 'maintenance',
-  },
-]
+let globalInvoices: any[] = []
 let listeners: (() => void)[] = []
 const notify = () => listeners.forEach((l) => l())
 
 export const fetchFinancials = async () => {
-  const { data } = await supabase.from('ledger_entries').select('*')
-  if (data) {
-    globalLedger = data.map((e: any) => ({
+  const { data: ledgerData } = await supabase.from('ledger_entries').select('*')
+  if (ledgerData) {
+    globalLedger = ledgerData.map((e: any) => ({
       ...e,
       propertyId: e.property_id,
       costType: e.cost_type,
       isRecurring: e.is_recurring,
       recurrenceFrequency: e.recurrence_frequency,
     }))
-    notify()
   }
+
+  const { data: invData } = await supabase
+    .from('invoices')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (invData) {
+    globalInvoices = invData.map((inv: any) => ({
+      ...inv,
+      dueDate: inv.due_date,
+      fromName: inv.from_name,
+      fromEmail: inv.from_email,
+      fromPhone: inv.from_phone,
+      fromAddress: inv.from_address,
+      toName: inv.to_name,
+      toEmail: inv.to_email,
+      toPhone: inv.to_phone,
+      toAddress: inv.to_address,
+      fromId: inv.from_id,
+      toId: inv.to_id,
+      propertyId: inv.property_id,
+      bookingId: inv.booking_id,
+    }))
+  }
+  notify()
 }
 
 fetchFinancials()
@@ -60,19 +64,66 @@ const useFinancialStore = () => {
     }
   }, [])
 
-  const addInvoice = (inv: any) => {
-    globalInvoices = [inv, ...globalInvoices]
-    notify()
+  const addInvoice = async (inv: any) => {
+    const dbInv = {
+      description: inv.description,
+      amount: inv.amount,
+      status: inv.status,
+      date: inv.date,
+      due_date: inv.dueDate || null,
+      from_name: inv.fromName,
+      from_email: inv.fromEmail,
+      from_phone: inv.fromPhone,
+      from_address: inv.fromAddress,
+      to_name: inv.toName,
+      to_email: inv.toEmail,
+      to_phone: inv.toPhone,
+      to_address: inv.toAddress,
+      from_id: inv.fromId || null,
+      to_id: inv.toId || null,
+      property_id: inv.propertyId || null,
+      type: inv.type,
+      booking_id: inv.bookingId,
+      items: inv.items || [],
+      notes: inv.notes,
+    }
+    const { error } = await supabase.from('invoices').insert(dbInv)
+    if (!error) await fetchFinancials()
   }
 
-  const updateInvoice = (inv: any) => {
-    globalInvoices = globalInvoices.map((i) => (i.id === inv.id ? inv : i))
-    notify()
+  const updateInvoice = async (inv: any) => {
+    const dbInv = {
+      description: inv.description,
+      amount: inv.amount,
+      status: inv.status,
+      date: inv.date,
+      due_date: inv.dueDate || null,
+      from_name: inv.fromName,
+      from_email: inv.fromEmail,
+      from_phone: inv.fromPhone,
+      from_address: inv.fromAddress,
+      to_name: inv.toName,
+      to_email: inv.toEmail,
+      to_phone: inv.toPhone,
+      to_address: inv.toAddress,
+      from_id: inv.fromId || null,
+      to_id: inv.toId || null,
+      property_id: inv.propertyId || null,
+      type: inv.type,
+      booking_id: inv.bookingId,
+      items: inv.items || [],
+      notes: inv.notes,
+    }
+    const { error } = await supabase
+      .from('invoices')
+      .update(dbInv)
+      .eq('id', inv.id)
+    if (!error) await fetchFinancials()
   }
 
-  const deleteInvoice = (id: string) => {
-    globalInvoices = globalInvoices.filter((i) => i.id !== id)
-    notify()
+  const deleteInvoice = async (id: string) => {
+    const { error } = await supabase.from('invoices').delete().eq('id', id)
+    if (!error) await fetchFinancials()
   }
 
   const addLedgerEntry = async (entry: any) => {

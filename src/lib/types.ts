@@ -957,18 +957,37 @@ export type TaskStatus =
   | 'pending_acceptance'
   | 'rejected'
 
+export interface InvoiceItem {
+  id?: string
+  description: string
+  quantity: number
+  unitPrice: number
+  total: number
+}
+
 export interface Invoice {
   id: string
   description: string
   amount: number
   status: 'pending' | 'paid' | 'approved' | 'sent'
   date: string
+  dueDate?: string
+  fromName?: string
+  fromEmail?: string
+  fromPhone?: string
+  fromAddress?: string
+  toName?: string
+  toEmail?: string
+  toPhone?: string
+  toAddress?: string
   fromId?: string
   toId?: string
   propertyId?: string
   type?: 'team_to_partner' | 'partner_to_pm' | 'admin_to_pm' | 'generic'
   bookingId?: string
   organizationId?: string
+  items?: InvoiceItem[]
+  notes?: string
 }
 
 export interface Payment {

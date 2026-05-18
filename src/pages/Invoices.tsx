@@ -18,6 +18,8 @@ import {
   Eye,
   MoreHorizontal,
   CheckCircle2,
+  FileText,
+  PlusCircle,
 } from 'lucide-react'
 import {
   Dialog,
@@ -45,9 +47,29 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import { format, isValid } from 'date-fns'
-import { Invoice } from '@/lib/types'
+import { Invoice, InvoiceItem } from '@/lib/types'
+import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
+
+const emptyForm = (): Partial<Invoice> => ({
+  description: '',
+  amount: 0,
+  status: 'pending',
+  date: new Date().toISOString().split('T')[0],
+  dueDate: '',
+  fromName: '',
+  fromEmail: '',
+  fromPhone: '',
+  fromAddress: '',
+  toName: '',
+  toEmail: '',
+  toPhone: '',
+  toAddress: '',
+  notes: '',
+  items: [],
+})
 
 export default function Invoices() {
   const context = useContext(AppContext)
@@ -65,12 +87,7 @@ export default function Invoices() {
   const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<Invoice | null>(null)
-  const [form, setForm] = useState<Partial<Invoice>>({
-    description: '',
-    amount: 0,
-    status: 'pending',
-    date: new Date().toISOString().split('T')[0],
-  })
+  const [form, setForm] = useState<Partial<Invoice>>(emptyForm())
 
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
@@ -83,14 +100,51 @@ export default function Invoices() {
   const filteredInvoices = (invoiceList || []).filter(
     (inv: any) =>
       (inv?.description || '').toLowerCase().includes(search.toLowerCase()) ||
+      (inv?.toName || '').toLowerCase().includes(search.toLowerCase()) ||
       (inv?.id || '').toLowerCase().includes(search.toLowerCase()),
   )
 
+  const handleAddItem = () => {
+    const newItem: InvoiceItem = {
+      description: '',
+      quantity: 1,
+      unitPrice: 0,
+      total: 0,
+    }
+    setForm({ ...form, items: [...(form.items || []), newItem] })
+  }
+
+  const handleRemoveItem = (index: number) => {
+    const newItems = [...(form.items || [])]
+    newItems.splice(index, 1)
+    calculateTotal(newItems)
+  }
+
+  const handleItemChange = (
+    index: number,
+    field: keyof InvoiceItem,
+    value: any,
+  ) => {
+    const newItems = [...(form.items || [])]
+    newItems[index] = { ...newItems[index], [field]: value }
+    if (field === 'quantity' || field === 'unitPrice') {
+      newItems[index].total =
+        Number(newItems[index].quantity || 0) *
+        Number(newItems[index].unitPrice || 0)
+    }
+    calculateTotal(newItems)
+  }
+
+  const calculateTotal = (items: InvoiceItem[]) => {
+    const total = items.reduce((acc, item) => acc + (item.total || 0), 0)
+    setForm((prev) => ({ ...prev, items, amount: total }))
+  }
+
   const handleSave = () => {
-    if (!form.description) {
+    if (!form.toName) {
       toast({
-        title: 'Erro',
-        description: 'Descrição é obrigatória',
+        title: 'Atenção',
+        description: 'O nome do pagador é obrigatório',
         variant: 'destructive',
       })
       return
@@ -101,23 +155,14 @@ export default function Invoices() {
       toast({ title: 'Sucesso', description: 'Fatura atualizada com sucesso' })
     } else {
       addInvoice({
-        id: `inv-${Date.now()}`,
-        description: form.description,
-        amount: Number(form.amount) || 0,
-        status: form.status || 'pending',
-        date: form.date || new Date().toISOString(),
+        ...form,
         type: 'generic',
       } as Invoice)
       toast({ title: 'Sucesso', description: 'Fatura criada com sucesso' })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
-    setForm({
-      description: '',
-      amount: 0,
-      status: 'pending',
-      date: new Date().toISOString().split('T')[0],
-    })
+    setForm(emptyForm())
   }
 
   const handleDelete = () => {
@@ -143,14 +188,14 @@ export default function Invoices() {
     })
     toast({
       title: 'Sucesso',
-      description: `Fatura paga. ${updatedCount} lançamentos atualizados.`,
+      description: `Fatura marcada como paga.`,
     })
   }
 
   const formatDateSafe = (dateString?: string) => {
     if (!dateString) return '-'
     const d = new Date(dateString)
-    return isValid(d) ? format(d, 'MMM dd, yyyy') : '-'
+    return isValid(d) ? format(d, 'dd/MM/yyyy') : '-'
   }
 
   return (
@@ -161,12 +206,13 @@ export default function Invoices() {
             Faturas
           </h1>
           <p className="text-muted-foreground">
-            Gerencie as faturas geradas (incluindo serviços e PDV).
+            Gerencie faturas de serviços, taxas e manutenções com detalhamento
+            completo.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Buscar faturas..."
+            placeholder="Buscar faturas (Nome, ID)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -177,54 +223,302 @@ export default function Invoices() {
               setIsAddOpen(v)
               if (!v) {
                 setEditingRecord(null)
-                setForm({
-                  description: '',
-                  amount: 0,
-                  status: 'pending',
-                  date: new Date().toISOString().split('T')[0],
-                })
+                setForm(emptyForm())
               }
             }}
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
-                <Plus className="h-4 w-4" /> Adicionar
+                <Plus className="h-4 w-4" /> Nova Fatura
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
               <DialogHeader>
-                <DialogTitle>
-                  {editingRecord ? 'Editar Fatura' : 'Nova Fatura'}
+                <DialogTitle className="text-xl">
+                  {editingRecord
+                    ? 'Editar Fatura Profissional'
+                    : 'Nova Fatura Profissional'}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>Descrição</Label>
-                  <Input
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm({ ...form, description: e.target.value })
-                    }
-                    placeholder="Ex: Limpeza de rotina"
-                  />
+
+              <div className="space-y-8 py-4">
+                {/* Informações Básicas */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg">
+                  <div className="space-y-2">
+                    <Label>Referência / Título</Label>
+                    <Input
+                      value={form.description || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                      placeholder="Ex: Fatura Quinzenal - Maio"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Data de Emissão</Label>
+                    <Input
+                      type="date"
+                      value={form.date?.split('T')[0] || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, date: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Data de Vencimento</Label>
+                    <Input
+                      type="date"
+                      value={form.dueDate?.split('T')[0] || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, dueDate: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
+
+                {/* Emissor e Pagador */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4 border rounded-lg p-4">
+                    <h3 className="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2">
+                      <FileText className="h-4 w-4 text-trust-blue" /> Dados do
+                      Emissor (Você)
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label>Nome / Empresa</Label>
+                        <Input
+                          value={form.fromName || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, fromName: e.target.value })
+                          }
+                          placeholder="Sua Empresa LLC"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Email</Label>
+                        <Input
+                          value={form.fromEmail || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, fromEmail: e.target.value })
+                          }
+                          placeholder="contato@empresa.com"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Telefone</Label>
+                        <Input
+                          value={form.fromPhone || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, fromPhone: e.target.value })
+                          }
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Endereço</Label>
+                        <Input
+                          value={form.fromAddress || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, fromAddress: e.target.value })
+                          }
+                          placeholder="123 Main St, FL"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 border rounded-lg p-4">
+                    <h3 className="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2">
+                      <FileText className="h-4 w-4 text-trust-blue" /> Dados do
+                      Pagador (Cliente)
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label>Nome / Empresa *</Label>
+                        <Input
+                          value={form.toName || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, toName: e.target.value })
+                          }
+                          placeholder="Nome do Owner ou Inquilino"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Email</Label>
+                        <Input
+                          value={form.toEmail || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, toEmail: e.target.value })
+                          }
+                          placeholder="cliente@email.com"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Telefone</Label>
+                        <Input
+                          value={form.toPhone || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, toPhone: e.target.value })
+                          }
+                          placeholder="+1 (555) 111-1111"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label>Endereço</Label>
+                        <Input
+                          value={form.toAddress || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, toAddress: e.target.value })
+                          }
+                          placeholder="Endereço do cliente"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Itens da Fatura */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <h3 className="font-semibold text-slate-800">
+                      Itens Cobrados
+                    </h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddItem}
+                      className="gap-2"
+                    >
+                      <PlusCircle className="h-4 w-4" /> Adicionar Serviço
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {form.items && form.items.length > 0 ? (
+                      <div className="rounded-md border overflow-hidden">
+                        <Table>
+                          <TableHeader className="bg-slate-50">
+                            <TableRow>
+                              <TableHead>Descrição</TableHead>
+                              <TableHead className="w-24">Qtd</TableHead>
+                              <TableHead className="w-32">
+                                Preço Unit.
+                              </TableHead>
+                              <TableHead className="w-32 text-right">
+                                Total
+                              </TableHead>
+                              <TableHead className="w-12"></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {form.items.map((item, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell className="p-2">
+                                  <Input
+                                    value={item.description}
+                                    onChange={(e) =>
+                                      handleItemChange(
+                                        idx,
+                                        'description',
+                                        e.target.value,
+                                      )
+                                    }
+                                    placeholder="Ex: Taxa Administrativa 20%"
+                                    className="border-0 shadow-none focus-visible:ring-1 bg-transparent"
+                                  />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={item.quantity || ''}
+                                    onChange={(e) =>
+                                      handleItemChange(
+                                        idx,
+                                        'quantity',
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    className="border-0 shadow-none focus-visible:ring-1 bg-transparent text-center px-1"
+                                  />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={item.unitPrice || ''}
+                                    onChange={(e) =>
+                                      handleItemChange(
+                                        idx,
+                                        'unitPrice',
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    className="border-0 shadow-none focus-visible:ring-1 bg-transparent text-right px-1"
+                                  />
+                                </TableCell>
+                                <TableCell className="p-2 text-right font-medium text-slate-700 align-middle">
+                                  {formatAppCurrency(item.total)}
+                                </TableCell>
+                                <TableCell className="p-2 text-center align-middle">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleRemoveItem(idx)}
+                                    className="h-8 w-8 text-slate-400 hover:text-red-500"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-slate-500 border border-dashed rounded-lg bg-slate-50">
+                        Nenhum item adicionado. Adicione os serviços ou taxas a
+                        serem cobradas.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <div className="w-64 bg-slate-50 p-4 rounded-lg flex justify-between items-center border border-slate-200 shadow-sm">
+                      <span className="font-semibold text-slate-600">
+                        Total da Fatura
+                      </span>
+                      <span className="text-xl font-bold text-trust-blue">
+                        {formatAppCurrency(form.amount || 0)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Observações */}
                 <div className="space-y-2">
-                  <Label>Valor</Label>
-                  <Input
-                    type="number"
-                    value={form.amount}
+                  <Label>Observações / Termos</Label>
+                  <Textarea
+                    value={form.notes || ''}
                     onChange={(e) =>
-                      setForm({ ...form, amount: Number(e.target.value) })
+                      setForm({ ...form, notes: e.target.value })
                     }
+                    placeholder="Termos de pagamento, agradecimentos, detalhes bancários (se não incluídos no perfil), etc."
+                    rows={3}
                   />
                 </div>
               </div>
-              <DialogFooter>
+              <DialogFooter className="sticky bottom-0 bg-white pt-4 pb-2 border-t mt-4">
+                <Button variant="outline" onClick={() => setIsAddOpen(false)}>
+                  Cancelar
+                </Button>
                 <Button
                   onClick={handleSave}
-                  className="bg-trust-blue text-white hover:bg-blue-700"
+                  className="bg-trust-blue text-white hover:bg-blue-700 min-w-32"
                 >
-                  Salvar
+                  Salvar Fatura
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -237,29 +531,37 @@ export default function Invoices() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>ID da Fatura</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Reserva Associada</TableHead>
-                <TableHead>Data</TableHead>
+                <TableHead className="w-24">Nº Fatura</TableHead>
+                <TableHead>Pagador</TableHead>
+                <TableHead>Referência</TableHead>
+                <TableHead>Data Emissão</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
+                <TableHead className="text-right">Valor Total</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInvoices.slice(0, 50).map((inv: any) => (
+              {filteredInvoices.map((inv: any) => (
                 <TableRow key={inv.id} className="hover:bg-slate-50">
-                  <TableCell className="font-mono text-xs">{inv.id}</TableCell>
+                  <TableCell className="font-mono text-xs font-medium text-slate-600">
+                    {inv.id ? inv.id.split('-')[0].substring(0, 8) : '-'}
+                  </TableCell>
+                  <TableCell className="font-medium text-slate-900">
+                    {inv.toName || (
+                      <span className="text-slate-400 italic">
+                        Não informado
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell
-                    className="font-medium text-slate-900 max-w-[200px] truncate"
+                    className="text-slate-600 max-w-[200px] truncate"
                     title={inv.description}
                   >
-                    {inv.description}
+                    {inv.description || '-'}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-xs font-mono">
-                    {inv.bookingId || '-'}
+                  <TableCell className="text-slate-600">
+                    {formatDateSafe(inv.date)}
                   </TableCell>
-                  <TableCell>{formatDateSafe(inv.date)}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -268,48 +570,49 @@ export default function Invoices() {
                       {inv.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-medium">
+                  <TableCell className="text-right font-bold text-slate-700">
                     {formatAppCurrency(inv.amount)}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem
                           onClick={() => {
                             setViewingInvoice(inv)
                             setViewerOpen(true)
                           }}
                         >
-                          <Eye className="h-4 w-4 mr-2" /> Visualizar
+                          <Eye className="h-4 w-4 mr-2 text-blue-600" />{' '}
+                          Visualizar Fatura
                         </DropdownMenuItem>
                         {inv.status !== 'paid' && (
                           <DropdownMenuItem
                             onClick={() => handleMarkAsPaid(inv)}
-                            className="text-green-600 focus:text-green-600"
                           >
-                            <CheckCircle2 className="h-4 w-4 mr-2" /> Marcar
-                            como Pago
+                            <CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />{' '}
+                            Marcar como Paga
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
                           onClick={() => {
                             setEditingRecord(inv)
-                            setForm(inv)
+                            setForm({ ...emptyForm(), ...inv })
                             setIsAddOpen(true)
                           }}
                         >
-                          <Pencil className="h-4 w-4 mr-2" /> Editar
+                          <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
+                          Editar Fatura
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600"
+                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
                           onClick={() => setDeleteId(inv.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                          <Trash2 className="h-4 w-4 mr-2" /> Excluir Fatura
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -320,9 +623,19 @@ export default function Invoices() {
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="text-center py-8 text-muted-foreground"
+                    className="text-center py-12 text-muted-foreground"
                   >
-                    Nenhuma fatura encontrada.
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <FileText className="h-10 w-10 text-slate-300" />
+                      <p>Nenhuma fatura encontrada com base na sua busca.</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsAddOpen(true)}
+                      >
+                        Criar primeira fatura
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -331,53 +644,11 @@ export default function Invoices() {
         </CardContent>
       </Card>
 
-      <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Visualizar Fatura</DialogTitle>
-          </DialogHeader>
-          {viewingInvoice && (
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100">
-                <div>
-                  <p className="text-muted-foreground text-xs mb-1">
-                    ID da Fatura
-                  </p>
-                  <p className="font-mono text-sm">{viewingInvoice.id}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-xs mb-1">Data</p>
-                  <p className="font-medium">
-                    {formatDateSafe(viewingInvoice.date)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-xs mb-1">Status</p>
-                  <Badge
-                    variant="outline"
-                    className={`uppercase text-[10px] ${viewingInvoice.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}
-                  >
-                    {viewingInvoice.status}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-xs mb-1">Valor</p>
-                  <p className="font-medium text-lg">
-                    {formatAppCurrency(viewingInvoice.amount)}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs mb-1">Descrição</p>
-                <p className="font-medium">{viewingInvoice.description}</p>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button onClick={() => setViewerOpen(false)}>Fechar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <InvoiceViewer
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        invoice={viewingInvoice}
+      />
 
       <AlertDialog
         open={!!deleteId}
@@ -388,7 +659,7 @@ export default function Invoices() {
             <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir esta fatura? Esta ação não pode ser
-              desfeita e pode afetar os relatórios financeiros.
+              desfeita e os dados do detalhamento serão perdidos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
