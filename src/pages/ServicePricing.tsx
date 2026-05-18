@@ -1,5 +1,4 @@
-import { useContext, useState } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -11,7 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
+import { Pencil, Trash2, MoreHorizontal, Settings } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -46,78 +45,74 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { ServiceRate } from '@/lib/types'
-import { DataMask } from '@/components/DataMask'
-import { CurrencyInput } from '@/components/ui/currency-input'
-import { formatCurrency } from '@/lib/utils'
-
-const countryToCurrency: Record<string, string> = {
-  US: 'USD',
-  BR: 'BRL',
-  ES: 'EUR',
-}
-
-const countryToLocale: Record<string, string> = {
-  US: 'en-US',
-  BR: 'pt-BR',
-  ES: 'es-ES',
-}
+import useBillingStore from '@/stores/useBillingStore'
+import useAuthStore from '@/stores/useAuthStore'
+import { BillingAgreement } from '@/lib/types'
 
 export default function ServicePricing() {
-  const {
-    genericServiceRates,
-    addGenericServiceRate,
-    updateGenericServiceRate,
-    deleteGenericServiceRate,
-  } = useContext(AppContext)!
-  const { t, language } = useLanguageStore()
+  const { agreements, addAgreement, updateAgreement, deleteAgreement } =
+    useBillingStore()
+  const { allUsers } = useAuthStore()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<ServiceRate | null>(null)
+  const [editingRecord, setEditingRecord] = useState<BillingAgreement | null>(
+    null,
+  )
 
-  const defaultForm: Partial<ServiceRate> = {
-    serviceName: '',
-    country: 'US',
-    servicePrice: 0,
-    productPrice: 0,
-    pmValue: 0,
-    partnerPayment: 0,
+  const defaultForm: Partial<BillingAgreement> = {
+    name: '',
+    targetId: 'global',
+    targetRole: 'all',
+    type: 'booking_percentage',
+    valueType: 'percentage',
+    value: 0,
+    frequency: 'per_booking',
     validFrom: new Date().toISOString().split('T')[0],
+    status: 'active',
   }
-  const [form, setForm] = useState<Partial<ServiceRate>>(defaultForm)
+
+  const [form, setForm] = useState<Partial<BillingAgreement>>(defaultForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filteredRates = genericServiceRates.filter((r) =>
-    r.serviceName.toLowerCase().includes(search.toLowerCase()),
+  const filteredRates = agreements.filter((r) =>
+    r.name.toLowerCase().includes(search.toLowerCase()),
   )
 
   const handleSave = () => {
-    if (!form.serviceName) {
+    if (!form.name) {
       toast({
-        title: t('common.error') || 'Error',
+        title: 'Error',
+        description: 'Name is required',
         variant: 'destructive',
       })
       return
     }
 
     if (editingRecord) {
-      updateGenericServiceRate({ ...editingRecord, ...form } as ServiceRate)
-      toast({ title: t('common.success') || 'Success' })
+      updateAgreement({ ...editingRecord, ...form } as BillingAgreement)
+      toast({
+        title: 'Success',
+        description: 'Agreement updated successfully.',
+      })
     } else {
-      addGenericServiceRate({
-        id: `sr-${Date.now()}`,
-        serviceName: form.serviceName,
-        country: form.country || 'US',
-        servicePrice: Number(form.servicePrice) || 0,
-        productPrice: Number(form.productPrice) || 0,
-        pmValue: Number(form.pmValue) || 0,
-        partnerPayment: Number(form.partnerPayment) || 0,
+      addAgreement({
+        id: `ba-${Date.now()}`,
+        name: form.name,
+        targetId: form.targetId || 'global',
+        targetRole: form.targetRole || 'all',
+        type: form.type || 'fixed_admin_fee',
+        valueType: form.valueType || 'fixed',
+        value: Number(form.value) || 0,
+        frequency: form.frequency || 'monthly',
         validFrom: form.validFrom || new Date().toISOString().split('T')[0],
-      } as ServiceRate)
-      toast({ title: t('common.success') || 'Success' })
+        status: form.status || 'active',
+      } as BillingAgreement)
+      toast({
+        title: 'Success',
+        description: 'Agreement created successfully.',
+      })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
@@ -126,27 +121,40 @@ export default function ServicePricing() {
 
   const handleDelete = () => {
     if (deleteId) {
-      deleteGenericServiceRate(deleteId)
-      toast({ title: t('common.delete_success') || 'Deleted successfully' })
+      deleteAgreement(deleteId)
+      toast({
+        title: 'Success',
+        description: 'Agreement deleted successfully.',
+      })
       setDeleteId(null)
     }
   }
 
-  const currentCurrency = countryToCurrency[form.country || 'US'] || 'USD'
-  const currentLocale = countryToLocale[form.country || 'US'] || 'en-US'
+  const getTargetName = (id: string) => {
+    if (id === 'global') return 'Global (All Users)'
+    const u = allUsers.find((user) => user.id === id)
+    return u ? `${u.name} (${u.role})` : id
+  }
+
+  const formatValue = (val: number, type: string) => {
+    return type === 'percentage' ? `${val}%` : `$${val.toFixed(2)}`
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('service_pricing.title')}
+            Billing Rules & Agreements
           </h1>
-          <p className="text-muted-foreground">{t('service_pricing.desc')}</p>
+          <p className="text-muted-foreground">
+            Configure the logic for automated calculation of management fees,
+            revenue shares, and markups.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('common.search') || 'Search...'}
+            placeholder="Search rules..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -162,86 +170,169 @@ export default function ServicePricing() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="bg-trust-blue gap-2 text-white">
-                <Plus className="h-4 w-4" /> {t('common.add') || 'Add'}
+              <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
+                <Settings className="h-4 w-4" /> New Billing Rule
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[600px] bg-white">
               <DialogHeader>
                 <DialogTitle>
-                  {editingRecord
-                    ? t('common.edit') || 'Edit'
-                    : t('common.add') || 'Add'}
+                  {editingRecord ? 'Edit Billing Rule' : 'New Billing Rule'}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>{t('common.country')}</Label>
-                  <Select
-                    value={form.country || 'US'}
-                    onValueChange={(val: any) =>
-                      setForm({ ...form, country: val })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('common.select_country')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="US">
-                        {t('common.country_us')}
-                      </SelectItem>
-                      <SelectItem value="BR">
-                        {t('common.country_br')}
-                      </SelectItem>
-                      <SelectItem value="ES">
-                        {t('common.country_es')}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('service_pricing.service_name')}</Label>
-                  <Input
-                    value={form.serviceName}
-                    onChange={(e) =>
-                      setForm({ ...form, serviceName: e.target.value })
-                    }
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>{t('service_pricing.cost_price')}</Label>
-                    <CurrencyInput
-                      value={form.servicePrice}
-                      onChange={(val) =>
-                        setForm({ ...form, servicePrice: val })
+                    <Label>Rule Name</Label>
+                    <Input
+                      placeholder="e.g. Monthly Admin Fee"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
                       }
-                      currency={currentCurrency}
-                      locale={currentLocale}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t('service_pricing.product_price')}</Label>
-                    <CurrencyInput
-                      value={form.productPrice}
-                      onChange={(val) =>
-                        setForm({ ...form, productPrice: val })
+                    <Label>Target Player (Owner/PM)</Label>
+                    <Select
+                      value={form.targetId}
+                      onValueChange={(val: any) => {
+                        const user = allUsers.find((u) => u.id === val)
+                        setForm({
+                          ...form,
+                          targetId: val,
+                          targetRole: user ? user.role : 'all',
+                        })
+                      }}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select target..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="global">
+                          Global (All Users)
+                        </SelectItem>
+                        {allUsers
+                          .filter((u) => u.role !== 'tenant')
+                          .map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              {u.name} ({u.role})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-slate-50">
+                  <div className="space-y-2 col-span-2">
+                    <Label>Calculation Source (Rule Type)</Label>
+                    <Select
+                      value={form.type}
+                      onValueChange={(val: any) =>
+                        setForm({ ...form, type: val })
                       }
-                      currency={currentCurrency}
-                      locale={currentLocale}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select type..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="booking_percentage">
+                          Booking Revenue Share (from Bookings)
+                        </SelectItem>
+                        <SelectItem value="fixed_admin_fee">
+                          Fixed Administrative Fee (Flat Rate)
+                        </SelectItem>
+                        <SelectItem value="maintenance_markup">
+                          Maintenance Markup (from Tasks)
+                        </SelectItem>
+                        <SelectItem value="cleaning_markup">
+                          Cleaning Markup (from Tasks)
+                        </SelectItem>
+                        <SelectItem value="purchase_markup">
+                          Purchase Markup (from Inventory)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Value Type</Label>
+                    <Select
+                      value={form.valueType}
+                      onValueChange={(val: any) =>
+                        setForm({ ...form, valueType: val })
+                      }
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select value type..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">
+                          Percentage (%)
+                        </SelectItem>
+                        <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Amount / Rate</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={form.value}
+                      onChange={(e) =>
+                        setForm({ ...form, value: Number(e.target.value) })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Frequency</Label>
+                    <Select
+                      value={form.frequency}
+                      onValueChange={(val: any) =>
+                        setForm({ ...form, frequency: val })
+                      }
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select frequency..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="per_booking">
+                          Per Booking (Auto)
+                        </SelectItem>
+                        <SelectItem value="per_task">
+                          Per Task (Auto)
+                        </SelectItem>
+                        <SelectItem value="monthly">Monthly Fixed</SelectItem>
+                        <SelectItem value="yearly">Yearly Fixed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Valid From</Label>
+                    <Input
+                      type="date"
+                      value={form.validFrom}
+                      onChange={(e) =>
+                        setForm({ ...form, validFrom: e.target.value })
+                      }
                     />
                   </div>
                 </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                  {t('common.cancel')}
+                  Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
                   className="bg-trust-blue text-white"
                 >
-                  {t('common.save')}
+                  Save Rule
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -254,86 +345,97 @@ export default function ServicePricing() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('service_pricing.service_name')}</TableHead>
-                <TableHead>{t('common.country')}</TableHead>
-                <TableHead>{t('service_pricing.cost_price')}</TableHead>
-                <TableHead className="text-right">
-                  {t('service_pricing.product_price')}
-                </TableHead>
-                <TableHead className="text-right">
-                  {t('common.actions')}
-                </TableHead>
+                <TableHead>Rule Name</TableHead>
+                <TableHead>Target Player</TableHead>
+                <TableHead>Data Source</TableHead>
+                <TableHead>Rate / Value</TableHead>
+                <TableHead>Frequency</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredRates.map((service) => {
-                const cur = countryToCurrency[service.country || 'US'] || 'USD'
-                const formatOpts = {
-                  style: 'currency',
-                  currency: cur,
-                }
-                return (
-                  <TableRow key={service.id} className="hover:bg-slate-50">
-                    <TableCell className="font-medium text-slate-900">
-                      <DataMask>{service.serviceName}</DataMask>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{service.country || 'US'}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <DataMask>
-                        {new Intl.NumberFormat(
-                          countryToLocale[service.country || 'US'] || 'en-US',
-                          formatOpts,
-                        ).format(service.servicePrice)}
-                      </DataMask>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      <DataMask>
-                        {new Intl.NumberFormat(
-                          countryToLocale[service.country || 'US'] || 'en-US',
-                          formatOpts,
-                        ).format(service.productPrice)}
-                      </DataMask>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setEditingRecord(service)
-                              setForm(service)
-                              setIsAddOpen(true)
-                            }}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />{' '}
-                            {t('common.edit') || 'Edit'}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() => setDeleteId(service.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />{' '}
-                            {t('common.delete') || 'Delete'}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+              {filteredRates.map((agreement) => (
+                <TableRow key={agreement.id} className="hover:bg-slate-50">
+                  <TableCell className="font-medium text-slate-900">
+                    {agreement.name}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className="bg-slate-50 text-slate-700"
+                    >
+                      {getTargetName(agreement.targetId)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm text-slate-600 capitalize">
+                      {agreement.type.replace('_', ' ')}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-bold text-slate-800">
+                    {formatValue(agreement.value, agreement.valueType)}
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-600 capitalize">
+                    {agreement.frequency.replace('_', ' ')}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={
+                        agreement.status === 'active'
+                          ? 'bg-green-100 text-green-800 border-green-200'
+                          : 'bg-slate-100 text-slate-800'
+                      }
+                    >
+                      {agreement.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setEditingRecord(agreement)
+                            setForm(agreement)
+                            setIsAddOpen(true)
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
+                          Edit Rule
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                          onClick={() => setDeleteId(agreement.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete Rule
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
               {filteredRates.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
-                    className="text-center py-6 text-muted-foreground"
+                    colSpan={7}
+                    className="text-center py-12 text-muted-foreground"
                   >
-                    {t('common.empty') || 'No records found.'}
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <Settings className="h-10 w-10 text-slate-300" />
+                      <p>No billing rules configured.</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsAddOpen(true)}
+                      >
+                        Create your first rule
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -348,19 +450,20 @@ export default function ServicePricing() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t('common.confirm_delete') || 'Confirm Delete'}
-            </AlertDialogTitle>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('common.delete_desc') || 'This action cannot be undone.'}
+              Are you sure you want to delete this billing rule? Existing
+              invoices won't be affected, but future automatic calculations will
+              ignore this rule.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>
-              {t('common.cancel') || 'Cancel'}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              {t('common.delete') || 'Delete'}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete Rule
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

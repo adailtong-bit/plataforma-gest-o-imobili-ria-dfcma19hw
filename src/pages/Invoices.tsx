@@ -21,6 +21,7 @@ import {
   FileText,
   PlusCircle,
   User as UserIcon,
+  Calculator,
 } from 'lucide-react'
 import {
   Dialog,
@@ -60,6 +61,9 @@ import { format, isValid } from 'date-fns'
 import { Invoice, InvoiceItem } from '@/lib/types'
 import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
 import useAuthStore from '@/stores/useAuthStore'
+import useBillingStore from '@/stores/useBillingStore'
+import useShortTermStore from '@/stores/useShortTermStore'
+import useTaskStore from '@/stores/useTaskStore'
 
 const emptyForm = (): Partial<Invoice> => ({
   description: '',
@@ -92,6 +96,9 @@ export default function Invoices() {
 
   const { toast } = useToast()
   const { currentUser, allUsers } = useAuthStore()
+  const { agreements } = useBillingStore()
+  const { bookings } = useShortTermStore()
+  const { tasks } = useTaskStore()
 
   const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -101,6 +108,16 @@ export default function Invoices() {
   const [viewerOpen, setViewerOpen] = useState(false)
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+
+  // Auto Generate State
+  const [isAutoOpen, setIsAutoOpen] = useState(false)
+  const [autoForm, setAutoForm] = useState({
+    targetId: '',
+    startDate: '',
+    endDate: '',
+  })
+  const [previewItems, setPreviewItems] = useState<InvoiceItem[]>([])
+  const [previewTotal, setPreviewTotal] = useState(0)
 
   const invoiceList = Array.isArray(financials)
     ? financials
@@ -213,6 +230,159 @@ export default function Invoices() {
     setIsAddOpen(true)
   }
 
+  const handlePreviewCalculation = () => {
+    if (!autoForm.targetId || !autoForm.startDate || !autoForm.endDate) {
+      toast({
+        title: 'Error',
+        description: 'Please select Target Player and Period',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const applicableAgreements = agreements.filter(
+      (a) => a.targetId === autoForm.targetId || a.targetId === 'global',
+    )
+    const pStart = new Date(autoForm.startDate).getTime()
+    const pEnd = new Date(autoForm.endDate).getTime()
+
+    const periodBookings = bookings.filter((b: any) => {
+      const bStart = new Date(b.checkIn).getTime()
+      const bEnd = new Date(b.checkOut).getTime()
+      return bStart <= pEnd && bEnd >= pStart
+    })
+
+    const periodTasks = tasks.filter((t: any) => {
+      if (!t.date) return false
+      const tTime = new Date(t.date).getTime()
+      return tTime >= pStart && tTime <= pEnd
+    })
+
+    const newItems: InvoiceItem[] = []
+
+    applicableAgreements.forEach((agreement) => {
+      if (agreement.type === 'booking_percentage') {
+        periodBookings.forEach((b: any) => {
+          const amount = (b.totalAmount || 0) * (agreement.value / 100)
+          if (amount > 0) {
+            newItems.push({
+              description: `${agreement.name} - Booking ${b.id.substring(0, 6)} (${b.propertyName})`,
+              quantity: 1,
+              unitPrice: amount,
+              total: amount,
+            })
+          }
+        })
+      } else if (agreement.type === 'fixed_admin_fee') {
+        newItems.push({
+          description: `${agreement.name} - Period ${autoForm.startDate} to ${autoForm.endDate}`,
+          quantity: 1,
+          unitPrice: agreement.value,
+          total: agreement.value,
+        })
+      } else if (agreement.type === 'maintenance_markup') {
+        const mTasks = periodTasks.filter((t: any) => t.type === 'maintenance')
+        mTasks.forEach((t: any) => {
+          const cost = (t.price || 0) + (t.laborCost || 0)
+          const amount =
+            agreement.valueType === 'percentage'
+              ? cost * (agreement.value / 100)
+              : agreement.value
+          if (amount > 0) {
+            newItems.push({
+              description: `${agreement.name} - Maint. Task: ${t.title}`,
+              quantity: 1,
+              unitPrice: amount,
+              total: amount,
+            })
+          }
+        })
+      } else if (agreement.type === 'cleaning_markup') {
+        const cTasks = periodTasks.filter(
+          (t: any) =>
+            t.type === 'cleaning' || t.title.toLowerCase().includes('clean'),
+        )
+        cTasks.forEach((t: any) => {
+          const cost = (t.price || 0) + (t.laborCost || 0)
+          const amount =
+            agreement.valueType === 'percentage'
+              ? cost * (agreement.value / 100)
+              : agreement.value
+          if (amount > 0) {
+            newItems.push({
+              description: `${agreement.name} - Cleaning: ${t.title}`,
+              quantity: 1,
+              unitPrice: amount,
+              total: amount,
+            })
+          }
+        })
+      } else if (agreement.type === 'purchase_markup') {
+        const pTasks = periodTasks.filter(
+          (t: any) =>
+            t.type === 'purchase' || t.title.toLowerCase().includes('purchase'),
+        )
+        pTasks.forEach((t: any) => {
+          const cost = t.price || 0
+          const amount =
+            agreement.valueType === 'percentage'
+              ? cost * (agreement.value / 100)
+              : agreement.value
+          if (amount > 0) {
+            newItems.push({
+              description: `${agreement.name} - Purchase: ${t.title}`,
+              quantity: 1,
+              unitPrice: amount,
+              total: amount,
+            })
+          }
+        })
+      }
+    })
+
+    setPreviewItems(newItems)
+    setPreviewTotal(newItems.reduce((acc, item) => acc + (item.total || 0), 0))
+  }
+
+  const handleCreateFromAuto = () => {
+    if (previewItems.length === 0) {
+      toast({
+        title: 'Error',
+        description: 'No items to invoice',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const user = allUsers.find((u) => u.id === autoForm.targetId)
+    const newInvoice: Partial<Invoice> = {
+      ...emptyForm(),
+      fromName: currentUser?.companyName || currentUser?.name || '',
+      fromEmail: currentUser?.email || '',
+      fromPhone: currentUser?.phone || '',
+      fromAddress: currentUser?.address || '',
+      toName: user?.companyName || user?.name || '',
+      toEmail: user?.email || '',
+      toPhone: user?.phone || '',
+      toAddress: user?.address || '',
+      toId: user?.id,
+      description: `Automated Billing - ${autoForm.startDate} to ${autoForm.endDate}`,
+      date: new Date().toISOString().split('T')[0],
+      items: previewItems,
+      amount: previewTotal,
+      status: 'pending',
+    }
+
+    addInvoice({ ...newInvoice, type: 'automated' } as Invoice)
+    toast({
+      title: 'Success',
+      description: 'Automated invoice created successfully.',
+    })
+    setIsAutoOpen(false)
+    setPreviewItems([])
+    setAutoForm({ targetId: '', startDate: '', endDate: '' })
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -227,11 +397,18 @@ export default function Invoices() {
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Search invoices (Name, ID)..."
+            placeholder="Search invoices..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
           />
+          <Button
+            onClick={() => setIsAutoOpen(true)}
+            variant="outline"
+            className="gap-2 border-trust-blue text-trust-blue hover:bg-blue-50"
+          >
+            <Calculator className="h-4 w-4" /> Auto-Generate
+          </Button>
           <Button
             onClick={openNewInvoice}
             className="bg-trust-blue gap-2 text-white hover:bg-blue-700"
@@ -239,6 +416,158 @@ export default function Invoices() {
             <Plus className="h-4 w-4" /> New Invoice
           </Button>
 
+          {/* Auto Generate Dialog */}
+          <Dialog
+            open={isAutoOpen}
+            onOpenChange={(v) => {
+              setIsAutoOpen(v)
+              if (!v) {
+                setPreviewItems([])
+                setAutoForm({ targetId: '', startDate: '', endDate: '' })
+              }
+            }}
+          >
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
+              <DialogHeader>
+                <DialogTitle className="text-xl">
+                  Generate Automated Invoice
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground">
+                  Calculate charges automatically from Bookings and Tasks based
+                  on your Billing Rules.
+                </p>
+              </DialogHeader>
+
+              <div className="space-y-6 py-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg">
+                  <div className="space-y-2">
+                    <Label>Billed To (Owner/Client)</Label>
+                    <Select
+                      value={autoForm.targetId}
+                      onValueChange={(val) =>
+                        setAutoForm({ ...autoForm, targetId: val })
+                      }
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select user..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allUsers
+                          .filter((u) => u.role !== 'tenant')
+                          .map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              {u.name} ({u.role})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Period Start Date</Label>
+                    <Input
+                      type="date"
+                      className="bg-white"
+                      value={autoForm.startDate}
+                      onChange={(e) =>
+                        setAutoForm({ ...autoForm, startDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Period End Date</Label>
+                    <Input
+                      type="date"
+                      className="bg-white"
+                      value={autoForm.endDate}
+                      onChange={(e) =>
+                        setAutoForm({ ...autoForm, endDate: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handlePreviewCalculation}
+                    className="gap-2 bg-slate-800 text-white hover:bg-slate-700"
+                  >
+                    <Calculator className="h-4 w-4" /> Calculate Charges
+                  </Button>
+                </div>
+
+                {previewItems.length > 0 && (
+                  <div className="space-y-4 border rounded-lg p-4 animate-in fade-in duration-300">
+                    <h3 className="font-semibold text-slate-800 border-b pb-2">
+                      Preview Charges (Calculated from Data Sources)
+                    </h3>
+                    <div className="rounded-md border overflow-hidden">
+                      <Table>
+                        <TableHeader className="bg-slate-50">
+                          <TableRow>
+                            <TableHead>Origin / Description</TableHead>
+                            <TableHead className="w-24">Qty</TableHead>
+                            <TableHead className="w-32 text-right">
+                              Total
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {previewItems.map((item, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell className="p-2 font-medium text-slate-700">
+                                {item.description}
+                              </TableCell>
+                              <TableCell className="p-2 text-center">
+                                {item.quantity}
+                              </TableCell>
+                              <TableCell className="p-2 text-right font-bold text-slate-800">
+                                {formatAppCurrency(item.total || 0)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                      <div className="flex justify-between items-center w-64 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <span className="font-semibold text-slate-700">
+                          Calculated Total
+                        </span>
+                        <span className="text-xl font-bold text-trust-blue">
+                          {formatAppCurrency(previewTotal)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {previewItems.length === 0 &&
+                  autoForm.targetId &&
+                  autoForm.startDate &&
+                  autoForm.endDate && (
+                    <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
+                      Click "Calculate Charges" to pull data from Bookings and
+                      Tasks based on Service Agreements.
+                    </div>
+                  )}
+              </div>
+
+              <DialogFooter className="sticky bottom-0 bg-white pt-4 pb-2 border-t mt-4">
+                <Button variant="outline" onClick={() => setIsAutoOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateFromAuto}
+                  disabled={previewItems.length === 0}
+                  className="bg-trust-blue text-white hover:bg-blue-700"
+                >
+                  Create Automated Invoice
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Manual Invoice Dialog */}
           <Dialog
             open={isAddOpen}
             onOpenChange={(v) => {
@@ -516,7 +845,7 @@ export default function Invoices() {
                                   />
                                 </TableCell>
                                 <TableCell className="p-2 text-right font-medium text-slate-700 align-middle">
-                                  {formatAppCurrency(item.total)}
+                                  {formatAppCurrency(item.total || 0)}
                                 </TableCell>
                                 <TableCell className="p-2 text-center align-middle">
                                   <Button
