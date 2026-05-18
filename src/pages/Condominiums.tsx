@@ -302,21 +302,12 @@ export default function Condominiums() {
 
                   <TabsContent value="addressing" className="space-y-4 py-4">
                     <div className="grid grid-cols-4 gap-4">
-                      <div className="grid gap-2 col-span-3">
+                      <div className="grid gap-2 col-span-4">
                         <Label>{t('condominiums.street')}</Label>
                         <Input
                           value={form.address}
                           onChange={(e) =>
                             setForm({ ...form, address: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2 col-span-1">
-                        <Label>{t('condominiums.number')}</Label>
-                        <Input
-                          value={form.number}
-                          onChange={(e) =>
-                            setForm({ ...form, number: e.target.value })
                           }
                         />
                       </div>
@@ -450,7 +441,6 @@ export default function Condominiums() {
                   <TableCell>
                     <DataMask>
                       {condo.address}
-                      {condo.number ? `, ${condo.number}` : ''}
                       {condo.city ? ` - ${condo.city}` : ''}
                     </DataMask>
                   </TableCell>

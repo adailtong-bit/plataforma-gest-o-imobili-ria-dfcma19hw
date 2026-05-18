@@ -295,21 +295,12 @@ export default function Owners() {
                       }
                     />
                   </div>
-                  <div className="space-y-1 md:col-span-2">
+                  <div className="space-y-1 md:col-span-3">
                     <Label>{t('common.street')}</Label>
                     <Input
                       value={form.address || ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.number')}</Label>
-                    <Input
-                      value={form.addressNumber || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, addressNumber: e.target.value })
                       }
                     />
                   </div>

@@ -329,23 +329,13 @@ export default function Hotels() {
                   </Select>
                 </div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="grid gap-2 col-span-3">
+                  <div className="grid gap-2 col-span-4">
                     <Label>{safeT('hotel_form.street_address')}</Label>
                     <Input
                       placeholder={safeT('hotel_form.street_address')}
                       value={form.address || ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2 col-span-1">
-                    <Label>{safeT('hotel_form.number')}</Label>
-                    <Input
-                      placeholder={safeT('hotel_form.number')}
-                      value={form.number || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, number: e.target.value })
                       }
                     />
                   </div>
@@ -483,7 +473,8 @@ export default function Hotels() {
                   <TableCell>
                     <DataMask>
                       {h.address}
-                      {h.number ? `, ${h.number}` : ''}, {h.city}, {h.state}
+                      {h.city ? `, ${h.city}` : ''}
+                      {h.state ? `, ${h.state}` : ''}
                     </DataMask>
                   </TableCell>
                   <TableCell>

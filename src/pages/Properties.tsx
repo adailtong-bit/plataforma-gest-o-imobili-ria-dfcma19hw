@@ -791,7 +791,7 @@ export default function Properties() {
                 )}
 
                 <div className="grid grid-cols-4 gap-2">
-                  <div className="grid gap-2 col-span-3">
+                  <div className="grid gap-2 col-span-4">
                     <Label className="text-black font-bold">
                       {t('common.address')}{' '}
                       {!isHotelLinked && (
@@ -804,18 +804,6 @@ export default function Properties() {
                         setNewProp({ ...newProp, address: e.target.value })
                       }
                       placeholder={t('properties.address_placeholder')}
-                      className="text-black"
-                      disabled={isHotelLinked}
-                    />
-                  </div>
-                  <div className="grid gap-2 col-span-1">
-                    <Label className="text-black font-bold">Nº</Label>
-                    <Input
-                      value={newProp.number || ''}
-                      onChange={(e) =>
-                        setNewProp({ ...newProp, number: e.target.value })
-                      }
-                      placeholder="Número"
                       className="text-black"
                       disabled={isHotelLinked}
                     />
@@ -1353,10 +1341,7 @@ export default function Properties() {
                 <div className="flex items-center gap-1 text-sm text-black mb-2">
                   <MapPin className="h-3 w-3 text-black shrink-0" />
                   <span className="truncate font-medium">
-                    <DataMask>
-                      {property.address}
-                      {property.number ? `, ${property.number}` : ''}
-                    </DataMask>
+                    <DataMask>{property.address}</DataMask>
                   </span>
                 </div>
                 {(property.hotelId ||

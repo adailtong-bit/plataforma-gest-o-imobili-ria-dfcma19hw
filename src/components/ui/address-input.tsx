@@ -59,8 +59,12 @@ export function AddressInput({
 
   const handleSelect = (item: any) => {
     const addr = item.address
+    const baseStreet = addr.road || addr.pedestrian || addr.suburb || ''
+    const fullStreet = addr.house_number
+      ? `${addr.house_number} ${baseStreet}`.trim()
+      : baseStreet
     const data: AddressData = {
-      street: addr.road || addr.pedestrian || addr.suburb || '',
+      street: fullStreet,
       city: addr.city || addr.town || addr.village || '',
       state: addr.state || '',
       zipCode: addr.postcode || '',
