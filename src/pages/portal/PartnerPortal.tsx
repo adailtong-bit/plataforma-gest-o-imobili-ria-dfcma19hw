@@ -5,7 +5,7 @@ import { PartnerStaff } from '@/components/partners/PartnerStaff'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-import { ClipboardList, Users } from 'lucide-react'
+import { ClipboardList, Users, AlertCircle } from 'lucide-react'
 
 export default function PartnerPortal() {
   const { partners, updatePartner, tasks } = useContext(AppContext)!
@@ -48,6 +48,9 @@ export default function PartnerPortal() {
   const pendingTasks = partnerTasks.filter(
     (t) => t.status === 'pending' || t.status === 'in_progress',
   )
+  const pendingAcceptanceTasks = partnerTasks.filter(
+    (t) => t.status === 'pending_acceptance',
+  )
 
   return (
     <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
@@ -59,6 +62,29 @@ export default function PartnerPortal() {
           Manage your operations and team.
         </p>
       </div>
+
+      {pendingAcceptanceTasks.length > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader className="pb-2 border-b border-orange-100">
+            <CardTitle className="text-lg flex items-center gap-2 text-orange-800">
+              <AlertCircle className="h-5 w-5" />
+              Tasks Pending Your Acceptance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <p className="text-sm text-orange-700 mb-4">
+              You have {pendingAcceptanceTasks.length} task(s) assigned to you
+              that require confirmation before starting.
+            </p>
+            <Button
+              asChild
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              <Link to="/tasks">Review and Accept Tasks</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="border-slate-200 shadow-sm bg-white">

@@ -954,6 +954,7 @@ export type TaskStatus =
   | 'completed'
   | 'approved'
   | 'pending_approval'
+  | 'pending_acceptance'
   | 'rejected'
 
 export interface Invoice {

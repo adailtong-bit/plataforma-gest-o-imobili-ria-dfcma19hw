@@ -159,7 +159,17 @@ export function CreateTaskDialog() {
       form.pricingModel === 'pm_driven' ? form.price : form.laborCost
     const isAboveThreshold = priceToCheck >= 100
 
-    const initialStatus = isAboveThreshold ? 'pending_approval' : 'pending'
+    const isOpporjob =
+      partner?.source === 'opporjob' ||
+      partner?.origin === 'opporjob' ||
+      partner?.tags?.includes('opporjob') ||
+      partner?.name?.toLowerCase().includes('opporjob')
+
+    const initialStatus = isOpporjob
+      ? 'pending_acceptance'
+      : isAboveThreshold
+        ? 'pending_approval'
+        : 'pending'
     const initialApprovalStatus = isAboveThreshold ? 'owner_pending' : undefined
 
     addTask({
@@ -189,9 +199,11 @@ export function CreateTaskDialog() {
 
     toast({
       title: 'Task created successfully',
-      description: isAboveThreshold
-        ? 'Task value exceeds $100 and requires Owner Approval.'
-        : undefined,
+      description: isOpporjob
+        ? 'Task assigned to Opporjob partner. Waiting for their acceptance.'
+        : isAboveThreshold
+          ? 'Task value exceeds $100 and requires Owner Approval.'
+          : undefined,
     })
     setOpen(false)
     setForm({

@@ -51,7 +51,14 @@ export function TaskDetailsSheet({
 
         <div className="space-y-6">
           <div className="flex gap-2 flex-wrap">
-            <Badge variant="outline" className="uppercase text-xs">
+            <Badge
+              variant="outline"
+              className={
+                task.status === 'pending_acceptance'
+                  ? 'uppercase text-xs bg-orange-100 text-orange-800 border-orange-200'
+                  : 'uppercase text-xs'
+              }
+            >
               {task.status.replace('_', ' ')}
             </Badge>
             <Badge variant="secondary" className="uppercase text-xs">

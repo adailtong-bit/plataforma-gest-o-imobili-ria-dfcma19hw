@@ -13,11 +13,15 @@ import {
   CheckCircle2,
   AlertTriangle,
   Building,
+  Check,
+  X,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
 import { cn } from '@/lib/utils'
 import useLanguageStore from '@/stores/useLanguageStore'
+import useAuthStore from '@/stores/useAuthStore'
+import { Button } from '@/components/ui/button'
 
 interface TaskCardProps {
   task: Task
@@ -29,6 +33,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
   const { t } = useLanguageStore()
+  const { currentUser } = useAuthStore()
 
   const getPriorityStyle = (p: string) => {
     switch (p) {
@@ -114,6 +119,46 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
             </span>
           </div>
         </div>
+
+        {task.status === 'pending_acceptance' && (
+          <div className="mt-3 border-t border-slate-100 pt-3 flex flex-col gap-2">
+            <div className="flex items-center gap-1 text-xs text-orange-600 font-medium">
+              <AlertCircle className="h-3 w-3" />
+              <span>Pending Acceptance</span>
+            </div>
+            {canEdit &&
+              (currentUser?.role === 'partner' ||
+                currentUser?.role === 'partner_employee' ||
+                currentUser?.role === 'platform_owner') && (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 h-7 text-xs bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (onStatusChange) onStatusChange('pending')
+                    }}
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    Accept
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 h-7 text-xs bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 border-red-200"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (onStatusChange) onStatusChange('rejected')
+                    }}
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Decline
+                  </Button>
+                </div>
+              )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
