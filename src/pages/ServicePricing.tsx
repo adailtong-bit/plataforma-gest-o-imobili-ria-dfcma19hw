@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, MoreHorizontal, Settings } from 'lucide-react'
+import { Pencil, Trash2, MoreHorizontal, Settings, Network } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -63,8 +63,9 @@ export default function ServicePricing() {
 
   const defaultForm: Partial<BillingAgreement> = {
     name: '',
+    sourceRole: 'software_tenant',
     targetId: 'global',
-    targetRole: 'all',
+    targetRole: 'property_owner',
     type: 'booking_percentage',
     valueType: 'percentage',
     value: 0,
@@ -100,8 +101,9 @@ export default function ServicePricing() {
       addAgreement({
         id: `ba-${Date.now()}`,
         name: form.name,
+        sourceRole: form.sourceRole || 'software_tenant',
         targetId: form.targetId || 'global',
-        targetRole: form.targetRole || 'all',
+        targetRole: form.targetRole || 'property_owner',
         type: form.type || 'fixed_admin_fee',
         valueType: form.valueType || 'fixed',
         value: Number(form.value) || 0,
@@ -131,13 +133,22 @@ export default function ServicePricing() {
   }
 
   const getTargetName = (id: string) => {
-    if (id === 'global') return 'Global (All Users)'
+    if (id === 'global') return 'Global'
     const u = allUsers.find((user) => user.id === id)
-    return u ? `${u.name} (${u.role})` : id
+    return u ? `${u.name}` : id
   }
 
   const formatValue = (val: number, type: string) => {
     return type === 'percentage' ? `${val}%` : `$${val.toFixed(2)}`
+  }
+
+  const roleLabels: Record<string, string> = {
+    master: 'Admin',
+    software_tenant: 'PM',
+    property_owner: 'Owner',
+    partner: 'Partner',
+    partner_employee: 'Team',
+    advertiser: 'Advertiser',
   }
 
   return (
@@ -145,11 +156,11 @@ export default function ServicePricing() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Billing Rules & Agreements
+            N-Tier Billing & Agreements
           </h1>
           <p className="text-muted-foreground">
-            Configure the logic for automated calculation of management fees,
-            revenue shares, and markups.
+            Configure automated hierarchy rules (Admin ➔ PM ➔ Owner & Partner ➔
+            PM).
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -171,21 +182,85 @@ export default function ServicePricing() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
-                <Settings className="h-4 w-4" /> New Billing Rule
+                <Network className="h-4 w-4" /> New Billing Rule
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] bg-white">
+            <DialogContent className="sm:max-w-[700px] bg-white">
               <DialogHeader>
                 <DialogTitle>
                   {editingRecord ? 'Edit Billing Rule' : 'New Billing Rule'}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className="space-y-6 py-4">
+                <div className="bg-slate-50 p-4 rounded-lg border space-y-4">
+                  <h3 className="font-semibold text-sm text-slate-700 uppercase tracking-wider">
+                    Financial Hierarchy
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Billed By (Source Role)</Label>
+                      <Select
+                        value={form.sourceRole as string}
+                        onValueChange={(val: any) =>
+                          setForm({ ...form, sourceRole: val })
+                        }
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Who bills?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="master">
+                            Admin / Platform
+                          </SelectItem>
+                          <SelectItem value="software_tenant">
+                            Property Manager
+                          </SelectItem>
+                          <SelectItem value="partner">
+                            Service Partner
+                          </SelectItem>
+                          <SelectItem value="partner_employee">
+                            Team Member
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Billed To (Target Role)</Label>
+                      <Select
+                        value={form.targetRole as string}
+                        onValueChange={(val: any) =>
+                          setForm({
+                            ...form,
+                            targetRole: val,
+                            targetId: 'global',
+                          })
+                        }
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Who pays?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="software_tenant">
+                            Property Manager
+                          </SelectItem>
+                          <SelectItem value="property_owner">
+                            Property Owner
+                          </SelectItem>
+                          <SelectItem value="partner">
+                            Service Partner
+                          </SelectItem>
+                          <SelectItem value="advertiser">Advertiser</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Rule Name</Label>
                     <Input
-                      placeholder="e.g. Monthly Admin Fee"
+                      placeholder="e.g. Monthly PM Admin Fee"
                       value={form.name}
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
@@ -193,30 +268,26 @@ export default function ServicePricing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Target Player (Owner/PM)</Label>
+                    <Label>Target Player Scope</Label>
                     <Select
                       value={form.targetId}
-                      onValueChange={(val: any) => {
-                        const user = allUsers.find((u) => u.id === val)
-                        setForm({
-                          ...form,
-                          targetId: val,
-                          targetRole: user ? user.role : 'all',
-                        })
-                      }}
+                      onValueChange={(val: any) =>
+                        setForm({ ...form, targetId: val })
+                      }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select target..." />
+                        <SelectValue placeholder="Global" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="global">
-                          Global (All Users)
+                          Global (All{' '}
+                          {roleLabels[form.targetRole as string] || 'Users'})
                         </SelectItem>
                         {allUsers
-                          .filter((u) => u.role !== 'tenant')
+                          .filter((u) => u.role === form.targetRole)
                           .map((u) => (
                             <SelectItem key={u.id} value={u.id}>
-                              {u.name} ({u.role})
+                              {u.name}
                             </SelectItem>
                           ))}
                       </SelectContent>
@@ -226,7 +297,7 @@ export default function ServicePricing() {
 
                 <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-slate-50">
                   <div className="space-y-2 col-span-2">
-                    <Label>Calculation Source (Rule Type)</Label>
+                    <Label>Calculation Logic (Rule Type)</Label>
                     <Select
                       value={form.type}
                       onValueChange={(val: any) =>
@@ -237,20 +308,29 @@ export default function ServicePricing() {
                         <SelectValue placeholder="Select type..." />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="software_fee_per_house">
+                          Software Fee (Per House)
+                        </SelectItem>
                         <SelectItem value="booking_percentage">
-                          Booking Revenue Share (from Bookings)
+                          Booking Revenue Share (%)
                         </SelectItem>
                         <SelectItem value="fixed_admin_fee">
-                          Fixed Administrative Fee (Flat Rate)
+                          Fixed Flat Fee
                         </SelectItem>
-                        <SelectItem value="maintenance_markup">
-                          Maintenance Markup (from Tasks)
+                        <SelectItem value="markup_cleaning">
+                          Cleaning Markup (over PM Cost)
                         </SelectItem>
-                        <SelectItem value="cleaning_markup">
-                          Cleaning Markup (from Tasks)
+                        <SelectItem value="markup_maintenance">
+                          Maintenance Markup
                         </SelectItem>
-                        <SelectItem value="purchase_markup">
-                          Purchase Markup (from Inventory)
+                        <SelectItem value="partner_cleaning_fee">
+                          Partner Cleaning Fee (to PM)
+                        </SelectItem>
+                        <SelectItem value="partner_maintenance_fee">
+                          Partner Maintenance Fee
+                        </SelectItem>
+                        <SelectItem value="team_cleaning_fee">
+                          Team Cleaning Payout
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -265,7 +345,7 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select value type..." />
+                        <SelectValue placeholder="Value type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="percentage">
@@ -298,7 +378,7 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select frequency..." />
+                        <SelectValue placeholder="Frequency" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="per_booking">
@@ -346,10 +426,10 @@ export default function ServicePricing() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead>Rule Name</TableHead>
-                <TableHead>Target Player</TableHead>
-                <TableHead>Data Source</TableHead>
-                <TableHead>Rate / Value</TableHead>
-                <TableHead>Frequency</TableHead>
+                <TableHead>Hierarchy (By ➔ To)</TableHead>
+                <TableHead>Target Scope</TableHead>
+                <TableHead>Logic Type</TableHead>
+                <TableHead>Rate</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -361,6 +441,17 @@ export default function ServicePricing() {
                     {agreement.name}
                   </TableCell>
                   <TableCell>
+                    <div className="flex items-center gap-2 text-xs font-semibold">
+                      <span className="text-blue-600">
+                        {roleLabels[agreement.sourceRole as string] || 'System'}
+                      </span>
+                      <span className="text-slate-400">➔</span>
+                      <span className="text-emerald-600">
+                        {roleLabels[agreement.targetRole as string] || 'User'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <Badge
                       variant="outline"
                       className="bg-slate-50 text-slate-700"
@@ -370,20 +461,17 @@ export default function ServicePricing() {
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-slate-600 capitalize">
-                      {agreement.type.replace('_', ' ')}
+                      {agreement.type.replace(/_/g, ' ')}
                     </span>
                   </TableCell>
                   <TableCell className="font-bold text-slate-800">
                     {formatValue(agreement.value, agreement.valueType)}
                   </TableCell>
-                  <TableCell className="text-sm text-slate-600 capitalize">
-                    {agreement.frequency.replace('_', ' ')}
-                  </TableCell>
                   <TableCell>
                     <Badge
                       className={
                         agreement.status === 'active'
-                          ? 'bg-green-100 text-green-800 border-green-200'
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-slate-100 text-slate-800'
                       }
                     >
@@ -426,14 +514,14 @@ export default function ServicePricing() {
                     className="text-center py-12 text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center space-y-3">
-                      <Settings className="h-10 w-10 text-slate-300" />
-                      <p>No billing rules configured.</p>
+                      <Network className="h-10 w-10 text-slate-300" />
+                      <p>No billing hierarchy rules configured.</p>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setIsAddOpen(true)}
                       >
-                        Create your first rule
+                        Create rule
                       </Button>
                     </div>
                   </TableCell>
@@ -452,16 +540,15 @@ export default function ServicePricing() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this billing rule? Existing
-              invoices won't be affected, but future automatic calculations will
-              ignore this rule.
+              Are you sure you want to delete this billing rule? It will no
+              longer be applied to future automated invoices.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-red-600 text-white"
             >
               Delete Rule
             </AlertDialogAction>

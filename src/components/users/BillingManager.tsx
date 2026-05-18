@@ -90,6 +90,12 @@ export function BillingManager({
         id: `ba-${Date.now()}`,
         targetId,
         targetRole,
+        sourceRole:
+          targetRole === 'property_owner'
+            ? 'software_tenant'
+            : targetRole === 'software_tenant'
+              ? 'master'
+              : 'software_tenant',
       } as BillingAgreement)
       toast({ title: 'Agreement Created' })
     }
@@ -355,6 +361,15 @@ export function BillingManager({
                     </SelectItem>
                     <SelectItem value="markup_purchases">
                       Purchases Markup
+                    </SelectItem>
+                    <SelectItem value="software_fee_per_house">
+                      Software Fee (Per House)
+                    </SelectItem>
+                    <SelectItem value="partner_cleaning_fee">
+                      Partner Cleaning Fee
+                    </SelectItem>
+                    <SelectItem value="partner_maintenance_fee">
+                      Partner Maintenance Fee
                     </SelectItem>
                     <SelectItem value="custom">Custom</SelectItem>
                   </SelectContent>

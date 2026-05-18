@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -22,6 +22,7 @@ import {
   PlusCircle,
   User as UserIcon,
   Calculator,
+  Network,
 } from 'lucide-react'
 import {
   Dialog,
@@ -64,6 +65,7 @@ import useAuthStore from '@/stores/useAuthStore'
 import useBillingStore from '@/stores/useBillingStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import useTaskStore from '@/stores/useTaskStore'
+import { supabase } from '@/lib/supabase/client'
 
 const emptyForm = (): Partial<Invoice> => ({
   description: '',
@@ -109,15 +111,35 @@ export default function Invoices() {
   const [viewingInvoice, setViewingInvoice] = useState<Invoice | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Auto Generate State
+  // Auto Generate State with Hierarchy
   const [isAutoOpen, setIsAutoOpen] = useState(false)
   const [autoForm, setAutoForm] = useState({
-    targetId: '',
+    payeeId: '',
+    payerId: '',
     startDate: '',
     endDate: '',
   })
   const [previewItems, setPreviewItems] = useState<InvoiceItem[]>([])
   const [previewTotal, setPreviewTotal] = useState(0)
+
+  // Fetch properties lightly for mapping
+  const [propertiesMap, setPropertiesMap] = useState<any[]>([])
+  useEffect(() => {
+    supabase
+      .from('properties')
+      .select('id, pm_id, owner_id')
+      .then(({ data }) => {
+        if (data) {
+          setPropertiesMap(
+            data.map((p) => ({
+              id: p.id,
+              pmId: p.pm_id,
+              ownerId: p.owner_id,
+            })),
+          )
+        }
+      })
+  }, [])
 
   const invoiceList = Array.isArray(financials)
     ? financials
@@ -131,13 +153,13 @@ export default function Invoices() {
   )
 
   const handleAddItem = () => {
-    const newItem: InvoiceItem = {
-      description: '',
-      quantity: 1,
-      unitPrice: 0,
-      total: 0,
-    }
-    setForm({ ...form, items: [...(form.items || []), newItem] })
+    setForm({
+      ...form,
+      items: [
+        ...(form.items || []),
+        { description: '', quantity: 1, unitPrice: 0, total: 0 },
+      ],
+    })
   }
 
   const handleRemoveItem = (index: number) => {
@@ -170,7 +192,7 @@ export default function Invoices() {
     if (!form.toName) {
       toast({
         title: 'Attention',
-        description: 'Billed To (Name) is required',
+        description: 'Billed To is required',
         variant: 'destructive',
       })
       return
@@ -198,17 +220,6 @@ export default function Invoices() {
 
   const handleMarkAsPaid = (inv: Invoice) => {
     updateInvoice({ ...inv, status: 'paid' } as Invoice)
-    let updatedCount = 0
-    ledgerEntries.forEach((entry: any) => {
-      if (entry.referenceId === inv.id && entry.status === 'pending') {
-        updateLedgerEntry({
-          ...entry,
-          status: 'cleared',
-          paymentDate: new Date().toISOString(),
-        })
-        updatedCount++
-      }
-    })
     toast({ title: 'Success', description: `Invoice marked as paid.` })
   }
 
@@ -231,25 +242,42 @@ export default function Invoices() {
   }
 
   const handlePreviewCalculation = () => {
-    if (!autoForm.targetId || !autoForm.startDate || !autoForm.endDate) {
+    if (
+      !autoForm.payeeId ||
+      !autoForm.payerId ||
+      !autoForm.startDate ||
+      !autoForm.endDate
+    ) {
       toast({
         title: 'Error',
-        description: 'Please select Target Player and Period',
+        description: 'Please select Payee, Payer and Period',
         variant: 'destructive',
       })
       return
     }
 
-    const applicableAgreements = agreements.filter(
-      (a) => a.targetId === autoForm.targetId || a.targetId === 'global',
-    )
+    const payee = allUsers.find((u) => u.id === autoForm.payeeId)
+    const payer = allUsers.find((u) => u.id === autoForm.payerId)
+    if (!payee || !payer) return
+
+    const applicableAgreements = agreements.filter((a) => {
+      const matchSource =
+        a.sourceId === payee.id ||
+        a.sourceRole === payee.role ||
+        (a.sourceRole === 'master' && payee.role === 'master')
+      const matchTarget =
+        a.targetId === payer.id ||
+        a.targetRole === payer.role ||
+        a.targetId === 'global'
+      return matchSource && matchTarget
+    })
+
     const pStart = new Date(autoForm.startDate).getTime()
     const pEnd = new Date(autoForm.endDate).getTime()
 
     const periodBookings = bookings.filter((b: any) => {
       const bStart = new Date(b.checkIn).getTime()
-      const bEnd = new Date(b.checkOut).getTime()
-      return bStart <= pEnd && bEnd >= pStart
+      return bStart >= pStart && bStart <= pEnd
     })
 
     const periodTasks = tasks.filter((t: any) => {
@@ -261,18 +289,16 @@ export default function Invoices() {
     const newItems: InvoiceItem[] = []
 
     applicableAgreements.forEach((agreement) => {
-      if (agreement.type === 'booking_percentage') {
-        periodBookings.forEach((b: any) => {
-          const amount = (b.totalAmount || 0) * (agreement.value / 100)
-          if (amount > 0) {
-            newItems.push({
-              description: `${agreement.name} - Booking ${b.id.substring(0, 6)} (${b.propertyName})`,
-              quantity: 1,
-              unitPrice: amount,
-              total: amount,
-            })
-          }
-        })
+      if (agreement.type === 'software_fee_per_house') {
+        const pmProps = propertiesMap.filter((p) => p.pmId === payer.id)
+        if (pmProps.length > 0) {
+          newItems.push({
+            description: `${agreement.name} (${pmProps.length} properties managed)`,
+            quantity: pmProps.length,
+            unitPrice: agreement.value,
+            total: pmProps.length * agreement.value,
+          })
+        }
       } else if (agreement.type === 'fixed_admin_fee') {
         newItems.push({
           description: `${agreement.name} - Period ${autoForm.startDate} to ${autoForm.endDate}`,
@@ -280,57 +306,85 @@ export default function Invoices() {
           unitPrice: agreement.value,
           total: agreement.value,
         })
-      } else if (agreement.type === 'maintenance_markup') {
-        const mTasks = periodTasks.filter((t: any) => t.type === 'maintenance')
-        mTasks.forEach((t: any) => {
-          const cost = (t.price || 0) + (t.laborCost || 0)
-          const amount =
-            agreement.valueType === 'percentage'
-              ? cost * (agreement.value / 100)
-              : agreement.value
+      } else if (agreement.type === 'booking_percentage') {
+        const ownerProps = propertiesMap
+          .filter((p) => p.ownerId === payer.id)
+          .map((p) => p.id)
+        const ownerBookings = periodBookings.filter((b) =>
+          ownerProps.includes(b.propertyId),
+        )
+        ownerBookings.forEach((b: any) => {
+          const amount = (b.totalAmount || 0) * (agreement.value / 100)
           if (amount > 0) {
             newItems.push({
-              description: `${agreement.name} - Maint. Task: ${t.title}`,
+              description: `${agreement.name} - Booking ${b.id.substring(0, 6)}`,
               quantity: 1,
               unitPrice: amount,
               total: amount,
             })
           }
         })
-      } else if (agreement.type === 'cleaning_markup') {
-        const cTasks = periodTasks.filter(
-          (t: any) =>
-            t.type === 'cleaning' || t.title.toLowerCase().includes('clean'),
+      } else if (agreement.type.startsWith('markup_')) {
+        const ownerProps = propertiesMap
+          .filter((p) => p.ownerId === payer.id)
+          .map((p) => p.id)
+        const ownerTasks = periodTasks.filter((t) =>
+          ownerProps.includes(t.propertyId),
         )
-        cTasks.forEach((t: any) => {
-          const cost = (t.price || 0) + (t.laborCost || 0)
-          const amount =
-            agreement.valueType === 'percentage'
-              ? cost * (agreement.value / 100)
-              : agreement.value
-          if (amount > 0) {
-            newItems.push({
-              description: `${agreement.name} - Cleaning: ${t.title}`,
-              quantity: 1,
-              unitPrice: amount,
-              total: amount,
-            })
+        ownerTasks.forEach((t: any) => {
+          if (
+            (agreement.type === 'markup_cleaning' && t.type === 'cleaning') ||
+            (agreement.type === 'markup_maintenance' &&
+              t.type === 'maintenance') ||
+            (agreement.type === 'markup_purchases' && t.type === 'purchase')
+          ) {
+            const cost = (t.price || 0) + (t.laborCost || 0)
+            const amount =
+              agreement.valueType === 'percentage'
+                ? cost * (agreement.value / 100)
+                : agreement.value
+            if (amount > 0) {
+              newItems.push({
+                description: `${agreement.name} - Task: ${t.title}`,
+                quantity: 1,
+                unitPrice: amount,
+                total: amount,
+              })
+            }
           }
         })
-      } else if (agreement.type === 'purchase_markup') {
-        const pTasks = periodTasks.filter(
-          (t: any) =>
-            t.type === 'purchase' || t.title.toLowerCase().includes('purchase'),
+      } else if (agreement.type.startsWith('partner_')) {
+        const partnerTasks = periodTasks.filter(
+          (t) => t.assigneeId === payee.id || t.assignee === payee.name,
         )
-        pTasks.forEach((t: any) => {
-          const cost = t.price || 0
-          const amount =
-            agreement.valueType === 'percentage'
-              ? cost * (agreement.value / 100)
-              : agreement.value
+        partnerTasks.forEach((t: any) => {
+          if (
+            (agreement.type === 'partner_cleaning_fee' &&
+              t.type === 'cleaning') ||
+            (agreement.type === 'partner_maintenance_fee' &&
+              t.type === 'maintenance') ||
+            (agreement.type === 'partner_parts_fee' && t.type === 'purchase')
+          ) {
+            const amount = t.laborCost || agreement.value
+            if (amount > 0) {
+              newItems.push({
+                description: `${agreement.name} - Partner Service: ${t.title}`,
+                quantity: 1,
+                unitPrice: amount,
+                total: amount,
+              })
+            }
+          }
+        })
+      } else if (agreement.type.startsWith('team_')) {
+        const teamTasks = periodTasks.filter(
+          (t) => t.partnerEmployeeId === payee.id,
+        )
+        teamTasks.forEach((t: any) => {
+          const amount = t.teamMemberPayout || agreement.value
           if (amount > 0) {
             newItems.push({
-              description: `${agreement.name} - Purchase: ${t.title}`,
+              description: `${agreement.name} - Team Payout: ${t.title}`,
               quantity: 1,
               unitPrice: amount,
               total: amount,
@@ -354,18 +408,21 @@ export default function Invoices() {
       return
     }
 
-    const user = allUsers.find((u) => u.id === autoForm.targetId)
+    const payee = allUsers.find((u) => u.id === autoForm.payeeId)
+    const payer = allUsers.find((u) => u.id === autoForm.payerId)
+
     const newInvoice: Partial<Invoice> = {
       ...emptyForm(),
-      fromName: currentUser?.companyName || currentUser?.name || '',
-      fromEmail: currentUser?.email || '',
-      fromPhone: currentUser?.phone || '',
-      fromAddress: currentUser?.address || '',
-      toName: user?.companyName || user?.name || '',
-      toEmail: user?.email || '',
-      toPhone: user?.phone || '',
-      toAddress: user?.address || '',
-      toId: user?.id,
+      fromName: payee?.companyName || payee?.name || '',
+      fromEmail: payee?.email || '',
+      fromPhone: payee?.phone || '',
+      fromAddress: payee?.address || '',
+      fromId: payee?.id,
+      toName: payer?.companyName || payer?.name || '',
+      toEmail: payer?.email || '',
+      toPhone: payer?.phone || '',
+      toAddress: payer?.address || '',
+      toId: payer?.id,
       description: `Automated Billing - ${autoForm.startDate} to ${autoForm.endDate}`,
       date: new Date().toISOString().split('T')[0],
       items: previewItems,
@@ -380,7 +437,7 @@ export default function Invoices() {
     })
     setIsAutoOpen(false)
     setPreviewItems([])
-    setAutoForm({ targetId: '', startDate: '', endDate: '' })
+    setAutoForm({ payeeId: '', payerId: '', startDate: '', endDate: '' })
   }
 
   return (
@@ -391,8 +448,7 @@ export default function Invoices() {
             Invoices
           </h1>
           <p className="text-muted-foreground">
-            Manage service invoices, fees, and maintenance with complete
-            details.
+            Manage service invoices and billing hierarchy.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -407,7 +463,7 @@ export default function Invoices() {
             variant="outline"
             className="gap-2 border-trust-blue text-trust-blue hover:bg-blue-50"
           >
-            <Calculator className="h-4 w-4" /> Auto-Generate
+            <Network className="h-4 w-4" /> N-Tier Auto-Generate
           </Button>
           <Button
             onClick={openNewInvoice}
@@ -416,49 +472,75 @@ export default function Invoices() {
             <Plus className="h-4 w-4" /> New Invoice
           </Button>
 
-          {/* Auto Generate Dialog */}
+          {/* N-Tier Auto Generate Dialog */}
           <Dialog
             open={isAutoOpen}
             onOpenChange={(v) => {
               setIsAutoOpen(v)
               if (!v) {
                 setPreviewItems([])
-                setAutoForm({ targetId: '', startDate: '', endDate: '' })
+                setAutoForm({
+                  payeeId: '',
+                  payerId: '',
+                  startDate: '',
+                  endDate: '',
+                })
               }
             }}
           >
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
               <DialogHeader>
                 <DialogTitle className="text-xl">
-                  Generate Automated Invoice
+                  Generate N-Tier Automated Invoice
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground">
-                  Calculate charges automatically from Bookings and Tasks based
-                  on your Billing Rules.
+                  Calculate charges traversing the financial hierarchy rules.
                 </p>
               </DialogHeader>
 
               <div className="space-y-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg">
                   <div className="space-y-2">
-                    <Label>Billed To (Owner/Client)</Label>
+                    <Label className="text-blue-700 font-bold">
+                      Billed By (Payee)
+                    </Label>
                     <Select
-                      value={autoForm.targetId}
+                      value={autoForm.payeeId}
                       onValueChange={(val) =>
-                        setAutoForm({ ...autoForm, targetId: val })
+                        setAutoForm({ ...autoForm, payeeId: val })
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select user..." />
+                        <SelectValue placeholder="Select who is charging..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {allUsers
-                          .filter((u) => u.role !== 'tenant')
-                          .map((u) => (
-                            <SelectItem key={u.id} value={u.id}>
-                              {u.name} ({u.role})
-                            </SelectItem>
-                          ))}
+                        {allUsers.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            {u.name} ({u.role})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-emerald-700 font-bold">
+                      Billed To (Payer)
+                    </Label>
+                    <Select
+                      value={autoForm.payerId}
+                      onValueChange={(val) =>
+                        setAutoForm({ ...autoForm, payerId: val })
+                      }
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select who is paying..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allUsers.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>
+                            {u.name} ({u.role})
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -491,20 +573,20 @@ export default function Invoices() {
                     onClick={handlePreviewCalculation}
                     className="gap-2 bg-slate-800 text-white hover:bg-slate-700"
                   >
-                    <Calculator className="h-4 w-4" /> Calculate Charges
+                    <Calculator className="h-4 w-4" /> Calculate Rule Matrix
                   </Button>
                 </div>
 
                 {previewItems.length > 0 && (
                   <div className="space-y-4 border rounded-lg p-4 animate-in fade-in duration-300">
                     <h3 className="font-semibold text-slate-800 border-b pb-2">
-                      Preview Charges (Calculated from Data Sources)
+                      Line Items Extracted (Auditable)
                     </h3>
                     <div className="rounded-md border overflow-hidden">
                       <Table>
                         <TableHeader className="bg-slate-50">
                           <TableRow>
-                            <TableHead>Origin / Description</TableHead>
+                            <TableHead>Rule & Data Source Map</TableHead>
                             <TableHead className="w-24">Qty</TableHead>
                             <TableHead className="w-32 text-right">
                               Total
@@ -514,7 +596,7 @@ export default function Invoices() {
                         <TableBody>
                           {previewItems.map((item, idx) => (
                             <TableRow key={idx}>
-                              <TableCell className="p-2 font-medium text-slate-700">
+                              <TableCell className="p-2 font-medium text-slate-700 text-xs">
                                 {item.description}
                               </TableCell>
                               <TableCell className="p-2 text-center">
@@ -531,7 +613,7 @@ export default function Invoices() {
                     <div className="flex justify-end pt-2">
                       <div className="flex justify-between items-center w-64 bg-blue-50 p-3 rounded-lg border border-blue-100">
                         <span className="font-semibold text-slate-700">
-                          Calculated Total
+                          Invoice Total
                         </span>
                         <span className="text-xl font-bold text-trust-blue">
                           {formatAppCurrency(previewTotal)}
@@ -542,12 +624,13 @@ export default function Invoices() {
                 )}
 
                 {previewItems.length === 0 &&
-                  autoForm.targetId &&
+                  autoForm.payeeId &&
+                  autoForm.payerId &&
                   autoForm.startDate &&
                   autoForm.endDate && (
                     <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
-                      Click "Calculate Charges" to pull data from Bookings and
-                      Tasks based on Service Agreements.
+                      Click "Calculate Rule Matrix" to map dependencies and
+                      generate line items.
                     </div>
                   )}
               </div>
@@ -561,7 +644,7 @@ export default function Invoices() {
                   disabled={previewItems.length === 0}
                   className="bg-trust-blue text-white hover:bg-blue-700"
                 >
-                  Create Automated Invoice
+                  Consolidate & Issue Invoice
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -597,7 +680,7 @@ export default function Invoices() {
                       onChange={(e) =>
                         setForm({ ...form, description: e.target.value })
                       }
-                      placeholder="E.g. Bi-weekly Invoice - May"
+                      placeholder="E.g. Bi-weekly Invoice"
                     />
                   </div>
                   <div className="space-y-2">
@@ -637,7 +720,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, fromName: e.target.value })
                           }
-                          placeholder="Your Company LLC"
                         />
                       </div>
                       <div className="space-y-1">
@@ -647,7 +729,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, fromEmail: e.target.value })
                           }
-                          placeholder="contact@company.com"
                         />
                       </div>
                       <div className="space-y-1">
@@ -657,7 +738,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, fromPhone: e.target.value })
                           }
-                          placeholder="+1 (555) 000-0000"
                         />
                       </div>
                       <div className="space-y-1">
@@ -667,24 +747,20 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, fromAddress: e.target.value })
                           }
-                          placeholder="123 Main St, FL"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4 border rounded-lg p-4">
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                        <UserIcon className="h-4 w-4 text-trust-blue" /> Billed
-                        To (Client)
-                      </h3>
-                    </div>
-
+                    <h3 className="font-semibold text-slate-800 flex items-center gap-2 border-b pb-2">
+                      <UserIcon className="h-4 w-4 text-trust-blue" /> Billed To
+                      (Client)
+                    </h3>
                     <div className="space-y-3 mt-2">
                       <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground">
-                          Import from contacts
+                          Import from hierarchy
                         </Label>
                         <Select
                           onValueChange={(val) => {
@@ -702,24 +778,17 @@ export default function Invoices() {
                           }}
                         >
                           <SelectTrigger className="h-8 bg-slate-50">
-                            <SelectValue placeholder="Select Owner or Tenant..." />
+                            <SelectValue placeholder="Select target payer..." />
                           </SelectTrigger>
                           <SelectContent>
-                            {allUsers
-                              .filter(
-                                (u) =>
-                                  u.role === 'property_owner' ||
-                                  u.role === 'tenant',
-                              )
-                              .map((u) => (
-                                <SelectItem key={u.id} value={u.id}>
-                                  {u.name} ({u.role})
-                                </SelectItem>
-                              ))}
+                            {allUsers.map((u) => (
+                              <SelectItem key={u.id} value={u.id}>
+                                {u.name} ({u.role})
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
-
                       <div className="space-y-1">
                         <Label>Name / Company *</Label>
                         <Input
@@ -727,7 +796,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, toName: e.target.value })
                           }
-                          placeholder="Owner or Tenant Name"
                         />
                       </div>
                       <div className="space-y-1">
@@ -737,7 +805,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, toEmail: e.target.value })
                           }
-                          placeholder="client@email.com"
                         />
                       </div>
                       <div className="space-y-1">
@@ -747,7 +814,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, toPhone: e.target.value })
                           }
-                          placeholder="+1 (555) 111-1111"
                         />
                       </div>
                       <div className="space-y-1">
@@ -757,7 +823,6 @@ export default function Invoices() {
                           onChange={(e) =>
                             setForm({ ...form, toAddress: e.target.value })
                           }
-                          placeholder="Client address"
                         />
                       </div>
                     </div>
@@ -767,9 +832,7 @@ export default function Invoices() {
                 {/* Items */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h3 className="font-semibold text-slate-800">
-                      Billed Items
-                    </h3>
+                    <h3 className="font-semibold text-slate-800">Line Items</h3>
                     <Button
                       variant="outline"
                       size="sm"
@@ -779,7 +842,6 @@ export default function Invoices() {
                       <PlusCircle className="h-4 w-4" /> Add Item
                     </Button>
                   </div>
-
                   <div className="space-y-3">
                     {form.items && form.items.length > 0 ? (
                       <div className="rounded-md border overflow-hidden">
@@ -808,7 +870,6 @@ export default function Invoices() {
                                         e.target.value,
                                       )
                                     }
-                                    placeholder="E.g. Management Fee 20%"
                                     className="border-0 shadow-none focus-visible:ring-1 bg-transparent"
                                   />
                                 </TableCell>
@@ -864,11 +925,10 @@ export default function Invoices() {
                       </div>
                     ) : (
                       <div className="text-center py-6 text-slate-500 border border-dashed rounded-lg bg-slate-50">
-                        No items added. Add the services or fees to be billed.
+                        No items added. Add services or fees to be billed.
                       </div>
                     )}
                   </div>
-
                   <div className="flex justify-end">
                     <div className="w-64 bg-slate-50 p-4 rounded-lg flex justify-between items-center border border-slate-200 shadow-sm">
                       <span className="font-semibold text-slate-600">
@@ -881,7 +941,6 @@ export default function Invoices() {
                   </div>
                 </div>
 
-                {/* Notes */}
                 <div className="space-y-2">
                   <Label>Notes / Terms</Label>
                   <Textarea
@@ -889,7 +948,6 @@ export default function Invoices() {
                     onChange={(e) =>
                       setForm({ ...form, notes: e.target.value })
                     }
-                    placeholder="Payment terms, bank details, or additional messages..."
                     rows={3}
                   />
                 </div>
@@ -972,7 +1030,6 @@ export default function Invoices() {
                           }}
                         >
                           <Eye className="h-4 w-4 mr-2 text-blue-600" /> View
-                          Invoice
                         </DropdownMenuItem>
                         {inv.status !== 'paid' && (
                           <DropdownMenuItem
@@ -990,13 +1047,13 @@ export default function Invoices() {
                           }}
                         >
                           <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
-                          Edit Invoice
+                          Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600 focus:bg-red-50"
                           onClick={() => setDeleteId(inv.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete Invoice
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -1043,7 +1100,7 @@ export default function Invoices() {
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this invoice? This action cannot
-              be undone and the detailed data will be lost.
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1306,9 +1306,17 @@ export interface PMSpecificPricing {
 
 export interface BillingAgreement {
   id: string
+  sourceId?: string
+  sourceRole?:
+    | UserRole
+    | 'admin'
+    | 'team'
+    | 'advertiser'
+    | 'master'
+    | 'partner_employee'
   targetId: string
   targetName?: string
-  targetRole: UserRole
+  targetRole: UserRole | 'advertiser'
   name: string
   type:
     | 'fixed_admin_fee'
@@ -1316,6 +1324,14 @@ export interface BillingAgreement {
     | 'markup_maintenance'
     | 'markup_cleaning'
     | 'markup_purchases'
+    | 'software_fee_per_house'
+    | 'ad_placement_fee'
+    | 'partner_cleaning_fee'
+    | 'partner_maintenance_fee'
+    | 'partner_parts_fee'
+    | 'team_cleaning_fee'
+    | 'team_maintenance_fee'
+    | 'team_parts_fee'
     | 'custom'
   valueType: 'fixed' | 'percentage'
   value: number
