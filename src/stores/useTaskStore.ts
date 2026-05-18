@@ -50,7 +50,7 @@ const useTaskStore = () => {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid)
 
   const addTask = async (task: any) => {
-    const dbTask = {
+    const dbTask: any = {
       title: task.title,
       property_id:
         task.propertyId && isValidUUID(task.propertyId)
@@ -75,8 +75,12 @@ const useTaskStore = () => {
       team_member_payout: task.teamMemberPayout || 0,
       source: task.source || 'manual',
       images: task.images || [],
-      created_by: task.createdBy || null,
     }
+
+    if (task.createdBy && isValidUUID(task.createdBy)) {
+      dbTask.created_by = task.createdBy
+    }
+
     const { data, error } = await supabase
       .from('tasks')
       .insert(dbTask)
