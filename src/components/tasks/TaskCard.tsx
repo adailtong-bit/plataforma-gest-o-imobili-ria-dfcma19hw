@@ -21,7 +21,9 @@ import { DataMask } from '@/components/DataMask'
 import { cn } from '@/lib/utils'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import useTaskStore from '@/stores/useTaskStore'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 interface TaskCardProps {
   task: Task
@@ -34,6 +36,36 @@ interface TaskCardProps {
 export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
   const { t } = useLanguageStore()
   const { currentUser } = useAuthStore()
+  const { updateTask } = useTaskStore()
+
+  const handleStatusUpdate = async (status: string) => {
+    try {
+      // Force database update directly to bypass any silent errors in parent handlers
+      const result = await updateTask({ id: task.id, status })
+      if (result?.error) throw result.error
+
+      // If the parent provided a handler (e.g. for optimistic UI), call it too
+      if (onStatusChange) {
+        try {
+          onStatusChange(status as any)
+        } catch (e) {
+          console.warn(
+            'Parent onStatusChange handler failed, but task was updated in DB',
+            e,
+          )
+        }
+      }
+
+      toast.success(
+        status === 'pending' ? 'Tarefa aceita com sucesso!' : 'Tarefa recusada',
+      )
+    } catch (error) {
+      console.error('Failed to update task status:', error)
+      toast.error(
+        'Erro ao atualizar o status da tarefa. Verifique suas permissões.',
+      )
+    }
+  }
 
   const getPriorityStyle = (p: string) => {
     switch (p) {
@@ -137,7 +169,7 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
                     className="flex-1 h-7 text-xs bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200"
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (onStatusChange) onStatusChange('pending')
+                      handleStatusUpdate('pending')
                     }}
                   >
                     <Check className="h-3 w-3 mr-1" />
@@ -149,7 +181,7 @@ export function TaskCard({ task, onStatusChange, canEdit }: TaskCardProps) {
                     className="flex-1 h-7 text-xs bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 border-red-200"
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (onStatusChange) onStatusChange('rejected')
+                      handleStatusUpdate('rejected')
                     }}
                   >
                     <X className="h-3 w-3 mr-1" />

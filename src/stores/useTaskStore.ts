@@ -95,15 +95,23 @@ const useTaskStore = () => {
     }
   }
   const updateTask = async (task: any) => {
-    const dbTask = {
-      status: task.status,
-      approval_status: task.approvalStatus,
-    }
+    const dbTask: any = {}
+    if (task.status !== undefined) dbTask.status = task.status
+    if (task.approvalStatus !== undefined)
+      dbTask.approval_status = task.approvalStatus
+
     const { error } = await supabase
       .from('tasks')
       .update(dbTask)
       .eq('id', task.id)
-    if (!error) await fetchTasks()
+
+    if (!error) {
+      await fetchTasks()
+      return { success: true }
+    } else {
+      console.error('Error updating task:', error)
+      return { success: false, error }
+    }
   }
   const deleteTask = async (id: string) => {
     const { error } = await supabase.from('tasks').delete().eq('id', id)
