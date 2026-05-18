@@ -46,11 +46,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { format } from 'date-fns'
+import { format, isValid } from 'date-fns'
 import { Invoice } from '@/lib/types'
-import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
-import { DataMask } from '@/components/DataMask'
 
 export default function Invoices() {
   const context = useContext(AppContext)
@@ -63,7 +60,6 @@ export default function Invoices() {
   const formatAppCurrency =
     context?.formatAppCurrency || ((v: number) => `$${v}`)
 
-  const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
@@ -83,21 +79,26 @@ export default function Invoices() {
   const invoiceList = Array.isArray(financials)
     ? financials
     : financials?.invoices || []
-  const filteredInvoices = invoiceList.filter(
-    (inv: Invoice) =>
+
+  const filteredInvoices = (invoiceList || []).filter(
+    (inv: any) =>
       (inv?.description || '').toLowerCase().includes(search.toLowerCase()) ||
       (inv?.id || '').toLowerCase().includes(search.toLowerCase()),
   )
 
   const handleSave = () => {
     if (!form.description) {
-      toast({ title: t('common.error'), variant: 'destructive' })
+      toast({
+        title: 'Erro',
+        description: 'Descrição é obrigatória',
+        variant: 'destructive',
+      })
       return
     }
 
     if (editingRecord) {
       updateInvoice({ ...editingRecord, ...form } as Invoice)
-      toast({ title: t('common.success') })
+      toast({ title: 'Sucesso', description: 'Fatura atualizada com sucesso' })
     } else {
       addInvoice({
         id: `inv-${Date.now()}`,
@@ -107,17 +108,22 @@ export default function Invoices() {
         date: form.date || new Date().toISOString(),
         type: 'generic',
       } as Invoice)
-      toast({ title: t('common.success') })
+      toast({ title: 'Sucesso', description: 'Fatura criada com sucesso' })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
-    setForm({ description: '', amount: 0, status: 'pending', date: '' })
+    setForm({
+      description: '',
+      amount: 0,
+      status: 'pending',
+      date: new Date().toISOString().split('T')[0],
+    })
   }
 
   const handleDelete = () => {
     if (deleteId) {
       deleteInvoice(deleteId)
-      toast({ title: t('common.delete_success') })
+      toast({ title: 'Sucesso', description: 'Fatura excluída com sucesso' })
       setDeleteId(null)
     }
   }
@@ -125,7 +131,7 @@ export default function Invoices() {
   const handleMarkAsPaid = (inv: Invoice) => {
     updateInvoice({ ...inv, status: 'paid' } as Invoice)
     let updatedCount = 0
-    ledgerEntries.forEach((entry) => {
+    ledgerEntries.forEach((entry: any) => {
       if (entry.referenceId === inv.id && entry.status === 'pending') {
         updateLedgerEntry({
           ...entry,
@@ -136,9 +142,15 @@ export default function Invoices() {
       }
     })
     toast({
-      title: t('common.success') || 'Success',
-      description: `Invoice paid. ${updatedCount} ledger entries cleared.`,
+      title: 'Sucesso',
+      description: `Fatura paga. ${updatedCount} lançamentos atualizados.`,
     })
+  }
+
+  const formatDateSafe = (dateString?: string) => {
+    if (!dateString) return '-'
+    const d = new Date(dateString)
+    return isValid(d) ? format(d, 'MMM dd, yyyy') : '-'
   }
 
   return (
@@ -146,7 +158,7 @@ export default function Invoices() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('common.invoices')}
+            Faturas
           </h1>
           <p className="text-muted-foreground">
             Gerencie as faturas geradas (incluindo serviços e PDV).
@@ -154,7 +166,7 @@ export default function Invoices() {
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('common.search')}
+            placeholder="Buscar faturas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -169,34 +181,35 @@ export default function Invoices() {
                   description: '',
                   amount: 0,
                   status: 'pending',
-                  date: '',
+                  date: new Date().toISOString().split('T')[0],
                 })
               }
             }}
           >
             <DialogTrigger asChild>
-              <Button className="bg-trust-blue gap-2 text-white">
-                <Plus className="h-4 w-4" /> {t('common.add')}
+              <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
+                <Plus className="h-4 w-4" /> Adicionar
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  {editingRecord ? t('common.edit') : t('common.add')}
+                  {editingRecord ? 'Editar Fatura' : 'Nova Fatura'}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>{t('common.description')}</Label>
+                  <Label>Descrição</Label>
                   <Input
                     value={form.description}
                     onChange={(e) =>
                       setForm({ ...form, description: e.target.value })
                     }
+                    placeholder="Ex: Limpeza de rotina"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t('common.value')}</Label>
+                  <Label>Valor</Label>
                   <Input
                     type="number"
                     value={form.amount}
@@ -207,7 +220,12 @@ export default function Invoices() {
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleSave}>{t('common.save')}</Button>
+                <Button
+                  onClick={handleSave}
+                  className="bg-trust-blue text-white hover:bg-blue-700"
+                >
+                  Salvar
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -219,44 +237,39 @@ export default function Invoices() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Invoice ID</TableHead>
-                <TableHead>{t('common.description')}</TableHead>
+                <TableHead>ID da Fatura</TableHead>
+                <TableHead>Descrição</TableHead>
                 <TableHead>Reserva Associada</TableHead>
-                <TableHead>{t('common.date')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
-                  {t('common.value')}
-                </TableHead>
-                <TableHead className="text-right">
-                  {t('common.actions')}
-                </TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInvoices.slice(0, 50).map((inv) => (
+              {filteredInvoices.slice(0, 50).map((inv: any) => (
                 <TableRow key={inv.id} className="hover:bg-slate-50">
-                  <TableCell className="font-mono text-xs">
-                    <DataMask>{inv.id}</DataMask>
-                  </TableCell>
+                  <TableCell className="font-mono text-xs">{inv.id}</TableCell>
                   <TableCell
                     className="font-medium text-slate-900 max-w-[200px] truncate"
                     title={inv.description}
                   >
-                    <DataMask>{inv.description}</DataMask>
+                    {inv.description}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-xs font-mono">
                     {inv.bookingId || '-'}
                   </TableCell>
+                  <TableCell>{formatDateSafe(inv.date)}</TableCell>
                   <TableCell>
-                    {format(new Date(inv.date), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="uppercase text-[10px]">
+                    <Badge
+                      variant="outline"
+                      className={`uppercase text-[10px] ${inv.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}
+                    >
                       {inv.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    <DataMask>{formatAppCurrency(inv.amount)}</DataMask>
+                    {formatAppCurrency(inv.amount)}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -272,15 +285,15 @@ export default function Invoices() {
                             setViewerOpen(true)
                           }}
                         >
-                          <Eye className="h-4 w-4 mr-2" /> {t('common.view')}
+                          <Eye className="h-4 w-4 mr-2" /> Visualizar
                         </DropdownMenuItem>
                         {inv.status !== 'paid' && (
                           <DropdownMenuItem
                             onClick={() => handleMarkAsPaid(inv)}
                             className="text-green-600 focus:text-green-600"
                           >
-                            <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as
-                            Paid
+                            <CheckCircle2 className="h-4 w-4 mr-2" /> Marcar
+                            como Pago
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -290,14 +303,13 @@ export default function Invoices() {
                             setIsAddOpen(true)
                           }}
                         >
-                          <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
+                          <Pencil className="h-4 w-4 mr-2" /> Editar
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600"
                           onClick={() => setDeleteId(inv.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />{' '}
-                          {t('common.delete')}
+                          <Trash2 className="h-4 w-4 mr-2" /> Excluir
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -308,9 +320,9 @@ export default function Invoices() {
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="text-center py-6 text-muted-foreground"
+                    className="text-center py-8 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    Nenhuma fatura encontrada.
                   </TableCell>
                 </TableRow>
               )}
@@ -319,11 +331,53 @@ export default function Invoices() {
         </CardContent>
       </Card>
 
-      <InvoiceViewer
-        open={viewerOpen}
-        onOpenChange={setViewerOpen}
-        invoice={viewingInvoice}
-      />
+      <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Visualizar Fatura</DialogTitle>
+          </DialogHeader>
+          {viewingInvoice && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100">
+                <div>
+                  <p className="text-muted-foreground text-xs mb-1">
+                    ID da Fatura
+                  </p>
+                  <p className="font-mono text-sm">{viewingInvoice.id}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs mb-1">Data</p>
+                  <p className="font-medium">
+                    {formatDateSafe(viewingInvoice.date)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs mb-1">Status</p>
+                  <Badge
+                    variant="outline"
+                    className={`uppercase text-[10px] ${viewingInvoice.status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}
+                  >
+                    {viewingInvoice.status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs mb-1">Valor</p>
+                  <p className="font-medium text-lg">
+                    {formatAppCurrency(viewingInvoice.amount)}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-muted-foreground text-xs mb-1">Descrição</p>
+                <p className="font-medium">{viewingInvoice.description}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setViewerOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog
         open={!!deleteId}
@@ -331,15 +385,19 @@ export default function Invoices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.confirm_delete')}</AlertDialogTitle>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('common.delete_desc')}
+              Tem certeza que deseja excluir esta fatura? Esta ação não pode ser
+              desfeita e pode afetar os relatórios financeiros.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              {t('common.delete')}
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Excluir Fatura
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
