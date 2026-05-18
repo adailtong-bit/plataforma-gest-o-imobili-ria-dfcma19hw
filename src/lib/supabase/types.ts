@@ -11,7 +11,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -60,18 +60,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'bookings_guest_id_fkey'
-            columns: ['guest_id']
+            foreignKeyName: "bookings_guest_id_fkey"
+            columns: ["guest_id"]
             isOneToOne: false
-            referencedRelation: 'guests'
-            referencedColumns: ['id']
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bookings_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "bookings_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -93,18 +93,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'conversation_participants_conversation_id_fkey'
-            columns: ['conversation_id']
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: 'conversations'
-            referencedColumns: ['id']
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'conversation_participants_profile_id_fkey'
-            columns: ['profile_id']
+            foreignKeyName: "conversation_participants_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -201,6 +201,109 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number | null
+          booking_id: string | null
+          created_at: string | null
+          date: string | null
+          description: string | null
+          due_date: string | null
+          from_address: string | null
+          from_email: string | null
+          from_id: string | null
+          from_name: string | null
+          from_phone: string | null
+          id: string
+          invoice_number: string | null
+          items: Json | null
+          notes: string | null
+          property_id: string | null
+          status: string | null
+          to_address: string | null
+          to_email: string | null
+          to_id: string | null
+          to_name: string | null
+          to_phone: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          booking_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          due_date?: string | null
+          from_address?: string | null
+          from_email?: string | null
+          from_id?: string | null
+          from_name?: string | null
+          from_phone?: string | null
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          property_id?: string | null
+          status?: string | null
+          to_address?: string | null
+          to_email?: string | null
+          to_id?: string | null
+          to_name?: string | null
+          to_phone?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          booking_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          due_date?: string | null
+          from_address?: string | null
+          from_email?: string | null
+          from_id?: string | null
+          from_name?: string | null
+          from_phone?: string | null
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          property_id?: string | null
+          status?: string | null
+          to_address?: string | null
+          to_email?: string | null
+          to_id?: string | null
+          to_name?: string | null
+          to_phone?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_from_id_fkey"
+            columns: ["from_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_to_id_fkey"
+            columns: ["to_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ledger_entries: {
         Row: {
           amount: number
@@ -246,11 +349,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ledger_entries_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "ledger_entries_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -278,18 +381,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'messages_conversation_id_fkey'
-            columns: ['conversation_id']
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: 'conversations'
-            referencedColumns: ['id']
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'messages_sender_id_fkey'
-            columns: ['sender_id']
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -320,11 +423,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles_pm_id_fkey'
-            columns: ['pm_id']
+            foreignKeyName: "profiles_pm_id_fkey"
+            columns: ["pm_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -427,46 +530,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'properties_agent_id_fkey'
-            columns: ['agent_id']
+            foreignKeyName: "properties_agent_id_fkey"
+            columns: ["agent_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "properties_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_owner_id_fkey'
-            columns: ['owner_id']
+            foreignKeyName: "properties_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_pm_id_fkey'
-            columns: ['pm_id']
+            foreignKeyName: "properties_pm_id_fkey"
+            columns: ["pm_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_room_type_id_fkey'
-            columns: ['room_type_id']
+            foreignKeyName: "properties_room_type_id_fkey"
+            columns: ["room_type_id"]
             isOneToOne: false
-            referencedRelation: 'room_types'
-            referencedColumns: ['id']
+            referencedRelation: "room_types"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_tower_id_fkey'
-            columns: ['tower_id']
+            foreignKeyName: "properties_tower_id_fkey"
+            columns: ["tower_id"]
             isOneToOne: false
-            referencedRelation: 'towers'
-            referencedColumns: ['id']
+            referencedRelation: "towers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -512,11 +615,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'room_types_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "room_types_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -592,18 +695,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tasks_assignee_id_fkey'
-            columns: ['assignee_id']
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tasks_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "tasks_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -628,11 +731,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'towers_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "towers_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -652,33 +755,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -687,23 +790,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -712,23 +815,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -737,36 +840,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -774,6 +877,7 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -827,6 +931,31 @@ export const Constants = {
 //   zip_code: text (nullable)
 //   country: text (nullable, default: 'US'::text)
 //   created_at: timestamp with time zone (not null, default: now())
+// Table: invoices
+//   id: uuid (not null, default: gen_random_uuid())
+//   invoice_number: text (nullable)
+//   description: text (nullable)
+//   amount: numeric (nullable, default: 0)
+//   status: text (nullable, default: 'pending'::text)
+//   date: timestamp with time zone (nullable, default: now())
+//   due_date: timestamp with time zone (nullable)
+//   from_name: text (nullable)
+//   from_email: text (nullable)
+//   from_phone: text (nullable)
+//   from_address: text (nullable)
+//   to_name: text (nullable)
+//   to_email: text (nullable)
+//   to_phone: text (nullable)
+//   to_address: text (nullable)
+//   from_id: uuid (nullable)
+//   to_id: uuid (nullable)
+//   property_id: uuid (nullable)
+//   type: text (nullable)
+//   booking_id: text (nullable)
+//   items: jsonb (nullable, default: '[]'::jsonb)
+//   notes: text (nullable)
+//   created_at: timestamp with time zone (nullable, default: now())
+//   updated_at: timestamp with time zone (nullable, default: now())
 // Table: ledger_entries
 //   id: uuid (not null, default: gen_random_uuid())
 //   description: text (not null)
@@ -939,6 +1068,11 @@ export const Constants = {
 //   PRIMARY KEY guests_pkey: PRIMARY KEY (id)
 // Table: hotels
 //   PRIMARY KEY hotels_pkey: PRIMARY KEY (id)
+// Table: invoices
+//   FOREIGN KEY invoices_from_id_fkey: FOREIGN KEY (from_id) REFERENCES profiles(id) ON DELETE SET NULL
+//   PRIMARY KEY invoices_pkey: PRIMARY KEY (id)
+//   FOREIGN KEY invoices_property_id_fkey: FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
+//   FOREIGN KEY invoices_to_id_fkey: FOREIGN KEY (to_id) REFERENCES profiles(id) ON DELETE SET NULL
 // Table: ledger_entries
 //   PRIMARY KEY ledger_entries_pkey: PRIMARY KEY (id)
 //   FOREIGN KEY ledger_entries_property_id_fkey: FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
@@ -995,6 +1129,10 @@ export const Constants = {
 //   Policy "hotels_select" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: true
 //   Policy "hotels_update" (UPDATE, PERMISSIVE) roles={authenticated}
+//     USING: true
+//     WITH CHECK: true
+// Table: invoices
+//   Policy "invoices_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
 //     WITH CHECK: true
 // Table: ledger_entries
@@ -1068,7 +1206,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 // FUNCTION is_admin_or_pm()
 //   CREATE OR REPLACE FUNCTION public.is_admin_or_pm()
 //    RETURNS boolean
@@ -1077,11 +1215,11 @@ export const Constants = {
 //    SET search_path TO 'public'
 //   AS $function$
 //     SELECT EXISTS (
-//       SELECT 1 FROM public.profiles
+//       SELECT 1 FROM public.profiles 
 //       WHERE id = auth.uid() AND role IN ('master', 'software_tenant', 'internal_user', 'platform_owner')
 //     );
 //   $function$
-//
+//   
 // FUNCTION sync_room_type_price()
 //   CREATE OR REPLACE FUNCTION public.sync_room_type_price()
 //    RETURNS trigger
@@ -1097,8 +1235,9 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 
 // --- TRIGGERS ---
 // Table: room_types
 //   on_room_type_price_update: CREATE TRIGGER on_room_type_price_update AFTER UPDATE ON public.room_types FOR EACH ROW EXECUTE FUNCTION sync_room_type_price()
+
