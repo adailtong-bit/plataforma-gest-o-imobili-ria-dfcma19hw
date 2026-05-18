@@ -208,13 +208,59 @@ export function EditTaskDialog({
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Unassigned" />
+                  <SelectValue placeholder="Unassigned">
+                    {(() => {
+                      if (!form.assigneeId || form.assigneeId === 'none')
+                        return 'Unassigned'
+                      const p = availablePartners.find(
+                        (x) => x.id === form.assigneeId,
+                      ) as any
+                      if (!p) return 'Unassigned'
+                      return (
+                        <div className="flex items-center gap-2">
+                          <span>{p.name}</span>
+                          {(p.source === 'opporjob' ||
+                            p.origin === 'opporjob' ||
+                            p.tags?.includes('opporjob') ||
+                            p.name?.toLowerCase().includes('opporjob')) && (
+                            <span className="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                              Opporjob
+                            </span>
+                          )}
+                          {(p.source === 'promoted' ||
+                            p.origin === 'promoted' ||
+                            p.tags?.includes('promoted')) && (
+                            <span className="bg-green-100 text-green-800 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                              Promoted
+                            </span>
+                          )}
+                        </div>
+                      )
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Unassigned</SelectItem>
-                  {availablePartners.map((p) => (
+                  {availablePartners.map((p: any) => (
                     <SelectItem key={p.id} value={p.id}>
-                      {p.name}
+                      <div className="flex items-center gap-2">
+                        <span>{p.name}</span>
+                        {(p.source === 'opporjob' ||
+                          p.origin === 'opporjob' ||
+                          p.tags?.includes('opporjob') ||
+                          p.name?.toLowerCase().includes('opporjob')) && (
+                          <span className="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                            Opporjob
+                          </span>
+                        )}
+                        {(p.source === 'promoted' ||
+                          p.origin === 'promoted' ||
+                          p.tags?.includes('promoted')) && (
+                          <span className="bg-green-100 text-green-800 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                            Promoted
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
