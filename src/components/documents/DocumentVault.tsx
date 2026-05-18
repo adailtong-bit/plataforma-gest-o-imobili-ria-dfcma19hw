@@ -187,12 +187,26 @@ export function DocumentVault({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>File URL (Mock Upload)</Label>
+              <Label>File</Label>
               <Input
-                value={form.url || ''}
-                onChange={(e) => setForm({ ...form, url: e.target.value })}
-                placeholder="https://..."
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    setForm({
+                      ...form,
+                      url: URL.createObjectURL(file),
+                      name: form.name || file.name.split('.')[0],
+                    })
+                  }
+                }}
+                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
               />
+              {form.url && form.url.startsWith('blob:') && (
+                <p className="text-xs text-green-600 font-medium mt-1">
+                  Document selected successfully.
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter>
