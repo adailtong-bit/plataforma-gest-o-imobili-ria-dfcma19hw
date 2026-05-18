@@ -101,7 +101,10 @@ export default function Tasks() {
   }, [tasks, filterType, filterStatus, isOwner, currentUser, properties])
 
   const pendingTasks = useMemo(
-    () => filteredTasks.filter((t) => t.status === 'pending'),
+    () =>
+      filteredTasks.filter(
+        (t) => t.status === 'pending' || t.status === 'pending_acceptance',
+      ),
     [filteredTasks],
   )
   const inProgressTasks = useMemo(
@@ -144,6 +147,8 @@ export default function Tasks() {
         return approvalStatus === 'owner_pending'
           ? t('tasks.status_wait_owner')
           : t('tasks.status_wait_pm')
+      case 'pending_acceptance':
+        return 'Pending Acceptance'
       default:
         return status
     }
@@ -232,6 +237,9 @@ export default function Tasks() {
             <SelectContent>
               <SelectItem value="all">{t('common.all')}</SelectItem>
               <SelectItem value="pending">{t('common.pending')}</SelectItem>
+              <SelectItem value="pending_acceptance">
+                Pending Acceptance
+              </SelectItem>
               <SelectItem value="in_progress">
                 {t('tasks.in_progress')}
               </SelectItem>
@@ -336,7 +344,7 @@ export default function Tasks() {
             <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-4 border border-slate-200 h-full">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200 shrink-0">
                 <h3 className="font-bold text-sm uppercase text-black">
-                  {t('common.pending')} (Ready)
+                  {t('common.pending')}
                 </h3>
                 <Badge
                   variant="secondary"
@@ -465,9 +473,11 @@ export default function Tasks() {
                               ? task.approvalStatus === 'owner_pending'
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-yellow-100 text-yellow-800'
-                              : task.status === 'rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : ''
+                              : task.status === 'pending_acceptance'
+                                ? 'bg-blue-100 text-blue-800'
+                                : task.status === 'rejected'
+                                  ? 'bg-red-100 text-red-800'
+                                  : ''
                           }
                         >
                           {getStatusLabel(task.status, task.approvalStatus)}
@@ -527,6 +537,7 @@ export default function Tasks() {
                           </Button>
                           {task.status !== 'completed' &&
                             task.status !== 'pending_approval' &&
+                            task.status !== 'pending_acceptance' &&
                             task.status !== 'rejected' && (
                               <Button
                                 variant="ghost"

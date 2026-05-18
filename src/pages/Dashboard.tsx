@@ -112,7 +112,10 @@ export default function Dashboard() {
 
   // Operational Metrics
   const pendingTasks = tasks.filter(
-    (t) => t.status === 'pending' || t.status === 'in_progress',
+    (t) =>
+      t.status === 'pending' ||
+      t.status === 'in_progress' ||
+      t.status === 'pending_acceptance',
   ).length
   const completedTasks = tasks.filter((t) => t.status === 'completed').length
   const pendingRenewals = tenants.filter(
@@ -808,7 +811,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-slate-900">
-                    {pendingTasks || 24}
+                    {pendingTasks}
                   </div>
                 </CardContent>
               </Card>
@@ -826,7 +829,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-slate-900">
-                    {completedTasks || 156}
+                    {completedTasks}
                   </div>
                 </CardContent>
               </Card>
@@ -844,7 +847,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-slate-900">
-                    {tenants.length || 112}
+                    {tenants.length}
                   </div>
                 </CardContent>
               </Card>
@@ -862,7 +865,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-slate-900">
-                    {pendingRenewals || 8}
+                    {pendingRenewals}
                   </div>
                 </CardContent>
               </Card>
@@ -934,7 +937,9 @@ export default function Dashboard() {
                   {tasks
                     .filter(
                       (t) =>
-                        t.status === 'pending' || t.status === 'in_progress',
+                        t.status === 'pending' ||
+                        t.status === 'in_progress' ||
+                        t.status === 'pending_acceptance',
                     )
                     .slice(0, 4)
                     .map((task) => (
@@ -957,7 +962,10 @@ export default function Dashboard() {
                       </Link>
                     ))}
                   {tasks.filter(
-                    (t) => t.status === 'pending' || t.status === 'in_progress',
+                    (t) =>
+                      t.status === 'pending' ||
+                      t.status === 'in_progress' ||
+                      t.status === 'pending_acceptance',
                   ).length === 0 && (
                     <div className="text-sm text-slate-500 text-center py-4">
                       {t('common.empty', 'Empty')}
