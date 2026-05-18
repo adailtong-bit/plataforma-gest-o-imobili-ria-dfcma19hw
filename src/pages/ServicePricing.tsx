@@ -52,7 +52,7 @@ import { BillingAgreement } from '@/lib/types'
 export default function ServicePricing() {
   const { agreements, addAgreement, updateAgreement, deleteAgreement } =
     useBillingStore()
-  const { allUsers } = useAuthStore()
+  const { allUsers, currentUser } = useAuthStore()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
@@ -61,12 +61,98 @@ export default function ServicePricing() {
     null,
   )
 
+  const isPlatformAdmin = [
+    'master',
+    'super_admin',
+    'platform_owner',
+    'admin',
+  ].includes(currentUser?.role || '')
+
+  const effectiveSourceRole = isPlatformAdmin
+    ? 'master'
+    : currentUser?.role || 'software_tenant'
+
+  const getRoleHierarchy = (sourceRole: string) => {
+    if (
+      ['master', 'super_admin', 'platform_owner', 'admin'].includes(sourceRole)
+    ) {
+      return {
+        allowedTargets: [
+          { value: 'software_tenant', label: 'Property Manager' },
+          { value: 'advertiser', label: 'Advertiser' },
+        ],
+        allowedTypes: {
+          software_tenant: [
+            {
+              value: 'software_fee_per_house',
+              label: 'Software Fee (Per House)',
+            },
+            { value: 'fixed_admin_fee', label: 'Platform Fixed Fee' },
+          ],
+          advertiser: [
+            { value: 'ad_placement_fee', label: 'Ad Placement Fee' },
+          ],
+        },
+      }
+    }
+
+    if (sourceRole === 'software_tenant') {
+      return {
+        allowedTargets: [{ value: 'property_owner', label: 'Property Owner' }],
+        allowedTypes: {
+          property_owner: [
+            { value: 'booking_percentage', label: 'Booking Revenue Share (%)' },
+            { value: 'fixed_admin_fee', label: 'Fixed Admin Fee' },
+            { value: 'markup_cleaning', label: 'Cleaning Markup' },
+            { value: 'markup_maintenance', label: 'Maintenance Markup' },
+            { value: 'markup_purchases', label: 'Purchases/Parts Markup' },
+          ],
+        },
+      }
+    }
+
+    if (sourceRole === 'partner') {
+      return {
+        allowedTargets: [
+          { value: 'software_tenant', label: 'Property Manager' },
+        ],
+        allowedTypes: {
+          software_tenant: [
+            { value: 'partner_cleaning_fee', label: 'Cleaning Fee' },
+            { value: 'partner_maintenance_fee', label: 'Maintenance Fee' },
+            { value: 'partner_parts_fee', label: 'Parts & Materials Fee' },
+          ],
+        },
+      }
+    }
+
+    if (sourceRole === 'partner_employee') {
+      return {
+        allowedTargets: [
+          { value: 'partner', label: 'Service Partner (Your Boss)' },
+        ],
+        allowedTypes: {
+          partner: [
+            { value: 'team_cleaning_fee', label: 'Cleaning Payout' },
+            { value: 'team_maintenance_fee', label: 'Maintenance Payout' },
+            { value: 'team_parts_fee', label: 'Parts Reimbursement' },
+          ],
+        },
+      }
+    }
+
+    return { allowedTargets: [], allowedTypes: {} }
+  }
+
+  const hierarchy = getRoleHierarchy(effectiveSourceRole)
+
   const defaultForm: Partial<BillingAgreement> = {
     name: '',
-    sourceRole: 'software_tenant',
+    sourceRole: effectiveSourceRole,
     targetId: 'global',
-    targetRole: 'property_owner',
-    type: 'booking_percentage',
+    targetRole: hierarchy.allowedTargets[0]?.value as any,
+    type: hierarchy.allowedTypes[hierarchy.allowedTargets[0]?.value]?.[0]
+      ?.value as any,
     valueType: 'percentage',
     value: 0,
     frequency: 'per_booking',
@@ -77,7 +163,12 @@ export default function ServicePricing() {
   const [form, setForm] = useState<Partial<BillingAgreement>>(defaultForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filteredRates = agreements.filter((r) =>
+  const visibleAgreements = agreements.filter((a) => {
+    if (isPlatformAdmin) return true
+    return a.sourceId === currentUser?.id || a.sourceRole === currentUser?.role
+  })
+
+  const filteredRates = visibleAgreements.filter((r) =>
     r.name.toLowerCase().includes(search.toLowerCase()),
   )
 
@@ -101,10 +192,14 @@ export default function ServicePricing() {
       addAgreement({
         id: `ba-${Date.now()}`,
         name: form.name,
-        sourceRole: form.sourceRole || 'software_tenant',
+        sourceId: currentUser?.id,
+        sourceRole: form.sourceRole || effectiveSourceRole,
         targetId: form.targetId || 'global',
-        targetRole: form.targetRole || 'property_owner',
-        type: form.type || 'fixed_admin_fee',
+        targetRole: form.targetRole || hierarchy.allowedTargets[0]?.value,
+        type:
+          form.type ||
+          hierarchy.allowedTypes[form.targetRole as string]?.[0]?.value ||
+          'custom',
         valueType: form.valueType || 'fixed',
         value: Number(form.value) || 0,
         frequency: form.frequency || 'monthly',
@@ -193,63 +288,51 @@ export default function ServicePricing() {
               </DialogHeader>
               <div className="space-y-6 py-4">
                 <div className="bg-slate-50 p-4 rounded-lg border space-y-4">
-                  <h3 className="font-semibold text-sm text-slate-700 uppercase tracking-wider">
-                    Financial Hierarchy
-                  </h3>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="font-semibold text-sm text-slate-700 uppercase tracking-wider">
+                      Financial Hierarchy
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Only valid relationships for your role (
+                      {roleLabels[effectiveSourceRole] || effectiveSourceRole})
+                      are shown.
+                    </p>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Billed By (Source Role)</Label>
-                      <Select
-                        value={form.sourceRole as string}
-                        onValueChange={(val: any) =>
-                          setForm({ ...form, sourceRole: val })
+                      <Input
+                        value={
+                          roleLabels[form.sourceRole as string] ||
+                          form.sourceRole
                         }
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Who bills?" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="master">
-                            Admin / Platform
-                          </SelectItem>
-                          <SelectItem value="software_tenant">
-                            Property Manager
-                          </SelectItem>
-                          <SelectItem value="partner">
-                            Service Partner
-                          </SelectItem>
-                          <SelectItem value="partner_employee">
-                            Team Member
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                        disabled
+                        className="bg-slate-100 text-slate-500"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>Billed To (Target Role)</Label>
                       <Select
                         value={form.targetRole as string}
-                        onValueChange={(val: any) =>
+                        onValueChange={(val: any) => {
+                          const allowedTypes = hierarchy.allowedTypes[val] || []
                           setForm({
                             ...form,
                             targetRole: val,
                             targetId: 'global',
+                            type: allowedTypes[0]?.value || 'custom',
                           })
-                        }
+                        }}
                       >
                         <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Who pays?" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="software_tenant">
-                            Property Manager
-                          </SelectItem>
-                          <SelectItem value="property_owner">
-                            Property Owner
-                          </SelectItem>
-                          <SelectItem value="partner">
-                            Service Partner
-                          </SelectItem>
-                          <SelectItem value="advertiser">Advertiser</SelectItem>
+                          {hierarchy.allowedTargets.map((t) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -308,30 +391,14 @@ export default function ServicePricing() {
                         <SelectValue placeholder="Select type..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="software_fee_per_house">
-                          Software Fee (Per House)
-                        </SelectItem>
-                        <SelectItem value="booking_percentage">
-                          Booking Revenue Share (%)
-                        </SelectItem>
-                        <SelectItem value="fixed_admin_fee">
-                          Fixed Flat Fee
-                        </SelectItem>
-                        <SelectItem value="markup_cleaning">
-                          Cleaning Markup (over PM Cost)
-                        </SelectItem>
-                        <SelectItem value="markup_maintenance">
-                          Maintenance Markup
-                        </SelectItem>
-                        <SelectItem value="partner_cleaning_fee">
-                          Partner Cleaning Fee (to PM)
-                        </SelectItem>
-                        <SelectItem value="partner_maintenance_fee">
-                          Partner Maintenance Fee
-                        </SelectItem>
-                        <SelectItem value="team_cleaning_fee">
-                          Team Cleaning Payout
-                        </SelectItem>
+                        {hierarchy.allowedTypes[form.targetRole as string]?.map(
+                          (t: any) => (
+                            <SelectItem key={t.value} value={t.value}>
+                              {t.label}
+                            </SelectItem>
+                          ),
+                        )}
+                        <SelectItem value="custom">Custom Rule</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -479,31 +546,34 @@ export default function ServicePricing() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditingRecord(agreement)
-                            setForm(agreement)
-                            setIsAddOpen(true)
-                          }}
-                        >
-                          <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
-                          Edit Rule
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                          onClick={() => setDeleteId(agreement.id)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete Rule
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {(isPlatformAdmin ||
+                      agreement.sourceId === currentUser?.id) && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingRecord(agreement)
+                              setForm(agreement)
+                              setIsAddOpen(true)
+                            }}
+                          >
+                            <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
+                            Edit Rule
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                            onClick={() => setDeleteId(agreement.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" /> Delete Rule
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
