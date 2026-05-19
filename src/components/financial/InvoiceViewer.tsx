@@ -154,11 +154,14 @@ export function InvoiceViewer({
                   <th className="py-3 px-4 font-semibold text-slate-700 text-right w-32">
                     Total
                   </th>
+                  <th className="py-3 px-4 font-semibold text-slate-700 text-center w-24 print:hidden">
+                    Origin
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {invoice.items && invoice.items.length > 0 ? (
-                  invoice.items.map((item, idx) => (
+                  invoice.items.map((item: any, idx: number) => (
                     <tr key={idx} className="bg-white">
                       <td className="py-4 px-4 text-slate-800 font-medium">
                         {item.description || '-'}
@@ -171,6 +174,28 @@ export function InvoiceViewer({
                       </td>
                       <td className="py-4 px-4 text-slate-800 font-medium text-right">
                         {formatAppCurrency(item.total || 0)}
+                      </td>
+                      <td className="py-4 px-4 text-center print:hidden">
+                        {item.sourceId ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs text-blue-600 hover:text-blue-800"
+                            onClick={() =>
+                              window.open(
+                                item.sourceType === 'booking'
+                                  ? `/calendar`
+                                  : `/tasks`,
+                                '_blank',
+                              )
+                            }
+                            title={`Trace back to ${item.sourceType || 'source'}`}
+                          >
+                            Trace
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-slate-400">N/A</span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -185,6 +210,9 @@ export function InvoiceViewer({
                     </td>
                     <td className="py-4 px-4 text-slate-800 font-medium text-right">
                       {formatAppCurrency(invoice.amount || 0)}
+                    </td>
+                    <td className="py-4 px-4 text-center text-xs text-slate-400 print:hidden">
+                      N/A
                     </td>
                   </tr>
                 )}

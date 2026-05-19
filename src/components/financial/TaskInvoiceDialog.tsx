@@ -9,6 +9,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import useFinancialStore from '@/stores/useFinancialStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -25,10 +32,15 @@ export function TaskInvoiceDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const { addInvoice, addLedgerEntry } = useFinancialStore()
-  const { currentUser } = useAuthStore()
+  const { currentUser, allUsers } = useAuthStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
-  const [form, setForm] = useState({ description: '', amount: '' })
+  const [form, setForm] = useState({
+    description: '',
+    amount: '',
+    fromId: '',
+    toId: '',
+  })
 
   useEffect(() => {
     if (task && open) {
@@ -54,23 +66,43 @@ export function TaskInvoiceDialog({
         desc = `Owner Invoice record for ${task.title}`
       }
 
-      setForm({ description: desc, amount: amt.toString() })
+      setForm({
+        description: desc,
+        amount: amt.toString(),
+        fromId: '',
+        toId: '',
+      })
     } else if (open && !task) {
-      setForm({ description: '', amount: '' })
+      setForm({ description: '', amount: '', fromId: '', toId: '' })
     }
   }, [task, open, currentUser])
 
   const handleSave = () => {
-    if (!form.description || !form.amount) {
+    if (!form.description || !form.amount || !form.fromId || !form.toId) {
       toast({
         title: t('common.error') || 'Error',
-        description: t('common.fill_all_fields') || 'Please fill in all fields',
+        description:
+          t('common.fill_all_fields') ||
+          'Please fill in all fields including Payee and Payer',
         variant: 'destructive',
       })
       return
     }
 
-    const invoiceId = `inv-${Date.now()}`
+    if (form.fromId === form.toId) {
+      toast({
+        title: 'Validation Error',
+        description:
+          'Payee and Payer must be distinct entities to prevent self-billing.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const invoiceId = crypto.randomUUID
+      ? crypto.randomUUID()
+      : '00000000-0000-0000-0000-000000000000'
+
     const totalAmount = Number(form.amount)
 
     const partnerAmount = task?.laborCost || 0
@@ -78,7 +110,6 @@ export function TaskInvoiceDialog({
 
     if (task?.propertyId) {
       addLedgerEntry({
-        id: `ledg-exp-${Date.now()}`,
         propertyId: task.propertyId,
         date: new Date().toISOString(),
         type: 'expense',
@@ -88,11 +119,11 @@ export function TaskInvoiceDialog({
         status: 'pending',
         costType: 'variable',
         referenceId: task.id,
+        invoiceId,
       } as any)
 
       if (pmCommission > 0) {
         addLedgerEntry({
-          id: `ledg-inc-${Date.now()}`,
           propertyId: 'none',
           date: new Date().toISOString(),
           type: 'income',
@@ -102,12 +133,15 @@ export function TaskInvoiceDialog({
           status: 'pending',
           costType: 'variable',
           referenceId: task.id,
+          invoiceId,
         } as any)
       }
     }
 
     addInvoice({
       id: invoiceId,
+      fromId: form.fromId,
+      toId: form.toId,
       description: form.description,
       amount: totalAmount,
       status: 'pending',
@@ -121,6 +155,8 @@ export function TaskInvoiceDialog({
           quantity: 1,
           unitPrice: totalAmount,
           total: totalAmount,
+          sourceId: task?.id,
+          sourceType: 'task',
         },
       ],
       notes: `Generated from Task ID: ${task?.id}\nTraceability Engine: Auditable & Locked.`,
@@ -162,6 +198,42 @@ export function TaskInvoiceDialog({
               value={form.amount}
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Billed By (Payee)</Label>
+            <Select
+              value={form.fromId}
+              onValueChange={(v) => setForm({ ...form, fromId: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Payee" />
+              </SelectTrigger>
+              <SelectContent>
+                {allUsers.map((u: any) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.name} ({u.role})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Billed To (Payer)</Label>
+            <Select
+              value={form.toId}
+              onValueChange={(v) => setForm({ ...form, toId: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Payer" />
+              </SelectTrigger>
+              <SelectContent>
+                {allUsers.map((u: any) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.name} ({u.role})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           {task?.laborCost && (
             <div className="text-xs text-muted-foreground bg-slate-50 p-2 rounded-md border mt-2">

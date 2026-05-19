@@ -17,6 +17,7 @@ export const fetchFinancials = async () => {
       costType: e.cost_type,
       isRecurring: e.is_recurring,
       recurrenceFrequency: e.recurrence_frequency,
+      invoiceId: e.invoice_id,
     }))
   }
 
@@ -65,7 +66,7 @@ const useFinancialStore = () => {
   }, [])
 
   const addInvoice = async (inv: any) => {
-    const dbInv = {
+    const dbInv: any = {
       description: inv.description,
       amount: inv.amount,
       status: inv.status,
@@ -87,6 +88,7 @@ const useFinancialStore = () => {
       items: inv.items || [],
       notes: inv.notes,
     }
+    if (inv.id) dbInv.id = inv.id
     const { error } = await supabase.from('invoices').insert(dbInv)
     if (!error) await fetchFinancials()
   }
@@ -120,12 +122,12 @@ const useFinancialStore = () => {
       .eq('id', inv.id)
 
     if (!error) {
-      if (inv.status === 'paid') {
+      if (inv.status === 'paid' || inv.status === 'finalized') {
         // Automatically mark associated ledger entries as cleared
         await supabase
           .from('ledger_entries')
-          .update({ status: 'cleared' })
-          .eq('description', `Invoice: ${inv.description}`)
+          .update({ status: inv.status === 'paid' ? 'cleared' : 'pending' })
+          .eq('invoice_id', inv.id)
       }
       await fetchFinancials()
     }
@@ -148,6 +150,7 @@ const useFinancialStore = () => {
       cost_type: entry.costType,
       is_recurring: entry.isRecurring,
       recurrence_frequency: entry.recurrenceFrequency,
+      invoice_id: entry.invoiceId,
     }
     const { error } = await supabase.from('ledger_entries').insert(dbEntry)
     if (!error) await fetchFinancials()
