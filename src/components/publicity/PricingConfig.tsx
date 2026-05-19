@@ -52,18 +52,14 @@ export function PricingConfig() {
     valid_from: new Date().toISOString().split('T')[0],
   })
   const [isEditing, setIsEditing] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Location Keys adjusted to match the application's core navigation as required
   const locations = [
-    { value: 'menu_properties', label: 'Properties Menu' },
-    { value: 'menu_financial', label: 'Financial Menu' },
-    { value: 'menu_hotels', label: 'Hotels Menu' },
-    { value: 'dashboard_sidebar', label: 'Dashboard Sidebar' },
-    { value: 'login_banner', label: 'Login Banner' },
-    { value: 'home_top', label: 'Home Top' },
-    { value: 'home_bottom', label: 'Home Bottom' },
-    { value: 'tenant_page', label: 'Tenant Page' },
-    { value: 'partner_page', label: 'Partner Page' },
-    { value: 'performance', label: 'Performance' },
+    { value: 'properties', label: 'Properties Menu' },
+    { value: 'financial', label: 'Financial Menu' },
+    { value: 'hotels', label: 'Hotels Menu' },
+    { value: 'management', label: 'Management/Admin Menu' },
   ]
 
   const handleSave = async () => {
@@ -81,26 +77,40 @@ export function PricingConfig() {
       return
     }
 
-    const payload = {
-      ...form,
-      valid_from: new Date(form.valid_from).toISOString(),
-    }
+    setIsSubmitting(true)
+    try {
+      // Ensure date is properly formatted as timestamptz for Supabase
+      const validFromDate = new Date(form.valid_from)
+      const payload = {
+        ...form,
+        valid_from: validFromDate.toISOString(),
+      }
 
-    if (isEditing) {
-      await updatePricingMatrix(payload)
-      toast({ title: 'Pricing Matrix updated' })
-    } else {
-      await addPricingMatrix(payload)
-      toast({ title: 'Pricing Matrix created' })
+      if (isEditing) {
+        await updatePricingMatrix(payload)
+        toast({ title: 'Pricing Matrix updated' })
+      } else {
+        await addPricingMatrix(payload)
+        toast({ title: 'Pricing Matrix created' })
+      }
+
+      setForm({
+        id: '',
+        location_key: '',
+        duration_days: 0,
+        price: 0,
+        valid_from: new Date().toISOString().split('T')[0],
+      })
+      setIsEditing(false)
+    } catch (error: any) {
+      toast({
+        title: 'Error saving pricing',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-    setForm({
-      id: '',
-      location_key: '',
-      duration_days: 0,
-      price: 0,
-      valid_from: new Date().toISOString().split('T')[0],
-    })
-    setIsEditing(false)
   }
 
   const handleEdit = (p: any) => {
@@ -109,7 +119,10 @@ export function PricingConfig() {
       location_key: p.location_key,
       duration_days: p.duration_days,
       price: p.price,
-      valid_from: new Date(p.valid_from).toISOString().split('T')[0],
+      // Handle potential timezone formatting issues for input type="date"
+      valid_from: p.valid_from
+        ? new Date(p.valid_from).toISOString().split('T')[0]
+        : '',
     })
     setIsEditing(true)
   }
@@ -120,8 +133,16 @@ export function PricingConfig() {
         'Delete this pricing configuration? It will not affect active campaigns.',
       )
     ) {
-      await deletePricingMatrix(id)
-      toast({ title: 'Deleted successfully' })
+      try {
+        await deletePricingMatrix(id)
+        toast({ title: 'Deleted successfully' })
+      } catch (error: any) {
+        toast({
+          title: 'Error deleting',
+          description: error.message || 'Could not delete pricing.',
+          variant: 'destructive',
+        })
+      }
     }
   }
 
@@ -133,8 +154,11 @@ export function PricingConfig() {
   const getStatus = (p: any) => {
     const now = new Date()
     const validFrom = new Date(p.valid_from)
+
     if (validFrom > now) return 'Scheduled'
 
+    // To determine if it's the CURRENT active one, find all rules for this location/duration
+    // that are valid as of now, and pick the latest valid_from date.
     const relevant = pricingMatrix.filter(
       (x) =>
         x.location_key === p.location_key &&
@@ -152,16 +176,16 @@ export function PricingConfig() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
-      <Card className="h-fit">
+      <Card className="h-fit sticky top-6">
         <CardHeader>
           <CardTitle>{isEditing ? 'Edit Tier' : 'New Pricing Tier'}</CardTitle>
           <CardDescription>
-            Configure price based on location, duration and effective date.
+            Configure temporal pricing based on location and duration.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
-            <Label>Location Map</Label>
+            <Label>Location Map *</Label>
             <Select
               value={form.location_key}
               onValueChange={(v) => setForm({ ...form, location_key: v })}
@@ -179,7 +203,7 @@ export function PricingConfig() {
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Duration (Days)</Label>
+            <Label>Duration (Days) *</Label>
             <Input
               type="number"
               min="1"
@@ -190,7 +214,7 @@ export function PricingConfig() {
             />
           </div>
           <div className="grid gap-2">
-            <Label>Price</Label>
+            <Label>Price *</Label>
             <CurrencyInput
               value={form.price}
               onChange={(v) => setForm({ ...form, price: v })}
@@ -198,7 +222,7 @@ export function PricingConfig() {
             />
           </div>
           <div className="grid gap-2">
-            <Label>Valid From Date</Label>
+            <Label>Valid From Date *</Label>
             <Input
               type="date"
               value={form.valid_from}
@@ -206,8 +230,16 @@ export function PricingConfig() {
             />
           </div>
           <div className="flex gap-2 pt-2">
-            <Button onClick={handleSave} className="w-full bg-trust-blue">
-              {isEditing ? 'Update Tier' : 'Add Tier'}
+            <Button
+              onClick={handleSave}
+              className="w-full bg-trust-blue"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? 'Saving...'
+                : isEditing
+                  ? 'Update Tier'
+                  : 'Add Tier'}
             </Button>
             {isEditing && (
               <Button
@@ -233,6 +265,9 @@ export function PricingConfig() {
       <Card>
         <CardHeader>
           <CardTitle>Pricing Matrix Configuration</CardTitle>
+          <CardDescription>
+            Historical and future scheduled pricing for campaign placements.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -253,7 +288,7 @@ export function PricingConfig() {
                     colSpan={6}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    No rules defined.
+                    No rules defined. Create your first pricing tier.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -269,7 +304,9 @@ export function PricingConfig() {
                       <TableRow key={p.id}>
                         <TableCell>
                           {status === 'Current' && (
-                            <Badge className="bg-green-600">Current</Badge>
+                            <Badge className="bg-green-600">
+                              Current Active
+                            </Badge>
                           )}
                           {status === 'Scheduled' && (
                             <Badge className="bg-blue-500">Scheduled</Badge>

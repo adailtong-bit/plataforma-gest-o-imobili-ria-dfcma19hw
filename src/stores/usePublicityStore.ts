@@ -59,7 +59,8 @@ const usePublicityStore = () => {
       country: adv.country,
       contacts: adv.contacts,
     }
-    await supabase.from('advertisers').insert(dbData)
+    const { error } = await supabase.from('advertisers').insert(dbData)
+    if (error) throw error
     await fetchPublicityData()
   }
 
@@ -80,27 +81,33 @@ const usePublicityStore = () => {
       country: adv.country,
       contacts: adv.contacts,
     }
-    await supabase.from('advertisers').update(dbData).eq('id', adv.id)
+    const { error } = await supabase
+      .from('advertisers')
+      .update(dbData)
+      .eq('id', adv.id)
+    if (error) throw error
     await fetchPublicityData()
   }
 
   const deleteAdvertiser = async (id: string) => {
-    await supabase.from('advertisers').delete().eq('id', id)
+    const { error } = await supabase.from('advertisers').delete().eq('id', id)
+    if (error) throw error
     await fetchPublicityData()
   }
 
   const addPricingMatrix = async (price: any) => {
-    await supabase.from('publicity_pricing_matrix').insert({
+    const { error } = await supabase.from('publicity_pricing_matrix').insert({
       location_key: price.location_key,
       duration_days: price.duration_days,
       price: price.price,
       valid_from: price.valid_from,
     })
+    if (error) throw error
     await fetchPublicityData()
   }
 
   const updatePricingMatrix = async (price: any) => {
-    await supabase
+    const { error } = await supabase
       .from('publicity_pricing_matrix')
       .update({
         location_key: price.location_key,
@@ -109,16 +116,21 @@ const usePublicityStore = () => {
         valid_from: price.valid_from,
       })
       .eq('id', price.id)
+    if (error) throw error
     await fetchPublicityData()
   }
 
   const deletePricingMatrix = async (id: string) => {
-    await supabase.from('publicity_pricing_matrix').delete().eq('id', id)
+    const { error } = await supabase
+      .from('publicity_pricing_matrix')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
     await fetchPublicityData()
   }
 
   const addCampaign = async (camp: any) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('publicity_campaigns')
       .insert({
         title: camp.title,
@@ -133,12 +145,14 @@ const usePublicityStore = () => {
       })
       .select()
       .single()
+
+    if (error) throw error
     await fetchPublicityData()
     return data
   }
 
   const updateCampaign = async (camp: any) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('publicity_campaigns')
       .update({
         title: camp.title,
@@ -154,12 +168,18 @@ const usePublicityStore = () => {
       .eq('id', camp.id)
       .select()
       .single()
+
+    if (error) throw error
     await fetchPublicityData()
     return data
   }
 
   const deleteCampaign = async (id: string) => {
-    await supabase.from('publicity_campaigns').delete().eq('id', id)
+    const { error } = await supabase
+      .from('publicity_campaigns')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
     await fetchPublicityData()
   }
 

@@ -19,9 +19,26 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Edit, Trash2, Search, Users } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Users, AlertCircle } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { useToast } from '@/hooks/use-toast'
+import { PhoneInput } from '@/components/ui/phone-input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const isValidZip = (zip: string, country: string) => {
+  if (!zip) return true
+  if (country === 'US') return /^\d{5}(-\d{4})?$/.test(zip)
+  if (country === 'BR') return /^\d{5}-?\d{3}$/.test(zip)
+  return true // Generic fallback for other countries
+}
 
 export function AdvertiserList() {
   const { advertisers, addAdvertiser, updateAdvertiser, deleteAdvertiser } =
@@ -31,6 +48,7 @@ export function AdvertiserList() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const initialFormState = {
     name: '',
@@ -44,7 +62,7 @@ export function AdvertiserList() {
     city: '',
     state: '',
     zipCode: '',
-    country: '',
+    country: 'US' as 'US' | 'BR' | 'ES',
     contacts: [] as {
       name: string
       role: string
@@ -64,7 +82,7 @@ export function AdvertiserList() {
     if (adv) {
       setEditingId(adv.id)
       setFormData({
-        name: adv.name,
+        name: adv.name || '',
         taxId: adv.taxId || '',
         email: adv.email || '',
         phone: adv.phone || '',
@@ -75,7 +93,7 @@ export function AdvertiserList() {
         city: adv.city || '',
         state: adv.state || '',
         zipCode: adv.zipCode || '',
-        country: adv.country || '',
+        country: (adv.country as 'US' | 'BR' | 'ES') || 'US',
         contacts: adv.contacts || [],
       })
     } else {
@@ -86,6 +104,7 @@ export function AdvertiserList() {
   }
 
   const handleSave = async () => {
+    // Validation
     if (
       !formData.name ||
       !formData.email ||
@@ -95,7 +114,25 @@ export function AdvertiserList() {
       toast({
         title: 'Validation Error',
         description:
-          'Company Name, Email, Street and City are required fields.',
+          'Company Name, Email, Street, and City are required fields.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!EMAIL_REGEX.test(formData.email)) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid billing email format.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (formData.zipCode && !isValidZip(formData.zipCode, formData.country)) {
+      toast({
+        title: 'Invalid Zip Code',
+        description: `Please enter a valid zip code for ${formData.country}.`,
         variant: 'destructive',
       })
       return
@@ -110,19 +147,42 @@ export function AdvertiserList() {
       return
     }
 
-    const payload = {
-      ...formData,
-      address: `${formData.street}, ${formData.number} - ${formData.city}/${formData.state}`,
+    const invalidContact = formData.contacts.find(
+      (c) => !c.name || !c.role || !c.email,
+    )
+    if (invalidContact) {
+      toast({
+        title: 'Incomplete Contact',
+        description: 'Each contact must have a name, role, and email.',
+        variant: 'destructive',
+      })
+      return
     }
 
-    if (editingId) {
-      await updateAdvertiser({ ...payload, id: editingId })
-      toast({ title: 'Advertiser updated successfully.' })
-    } else {
-      await addAdvertiser(payload)
-      toast({ title: 'Advertiser registered successfully.' })
+    setIsSubmitting(true)
+    try {
+      const payload = {
+        ...formData,
+        address: `${formData.street}, ${formData.number} - ${formData.city}/${formData.state}`,
+      }
+
+      if (editingId) {
+        await updateAdvertiser({ ...payload, id: editingId })
+        toast({ title: 'Advertiser updated successfully.' })
+      } else {
+        await addAdvertiser(payload)
+        toast({ title: 'Advertiser registered successfully.' })
+      }
+      setIsOpen(false)
+    } catch (error: any) {
+      toast({
+        title: 'Error saving advertiser',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-    setIsOpen(false)
   }
 
   const handleDelete = async (id: string) => {
@@ -131,12 +191,28 @@ export function AdvertiserList() {
         'Are you sure you want to delete this advertiser? All their campaigns might be affected.',
       )
     ) {
-      await deleteAdvertiser(id)
-      toast({ title: 'Advertiser deleted.' })
+      try {
+        await deleteAdvertiser(id)
+        toast({ title: 'Advertiser deleted.' })
+      } catch (error: any) {
+        toast({
+          title: 'Error deleting',
+          description: error.message || 'Could not delete the advertiser.',
+          variant: 'destructive',
+        })
+      }
     }
   }
 
   const addContact = () => {
+    if (formData.contacts.length >= 3) {
+      toast({
+        title: 'Limit Reached',
+        description: 'You can only add up to 3 contact persons.',
+        variant: 'default',
+      })
+      return
+    }
     setFormData({
       ...formData,
       contacts: [
@@ -252,7 +328,7 @@ export function AdvertiserList() {
             <ScrollArea className="max-h-[70vh] p-6 pt-4">
               <div className="grid gap-6">
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">
+                  <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                     Company Details
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -263,6 +339,7 @@ export function AdvertiserList() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
+                        placeholder="e.g. Acme Corp"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -272,6 +349,7 @@ export function AdvertiserList() {
                         onChange={(e) =>
                           setFormData({ ...formData, taxId: e.target.value })
                         }
+                        placeholder="Optional"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -282,14 +360,19 @@ export function AdvertiserList() {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
+                        placeholder="billing@company.com"
                       />
                     </div>
                     <div className="grid gap-2">
                       <Label>Billing Phone</Label>
-                      <Input
+                      <PhoneInput
                         value={formData.phone}
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
+                        }
+                        country={formData.country}
+                        onCountryChange={(c) =>
+                          setFormData({ ...formData, country: c })
                         }
                       />
                     </div>
@@ -371,25 +454,37 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2 col-span-2">
-                      <Label>Country</Label>
-                      <Input
+                      <Label>Country Setting (Affects Formatting)</Label>
+                      <Select
                         value={formData.country}
-                        onChange={(e) =>
-                          setFormData({ ...formData, country: e.target.value })
+                        onValueChange={(v: 'US' | 'BR' | 'ES') =>
+                          setFormData({ ...formData, country: v })
                         }
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">United States</SelectItem>
+                          <SelectItem value="BR">Brazil</SelectItem>
+                          <SelectItem value="ES">Spain</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold">Contact Persons *</h3>
+                    <h3 className="text-sm font-semibold">
+                      Contact Persons * (Max 3)
+                    </h3>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={addContact}
+                      disabled={formData.contacts.length >= 3}
                     >
                       <Plus className="h-3 w-3 mr-1" /> Add Contact
                     </Button>
@@ -400,31 +495,33 @@ export function AdvertiserList() {
                         key={idx}
                         className="flex gap-2 items-start bg-slate-50 p-3 rounded-lg border"
                       >
-                        <div className="grid grid-cols-4 gap-2 flex-1">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-1">
                           <Input
-                            placeholder="Name"
+                            placeholder="Name *"
                             value={contact.name}
                             onChange={(e) =>
                               updateContact(idx, 'name', e.target.value)
                             }
                           />
                           <Input
-                            placeholder="Role (e.g. Marketing)"
+                            placeholder="Role * (e.g. Marketing)"
                             value={contact.role}
                             onChange={(e) =>
                               updateContact(idx, 'role', e.target.value)
                             }
                           />
                           <Input
-                            placeholder="Email"
+                            type="email"
+                            placeholder="Email *"
                             value={contact.email}
                             onChange={(e) =>
                               updateContact(idx, 'email', e.target.value)
                             }
                           />
-                          <Input
+                          <PhoneInput
                             placeholder="Phone"
                             value={contact.phone}
+                            country={formData.country}
                             onChange={(e) =>
                               updateContact(idx, 'phone', e.target.value)
                             }
@@ -434,7 +531,7 @@ export function AdvertiserList() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="text-red-500 mt-0.5"
+                          className="text-red-500 mt-0.5 shrink-0"
                           onClick={() => removeContact(idx)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -442,20 +539,29 @@ export function AdvertiserList() {
                       </div>
                     ))}
                     {formData.contacts.length === 0 && (
-                      <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
-                        Please add at least one contact person.
-                      </p>
+                      <div className="flex items-center gap-2 text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Please add at least one contact person.</span>
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
             </ScrollArea>
             <DialogFooter className="p-6 border-t bg-slate-50">
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsOpen(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-trust-blue">
-                Save Advertiser
+              <Button
+                onClick={handleSave}
+                className="bg-trust-blue"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Advertiser'}
               </Button>
             </DialogFooter>
           </DialogContent>

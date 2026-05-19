@@ -58,6 +58,7 @@ export function AdsManager() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const initialFormState = {
     title: '',
@@ -89,7 +90,7 @@ export function AdsManager() {
     )
   }, [pricingMatrix, formData.location_key])
 
-  // Get applicable price based on location, duration and start date
+  // Core Logic: Get applicable price based on location, duration and start date (Time-Based Validity)
   const applicablePricing = useMemo(() => {
     if (
       !formData.location_key ||
@@ -99,16 +100,20 @@ export function AdsManager() {
       return null
 
     const targetDate = new Date(formData.start_date)
+    // Find prices valid ON or BEFORE the target campaign start date
     const validPrices = pricingMatrix.filter(
       (p) =>
         p.location_key === formData.location_key &&
         p.duration_days === Number(formData.duration_days) &&
         new Date(p.valid_from) <= targetDate,
     )
+
+    // Sort descending to get the most recent valid price
     validPrices.sort(
       (a, b) =>
         new Date(b.valid_from).getTime() - new Date(a.valid_from).getTime(),
     )
+
     return validPrices.length > 0 ? validPrices[0] : null
   }, [
     pricingMatrix,
@@ -147,7 +152,8 @@ export function AdsManager() {
     ) {
       toast({
         title: 'Validation Error',
-        description: 'Please fill in all required fields.',
+        description:
+          'Please fill in all required fields (Advertiser, Location, Duration, Start Date).',
         variant: 'destructive',
       })
       return
@@ -156,100 +162,129 @@ export function AdsManager() {
     if (!applicablePricing) {
       toast({
         title: 'Pricing Error',
-        description: 'No valid pricing found for the selected parameters.',
+        description:
+          'No valid pricing found for the selected parameters. Please configure pricing first.',
         variant: 'destructive',
       })
       return
     }
 
-    const startDate = new Date(formData.start_date)
-    const endDate = new Date(startDate)
-    endDate.setDate(endDate.getDate() + applicablePricing.duration_days)
+    setIsSubmitting(true)
+    try {
+      const startDate = new Date(formData.start_date)
+      const endDate = new Date(startDate)
+      endDate.setDate(endDate.getDate() + applicablePricing.duration_days)
 
-    const payload = {
-      title: formData.title,
-      advertiser_id: formData.advertiser_id,
-      pricing_id: applicablePricing.id,
-      start_date: formData.start_date,
-      end_date: endDate.toISOString(),
-      total_amount: applicablePricing.price,
-      image_url: formData.image_url,
-      link_url: formData.link_url,
-    }
+      const payload = {
+        title: formData.title,
+        advertiser_id: formData.advertiser_id,
+        pricing_id: applicablePricing.id, // Mandatory Association
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        total_amount: applicablePricing.price,
+        image_url: formData.image_url,
+        link_url: formData.link_url,
+      }
 
-    if (editingId) {
-      await updateCampaign({ ...payload, id: editingId })
-      toast({ title: 'Campaign updated successfully.' })
-    } else {
-      await addCampaign({ ...payload, status: 'pending' })
-      toast({ title: 'Campaign created successfully.' })
+      if (editingId) {
+        await updateCampaign({ ...payload, id: editingId })
+        toast({ title: 'Campaign updated successfully.' })
+      } else {
+        await addCampaign({ ...payload, status: 'pending' })
+        toast({ title: 'Campaign created successfully.' })
+      }
+      setIsOpen(false)
+    } catch (error: any) {
+      toast({
+        title: 'Error saving campaign',
+        description: error.message || 'Could not save the campaign.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-    setIsOpen(false)
   }
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this campaign?')) {
-      await deleteCampaign(id)
-      toast({ title: 'Campaign deleted.' })
+      try {
+        await deleteCampaign(id)
+        toast({ title: 'Campaign deleted.' })
+      } catch (error: any) {
+        toast({
+          title: 'Error deleting',
+          description: error.message,
+          variant: 'destructive',
+        })
+      }
     }
   }
 
   const handleActivate = async (camp: any) => {
     if (
       !confirm(
-        'Activate campaign? This will generate an invoice billed directly to the Advertiser.',
+        'Activate campaign? This will generate an invoice billed directly to the Advertiser and allocate 100% revenue to the platform.',
       )
     )
       return
 
-    const { data: owners } = await supabase
-      .from('profiles')
-      .select('id, name, email')
-      .in('role', ['platform_owner', 'master'])
-      .limit(1)
-    const owner = owners?.[0]
-    const adv = advertisers.find((a) => a.id === camp.advertiser_id)
+    try {
+      // Find platform owner for 100% revenue attribution
+      const { data: owners } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .in('role', ['platform_owner', 'master'])
+        .limit(1)
+      const owner = owners?.[0]
+      const adv = advertisers.find((a) => a.id === camp.advertiser_id)
 
-    if (owner && adv) {
-      const fullAddress =
-        `${adv.street || ''} ${adv.number || ''} ${adv.complement || ''}, ${adv.neighborhood || ''}, ${adv.city || ''} - ${adv.state || ''} ${adv.zipCode || ''} ${adv.country || ''}`.trim()
+      if (owner && adv) {
+        const fullAddress =
+          `${adv.street || ''} ${adv.number || ''} ${adv.complement || ''}, ${adv.neighborhood || ''}, ${adv.city || ''} - ${adv.state || ''} ${adv.zipCode || ''} ${adv.country || ''}`.trim()
 
-      const invId = `inv-pub-${Date.now()}`
+        const invId = `inv-pub-${Date.now()}`
 
-      // Invoice FROM platform TO advertiser
-      await addInvoice({
-        id: invId,
-        description: `Publicity Campaign: ${camp.title}`,
-        amount: camp.total_amount,
-        status: 'issued',
-        date: new Date().toISOString(),
-        toId: adv.id,
-        toName: adv.name,
-        toEmail: adv.email,
-        toPhone: adv.phone,
-        toAddress: fullAddress,
-        fromId: owner.id,
-        fromName: owner.name,
-        fromEmail: owner.email,
-        type: 'publicity',
-      })
+        // Invoice FROM platform TO advertiser
+        await addInvoice({
+          id: invId,
+          description: `Publicity Campaign: ${camp.title}`,
+          amount: camp.total_amount,
+          status: 'issued',
+          date: new Date().toISOString(),
+          toId: adv.id,
+          toName: adv.name,
+          toEmail: adv.email,
+          toPhone: adv.phone,
+          toAddress: fullAddress,
+          fromId: owner.id,
+          fromName: owner.name,
+          fromEmail: owner.email,
+          type: 'publicity',
+        })
 
-      // Revenue directly to platform (100%)
-      await addLedgerEntry({
-        id: `ldg-${Date.now()}`,
-        propertyId: undefined,
-        date: new Date().toISOString(),
-        type: 'income',
-        category: 'Publicity Revenue',
-        amount: camp.total_amount,
-        description: `Revenue from Campaign: ${camp.title}`,
-        status: 'cleared',
-        costType: 'fixed',
+        // Revenue directly to platform (100% attribution as per requirements)
+        await addLedgerEntry({
+          id: `ldg-${Date.now()}`,
+          propertyId: undefined, // Not property specific
+          date: new Date().toISOString(),
+          type: 'income',
+          category: 'Publicity Revenue',
+          amount: camp.total_amount,
+          description: `Revenue from Campaign: ${camp.title}`,
+          status: 'cleared',
+          costType: 'fixed',
+        })
+      }
+
+      await updateCampaign({ ...camp, status: 'active' })
+      toast({ title: 'Campaign activated and invoiced.' })
+    } catch (error: any) {
+      toast({
+        title: 'Activation Error',
+        description: error.message,
+        variant: 'destructive',
       })
     }
-
-    await updateCampaign({ ...camp, status: 'active' })
-    toast({ title: 'Campaign activated and invoiced.' })
   }
 
   return (
@@ -431,7 +466,7 @@ export function AdsManager() {
             </DialogHeader>
             <div className="grid gap-6 py-4">
               <div className="grid gap-2">
-                <Label>Title</Label>
+                <Label>Title *</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) =>
@@ -442,7 +477,7 @@ export function AdsManager() {
               </div>
 
               <div className="grid gap-2">
-                <Label>Advertiser</Label>
+                <Label>Advertiser *</Label>
                 <Select
                   value={formData.advertiser_id}
                   onValueChange={(v) =>
@@ -465,7 +500,7 @@ export function AdsManager() {
 
               <div className="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg border">
                 <div className="grid gap-2">
-                  <Label>Start Date</Label>
+                  <Label>Start Date *</Label>
                   <Input
                     type="date"
                     value={formData.start_date}
@@ -475,7 +510,7 @@ export function AdsManager() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Location</Label>
+                  <Label>Placement Location *</Label>
                   <Select
                     value={formData.location_key}
                     onValueChange={(v) =>
@@ -487,7 +522,7 @@ export function AdsManager() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Location" />
+                      <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
                       {availableLocations.map((loc) => (
@@ -495,11 +530,16 @@ export function AdsManager() {
                           {loc.replace(/_/g, ' ')}
                         </SelectItem>
                       ))}
+                      {availableLocations.length === 0 && (
+                        <SelectItem value="empty" disabled>
+                          No pricing configured
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Duration</Label>
+                  <Label>Duration *</Label>
                   <Select
                     value={formData.duration_days}
                     onValueChange={(v) =>
@@ -524,9 +564,10 @@ export function AdsManager() {
               <div className="flex items-center gap-3 text-sm p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-100">
                 <Calculator className="h-5 w-5 text-blue-500" />
                 <div className="flex-1">
-                  <p className="font-semibold">Calculated Amount</p>
+                  <p className="font-semibold">Calculated Total Amount</p>
                   <p className="text-blue-600">
-                    Based on location, duration and effective date.
+                    Based on location, duration and exact temporal pricing rule
+                    active on the selected start date.
                   </p>
                 </div>
                 <div className="text-xl font-bold">
@@ -539,14 +580,14 @@ export function AdsManager() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4" /> Image URL
+                    <LinkIcon className="h-4 w-4" /> Image/Banner URL
                   </Label>
                   <Input
                     value={formData.image_url}
                     onChange={(e) =>
                       setFormData({ ...formData, image_url: e.target.value })
                     }
-                    placeholder="https://..."
+                    placeholder="https://img.usecurling.com/..."
                   />
                 </div>
                 <div className="grid gap-2">
@@ -558,21 +599,25 @@ export function AdsManager() {
                     onChange={(e) =>
                       setFormData({ ...formData, link_url: e.target.value })
                     }
-                    placeholder="https://..."
+                    placeholder="https://example.com"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsOpen(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
                 className="bg-trust-blue"
-                disabled={!applicablePricing}
+                disabled={!applicablePricing || isSubmitting}
               >
-                Save Campaign
+                {isSubmitting ? 'Saving...' : 'Save Campaign'}
               </Button>
             </DialogFooter>
           </DialogContent>
