@@ -281,6 +281,15 @@ export default function Invoices() {
       return
     }
 
+    if (autoForm.payeeId === autoForm.payerId) {
+      toast({
+        title: 'Invalid Selection',
+        description: 'Payee and Payer cannot be the same entity.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     const payee = allUsers.find((u) => u.id === autoForm.payeeId)
     const payer = allUsers.find((u) => u.id === autoForm.payerId)
     if (!payee || !payer) return
@@ -533,7 +542,11 @@ export default function Invoices() {
                     <Select
                       value={autoForm.payeeId}
                       onValueChange={(val) =>
-                        setAutoForm({ ...autoForm, payeeId: val })
+                        setAutoForm((prev) => ({
+                          ...prev,
+                          payeeId: val,
+                          payerId: prev.payerId === val ? '' : prev.payerId,
+                        }))
                       }
                     >
                       <SelectTrigger className="bg-white">
@@ -557,16 +570,25 @@ export default function Invoices() {
                       onValueChange={(val) =>
                         setAutoForm({ ...autoForm, payerId: val })
                       }
+                      disabled={!autoForm.payeeId}
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select who is paying..." />
+                        <SelectValue
+                          placeholder={
+                            !autoForm.payeeId
+                              ? 'Select Payee first...'
+                              : 'Select who is paying...'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        {allUsers.map((u) => (
-                          <SelectItem key={u.id} value={u.id}>
-                            {u.name} ({u.role})
-                          </SelectItem>
-                        ))}
+                        {allUsers
+                          .filter((u) => u.id !== autoForm.payeeId)
+                          .map((u) => (
+                            <SelectItem key={u.id} value={u.id}>
+                              {u.name} ({u.role})
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -594,9 +616,23 @@ export default function Invoices() {
                   </div>
                 </div>
 
+                {autoForm.payeeId &&
+                  autoForm.payerId &&
+                  autoForm.payeeId === autoForm.payerId && (
+                    <div className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-md border border-red-200">
+                      Error: Payee and Payer cannot be the same entity. Please
+                      select different entities.
+                    </div>
+                  )}
+
                 <div className="flex justify-end">
                   <Button
                     onClick={handlePreviewCalculation}
+                    disabled={
+                      autoForm.payeeId !== '' &&
+                      autoForm.payerId !== '' &&
+                      autoForm.payeeId === autoForm.payerId
+                    }
                     className="gap-2 bg-slate-800 text-white hover:bg-slate-700"
                   >
                     <Calculator className="h-4 w-4" /> Calculate Rule Matrix
