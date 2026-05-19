@@ -11,7 +11,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: '14.5'
   }
   public: {
     Tables: {
@@ -117,18 +117,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "bookings_guest_id_fkey"
-            columns: ["guest_id"]
+            foreignKeyName: 'bookings_guest_id_fkey'
+            columns: ['guest_id']
             isOneToOne: false
-            referencedRelation: "guests"
-            referencedColumns: ["id"]
+            referencedRelation: 'guests'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "bookings_property_id_fkey"
-            columns: ["property_id"]
+            foreignKeyName: 'bookings_property_id_fkey'
+            columns: ['property_id']
             isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
+            referencedRelation: 'properties'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -150,18 +150,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "conversation_participants_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'conversation_participants_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'conversations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "conversation_participants_profile_id_fkey"
-            columns: ["profile_id"]
+            foreignKeyName: 'conversation_participants_profile_id_fkey'
+            columns: ['profile_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -339,25 +339,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "invoices_from_id_fkey"
-            columns: ["from_id"]
+            foreignKeyName: 'invoices_from_id_fkey'
+            columns: ['from_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "invoices_property_id_fkey"
-            columns: ["property_id"]
+            foreignKeyName: 'invoices_property_id_fkey'
+            columns: ['property_id']
             isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
+            referencedRelation: 'properties'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "invoices_to_id_fkey"
-            columns: ["to_id"]
+            foreignKeyName: 'invoices_to_id_fkey'
+            columns: ['to_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -409,18 +409,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ledger_entries_invoice_id_fkey"
-            columns: ["invoice_id"]
+            foreignKeyName: 'ledger_entries_invoice_id_fkey'
+            columns: ['invoice_id']
             isOneToOne: false
-            referencedRelation: "invoices"
-            referencedColumns: ["id"]
+            referencedRelation: 'invoices'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "ledger_entries_property_id_fkey"
-            columns: ["property_id"]
+            foreignKeyName: 'ledger_entries_property_id_fkey'
+            columns: ['property_id']
             isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
+            referencedRelation: 'properties'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -448,18 +448,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'messages_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'conversations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
+            foreignKeyName: 'messages_sender_id_fkey'
+            columns: ['sender_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -490,11 +490,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_pm_id_fkey"
-            columns: ["pm_id"]
+            foreignKeyName: 'profiles_pm_id_fkey'
+            columns: ['pm_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -597,46 +597,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "properties_agent_id_fkey"
-            columns: ["agent_id"]
+            foreignKeyName: 'properties_agent_id_fkey'
+            columns: ['agent_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "properties_hotel_id_fkey"
-            columns: ["hotel_id"]
+            foreignKeyName: 'properties_hotel_id_fkey'
+            columns: ['hotel_id']
             isOneToOne: false
-            referencedRelation: "hotels"
-            referencedColumns: ["id"]
+            referencedRelation: 'hotels'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "properties_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'properties_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "properties_pm_id_fkey"
-            columns: ["pm_id"]
+            foreignKeyName: 'properties_pm_id_fkey'
+            columns: ['pm_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "properties_room_type_id_fkey"
-            columns: ["room_type_id"]
+            foreignKeyName: 'properties_room_type_id_fkey'
+            columns: ['room_type_id']
             isOneToOne: false
-            referencedRelation: "room_types"
-            referencedColumns: ["id"]
+            referencedRelation: 'room_types'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "properties_tower_id_fkey"
-            columns: ["tower_id"]
+            foreignKeyName: 'properties_tower_id_fkey'
+            columns: ['tower_id']
             isOneToOne: false
-            referencedRelation: "towers"
-            referencedColumns: ["id"]
+            referencedRelation: 'towers'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -682,18 +682,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "publicity_campaigns_advertiser_id_fkey"
-            columns: ["advertiser_id"]
+            foreignKeyName: 'publicity_campaigns_advertiser_id_fkey'
+            columns: ['advertiser_id']
             isOneToOne: false
-            referencedRelation: "advertisers"
-            referencedColumns: ["id"]
+            referencedRelation: 'advertisers'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "publicity_campaigns_pricing_id_fkey"
-            columns: ["pricing_id"]
+            foreignKeyName: 'publicity_campaigns_pricing_id_fkey'
+            columns: ['pricing_id']
             isOneToOne: false
-            referencedRelation: "publicity_pricing_matrix"
-            referencedColumns: ["id"]
+            referencedRelation: 'publicity_pricing_matrix'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -766,11 +766,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "room_types_hotel_id_fkey"
-            columns: ["hotel_id"]
+            foreignKeyName: 'room_types_hotel_id_fkey'
+            columns: ['hotel_id']
             isOneToOne: false
-            referencedRelation: "hotels"
-            referencedColumns: ["id"]
+            referencedRelation: 'hotels'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -846,18 +846,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_assignee_id_fkey"
-            columns: ["assignee_id"]
+            foreignKeyName: 'tasks_assignee_id_fkey'
+            columns: ['assignee_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_property_id_fkey"
-            columns: ["property_id"]
+            foreignKeyName: 'tasks_property_id_fkey'
+            columns: ['property_id']
             isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
+            referencedRelation: 'properties'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -882,11 +882,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "towers_hotel_id_fkey"
-            columns: ["hotel_id"]
+            foreignKeyName: 'towers_hotel_id_fkey'
+            columns: ['hotel_id']
             isOneToOne: false
-            referencedRelation: "hotels"
-            referencedColumns: ["id"]
+            referencedRelation: 'hotels'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -906,33 +906,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -941,23 +941,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -966,23 +966,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -991,36 +991,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -1028,7 +1028,6 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -1423,7 +1422,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//   
+//
 // FUNCTION is_admin_or_pm()
 //   CREATE OR REPLACE FUNCTION public.is_admin_or_pm()
 //    RETURNS boolean
@@ -1432,11 +1431,11 @@ export const Constants = {
 //    SET search_path TO 'public'
 //   AS $function$
 //     SELECT EXISTS (
-//       SELECT 1 FROM public.profiles 
+//       SELECT 1 FROM public.profiles
 //       WHERE id = auth.uid() AND role IN ('master', 'software_tenant', 'internal_user', 'platform_owner')
 //     );
 //   $function$
-//   
+//
 // FUNCTION prevent_locked_invoice_update()
 //   CREATE OR REPLACE FUNCTION public.prevent_locked_invoice_update()
 //    RETURNS trigger
@@ -1445,9 +1444,9 @@ export const Constants = {
 //   BEGIN
 //     IF OLD.status IN ('finalized', 'issued', 'paid') THEN
 //       -- If something other than status changed, block it to enforce immutability
-//       IF (NEW.amount IS DISTINCT FROM OLD.amount) OR 
-//          (NEW.items::text IS DISTINCT FROM OLD.items::text) OR 
-//          (NEW.from_id IS DISTINCT FROM OLD.from_id) OR 
+//       IF (NEW.amount IS DISTINCT FROM OLD.amount) OR
+//          (NEW.items::text IS DISTINCT FROM OLD.items::text) OR
+//          (NEW.from_id IS DISTINCT FROM OLD.from_id) OR
 //          (NEW.to_id IS DISTINCT FROM OLD.to_id) OR
 //          (NEW.due_date IS DISTINCT FROM OLD.due_date)
 //       THEN
@@ -1457,7 +1456,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//   
+//
 // FUNCTION sync_room_type_price()
 //   CREATE OR REPLACE FUNCTION public.sync_room_type_price()
 //    RETURNS trigger
@@ -1473,11 +1472,10 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//   
+//
 
 // --- TRIGGERS ---
 // Table: invoices
 //   trg_prevent_locked_invoice_update: CREATE TRIGGER trg_prevent_locked_invoice_update BEFORE UPDATE ON public.invoices FOR EACH ROW EXECUTE FUNCTION prevent_locked_invoice_update()
 // Table: room_types
 //   on_room_type_price_update: CREATE TRIGGER on_room_type_price_update AFTER UPDATE ON public.room_types FOR EACH ROW EXECUTE FUNCTION sync_room_type_price()
-

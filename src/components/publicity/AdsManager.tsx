@@ -169,6 +169,25 @@ export function AdsManager() {
       return
     }
 
+    const selectedAdv = advertisers.find((a) => a.id === formData.advertiser_id)
+    if (selectedAdv) {
+      const isComplete =
+        selectedAdv.street &&
+        selectedAdv.city &&
+        selectedAdv.country &&
+        selectedAdv.zipCode &&
+        selectedAdv.contacts?.length > 0
+      if (!isComplete) {
+        toast({
+          title: 'Incomplete Advertiser Profile',
+          description:
+            'The selected advertiser does not have a complete address and at least one contact registered. Please update their profile first.',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
     setIsSubmitting(true)
     try {
       const startDate = new Date(formData.start_date)
@@ -195,9 +214,13 @@ export function AdsManager() {
       }
       setIsOpen(false)
     } catch (error: any) {
+      const isRlsError =
+        error.message?.includes('row-level security') || error.code === '42501'
       toast({
         title: 'Error saving campaign',
-        description: error.message || 'Could not save the campaign.',
+        description: isRlsError
+          ? 'Error saving: You do not have permission to perform this action. Please check your administrative role.'
+          : error.message || 'Could not save the campaign.',
         variant: 'destructive',
       })
     } finally {

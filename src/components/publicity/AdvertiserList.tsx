@@ -108,13 +108,15 @@ export function AdvertiserList() {
     if (
       !formData.name ||
       !formData.email ||
+      !formData.country ||
+      !formData.zipCode ||
       !formData.street ||
       !formData.city
     ) {
       toast({
         title: 'Validation Error',
         description:
-          'Company Name, Email, Street, and City are required fields.',
+          'Company Name, Email, Country, Zip Code, Street, and City are required fields.',
         variant: 'destructive',
       })
       return
@@ -175,9 +177,13 @@ export function AdvertiserList() {
       }
       setIsOpen(false)
     } catch (error: any) {
+      const isRlsError =
+        error.message?.includes('row-level security') || error.code === '42501'
       toast({
         title: 'Error saving advertiser',
-        description: error.message || 'An unexpected error occurred.',
+        description: isRlsError
+          ? 'Error saving: You do not have permission to perform this action. Please check your administrative role.'
+          : error.message || 'An unexpected error occurred.',
         variant: 'destructive',
       })
     } finally {

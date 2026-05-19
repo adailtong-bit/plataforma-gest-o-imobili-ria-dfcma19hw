@@ -57,9 +57,10 @@ export function PricingConfig() {
   // Location Keys adjusted to match the application's core navigation as required
   const locations = [
     { value: 'properties', label: 'Properties Menu' },
-    { value: 'financial', label: 'Financial Menu' },
     { value: 'hotels', label: 'Hotels Menu' },
-    { value: 'management', label: 'Management/Admin Menu' },
+    { value: 'financial', label: 'Financial Menu' },
+    { value: 'condominiums', label: 'Condominiums Menu' },
+    { value: 'dashboard', label: 'Dashboard' },
   ]
 
   const handleSave = async () => {
@@ -103,9 +104,13 @@ export function PricingConfig() {
       })
       setIsEditing(false)
     } catch (error: any) {
+      const isRlsError =
+        error.message?.includes('row-level security') || error.code === '42501'
       toast({
         title: 'Error saving pricing',
-        description: error.message || 'An unexpected error occurred.',
+        description: isRlsError
+          ? 'Error saving: You do not have permission to perform this action. Please check your administrative role.'
+          : error.message || 'An unexpected error occurred.',
         variant: 'destructive',
       })
     } finally {
