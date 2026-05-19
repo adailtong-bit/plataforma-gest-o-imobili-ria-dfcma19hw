@@ -118,7 +118,17 @@ const useFinancialStore = () => {
       .from('invoices')
       .update(dbInv)
       .eq('id', inv.id)
-    if (!error) await fetchFinancials()
+
+    if (!error) {
+      if (inv.status === 'paid') {
+        // Automatically mark associated ledger entries as cleared
+        await supabase
+          .from('ledger_entries')
+          .update({ status: 'cleared' })
+          .eq('description', `Invoice: ${inv.description}`)
+      }
+      await fetchFinancials()
+    }
   }
 
   const deleteInvoice = async (id: string) => {

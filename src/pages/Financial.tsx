@@ -340,6 +340,17 @@ export default function Financial() {
   }
 
   const handleEdit = () => {
+    if (editingRecord?.status === 'cleared') {
+      toast({
+        title: t('financial.error') || 'Action Not Allowed',
+        description:
+          t('financial.locked_record') ||
+          'Cleared or paid records are locked for financial integrity and auditing.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (Number(form.amount) <= 0) {
       toast({
         title: t('financial.invalid_amount') || 'Invalid amount',
@@ -389,6 +400,18 @@ export default function Financial() {
   }
 
   const handleDelete = (id: string) => {
+    const entry = ledgerEntries.find((e) => e.id === id)
+    if (entry?.status === 'cleared') {
+      toast({
+        title: t('financial.error') || 'Action Not Allowed',
+        description:
+          t('financial.locked_record') ||
+          'Cleared or paid records are locked for financial integrity and auditing.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     deleteLedgerEntry(id)
     toast({
       title:
@@ -1016,6 +1039,11 @@ export default function Financial() {
                               : t('financial.yearly') || 'Yearly'}
                           </span>
                         )}
+                        {entry.referenceId && (
+                          <span className="text-[10px] text-slate-400 mt-1 font-mono">
+                            Ref: {entry.referenceId.substring(0, 8)}
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -1102,334 +1130,347 @@ export default function Financial() {
                             {t('financial.pay') || 'Pay'}
                           </Button>
                         )}
-                        <>
-                          <Dialog
-                            open={editingRecord?.id === entry.id}
-                            onOpenChange={(open) =>
-                              !open && setEditingRecord(null)
-                            }
-                          >
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-slate-500 hover:text-blue-600"
-                                onClick={() => openEdit(entry)}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  {t('financial.edit_transaction') ||
-                                    'Edit Transaction'}
-                                </DialogTitle>
-                              </DialogHeader>
-                              <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.type') || 'Type'}
-                                    </Label>
-                                    <Select
-                                      value={form.type}
-                                      onValueChange={(v) =>
-                                        setForm({ ...form, type: v })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="income">
-                                          {t('financial.income') || 'Income'}
-                                        </SelectItem>
-                                        <SelectItem value="expense">
-                                          {t('financial.expense') || 'Expense'}
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.date') || 'Date'}
-                                    </Label>
-                                    <Input
-                                      type="date"
-                                      value={form.date}
-                                      onChange={(e) =>
-                                        setForm({
-                                          ...form,
-                                          date: e.target.value,
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.description') ||
-                                        'Description'}
-                                    </Label>
-                                    <Input
-                                      value={form.description}
-                                      onChange={(e) =>
-                                        setForm({
-                                          ...form,
-                                          description: e.target.value,
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.category') || 'Category'}
-                                    </Label>
-                                    <Select
-                                      value={form.category}
-                                      onValueChange={(v) =>
-                                        setForm({ ...form, category: v })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="other">
-                                          {t('financial.categories.other') ||
-                                            'Other'}
-                                        </SelectItem>
-                                        <SelectItem value="rent">
-                                          {t('financial.categories.rent') ||
-                                            'Rent'}
-                                        </SelectItem>
-                                        <SelectItem value="maintenance">
-                                          {t(
-                                            'financial.categories.maintenance',
-                                          ) || 'Maintenance'}
-                                        </SelectItem>
-                                        <SelectItem value="cleaning">
-                                          {t('financial.categories.cleaning') ||
-                                            'Cleaning'}
-                                        </SelectItem>
-                                        <SelectItem value="hoa">
-                                          {t('financial.categories.hoa') ||
-                                            'HOA / Condo'}
-                                        </SelectItem>
-                                        <SelectItem value="tax">
-                                          {t('financial.categories.tax') ||
-                                            'Taxes'}
-                                        </SelectItem>
-                                        <SelectItem value="utilities">
-                                          {t(
-                                            'financial.categories.utilities',
-                                          ) || 'Utilities'}
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.amount') || 'Amount'}
-                                    </Label>
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      value={form.amount}
-                                      onChange={(e) => {
-                                        const val = parseFloat(e.target.value)
-                                        if (val < 0) return
-                                        setForm({
-                                          ...form,
-                                          amount: e.target.value,
-                                        })
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('common.property') || 'Property'}
-                                    </Label>
-                                    <Select
-                                      value={form.propertyId}
-                                      onValueChange={(v) =>
-                                        setForm({ ...form, propertyId: v })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {!isOwner && (
-                                          <SelectItem value="none">
-                                            {t('financial.pm_general') ||
-                                              'PM (General)'}
-                                          </SelectItem>
-                                        )}
-                                        {properties
-                                          .filter(
-                                            (p) =>
-                                              !isOwner ||
-                                              p.ownerId === effectiveUserId,
-                                          )
-                                          .map((p) => (
-                                            <SelectItem key={p.id} value={p.id}>
-                                              {p.name}
-                                            </SelectItem>
-                                          ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-
-                                {form.type === 'expense' && (
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.cost_category') ||
-                                        'Cost Category'}
-                                    </Label>
-                                    <Select
-                                      value={form.costType}
-                                      onValueChange={(v) =>
-                                        setForm({ ...form, costType: v })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="fixed">
-                                          {t('financial.fixed_cost') ||
-                                            'Fixed Cost'}
-                                        </SelectItem>
-                                        <SelectItem value="variable">
-                                          {t('financial.variable_cost') ||
-                                            'Variable Cost'}
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                )}
-
-                                <div className="flex items-center space-x-2 pt-2">
-                                  <Switch
-                                    checked={form.isRecurring}
-                                    onCheckedChange={(v) =>
-                                      setForm({ ...form, isRecurring: v })
-                                    }
-                                  />
-                                  <Label>
-                                    {t('financial.is_recurring') ||
-                                      'Is this a recurring expense/income?'}
-                                  </Label>
-                                </div>
-
-                                {form.isRecurring && (
-                                  <div className="grid gap-2">
-                                    <Label>
-                                      {t('financial.recurrence_freq') ||
-                                        'Recurrence Frequency'}
-                                    </Label>
-                                    <Select
-                                      value={form.recurrenceFrequency}
-                                      onValueChange={(v) =>
-                                        setForm({
-                                          ...form,
-                                          recurrenceFrequency: v,
-                                        })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="monthly">
-                                          {t('financial.monthly') || 'Monthly'}
-                                        </SelectItem>
-                                        <SelectItem value="yearly">
-                                          {t('financial.yearly') || 'Yearly'}
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                )}
-
-                                <div className="grid gap-2">
-                                  <Label>
-                                    {t('financial.initial_status') ||
-                                      'Initial Status'}
-                                  </Label>
-                                  <Select
-                                    value={form.status}
-                                    onValueChange={(v) =>
-                                      setForm({ ...form, status: v })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="pending">
-                                        {t('common.pending') || 'Pending'}
-                                      </SelectItem>
-                                      <SelectItem value="cleared">
-                                        {t('financial.cleared') ||
-                                          'Paid/Received'}
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
-                              <DialogFooter>
-                                <Button onClick={handleEdit}>
-                                  {t('financial.save_changes') ||
-                                    'Save Changes'}
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-slate-500 hover:text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  {t('financial.delete_transaction') ||
-                                    'Delete Transaction'}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {t('financial.delete_confirm') ||
-                                    'Are you sure you want to delete this transaction? This action cannot be undone.'}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>
-                                  {t('common.cancel') || 'Cancel'}
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-red-600 hover:bg-red-700"
-                                  onClick={() => handleDelete(entry.id)}
+                        {entry.status !== 'cleared' && (
+                          <>
+                            <Dialog
+                              open={editingRecord?.id === entry.id}
+                              onOpenChange={(open) =>
+                                !open && setEditingRecord(null)
+                              }
+                            >
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-slate-500 hover:text-blue-600"
+                                  onClick={() => openEdit(entry)}
                                 >
-                                  {t('common.delete') || 'Delete'}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </>
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>
+                                    {t('financial.edit_transaction') ||
+                                      'Edit Transaction'}
+                                  </DialogTitle>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.type') || 'Type'}
+                                      </Label>
+                                      <Select
+                                        value={form.type}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, type: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="income">
+                                            {t('financial.income') || 'Income'}
+                                          </SelectItem>
+                                          <SelectItem value="expense">
+                                            {t('financial.expense') ||
+                                              'Expense'}
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.date') || 'Date'}
+                                      </Label>
+                                      <Input
+                                        type="date"
+                                        value={form.date}
+                                        onChange={(e) =>
+                                          setForm({
+                                            ...form,
+                                            date: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.description') ||
+                                          'Description'}
+                                      </Label>
+                                      <Input
+                                        value={form.description}
+                                        onChange={(e) =>
+                                          setForm({
+                                            ...form,
+                                            description: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.category') || 'Category'}
+                                      </Label>
+                                      <Select
+                                        value={form.category}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, category: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="other">
+                                            {t('financial.categories.other') ||
+                                              'Other'}
+                                          </SelectItem>
+                                          <SelectItem value="rent">
+                                            {t('financial.categories.rent') ||
+                                              'Rent'}
+                                          </SelectItem>
+                                          <SelectItem value="maintenance">
+                                            {t(
+                                              'financial.categories.maintenance',
+                                            ) || 'Maintenance'}
+                                          </SelectItem>
+                                          <SelectItem value="cleaning">
+                                            {t(
+                                              'financial.categories.cleaning',
+                                            ) || 'Cleaning'}
+                                          </SelectItem>
+                                          <SelectItem value="hoa">
+                                            {t('financial.categories.hoa') ||
+                                              'HOA / Condo'}
+                                          </SelectItem>
+                                          <SelectItem value="tax">
+                                            {t('financial.categories.tax') ||
+                                              'Taxes'}
+                                          </SelectItem>
+                                          <SelectItem value="utilities">
+                                            {t(
+                                              'financial.categories.utilities',
+                                            ) || 'Utilities'}
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.amount') || 'Amount'}
+                                      </Label>
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={form.amount}
+                                        onChange={(e) => {
+                                          const val = parseFloat(e.target.value)
+                                          if (val < 0) return
+                                          setForm({
+                                            ...form,
+                                            amount: e.target.value,
+                                          })
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('common.property') || 'Property'}
+                                      </Label>
+                                      <Select
+                                        value={form.propertyId}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, propertyId: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {!isOwner && (
+                                            <SelectItem value="none">
+                                              {t('financial.pm_general') ||
+                                                'PM (General)'}
+                                            </SelectItem>
+                                          )}
+                                          {properties
+                                            .filter(
+                                              (p) =>
+                                                !isOwner ||
+                                                p.ownerId === effectiveUserId,
+                                            )
+                                            .map((p) => (
+                                              <SelectItem
+                                                key={p.id}
+                                                value={p.id}
+                                              >
+                                                {p.name}
+                                              </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+
+                                  {form.type === 'expense' && (
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.cost_category') ||
+                                          'Cost Category'}
+                                      </Label>
+                                      <Select
+                                        value={form.costType}
+                                        onValueChange={(v) =>
+                                          setForm({ ...form, costType: v })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="fixed">
+                                            {t('financial.fixed_cost') ||
+                                              'Fixed Cost'}
+                                          </SelectItem>
+                                          <SelectItem value="variable">
+                                            {t('financial.variable_cost') ||
+                                              'Variable Cost'}
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  <div className="flex items-center space-x-2 pt-2">
+                                    <Switch
+                                      checked={form.isRecurring}
+                                      onCheckedChange={(v) =>
+                                        setForm({ ...form, isRecurring: v })
+                                      }
+                                    />
+                                    <Label>
+                                      {t('financial.is_recurring') ||
+                                        'Is this a recurring expense/income?'}
+                                    </Label>
+                                  </div>
+
+                                  {form.isRecurring && (
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.recurrence_freq') ||
+                                          'Recurrence Frequency'}
+                                      </Label>
+                                      <Select
+                                        value={form.recurrenceFrequency}
+                                        onValueChange={(v) =>
+                                          setForm({
+                                            ...form,
+                                            recurrenceFrequency: v,
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="monthly">
+                                            {t('financial.monthly') ||
+                                              'Monthly'}
+                                          </SelectItem>
+                                          <SelectItem value="yearly">
+                                            {t('financial.yearly') || 'Yearly'}
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  <div className="grid gap-2">
+                                    <Label>
+                                      {t('financial.initial_status') ||
+                                        'Initial Status'}
+                                    </Label>
+                                    <Select
+                                      value={form.status}
+                                      onValueChange={(v) =>
+                                        setForm({ ...form, status: v })
+                                      }
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="pending">
+                                          {t('common.pending') || 'Pending'}
+                                        </SelectItem>
+                                        <SelectItem value="cleared">
+                                          {t('financial.cleared') ||
+                                            'Paid/Received'}
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button onClick={handleEdit}>
+                                    {t('financial.save_changes') ||
+                                      'Save Changes'}
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-slate-500 hover:text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    {t('financial.delete_transaction') ||
+                                      'Delete Transaction'}
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {t('financial.delete_confirm') ||
+                                      'Are you sure you want to delete this transaction? This action cannot be undone.'}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>
+                                    {t('common.cancel') || 'Cancel'}
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-red-600 hover:bg-red-700"
+                                    onClick={() => handleDelete(entry.id)}
+                                  >
+                                    {t('common.delete') || 'Delete'}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
+                        )}
+                        {entry.status === 'cleared' && (
+                          <div className="text-xs text-slate-400 italic flex items-center gap-1">
+                            Locked (Audited)
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

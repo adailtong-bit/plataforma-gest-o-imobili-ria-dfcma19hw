@@ -208,11 +208,11 @@ export function InvoiceViewer({
           {invoice.notes && (
             <div className="pt-8 border-t border-slate-100 mt-8">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Notes / Terms
+                Notes / Terms / Traceability
               </p>
-              <p className="text-slate-600 text-sm whitespace-pre-wrap">
+              <div className="bg-slate-50 p-4 rounded border border-slate-100 font-mono text-xs text-slate-600 whitespace-pre-wrap">
                 {invoice.notes}
-              </p>
+              </div>
             </div>
           )}
 

@@ -87,7 +87,7 @@ export function TaskInvoiceDialog({
         description: `Invoice: ${form.description}`,
         status: 'pending',
         costType: 'variable',
-        referenceId: invoiceId,
+        referenceId: task.id,
       } as any)
 
       if (pmCommission > 0) {
@@ -101,7 +101,7 @@ export function TaskInvoiceDialog({
           description: `PM Commission for: ${task.title}`,
           status: 'pending',
           costType: 'variable',
-          referenceId: invoiceId,
+          referenceId: task.id,
         } as any)
       }
     }
@@ -115,6 +115,15 @@ export function TaskInvoiceDialog({
       propertyId: task?.propertyId,
       bookingId: task?.bookingId,
       type: 'generic',
+      items: [
+        {
+          description: form.description,
+          quantity: 1,
+          unitPrice: totalAmount,
+          total: totalAmount,
+        },
+      ],
+      notes: `Generated from Task ID: ${task?.id}\nTraceability Engine: Auditable & Locked.`,
     })
 
     toast({
