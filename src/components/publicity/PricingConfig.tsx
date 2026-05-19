@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -7,261 +7,230 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CurrencyInput } from '@/components/ui/currency-input'
-import { Save, HelpCircle } from 'lucide-react'
-import usePublicityStore from '@/stores/usePublicityStore'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { AppContext } from '@/stores/AppContext'
-import { useToast } from '@/hooks/use-toast'
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { CurrencyInput } from '@/components/ui/currency-input'
+import { Edit, Trash2 } from 'lucide-react'
+import usePublicityStore from '@/stores/usePublicityStore'
+import { useToast } from '@/hooks/use-toast'
+import useFinancialStore from '@/stores/useFinancialStore'
+import { formatCurrency } from '@/lib/utils'
 
 export function PricingConfig() {
-  const { adPricing, updateAdPricing } = usePublicityStore()
-  const appContext = useContext(AppContext)
-  const currency = appContext?.currency || 'USD'
-  const { t } = useLanguageStore()
+  const {
+    pricingMatrix,
+    addPricingMatrix,
+    updatePricingMatrix,
+    deletePricingMatrix,
+  } = usePublicityStore()
+  const { currency } = useFinancialStore()
   const { toast } = useToast()
 
-  const [formData, setFormData] = useState({
-    weekly: 0,
-    biWeekly: 0,
-    monthly: 0,
-    placementModifiers: {
-      home_top: 0,
-      home_bottom: 0,
-      partner_page: 0,
-      tenant_page: 0,
-      pm_login: 0,
-      sidebar: 0,
-      footer: 0,
-      header: 0,
-      performance: 0,
-    },
+  const [form, setForm] = useState({
+    id: '',
+    location_key: '',
+    duration_days: 0,
+    price: 0,
   })
+  const [isEditing, setIsEditing] = useState(false)
 
-  useEffect(() => {
-    if (adPricing) {
-      setFormData({
-        weekly: adPricing.weekly || 0,
-        biWeekly: adPricing.biWeekly || 0,
-        monthly: adPricing.monthly || 0,
-        placementModifiers: {
-          home_top: adPricing.placementModifiers?.home_top || 0,
-          home_bottom: adPricing.placementModifiers?.home_bottom || 0,
-          partner_page: adPricing.placementModifiers?.partner_page || 0,
-          tenant_page: adPricing.placementModifiers?.tenant_page || 0,
-          pm_login: adPricing.placementModifiers?.pm_login || 0,
-          sidebar: adPricing.placementModifiers?.sidebar || 0,
-          footer: adPricing.placementModifiers?.footer || 0,
-          header: adPricing.placementModifiers?.header || 0,
-          performance: adPricing.placementModifiers?.performance || 0,
-        },
+  const locations = [
+    { value: 'dashboard_sidebar', label: 'Dashboard Sidebar' },
+    { value: 'login_banner', label: 'Login Banner' },
+    { value: 'home_top', label: 'Home Top' },
+    { value: 'home_bottom', label: 'Home Bottom' },
+    { value: 'tenant_page', label: 'Tenant Page' },
+    { value: 'partner_page', label: 'Partner Page' },
+    { value: 'performance', label: 'Performance' },
+  ]
+
+  const handleSave = async () => {
+    if (!form.location_key || form.duration_days <= 0 || form.price <= 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fill all fields with valid data.',
+        variant: 'destructive',
       })
+      return
     }
-  }, [adPricing])
 
-  const handleSave = () => {
-    updateAdPricing(formData)
-    toast({
-      title: t('publicity.pricing_config.save_success_title'),
-      description: t('publicity.pricing_config.save_success_desc'),
-    })
+    if (isEditing) {
+      await updatePricingMatrix(form)
+      toast({ title: 'Pricing Matrix updated' })
+    } else {
+      await addPricingMatrix(form)
+      toast({ title: 'Pricing Matrix created' })
+    }
+    setForm({ id: '', location_key: '', duration_days: 0, price: 0 })
+    setIsEditing(false)
   }
 
-  const updateModifier = (key: string, value: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      placementModifiers: {
-        ...prev.placementModifiers,
-        [key]: value,
-      },
-    }))
+  const handleEdit = (p: any) => {
+    setForm({
+      id: p.id,
+      location_key: p.location_key,
+      duration_days: p.duration_days,
+      price: p.price,
+    })
+    setIsEditing(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (
+      confirm(
+        'Delete this pricing configuration? It will not affect active campaigns.',
+      )
+    ) {
+      await deletePricingMatrix(id)
+      toast({ title: 'Deleted successfully' })
+    }
+  }
+
+  const getLocationLabel = (key: string) => {
+    const loc = locations.find((l) => l.value === key)
+    return loc ? loc.label : key.replace(/_/g, ' ')
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card>
+    <div className="grid gap-6 md:grid-cols-3">
+      <Card className="md:col-span-1 h-fit">
         <CardHeader>
-          <CardTitle>{t('publicity.pricing_config.title_base')}</CardTitle>
+          <CardTitle>{isEditing ? 'Edit Tier' : 'New Pricing Tier'}</CardTitle>
           <CardDescription>
-            {t('publicity.pricing_config.desc_base')}
+            Configure price based on location and exposure time.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label className="flex items-center gap-2">
-                {t('publicity.pricing_config.label_weekly')}
-              </Label>
-              <CurrencyInput
-                value={formData.weekly}
-                onChange={(v) => setFormData({ ...formData, weekly: v })}
-                currency={currency}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t('publicity.pricing_config.label_biweekly')}</Label>
-              <CurrencyInput
-                value={formData.biWeekly}
-                onChange={(v) => setFormData({ ...formData, biWeekly: v })}
-                currency={currency}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t('publicity.pricing_config.label_monthly')}</Label>
-              <CurrencyInput
-                value={formData.monthly}
-                onChange={(v) => setFormData({ ...formData, monthly: v })}
-                currency={currency}
-              />
-            </div>
+        <CardContent className="space-y-4">
+          <div className="grid gap-2">
+            <Label>Location</Label>
+            <Select
+              value={form.location_key}
+              onValueChange={(v) => setForm({ ...form, location_key: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map((l) => (
+                  <SelectItem key={l.value} value={l.value}>
+                    {l.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label>Duration (Days)</Label>
+            <Input
+              type="number"
+              min="1"
+              value={form.duration_days || ''}
+              onChange={(e) =>
+                setForm({ ...form, duration_days: Number(e.target.value) })
+              }
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label>Price</Label>
+            <CurrencyInput
+              value={form.price}
+              onChange={(v) => setForm({ ...form, price: v })}
+              currency={currency}
+            />
+          </div>
+          <div className="flex gap-2 pt-2">
+            <Button onClick={handleSave} className="w-full bg-trust-blue">
+              {isEditing ? 'Update Tier' : 'Add Tier'}
+            </Button>
+            {isEditing && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false)
+                  setForm({
+                    id: '',
+                    location_key: '',
+                    duration_days: 0,
+                    price: 0,
+                  })
+                }}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="md:col-span-2">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            {t('publicity.pricing_config.title_modifiers')}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="w-64">
-                  {t('publicity.pricing_config.tooltip_modifiers')}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </CardTitle>
-          <CardDescription>
-            {t('publicity.pricing_config.desc_modifiers')}
-          </CardDescription>
+          <CardTitle>Pricing Matrix Configuration</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.home_top')}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.home_top}
-                  onChange={(v) => updateModifier('home_top', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.home_bottom')}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.home_bottom}
-                  onChange={(v) => updateModifier('home_bottom', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.partner_page')}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.partner_page}
-                  onChange={(v) => updateModifier('partner_page', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.tenant_page')}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.tenant_page}
-                  onChange={(v) => updateModifier('tenant_page', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.pm_login') || 'PM Login'}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.pm_login}
-                  onChange={(v) => updateModifier('pm_login', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.sidebar') || 'Sidebar'}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.sidebar}
-                  onChange={(v) => updateModifier('sidebar', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.footer') || 'Footer'}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.footer}
-                  onChange={(v) => updateModifier('footer', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.header') || 'Header'}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.header}
-                  onChange={(v) => updateModifier('header', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label className="col-span-1 text-right text-muted-foreground">
-                {t('publicity.ads_manager.placements.performance') ||
-                  'Performance'}
-              </Label>
-              <div className="col-span-2">
-                <CurrencyInput
-                  value={formData.placementModifiers.performance}
-                  onChange={(v) => updateModifier('performance', v)}
-                  currency={currency}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-6">
-            <Button onClick={handleSave} className="bg-trust-blue gap-2">
-              <Save className="h-4 w-4" />{' '}
-              {t('publicity.pricing_config.save_btn')}
-            </Button>
-          </div>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Location</TableHead>
+                <TableHead>Duration</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pricingMatrix.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center py-4 text-muted-foreground"
+                  >
+                    No rules defined.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pricingMatrix.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-medium capitalize">
+                      {getLocationLabel(p.location_key)}
+                    </TableCell>
+                    <TableCell>{p.duration_days} Days</TableCell>
+                    <TableCell>{formatCurrency(p.price, currency)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(p)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500"
+                        onClick={() => handleDelete(p.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
