@@ -11,7 +11,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -60,18 +60,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'bookings_guest_id_fkey'
-            columns: ['guest_id']
+            foreignKeyName: "bookings_guest_id_fkey"
+            columns: ["guest_id"]
             isOneToOne: false
-            referencedRelation: 'guests'
-            referencedColumns: ['id']
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bookings_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "bookings_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -93,18 +93,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'conversation_participants_conversation_id_fkey'
-            columns: ['conversation_id']
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: 'conversations'
-            referencedColumns: ['id']
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'conversation_participants_profile_id_fkey'
-            columns: ['profile_id']
+            foreignKeyName: "conversation_participants_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -282,25 +282,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'invoices_from_id_fkey'
-            columns: ['from_id']
+            foreignKeyName: "invoices_from_id_fkey"
+            columns: ["from_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'invoices_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "invoices_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'invoices_to_id_fkey'
-            columns: ['to_id']
+            foreignKeyName: "invoices_to_id_fkey"
+            columns: ["to_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -313,6 +313,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          invoice_id: string | null
           is_recurring: boolean | null
           property_id: string | null
           recurrence_frequency: string | null
@@ -327,6 +328,7 @@ export type Database = {
           date: string
           description: string
           id?: string
+          invoice_id?: string | null
           is_recurring?: boolean | null
           property_id?: string | null
           recurrence_frequency?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          invoice_id?: string | null
           is_recurring?: boolean | null
           property_id?: string | null
           recurrence_frequency?: string | null
@@ -349,11 +352,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ledger_entries_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "ledger_entries_invoice_id_fkey"
+            columns: ["invoice_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -381,18 +391,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'messages_conversation_id_fkey'
-            columns: ['conversation_id']
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: 'conversations'
-            referencedColumns: ['id']
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'messages_sender_id_fkey'
-            columns: ['sender_id']
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -423,11 +433,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles_pm_id_fkey'
-            columns: ['pm_id']
+            foreignKeyName: "profiles_pm_id_fkey"
+            columns: ["pm_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -530,46 +540,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'properties_agent_id_fkey'
-            columns: ['agent_id']
+            foreignKeyName: "properties_agent_id_fkey"
+            columns: ["agent_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "properties_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_owner_id_fkey'
-            columns: ['owner_id']
+            foreignKeyName: "properties_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_pm_id_fkey'
-            columns: ['pm_id']
+            foreignKeyName: "properties_pm_id_fkey"
+            columns: ["pm_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_room_type_id_fkey'
-            columns: ['room_type_id']
+            foreignKeyName: "properties_room_type_id_fkey"
+            columns: ["room_type_id"]
             isOneToOne: false
-            referencedRelation: 'room_types'
-            referencedColumns: ['id']
+            referencedRelation: "room_types"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'properties_tower_id_fkey'
-            columns: ['tower_id']
+            foreignKeyName: "properties_tower_id_fkey"
+            columns: ["tower_id"]
             isOneToOne: false
-            referencedRelation: 'towers'
-            referencedColumns: ['id']
+            referencedRelation: "towers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -615,11 +625,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'room_types_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "room_types_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -695,18 +705,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'tasks_assignee_id_fkey'
-            columns: ['assignee_id']
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tasks_property_id_fkey'
-            columns: ['property_id']
+            foreignKeyName: "tasks_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: 'properties'
-            referencedColumns: ['id']
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -731,11 +741,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'towers_hotel_id_fkey'
-            columns: ['hotel_id']
+            foreignKeyName: "towers_hotel_id_fkey"
+            columns: ["hotel_id"]
             isOneToOne: false
-            referencedRelation: 'hotels'
-            referencedColumns: ['id']
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -755,33 +765,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -790,23 +800,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -815,23 +825,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -840,36 +850,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -877,6 +887,7 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
 
 // ====== DATABASE EXTENDED CONTEXT (auto-generated) ======
 // This section contains actual PostgreSQL column types, constraints, RLS policies,
@@ -968,6 +979,7 @@ export const Constants = {
 //   is_recurring: boolean (nullable, default: false)
 //   recurrence_frequency: text (nullable)
 //   created_at: timestamp with time zone (not null, default: now())
+//   invoice_id: uuid (nullable)
 // Table: messages
 //   id: uuid (not null, default: gen_random_uuid())
 //   conversation_id: uuid (not null)
@@ -1068,11 +1080,13 @@ export const Constants = {
 // Table: hotels
 //   PRIMARY KEY hotels_pkey: PRIMARY KEY (id)
 // Table: invoices
+//   CHECK check_different_entities: CHECK (((from_id IS NULL) OR (to_id IS NULL) OR (from_id <> to_id)))
 //   FOREIGN KEY invoices_from_id_fkey: FOREIGN KEY (from_id) REFERENCES profiles(id) ON DELETE SET NULL
 //   PRIMARY KEY invoices_pkey: PRIMARY KEY (id)
 //   FOREIGN KEY invoices_property_id_fkey: FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
 //   FOREIGN KEY invoices_to_id_fkey: FOREIGN KEY (to_id) REFERENCES profiles(id) ON DELETE SET NULL
 // Table: ledger_entries
+//   FOREIGN KEY ledger_entries_invoice_id_fkey: FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE SET NULL
 //   PRIMARY KEY ledger_entries_pkey: PRIMARY KEY (id)
 //   FOREIGN KEY ledger_entries_property_id_fkey: FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
 // Table: messages
@@ -1134,16 +1148,23 @@ export const Constants = {
 //   Policy "invoices_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
 //     WITH CHECK: true
+//   Policy "invoices_delete" (DELETE, PERMISSIVE) roles={authenticated}
+//     USING: is_admin_or_pm()
+//   Policy "invoices_insert" (INSERT, PERMISSIVE) roles={authenticated}
+//     WITH CHECK: true
+//   Policy "invoices_select" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: (is_admin_or_pm() OR (from_id = auth.uid()) OR (to_id = auth.uid()) OR (property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))))
+//   Policy "invoices_update" (UPDATE, PERMISSIVE) roles={authenticated}
+//     USING: (is_admin_or_pm() OR (from_id = auth.uid()) OR (to_id = auth.uid()) OR (property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))))
 // Table: ledger_entries
 //   Policy "ledger_delete" (DELETE, PERMISSIVE) roles={authenticated}
-//     USING: true
+//     USING: is_admin_or_pm()
 //   Policy "ledger_insert" (INSERT, PERMISSIVE) roles={authenticated}
 //     WITH CHECK: true
 //   Policy "ledger_select" (SELECT, PERMISSIVE) roles={authenticated}
-//     USING: ((property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))) OR is_admin_or_pm())
+//     USING: (is_admin_or_pm() OR (property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))))
 //   Policy "ledger_update" (UPDATE, PERMISSIVE) roles={authenticated}
-//     USING: true
-//     WITH CHECK: true
+//     USING: (is_admin_or_pm() OR (property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))))
 // Table: messages
 //   Policy "messages_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -1205,7 +1226,7 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 // FUNCTION is_admin_or_pm()
 //   CREATE OR REPLACE FUNCTION public.is_admin_or_pm()
 //    RETURNS boolean
@@ -1214,11 +1235,32 @@ export const Constants = {
 //    SET search_path TO 'public'
 //   AS $function$
 //     SELECT EXISTS (
-//       SELECT 1 FROM public.profiles
+//       SELECT 1 FROM public.profiles 
 //       WHERE id = auth.uid() AND role IN ('master', 'software_tenant', 'internal_user', 'platform_owner')
 //     );
 //   $function$
-//
+//   
+// FUNCTION prevent_locked_invoice_update()
+//   CREATE OR REPLACE FUNCTION public.prevent_locked_invoice_update()
+//    RETURNS trigger
+//    LANGUAGE plpgsql
+//   AS $function$
+//   BEGIN
+//     IF OLD.status IN ('finalized', 'issued', 'paid') THEN
+//       -- If something other than status changed, block it to enforce immutability
+//       IF (NEW.amount IS DISTINCT FROM OLD.amount) OR 
+//          (NEW.items::text IS DISTINCT FROM OLD.items::text) OR 
+//          (NEW.from_id IS DISTINCT FROM OLD.from_id) OR 
+//          (NEW.to_id IS DISTINCT FROM OLD.to_id) OR
+//          (NEW.due_date IS DISTINCT FROM OLD.due_date)
+//       THEN
+//         RAISE EXCEPTION 'Cannot modify locked invoice data (Traceability & Immutability policy).';
+//       END IF;
+//     END IF;
+//     RETURN NEW;
+//   END;
+//   $function$
+//   
 // FUNCTION sync_room_type_price()
 //   CREATE OR REPLACE FUNCTION public.sync_room_type_price()
 //    RETURNS trigger
@@ -1234,8 +1276,11 @@ export const Constants = {
 //     RETURN NEW;
 //   END;
 //   $function$
-//
+//   
 
 // --- TRIGGERS ---
+// Table: invoices
+//   trg_prevent_locked_invoice_update: CREATE TRIGGER trg_prevent_locked_invoice_update BEFORE UPDATE ON public.invoices FOR EACH ROW EXECUTE FUNCTION prevent_locked_invoice_update()
 // Table: room_types
 //   on_room_type_price_update: CREATE TRIGGER on_room_type_price_update AFTER UPDATE ON public.room_types FOR EACH ROW EXECUTE FUNCTION sync_room_type_price()
+
