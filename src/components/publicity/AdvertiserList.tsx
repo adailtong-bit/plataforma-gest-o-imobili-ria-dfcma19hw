@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -18,7 +19,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Users } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { useToast } from '@/hooks/use-toast'
 
@@ -36,7 +37,20 @@ export function AdvertiserList() {
     taxId: '',
     email: '',
     phone: '',
-    address: '',
+    street: '',
+    number: '',
+    complement: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
+    contacts: [] as {
+      name: string
+      role: string
+      phone: string
+      email: string
+    }[],
   }
   const [formData, setFormData] = useState(initialFormState)
 
@@ -54,7 +68,15 @@ export function AdvertiserList() {
         taxId: adv.taxId || '',
         email: adv.email || '',
         phone: adv.phone || '',
-        address: adv.address || '',
+        street: adv.street || '',
+        number: adv.number || '',
+        complement: adv.complement || '',
+        neighborhood: adv.neighborhood || '',
+        city: adv.city || '',
+        state: adv.state || '',
+        zipCode: adv.zipCode || '',
+        country: adv.country || '',
+        contacts: adv.contacts || [],
       })
     } else {
       setEditingId(null)
@@ -64,20 +86,40 @@ export function AdvertiserList() {
   }
 
   const handleSave = async () => {
-    if (!formData.name || !formData.email) {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.street ||
+      !formData.city
+    ) {
       toast({
         title: 'Validation Error',
-        description: 'Please fill in required fields.',
+        description:
+          'Company Name, Email, Street and City are required fields.',
         variant: 'destructive',
       })
       return
     }
 
+    if (formData.contacts.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'At least one contact person is required.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    const payload = {
+      ...formData,
+      address: `${formData.street}, ${formData.number} - ${formData.city}/${formData.state}`,
+    }
+
     if (editingId) {
-      await updateAdvertiser({ ...formData, id: editingId })
+      await updateAdvertiser({ ...payload, id: editingId })
       toast({ title: 'Advertiser updated successfully.' })
     } else {
-      await addAdvertiser(formData)
+      await addAdvertiser(payload)
       toast({ title: 'Advertiser registered successfully.' })
     }
     setIsOpen(false)
@@ -94,10 +136,31 @@ export function AdvertiserList() {
     }
   }
 
+  const addContact = () => {
+    setFormData({
+      ...formData,
+      contacts: [
+        ...formData.contacts,
+        { name: '', role: '', phone: '', email: '' },
+      ],
+    })
+  }
+
+  const updateContact = (index: number, field: string, value: string) => {
+    const newContacts = [...formData.contacts]
+    newContacts[index] = { ...newContacts[index], [field]: value }
+    setFormData({ ...formData, contacts: newContacts })
+  }
+
+  const removeContact = (index: number) => {
+    const newContacts = formData.contacts.filter((_, i) => i !== index)
+    setFormData({ ...formData, contacts: newContacts })
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle>Advertisers</CardTitle>
+        <CardTitle>Advertisers CRM</CardTitle>
         <div className="flex gap-2">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -120,7 +183,8 @@ export function AdvertiserList() {
               <TableHead>Company Name</TableHead>
               <TableHead>Tax ID</TableHead>
               <TableHead>Billing Email</TableHead>
-              <TableHead>Address / Phone</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead>Contacts</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -128,7 +192,7 @@ export function AdvertiserList() {
             {filteredAdvertisers.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="text-center py-6 text-muted-foreground"
                 >
                   No advertisers found.
@@ -141,11 +205,18 @@ export function AdvertiserList() {
                   <TableCell>{adv.taxId || '-'}</TableCell>
                   <TableCell>{adv.email}</TableCell>
                   <TableCell>
-                    <div className="flex flex-col text-sm">
-                      <span>{adv.phone || '-'}</span>
-                      <span className="text-muted-foreground">
-                        {adv.address}
+                    <div className="flex flex-col text-sm text-muted-foreground max-w-[200px] truncate">
+                      <span>
+                        {adv.street} {adv.number}
                       </span>
+                      <span>
+                        {adv.city}, {adv.state}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-sm text-slate-600">
+                      <Users className="h-4 w-4" /> {adv.contacts?.length || 0}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -172,66 +243,219 @@ export function AdvertiserList() {
         </Table>
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent>
-            <DialogHeader>
+          <DialogContent className="max-w-4xl p-0 overflow-hidden">
+            <DialogHeader className="p-6 pb-0">
               <DialogTitle>
                 {editingId ? 'Edit Advertiser' : 'New Advertiser'}
               </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Company Name *</Label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
+            <ScrollArea className="max-h-[70vh] p-6 pt-4">
+              <div className="grid gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">
+                    Company Details
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>Company Name *</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Tax ID (CNPJ/EIN)</Label>
+                      <Input
+                        value={formData.taxId}
+                        onChange={(e) =>
+                          setFormData({ ...formData, taxId: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Billing Email *</Label>
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Billing Phone</Label>
+                      <Input
+                        value={formData.phone}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">
+                    Structured Address
+                  </h3>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="grid gap-2 col-span-2">
+                      <Label>Street *</Label>
+                      <Input
+                        value={formData.street}
+                        onChange={(e) =>
+                          setFormData({ ...formData, street: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Number</Label>
+                      <Input
+                        value={formData.number}
+                        onChange={(e) =>
+                          setFormData({ ...formData, number: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Complement</Label>
+                      <Input
+                        value={formData.complement}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            complement: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Neighborhood</Label>
+                      <Input
+                        value={formData.neighborhood}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            neighborhood: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>City *</Label>
+                      <Input
+                        value={formData.city}
+                        onChange={(e) =>
+                          setFormData({ ...formData, city: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>State / Province</Label>
+                      <Input
+                        value={formData.state}
+                        onChange={(e) =>
+                          setFormData({ ...formData, state: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Zip Code</Label>
+                      <Input
+                        value={formData.zipCode}
+                        onChange={(e) =>
+                          setFormData({ ...formData, zipCode: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2 col-span-2">
+                      <Label>Country</Label>
+                      <Input
+                        value={formData.country}
+                        onChange={(e) =>
+                          setFormData({ ...formData, country: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold">Contact Persons *</h3>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addContact}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Contact
+                    </Button>
+                  </div>
+                  <div className="space-y-4">
+                    {formData.contacts.map((contact, idx) => (
+                      <div
+                        key={idx}
+                        className="flex gap-2 items-start bg-slate-50 p-3 rounded-lg border"
+                      >
+                        <div className="grid grid-cols-4 gap-2 flex-1">
+                          <Input
+                            placeholder="Name"
+                            value={contact.name}
+                            onChange={(e) =>
+                              updateContact(idx, 'name', e.target.value)
+                            }
+                          />
+                          <Input
+                            placeholder="Role (e.g. Marketing)"
+                            value={contact.role}
+                            onChange={(e) =>
+                              updateContact(idx, 'role', e.target.value)
+                            }
+                          />
+                          <Input
+                            placeholder="Email"
+                            value={contact.email}
+                            onChange={(e) =>
+                              updateContact(idx, 'email', e.target.value)
+                            }
+                          />
+                          <Input
+                            placeholder="Phone"
+                            value={contact.phone}
+                            onChange={(e) =>
+                              updateContact(idx, 'phone', e.target.value)
+                            }
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500 mt-0.5"
+                          onClick={() => removeContact(idx)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    {formData.contacts.length === 0 && (
+                      <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+                        Please add at least one contact person.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label>Tax ID (CNPJ/EIN)</Label>
-                <Input
-                  value={formData.taxId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, taxId: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Billing Email *</Label>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Billing Phone</Label>
-                <Input
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Full Address</Label>
-                <Input
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <DialogFooter>
+            </ScrollArea>
+            <DialogFooter className="p-6 border-t bg-slate-50">
               <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleSave} className="bg-trust-blue">
-                Save
+                Save Advertiser
               </Button>
             </DialogFooter>
           </DialogContent>

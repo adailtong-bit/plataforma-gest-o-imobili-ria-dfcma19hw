@@ -49,6 +49,15 @@ const usePublicityStore = () => {
       billing_email: adv.email,
       billing_phone: adv.phone,
       billing_address: adv.address,
+      street: adv.street,
+      number: adv.number,
+      complement: adv.complement,
+      neighborhood: adv.neighborhood,
+      city: adv.city,
+      state: adv.state,
+      zip_code: adv.zipCode,
+      country: adv.country,
+      contacts: adv.contacts,
     }
     await supabase.from('advertisers').insert(dbData)
     await fetchPublicityData()
@@ -61,6 +70,15 @@ const usePublicityStore = () => {
       billing_email: adv.email,
       billing_phone: adv.phone,
       billing_address: adv.address,
+      street: adv.street,
+      number: adv.number,
+      complement: adv.complement,
+      neighborhood: adv.neighborhood,
+      city: adv.city,
+      state: adv.state,
+      zip_code: adv.zipCode,
+      country: adv.country,
+      contacts: adv.contacts,
     }
     await supabase.from('advertisers').update(dbData).eq('id', adv.id)
     await fetchPublicityData()
@@ -76,6 +94,7 @@ const usePublicityStore = () => {
       location_key: price.location_key,
       duration_days: price.duration_days,
       price: price.price,
+      valid_from: price.valid_from,
     })
     await fetchPublicityData()
   }
@@ -87,6 +106,7 @@ const usePublicityStore = () => {
         location_key: price.location_key,
         duration_days: price.duration_days,
         price: price.price,
+        valid_from: price.valid_from,
       })
       .eq('id', price.id)
     await fetchPublicityData()
@@ -151,6 +171,15 @@ const usePublicityStore = () => {
       email: a.billing_email,
       phone: a.billing_phone,
       address: a.billing_address,
+      street: a.street,
+      number: a.number,
+      complement: a.complement,
+      neighborhood: a.neighborhood,
+      city: a.city,
+      state: a.state,
+      zipCode: a.zip_code,
+      country: a.country,
+      contacts: a.contacts || [],
     })),
     addAdvertiser,
     updateAdvertiser,

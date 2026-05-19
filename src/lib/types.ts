@@ -1158,6 +1158,7 @@ export interface ContactInfo {
   name: string
   email: string
   phone: string
+  role?: string
 }
 
 export interface Advertiser {
@@ -1168,9 +1169,13 @@ export interface Advertiser {
   email: string
   phone: string
   address: string
-  zipCode?: string
+  street?: string
+  number?: string
+  complement?: string
+  neighborhood?: string
   city?: string
   state?: string
+  zipCode?: string
   country?: string
   billingContactName?: string
   billingContactEmail?: string

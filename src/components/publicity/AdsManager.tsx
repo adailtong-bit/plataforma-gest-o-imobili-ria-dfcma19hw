@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,6 +33,7 @@ import {
   Search,
   Link as LinkIcon,
   Play,
+  Calculator,
 } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -50,7 +51,7 @@ export function AdsManager() {
     updateCampaign,
     deleteCampaign,
   } = usePublicityStore()
-  const { addInvoice, currency } = useFinancialStore()
+  const { addInvoice, addLedgerEntry, currency } = useFinancialStore()
   const { toast } = useToast()
   const { language } = useLanguageStore()
 
@@ -61,8 +62,9 @@ export function AdsManager() {
   const initialFormState = {
     title: '',
     advertiser_id: '',
-    pricing_id: '',
-    start_date: '',
+    location_key: '',
+    duration_days: '',
+    start_date: new Date().toISOString().split('T')[0],
     image_url: '',
     link_url: '',
   }
@@ -72,13 +74,58 @@ export function AdsManager() {
     c.title?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  // Extract unique locations and durations from pricing matrix
+  const availableLocations = useMemo(() => {
+    return Array.from(new Set(pricingMatrix.map((p) => p.location_key)))
+  }, [pricingMatrix])
+
+  const availableDurations = useMemo(() => {
+    if (!formData.location_key) return []
+    const matching = pricingMatrix.filter(
+      (p) => p.location_key === formData.location_key,
+    )
+    return Array.from(new Set(matching.map((p) => p.duration_days))).sort(
+      (a, b) => a - b,
+    )
+  }, [pricingMatrix, formData.location_key])
+
+  // Get applicable price based on location, duration and start date
+  const applicablePricing = useMemo(() => {
+    if (
+      !formData.location_key ||
+      !formData.duration_days ||
+      !formData.start_date
+    )
+      return null
+
+    const targetDate = new Date(formData.start_date)
+    const validPrices = pricingMatrix.filter(
+      (p) =>
+        p.location_key === formData.location_key &&
+        p.duration_days === Number(formData.duration_days) &&
+        new Date(p.valid_from) <= targetDate,
+    )
+    validPrices.sort(
+      (a, b) =>
+        new Date(b.valid_from).getTime() - new Date(a.valid_from).getTime(),
+    )
+    return validPrices.length > 0 ? validPrices[0] : null
+  }, [
+    pricingMatrix,
+    formData.location_key,
+    formData.duration_days,
+    formData.start_date,
+  ])
+
   const handleOpen = (camp?: any) => {
     if (camp) {
+      const pm = pricingMatrix.find((p) => p.id === camp.pricing_id)
       setEditingId(camp.id)
       setFormData({
         title: camp.title || '',
         advertiser_id: camp.advertiser_id || '',
-        pricing_id: camp.pricing_id || '',
+        location_key: pm?.location_key || '',
+        duration_days: pm?.duration_days?.toString() || '',
         start_date: camp.start_date ? camp.start_date.split('T')[0] : '',
         image_url: camp.image_url || '',
         link_url: camp.link_url || '',
@@ -94,7 +141,8 @@ export function AdsManager() {
     if (
       !formData.title ||
       !formData.advertiser_id ||
-      !formData.pricing_id ||
+      !formData.location_key ||
+      !formData.duration_days ||
       !formData.start_date
     ) {
       toast({
@@ -105,17 +153,28 @@ export function AdsManager() {
       return
     }
 
-    const priceConfig = pricingMatrix.find((p) => p.id === formData.pricing_id)
-    if (!priceConfig) return
+    if (!applicablePricing) {
+      toast({
+        title: 'Pricing Error',
+        description: 'No valid pricing found for the selected parameters.',
+        variant: 'destructive',
+      })
+      return
+    }
 
     const startDate = new Date(formData.start_date)
     const endDate = new Date(startDate)
-    endDate.setDate(endDate.getDate() + priceConfig.duration_days)
+    endDate.setDate(endDate.getDate() + applicablePricing.duration_days)
 
     const payload = {
-      ...formData,
+      title: formData.title,
+      advertiser_id: formData.advertiser_id,
+      pricing_id: applicablePricing.id,
+      start_date: formData.start_date,
       end_date: endDate.toISOString(),
-      total_amount: priceConfig.price,
+      total_amount: applicablePricing.price,
+      image_url: formData.image_url,
+      link_url: formData.link_url,
     }
 
     if (editingId) {
@@ -138,32 +197,54 @@ export function AdsManager() {
   const handleActivate = async (camp: any) => {
     if (
       !confirm(
-        'Activate campaign? This will generate an invoice billed directly to the Platform Owner.',
+        'Activate campaign? This will generate an invoice billed directly to the Advertiser.',
       )
     )
       return
 
     const { data: owners } = await supabase
       .from('profiles')
-      .select('id')
-      .eq('role', 'platform_owner')
+      .select('id, name, email')
+      .in('role', ['platform_owner', 'master'])
       .limit(1)
-    const ownerId = owners?.[0]?.id
+    const owner = owners?.[0]
+    const adv = advertisers.find((a) => a.id === camp.advertiser_id)
 
-    if (ownerId) {
-      const adv = advertisers.find((a) => a.id === camp.advertiser_id)
+    if (owner && adv) {
+      const fullAddress =
+        `${adv.street || ''} ${adv.number || ''} ${adv.complement || ''}, ${adv.neighborhood || ''}, ${adv.city || ''} - ${adv.state || ''} ${adv.zipCode || ''} ${adv.country || ''}`.trim()
+
+      const invId = `inv-pub-${Date.now()}`
+
+      // Invoice FROM platform TO advertiser
       await addInvoice({
-        id: `inv-pub-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        id: invId,
         description: `Publicity Campaign: ${camp.title}`,
         amount: camp.total_amount,
         status: 'issued',
         date: new Date().toISOString(),
-        toId: ownerId, // Revenue specifically directly to Platform Owner
-        fromName: adv?.name,
-        fromEmail: adv?.email,
-        fromPhone: adv?.phone,
-        fromAddress: adv?.address,
-        type: 'publicity', // Crucial: System skips PM Commission based on this type
+        toId: adv.id,
+        toName: adv.name,
+        toEmail: adv.email,
+        toPhone: adv.phone,
+        toAddress: fullAddress,
+        fromId: owner.id,
+        fromName: owner.name,
+        fromEmail: owner.email,
+        type: 'publicity',
+      })
+
+      // Revenue directly to platform (100%)
+      await addLedgerEntry({
+        id: `ldg-${Date.now()}`,
+        propertyId: undefined,
+        date: new Date().toISOString(),
+        type: 'income',
+        category: 'Publicity Revenue',
+        amount: camp.total_amount,
+        description: `Revenue from Campaign: ${camp.title}`,
+        status: 'cleared',
+        costType: 'fixed',
       })
     }
 
@@ -348,7 +429,7 @@ export function AdsManager() {
                 {editingId ? 'Edit Campaign' : 'New Campaign'}
               </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-6 py-4">
               <div className="grid gap-2">
                 <Label>Title</Label>
                 <Input
@@ -360,52 +441,29 @@ export function AdsManager() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Advertiser</Label>
-                  <Select
-                    value={formData.advertiser_id}
-                    onValueChange={(v) =>
-                      setFormData({ ...formData, advertiser_id: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Advertiser" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {advertisers.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Pricing & Location Matrix</Label>
-                  <Select
-                    value={formData.pricing_id}
-                    onValueChange={(v) =>
-                      setFormData({ ...formData, pricing_id: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Pricing" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pricingMatrix.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.location_key.replace(/_/g, ' ')} -{' '}
-                          {p.duration_days} days (
-                          {formatCurrency(p.price, currency)})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="grid gap-2">
+                <Label>Advertiser</Label>
+                <Select
+                  value={formData.advertiser_id}
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, advertiser_id: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Advertiser" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {advertisers.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}{' '}
+                        {a.contacts?.[0] ? `(${a.contacts[0].name})` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg border">
                 <div className="grid gap-2">
                   <Label>Start Date</Label>
                   <Input
@@ -416,38 +474,104 @@ export function AdsManager() {
                     }
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label>Location</Label>
+                  <Select
+                    value={formData.location_key}
+                    onValueChange={(v) =>
+                      setFormData({
+                        ...formData,
+                        location_key: v,
+                        duration_days: '',
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableLocations.map((loc) => (
+                        <SelectItem key={loc} value={loc}>
+                          {loc.replace(/_/g, ' ')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Duration</Label>
+                  <Select
+                    value={formData.duration_days}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, duration_days: v })
+                    }
+                    disabled={!formData.location_key}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableDurations.map((d) => (
+                        <SelectItem key={d} value={d.toString()}>
+                          {d} days
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="grid gap-2">
-                <Label className="flex items-center gap-2">
-                  <LinkIcon className="h-4 w-4" /> Image URL
-                </Label>
-                <Input
-                  value={formData.image_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image_url: e.target.value })
-                  }
-                  placeholder="https://..."
-                />
+              <div className="flex items-center gap-3 text-sm p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-100">
+                <Calculator className="h-5 w-5 text-blue-500" />
+                <div className="flex-1">
+                  <p className="font-semibold">Calculated Amount</p>
+                  <p className="text-blue-600">
+                    Based on location, duration and effective date.
+                  </p>
+                </div>
+                <div className="text-xl font-bold">
+                  {applicablePricing
+                    ? formatCurrency(applicablePricing.price, currency)
+                    : '-'}
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label className="flex items-center gap-2">
-                  <LinkIcon className="h-4 w-4" /> Target Link URL
-                </Label>
-                <Input
-                  value={formData.link_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, link_url: e.target.value })
-                  }
-                  placeholder="https://..."
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4" /> Image URL
+                  </Label>
+                  <Input
+                    value={formData.image_url}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image_url: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4" /> Target Link URL
+                  </Label>
+                  <Input
+                    value={formData.link_url}
+                    onChange={(e) =>
+                      setFormData({ ...formData, link_url: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-trust-blue">
+              <Button
+                onClick={handleSave}
+                className="bg-trust-blue"
+                disabled={!applicablePricing}
+              >
                 Save Campaign
               </Button>
             </DialogFooter>
