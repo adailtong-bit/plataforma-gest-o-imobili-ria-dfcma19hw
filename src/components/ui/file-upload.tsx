@@ -6,7 +6,7 @@ import useLanguageStore from '@/stores/useLanguageStore'
 
 interface FileUploadProps {
   value?: string
-  onChange: (url: string) => void
+  onChange: (url: string, file?: File) => void
   label?: string
   accept?: string
   disabled?: boolean
@@ -26,7 +26,7 @@ export function FileUpload({
     const file = e.target.files?.[0]
     if (file) {
       const url = URL.createObjectURL(file)
-      onChange(url)
+      onChange(url, file)
     }
   }
 

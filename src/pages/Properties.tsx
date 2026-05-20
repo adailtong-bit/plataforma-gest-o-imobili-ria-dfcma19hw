@@ -47,6 +47,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { ImportPropertiesModal } from '@/components/properties/ImportPropertiesModal'
 import { BulkPricingModal } from '@/components/properties/BulkPricingModal'
 import { Download, DollarSign } from 'lucide-react'
+import { FileUpload } from '@/components/ui/file-upload'
+import useHotelStore from '@/stores/useHotelStore'
+import useCondominiumStore from '@/stores/useCondominiumStore'
+import useAuthStore from '@/stores/useAuthStore'
 
 export default function Properties() {
   const { t } = useDbTranslations()
@@ -59,6 +63,12 @@ export default function Properties() {
   const [isBulkOpen, setIsBulkOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<any>({})
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const { hotels } = useHotelStore()
+  const { condominiums } = useCondominiumStore()
+  const { currentUser } = useAuthStore()
 
   const fetchProperties = async () => {
     setLoading(true)
@@ -85,13 +95,15 @@ export default function Properties() {
 
   const handleOpenAdd = () => {
     setEditingId(null)
-    setForm({ status: 'available' })
+    setForm({ status: 'available', type: 'house', profile_type: 'short_term' })
+    setImageFile(null)
     setIsOpen(true)
   }
 
   const handleOpenEdit = (property: any) => {
     setEditingId(property.id)
     setForm(property)
+    setImageFile(null)
     setIsOpen(true)
   }
 
@@ -105,10 +117,35 @@ export default function Properties() {
       return
     }
 
-    const payload = {
+    setIsUploading(true)
+    let imageUrl = form.image
+    if (imageFile) {
+      const fileExt = imageFile.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`
+      const { data, error: uploadError } = await supabase.storage
+        .from('properties')
+        .upload(fileName, imageFile)
+
+      if (uploadError) {
+        toast({
+          title: 'Upload Error',
+          description: uploadError.message,
+          variant: 'destructive',
+        })
+        setIsUploading(false)
+        return
+      }
+      const { data: publicUrlData } = supabase.storage
+        .from('properties')
+        .getPublicUrl(fileName)
+      imageUrl = publicUrlData.publicUrl
+    }
+
+    const payload: any = {
       name: form.name,
       address: form.address,
       number: form.number,
+      complement: form.complement,
       neighborhood: form.neighborhood,
       city: form.city,
       state: form.state,
@@ -124,9 +161,17 @@ export default function Properties() {
       type: form.type,
       profile_type: form.profile_type,
       community: form.community,
+      condominium_id: form.condominium_id || null,
+      hotel_id: form.hotel_id || null,
       floor: form.floor,
       room_number: form.room_number,
-      image: form.image,
+      image: imageUrl,
+      access_code: form.access_code,
+      locker_code: form.locker_code,
+    }
+
+    if (!editingId && currentUser?.id) {
+      payload.pm_id = currentUser.id
     }
 
     if (editingId) {
@@ -155,6 +200,7 @@ export default function Properties() {
         toast({ title: t('common.success', 'Success') })
       }
     }
+    setIsUploading(false)
     setIsOpen(false)
     fetchProperties()
   }
@@ -322,18 +368,77 @@ export default function Properties() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="condominium_id">
+                    {t('common.condominium', 'Condominium')}
+                  </Label>
+                  <Select
+                    value={form.condominium_id || 'none'}
+                    onValueChange={(v) =>
+                      setForm({
+                        ...form,
+                        condominium_id: v === 'none' ? null : v,
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'common.select_condominium',
+                          'Select Condominium',
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        {t('common.none', 'None')}
+                      </SelectItem>
+                      {condominiums?.map((c: any) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hotel_id">{t('common.hotel', 'Hotel')}</Label>
+                  <Select
+                    value={form.hotel_id || 'none'}
+                    onValueChange={(v) =>
+                      setForm({ ...form, hotel_id: v === 'none' ? null : v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t('common.select_hotel', 'Select Hotel')}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        {t('common.none', 'None')}
+                      </SelectItem>
+                      {hotels?.map((h: any) => (
+                        <SelectItem key={h.id} value={h.id}>
+                          {h.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="image">
-                    {t('common.image_url', 'Image URL')}
-                  </Label>
-                  <Input
-                    id="image"
-                    value={form.image || ''}
-                    onChange={(e) =>
-                      setForm({ ...form, image: e.target.value })
-                    }
-                    placeholder="https://..."
+                  <FileUpload
+                    label={t('common.image', 'Property Image')}
+                    value={form.image}
+                    onChange={(url, file) => {
+                      setForm({ ...form, image: url })
+                      if (file) setImageFile(file)
+                    }}
+                    accept="image/*"
                   />
                 </div>
               </div>
@@ -364,6 +469,18 @@ export default function Properties() {
                       value={form.number || ''}
                       onChange={(e) =>
                         setForm({ ...form, number: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="complement">
+                      {t('common.complement', 'Complement')}
+                    </Label>
+                    <Input
+                      id="complement"
+                      value={form.complement || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, complement: e.target.value })
                       }
                     />
                   </div>
@@ -461,7 +578,39 @@ export default function Properties() {
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-medium text-sm border-b pb-2">
+                <h4 className="font-medium text-sm border-b pb-2 mt-4">
+                  {t('properties.access_credentials', 'Access Credentials')}
+                </h4>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="access_code">
+                      {t('properties.access_code', 'Door Access Code')}
+                    </Label>
+                    <Input
+                      id="access_code"
+                      value={form.access_code || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, access_code: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="locker_code">
+                      {t('properties.locker_code', 'Locker / Keybox Code')}
+                    </Label>
+                    <Input
+                      id="locker_code"
+                      value={form.locker_code || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, locker_code: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm border-b pb-2 mt-4">
                   {t('common.property_details', 'Property Details')}
                 </h4>
                 <div className="grid grid-cols-3 gap-4 pt-2">
@@ -548,11 +697,21 @@ export default function Properties() {
             </div>
           </ScrollArea>
           <DialogFooter className="p-6 border-t mt-auto">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isUploading}
+            >
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button onClick={handleSave} className="bg-trust-blue text-white">
-              {t('common.save', 'Save')}
+            <Button
+              onClick={handleSave}
+              className="bg-trust-blue text-white"
+              disabled={isUploading}
+            >
+              {isUploading
+                ? t('common.saving', 'Saving...')
+                : t('common.save', 'Save')}
             </Button>
           </DialogFooter>
         </DialogContent>
