@@ -5,13 +5,13 @@ export interface Advertisement {
   imageUrl?: string
   linkUrl?: string
   tier?: 'gold' | 'silver' | 'standard'
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export function useAdRotation(
   ads: Advertisement[],
-  displayCount: number = 2,
-  rotationIntervalSeconds: number = 10,
+  displayCount = 2,
+  rotationIntervalSeconds = 10,
 ) {
   const [visibleAds, setVisibleAds] = useState<Advertisement[]>([])
 

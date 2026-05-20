@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 
+export interface AdvertiserContact {
+  name?: string
+  email?: string
+  phone?: string
+  [key: string]: unknown
+}
+
 export interface Advertiser {
   id: string
   name: string
@@ -16,8 +23,48 @@ export interface Advertiser {
   state: string | null
   zip_code: string | null
   country: string | null
-  contacts: any[] | null
+  contacts: AdvertiserContact[] | null
   created_at?: string
+}
+
+export interface AdvFormData {
+  id?: string
+  name?: string
+  taxId?: string
+  email?: string
+  phone?: string
+  address?: string
+  street?: string
+  number?: string
+  complement?: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  contacts?: AdvertiserContact[]
+}
+
+export interface PriceFormData {
+  id?: string
+  location_key?: string
+  duration_days?: number
+  price?: number
+  valid_from?: string
+}
+
+export interface CampFormData {
+  id?: string
+  title?: string
+  advertiser_id?: string
+  pricing_id?: string
+  start_date?: string
+  end_date?: string
+  status?: string
+  total_amount?: number
+  image_url?: string
+  link_url?: string
+  last_notified_at?: string
 }
 
 export interface PricingMatrix {
@@ -92,7 +139,7 @@ const usePublicityStore = () => {
     }
   }, [])
 
-  const addAdvertiser = async (adv: any) => {
+  const addAdvertiser = async (adv: AdvFormData) => {
     const dbData = {
       name: adv.name,
       tax_id: adv.taxId,
@@ -114,7 +161,7 @@ const usePublicityStore = () => {
     await fetchPublicityData()
   }
 
-  const updateAdvertiser = async (adv: any) => {
+  const updateAdvertiser = async (adv: AdvFormData) => {
     const dbData = {
       name: adv.name,
       tax_id: adv.taxId,
@@ -145,7 +192,7 @@ const usePublicityStore = () => {
     await fetchPublicityData()
   }
 
-  const addPricingMatrix = async (price: any) => {
+  const addPricingMatrix = async (price: PriceFormData) => {
     const { error } = await supabase.from('publicity_pricing_matrix').insert({
       location_key: price.location_key,
       duration_days: price.duration_days,
@@ -156,7 +203,7 @@ const usePublicityStore = () => {
     await fetchPublicityData()
   }
 
-  const updatePricingMatrix = async (price: any) => {
+  const updatePricingMatrix = async (price: PriceFormData) => {
     const { error } = await supabase
       .from('publicity_pricing_matrix')
       .update({
@@ -179,7 +226,7 @@ const usePublicityStore = () => {
     await fetchPublicityData()
   }
 
-  const addCampaign = async (camp: any) => {
+  const addCampaign = async (camp: CampFormData) => {
     const { data, error } = await supabase
       .from('publicity_campaigns')
       .insert({
@@ -201,7 +248,7 @@ const usePublicityStore = () => {
     return data
   }
 
-  const updateCampaign = async (camp: any) => {
+  const updateCampaign = async (camp: CampFormData) => {
     const { data, error } = await supabase
       .from('publicity_campaigns')
       .update({

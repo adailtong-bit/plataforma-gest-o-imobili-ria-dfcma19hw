@@ -37,7 +37,7 @@ import {
   AlertCircle,
   FileText,
 } from 'lucide-react'
-import usePublicityStore from '@/stores/usePublicityStore'
+import usePublicityStore, { Campaign } from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency, formatDate } from '@/lib/utils'
@@ -88,7 +88,8 @@ export function AdsManager() {
     image_url: '',
     link_url: '',
   }
-  const [formData, setFormData] = useState<any>(initialFormState)
+  const [formData, setFormData] =
+    useState<Record<string, string>>(initialFormState)
 
   const filteredCampaigns = campaigns.filter((c) =>
     c.title?.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -124,7 +125,7 @@ export function AdsManager() {
 
     return campaigns.filter((c) => {
       if (editingId && c.id === editingId) return false
-      if (!['active', 'pending'].includes(c.status)) return false
+      if (!c.status || !['active', 'pending'].includes(c.status)) return false
 
       const cPricing = pricingMatrix.find((p) => p.id === c.pricing_id)
       if (cPricing?.location_key !== formData.location_key) return false
@@ -178,7 +179,7 @@ export function AdsManager() {
     formData.start_date,
   ])
 
-  const handleOpen = (camp?: any) => {
+  const handleOpen = (camp?: Campaign) => {
     if (camp) {
       const pm = pricingMatrix.find((p) => p.id === camp.pricing_id)
       setEditingId(camp.id)
@@ -279,14 +280,15 @@ export function AdsManager() {
         toast({ title: 'Campaign created successfully.' })
       }
       setIsOpen(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string }
       const isRlsError =
-        error.message?.includes('row-level security') || error.code === '42501'
+        err.message?.includes('row-level security') || err.code === '42501'
       toast({
         title: 'Error saving campaign',
         description: isRlsError
           ? 'Error saving: You do not have permission to perform this action. Please check your administrative role.'
-          : error.message || 'Could not save the campaign.',
+          : err.message || 'Could not save the campaign.',
         variant: 'destructive',
       })
     } finally {
@@ -294,7 +296,7 @@ export function AdsManager() {
     }
   }
 
-  const generatePDFReport = (camp: any) => {
+  const generatePDFReport = (camp: Campaign) => {
     const adv = advertisers.find((a) => a.id === camp.advertiser_id)
     const printWindow = window.open('', '_blank')
     if (!printWindow) return
@@ -337,8 +339,8 @@ export function AdsManager() {
               <div class="label">Advertiser</div>
               <div class="val">${adv?.name || 'N/A'}</div>
               <div style="margin-top: 10px; color: #666; font-size: 14px;">
-                ${adv?.billing_email || 'No email provided'}<br/>
-                ${adv?.billing_phone || 'No phone provided'}
+                ${adv?.email || 'No email provided'}<br/>
+                ${adv?.phone || 'No phone provided'}
               </div>
             </div>
           </div>
@@ -385,17 +387,18 @@ export function AdsManager() {
       try {
         await deleteCampaign(id)
         toast({ title: 'Campaign deleted.' })
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as Error
         toast({
           title: 'Error deleting',
-          description: error.message,
+          description: err.message,
           variant: 'destructive',
         })
       }
     }
   }
 
-  const handleRenew = async (camp: any) => {
+  const handleRenew = async (camp: Campaign) => {
     if (
       !window.confirm(
         'Are you sure you want to renew this campaign? This will generate a new invoice.',
@@ -403,7 +406,7 @@ export function AdsManager() {
     )
       return
 
-    const pm = pricingMatrix.find((p: any) => p.id === camp.pricing_id)
+    const pm = pricingMatrix.find((p) => p.id === camp.pricing_id)
     const duration = pm ? pm.duration_days : 30
 
     const currentEnd = camp.end_date ? new Date(camp.end_date) : new Date()
@@ -417,32 +420,34 @@ export function AdsManager() {
         last_notified_at: null,
       })
       toast({ title: 'Campaign renewed successfully.' })
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error
       toast({
         title: 'Error renewing campaign',
-        description: error.message,
+        description: err.message,
         variant: 'destructive',
       })
     }
   }
 
-  const markContacted = async (camp: any) => {
+  const markContacted = async (camp: Campaign) => {
     try {
       await updateCampaign({
         ...camp,
         last_notified_at: new Date().toISOString(),
       })
       toast({ title: 'Marked as contacted.' })
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error
       toast({
         title: 'Error',
-        description: error.message,
+        description: err.message,
         variant: 'destructive',
       })
     }
   }
 
-  const handleActivate = async (camp: any) => {
+  const handleActivate = async (camp: Campaign) => {
     if (
       !window.confirm(
         'Activate campaign? This will generate an invoice billed directly to the Advertiser and allocate 100% revenue to the platform.',
@@ -469,7 +474,7 @@ export function AdsManager() {
           date: new Date().toISOString(),
           type: 'income',
           category: 'Publicity Revenue',
-          amount: camp.total_amount,
+          amount: camp.total_amount || 0,
           description: `Revenue from Campaign: ${camp.title}`,
           status: 'cleared',
           costType: 'fixed',
@@ -478,10 +483,11 @@ export function AdsManager() {
 
       await updateCampaign({ ...camp, status: 'active' })
       toast({ title: 'Campaign activated and invoiced.' })
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error
       toast({
         title: 'Activation Error',
-        description: error.message,
+        description: err.message,
         variant: 'destructive',
       })
     }
