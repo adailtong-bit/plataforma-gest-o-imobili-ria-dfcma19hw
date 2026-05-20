@@ -10,7 +10,14 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, MoreHorizontal, Settings, Network } from 'lucide-react'
+import {
+  Pencil,
+  Trash2,
+  MoreHorizontal,
+  Settings,
+  Network,
+  Loader2,
+} from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -51,7 +58,7 @@ import { BillingAgreement } from '@/lib/types'
 import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function ServicePricing() {
-  const { t } = useDbTranslations()
+  const { t, loading: isI18nLoading } = useDbTranslations()
   const { agreements, addAgreement, updateAgreement, deleteAgreement } =
     useBillingStore()
   const { allUsers, currentUser } = useAuthStore()
@@ -313,6 +320,17 @@ export default function ServicePricing() {
     advertiser: t('role_advertiser', 'Advertiser'),
   }
 
+  if (isI18nLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <p className="text-sm text-muted-foreground animate-pulse">
+          {t('loading_translations', 'Loading translations...')}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -451,7 +469,7 @@ export default function ServicePricing() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="global">
-                          {t('target_global', 'Global')} (All{' '}
+                          {t('target_global', 'Global')} ({t('text_all', 'All')}{' '}
                           {roleLabels[form.targetRole as string] ||
                             t('target_users', 'Users')}
                           )
