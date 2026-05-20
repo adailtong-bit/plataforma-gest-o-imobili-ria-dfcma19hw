@@ -118,7 +118,13 @@ const fetchPublicityData = async () => {
   if (advRes.data) globalAdvertisers = advRes.data as Advertiser[]
   if (priceRes.data) globalPricingMatrix = priceRes.data as PricingMatrix[]
   if (campRes.data && invRes.data) {
-    const invoices = invRes.data
+    const invoices = invRes.data as Array<{
+      booking_id?: string
+      description?: string
+      created_at?: string
+      date?: string
+      status?: string
+    }>
     globalCampaigns = (campRes.data as Campaign[]).map((c) => {
       const campaignInvoices = invoices.filter(
         (i) =>

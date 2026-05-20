@@ -37,7 +37,8 @@ import {
   AlertCircle,
   FileText,
 } from 'lucide-react'
-import usePublicityStore, { type Campaign } from '@/stores/usePublicityStore'
+import usePublicityStore from '@/stores/usePublicityStore'
+import type { Campaign } from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency, formatDate } from '@/lib/utils'
@@ -294,7 +295,7 @@ export function AdsManager() {
       }
       setIsOpen(false)
     } catch (error: unknown) {
-      const err = error as { message?: string; code?: string }
+      const err = error as Error & { code?: string }
       const isRlsError =
         err.message?.includes('row-level security') || err.code === '42501'
       toast({
@@ -401,10 +402,9 @@ export function AdsManager() {
         await deleteCampaign(id)
         toast({ title: 'Campaign deleted.' })
       } catch (error: unknown) {
-        const err = error as Error
         toast({
           title: 'Error deleting',
-          description: err.message,
+          description: error instanceof Error ? error.message : 'Unknown error',
           variant: 'destructive',
         })
       }
@@ -434,10 +434,9 @@ export function AdsManager() {
       })
       toast({ title: 'Campaign renewed successfully.' })
     } catch (error: unknown) {
-      const err = error as Error
       toast({
         title: 'Error renewing campaign',
-        description: err.message,
+        description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       })
     }
@@ -451,10 +450,9 @@ export function AdsManager() {
       })
       toast({ title: 'Marked as contacted.' })
     } catch (error: unknown) {
-      const err = error as Error
       toast({
         title: 'Error',
-        description: err.message,
+        description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       })
     }
@@ -490,10 +488,9 @@ export function AdsManager() {
       await updateCampaign({ ...camp, status: 'active' })
       toast({ title: 'Campaign activated and invoiced.' })
     } catch (error: unknown) {
-      const err = error as Error
       toast({
         title: 'Activation Error',
-        description: err.message,
+        description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
       })
     }
@@ -512,8 +509,9 @@ export function AdsManager() {
           <CardContent className="pt-4">
             <div className="grid gap-3">
               {expiringCampaigns.map((camp) => {
+                if (!camp.end_date) return null
                 const adv = advertisers.find((a) => a.id === camp.advertiser_id)
-                const end = new Date(camp.end_date!)
+                const end = new Date(camp.end_date)
                 const now = new Date()
                 end.setHours(0, 0, 0, 0)
                 now.setHours(0, 0, 0, 0)
