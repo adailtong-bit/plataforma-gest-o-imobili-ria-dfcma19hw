@@ -82,7 +82,12 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
             <span
               className={`text-xl font-bold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
             >
-              <DataMask>{formatCurrency(balance, language)}</DataMask>
+              <DataMask>
+                {formatCurrency(
+                  balance,
+                  language === 'pt' ? 'BRL' : language === 'es' ? 'EUR' : 'USD',
+                )}
+              </DataMask>
             </span>
           </div>
           <Button
@@ -161,14 +166,28 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
                   >
                     <DataMask>
                       {entry.type === 'income' ? '+' : '-'}
-                      {formatCurrency(entry.amount, language)}
+                      {formatCurrency(
+                        entry.amount,
+                        language === 'pt'
+                          ? 'BRL'
+                          : language === 'es'
+                            ? 'EUR'
+                            : 'USD',
+                      )}
                     </DataMask>
                   </TableCell>
                   <TableCell
                     className={`text-right font-bold ${entry.runningBalance >= 0 ? 'text-blue-700' : 'text-red-700'}`}
                   >
                     <DataMask>
-                      {formatCurrency(entry.runningBalance, language)}
+                      {formatCurrency(
+                        entry.runningBalance,
+                        language === 'pt'
+                          ? 'BRL'
+                          : language === 'es'
+                            ? 'EUR'
+                            : 'USD',
+                      )}
                     </DataMask>
                   </TableCell>
                   <TableCell className="text-right">

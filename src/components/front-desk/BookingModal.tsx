@@ -235,9 +235,9 @@ export function BookingModal({
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Diária Base:</span>
               <span className="font-medium">
-                {new Intl.NumberFormat('en-US', {
+                {new Intl.NumberFormat(navigator.language || 'en-US', {
                   style: 'currency',
-                  currency: 'USD',
+                  currency: property.country === 'BR' ? 'BRL' : 'USD',
                 }).format(property.listing_price || 0)}
               </span>
             </div>
@@ -248,9 +248,9 @@ export function BookingModal({
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Subtotal:</span>
               <span className="font-medium">
-                {new Intl.NumberFormat('en-US', {
+                {new Intl.NumberFormat(navigator.language || 'en-US', {
                   style: 'currency',
-                  currency: 'USD',
+                  currency: property.country === 'BR' ? 'BRL' : 'USD',
                 }).format(baseAmount)}
               </span>
             </div>
@@ -259,9 +259,9 @@ export function BookingModal({
                 <span>Desconto Solicitado:</span>
                 <span className="font-medium">
                   -{' '}
-                  {new Intl.NumberFormat('en-US', {
+                  {new Intl.NumberFormat(navigator.language || 'en-US', {
                     style: 'currency',
-                    currency: 'USD',
+                    currency: property.country === 'BR' ? 'BRL' : 'USD',
                   }).format(formData.discountAmount)}
                 </span>
               </div>
@@ -269,9 +269,9 @@ export function BookingModal({
             <div className="flex justify-between text-base font-bold pt-2 border-t">
               <span>Total a Cobrar:</span>
               <span>
-                {new Intl.NumberFormat('en-US', {
+                {new Intl.NumberFormat(navigator.language || 'en-US', {
                   style: 'currency',
-                  currency: 'USD',
+                  currency: property.country === 'BR' ? 'BRL' : 'USD',
                 }).format(totalAmount)}
               </span>
             </div>

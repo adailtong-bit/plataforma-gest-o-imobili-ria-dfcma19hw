@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/select'
 import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Skeleton } from '@/components/ui/skeleton'
+import { applyPhoneMask } from '@/lib/utils'
 
 export default function Settings() {
   const { currentUser, isAuthLoading } = useAuthStore()
@@ -184,8 +185,12 @@ export default function Settings() {
                   <Input
                     value={profileData.phone}
                     onChange={(e) =>
-                      setProfileData({ ...profileData, phone: e.target.value })
+                      setProfileData({
+                        ...profileData,
+                        phone: applyPhoneMask(e.target.value, 'US'),
+                      })
                     }
+                    placeholder="(555) 555-5555"
                   />
                 </div>
                 <div className="grid gap-2 md:col-span-2 mt-4 pt-4 border-t">

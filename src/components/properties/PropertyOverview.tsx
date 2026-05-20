@@ -50,7 +50,7 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
             <Label>{t('common.status') || 'Status'}</Label>
             <Input
               className="capitalize"
-              value={t(`status.${data.status}`) || data.status}
+              value={t(`status.${data.status}`, data.status || '')}
               disabled
             />
           </div>

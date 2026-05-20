@@ -366,7 +366,10 @@ export default function Properties() {
         }
 
         toast({
-          title: t('properties.property_updated') || 'Propriedade alterada',
+          title: t(
+            'properties.property_updated',
+            'Property updated successfully',
+          ),
         })
       }
     } else {
@@ -415,8 +418,8 @@ export default function Properties() {
       }
 
       toast({
-        title: t('properties.property_added'),
-        description: `${newProp.name} ${t('common.done').toLowerCase()}.`,
+        title: t('properties.property_added', 'Property added successfully'),
+        description: `${newProp.name} ${t('common.done', 'done').toLowerCase()}.`,
       })
     }
 
@@ -453,14 +456,22 @@ export default function Properties() {
     try {
       const { error } = await deleteProperty(id)
       if (error) throw error
-      toast({ title: t('properties.delete_success') })
+      toast({
+        title: t('properties.delete_success', 'Property deleted successfully'),
+      })
     } catch (e: any) {
       toast({
-        title: t('common.error'),
+        title: t('common.error', 'Error'),
         description:
           e.message === 'error_active_tenant'
-            ? t('common.delete_active_tenant_error')
-            : t('properties.error_delete'),
+            ? t(
+                'common.delete_active_tenant_error',
+                'Cannot delete property with an active tenant.',
+              )
+            : t(
+                'properties.error_delete',
+                'An error occurred while deleting the property.',
+              ),
         variant: 'destructive',
       })
     }
@@ -505,9 +516,11 @@ export default function Properties() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
-            {t('menu.properties', t('properties.title', 'Properties'))}
+            {t('properties.title', 'Properties')}
           </h1>
-          <p className="text-black font-medium">{t('properties.subtitle')}</p>
+          <p className="text-black font-medium">
+            {t('properties.subtitle', 'Manage your property portfolio')}
+          </p>
         </div>
 
         {canCreate && (
@@ -537,19 +550,23 @@ export default function Properties() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue hover:bg-blue-700 gap-2">
-                <Plus className="h-4 w-4" /> {t('properties.new_property')}
+                <Plus className="h-4 w-4" />{' '}
+                {t('properties.new_property', 'New Property')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
               <DialogHeader>
                 <DialogTitle>
                   {editingId
-                    ? 'Alterar Propriedade'
-                    : t('properties.add_title')}
+                    ? t('properties.edit_title', 'Edit Property')
+                    : t('properties.add_title', 'Add Property')}
                 </DialogTitle>
                 <DialogDescription>
                   <VisuallyHidden>
-                    {t('properties.add_description')}
+                    {t(
+                      'properties.add_description',
+                      'Fill in the property details below.',
+                    )}
                   </VisuallyHidden>
                 </DialogDescription>
               </DialogHeader>
@@ -1014,22 +1031,29 @@ export default function Properties() {
 
       <div className="flex flex-col md:flex-row gap-4 items-center flex-wrap bg-white p-4 rounded-lg border shadow-sm">
         <Input
-          placeholder={t('properties.search_placeholder')}
+          placeholder={t(
+            'properties.search_placeholder',
+            'Search properties...',
+          )}
           className="md:w-[250px] text-black bg-white"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full md:w-[150px] border-slate-300 text-black">
-            <SelectValue placeholder={t('common.status')} />
+            <SelectValue placeholder={t('common.status', 'Status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('common.all')}</SelectItem>
-            <SelectItem value="rented">{t('status.rented')}</SelectItem>
-            <SelectItem value="available">{t('status.available')}</SelectItem>
-            <SelectItem value="sold">{t('status.sold')}</SelectItem>
+            <SelectItem value="all">{t('common.all', 'All')}</SelectItem>
+            <SelectItem value="rented">
+              {t('status.rented', 'Rented')}
+            </SelectItem>
+            <SelectItem value="available">
+              {t('status.available', 'Available')}
+            </SelectItem>
+            <SelectItem value="sold">{t('status.sold', 'Sold')}</SelectItem>
             <SelectItem value="sale_pending">
-              {t('status.sale_pending')}
+              {t('status.sale_pending', 'Sale Pending')}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -1038,15 +1062,19 @@ export default function Properties() {
           onValueChange={(v: any) => setProfileFilter(v)}
         >
           <SelectTrigger className="w-full md:w-[160px] border-slate-300 text-black">
-            <SelectValue placeholder={t('properties.profile_filter')} />
+            <SelectValue
+              placeholder={t('properties.profile_filter', 'Profile Type')}
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('properties.all_profiles')}</SelectItem>
+            <SelectItem value="all">
+              {t('properties.all_profiles', 'All Profiles')}
+            </SelectItem>
             <SelectItem value="short_term">
-              {t('properties.profile_short')}
+              {t('properties.profile_short', 'Short Term')}
             </SelectItem>
             <SelectItem value="long_term">
-              {t('properties.profile_long')}
+              {t('properties.profile_long', 'Long Term')}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -1230,7 +1258,10 @@ export default function Properties() {
                           property.status || 'available',
                         )}
                       >
-                        {t(`status.${property.status || 'available'}`)}
+                        {t(
+                          `status.${property.status || 'available'}`,
+                          property.status || 'available',
+                        )}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -1304,7 +1335,7 @@ export default function Properties() {
                     colSpan={7}
                     className="px-4 py-10 text-center text-muted-foreground border-dashed bg-slate-50"
                   >
-                    {t('common.empty')}
+                    {t('common.empty', 'No records found.')}
                   </td>
                 </tr>
               )}
@@ -1334,13 +1365,16 @@ export default function Properties() {
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-black font-medium">
-                    {t('properties.no_image')}
+                    {t('properties.no_image', 'No Image')}
                   </div>
                 )}
                 <Badge
                   className={`absolute top-2 right-2 ${getStatusColor(property.status || 'available')}`}
                 >
-                  {t(`status.${property.status || 'available'}`)}
+                  {t(
+                    `status.${property.status || 'available'}`,
+                    property.status || 'available',
+                  )}
                 </Badge>
                 <Badge className="absolute bottom-2 left-2 bg-black text-white border-none font-bold">
                   {property.profileType === 'short_term' ? 'STR' : 'LTR'}
@@ -1460,7 +1494,7 @@ export default function Properties() {
           ))}
           {filteredProperties.length === 0 && (
             <div className="col-span-full py-10 text-center text-muted-foreground border rounded-lg bg-slate-50 border-dashed">
-              {t('common.empty')}
+              {t('common.empty', 'No records found.')}
             </div>
           )}
         </div>

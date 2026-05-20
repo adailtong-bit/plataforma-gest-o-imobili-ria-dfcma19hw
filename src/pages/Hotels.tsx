@@ -46,6 +46,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Hotel } from '@/lib/types'
+import { applyPhoneMask } from '@/lib/utils'
 
 export default function Hotels() {
   const {
@@ -62,7 +63,10 @@ export default function Hotels() {
   const { toast } = useToast()
   const navigate = useNavigate()
 
-  const safeT = typeof t === 'function' ? t : (key: string) => key
+  const safeT =
+    typeof t === 'function'
+      ? t
+      : (key: string, fallback?: string) => fallback || key
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<Hotel | null>(null)
@@ -231,7 +235,8 @@ export default function Hotels() {
         >
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> {safeT('hotels.add_title')}
+              <Plus className="h-4 w-4" />{' '}
+              {safeT('hotels.add_title', 'Add Hotel')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -288,7 +293,13 @@ export default function Hotels() {
                       placeholder="+1 (555) 000-0000"
                       value={form.managerPhone || ''}
                       onChange={(e) =>
-                        setForm({ ...form, managerPhone: e.target.value })
+                        setForm({
+                          ...form,
+                          managerPhone: applyPhoneMask(
+                            e.target.value,
+                            (form.country as 'US' | 'BR' | 'ES') || 'US',
+                          ),
+                        })
                       }
                     />
                   </div>
@@ -481,7 +492,14 @@ export default function Hotels() {
                     <DataMask>{h.managerName || 'N/A'}</DataMask>
                   </TableCell>
                   <TableCell>
-                    <DataMask>{h.managerPhone || 'N/A'}</DataMask>
+                    <DataMask>
+                      {h.managerPhone
+                        ? applyPhoneMask(
+                            h.managerPhone,
+                            (h.country as 'US' | 'BR' | 'ES') || 'US',
+                          )
+                        : 'N/A'}
+                    </DataMask>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
