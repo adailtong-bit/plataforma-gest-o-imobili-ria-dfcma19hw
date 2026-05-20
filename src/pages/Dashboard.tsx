@@ -80,12 +80,6 @@ export default function Dashboard() {
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
 
-  // Contextual rendering based on portal role
-  if (effectiveRole === 'property_owner') return <OwnerPortal />
-  if (effectiveRole === 'tenant') return <TenantPortal />
-  if (effectiveRole === 'partner' || effectiveRole === 'partner_employee')
-    return <PartnerPortal />
-
   // ----- MAIN DASHBOARD FOR ADMIN, PM AND INTERNAL ROLES -----
 
   const {
@@ -290,6 +284,12 @@ export default function Dashboard() {
     bookings,
     invoices,
   ])
+
+  // Contextual rendering based on portal role
+  if (effectiveRole === 'property_owner') return <OwnerPortal />
+  if (effectiveRole === 'tenant') return <TenantPortal />
+  if (effectiveRole === 'partner' || effectiveRole === 'partner_employee')
+    return <PartnerPortal />
 
   // Charts Data
   const propertyStatusData = [
