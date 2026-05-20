@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { FileText, Download, Trash2, Upload, File } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { supabase } from '@/lib/supabase/client'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,7 +57,7 @@ export function PropertyDocuments({
   const docInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFile, setSelectedFile] = useState<globalThis.File | null>(null)
   const [selectedCategory, setSelectedCategory] =
     useState<DocumentCategory>('Other')
 
@@ -68,15 +69,28 @@ export function PropertyDocuments({
     }
   }
 
-  const handleConfirmUpload = () => {
+  const handleConfirmUpload = async () => {
     if (!selectedFile) return
-
     setIsUploading(true)
-    setTimeout(() => {
+
+    try {
+      const fileExt = selectedFile.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('property_documents')
+        .upload(fileName, selectedFile)
+
+      if (uploadError) throw uploadError
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('property_documents').getPublicUrl(fileName)
+
       const newDoc = {
         id: `doc-${Date.now()}`,
         name: selectedFile.name,
-        url: URL.createObjectURL(selectedFile),
+        url: publicUrl,
         date: new Date().toISOString(),
         type: selectedFile.type,
         size: `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`,
@@ -85,18 +99,34 @@ export function PropertyDocuments({
       }
       const currentDocs = property.documents || []
       onChange('documents', [...currentDocs, newDoc])
+      toast({
+        title: 'Sucesso',
+        description: 'Documento enviado e categorizado.',
+      })
+    } catch (err: any) {
+      toast({
+        title: 'Erro',
+        description: err.message,
+        variant: 'destructive',
+      })
+    } finally {
       setIsUploading(false)
       setUploadDialogOpen(false)
       setSelectedFile(null)
       if (docInputRef.current) docInputRef.current.value = ''
-      toast({
-        title: 'Sucesso',
-        description: 'Documento categorizado e anexado.',
-      })
-    }, 1000)
+    }
   }
 
-  const handleRemoveDoc = (docId: string) => {
+  const handleRemoveDoc = async (docId: string, url: string) => {
+    try {
+      const fileName = url.split('/').pop()
+      if (fileName) {
+        await supabase.storage.from('property_documents').remove([fileName])
+      }
+    } catch (e) {
+      console.error('Failed to delete file from storage', e)
+    }
+
     const currentDocs = property.documents || []
     const newDocs = currentDocs.filter((d) => d.id !== docId)
     onChange('documents', newDocs)
@@ -126,7 +156,7 @@ export function PropertyDocuments({
             />
             <Button
               onClick={() => docInputRef.current?.click()}
-              className="bg-trust-blue"
+              className="bg-trust-blue text-white"
             >
               <Upload className="mr-2 h-4 w-4" />
               {t('common.add_title')}
@@ -180,11 +210,16 @@ export function PropertyDocuments({
               <Button
                 variant="outline"
                 onClick={() => setUploadDialogOpen(false)}
+                disabled={isUploading}
               >
                 Cancelar
               </Button>
-              <Button onClick={handleConfirmUpload} disabled={isUploading}>
-                {isUploading ? 'Salvando...' : 'Confirmar Upload'}
+              <Button
+                onClick={handleConfirmUpload}
+                disabled={isUploading}
+                className="bg-trust-blue text-white"
+              >
+                {isUploading ? 'Enviando...' : 'Confirmar Upload'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -255,7 +290,7 @@ export function PropertyDocuments({
                             {t('common.cancel')}
                           </AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleRemoveDoc(doc.id)}
+                            onClick={() => handleRemoveDoc(doc.id, doc.url)}
                           >
                             {t('common.delete')}
                           </AlertDialogAction>

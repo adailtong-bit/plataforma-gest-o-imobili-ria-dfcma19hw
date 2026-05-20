@@ -56,9 +56,15 @@ import useAuthStore from '@/stores/useAuthStore'
 export default function HotelDetails() {
   const { id, tab } = useParams()
   const navigate = useNavigate()
-  const currentTab = tab || 'overview'
+  const [activeTab, setActiveTab] = useState(tab || 'overview')
   const { hotels, towers, updateHotel, deleteHotel, addTower, deleteTower } =
     useHotelStore()
+
+  useEffect(() => {
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab)
+    }
+  }, [tab])
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
@@ -162,7 +168,9 @@ export default function HotelDetails() {
       tax_id: formData.tax_id,
       billing_address: formData.billing_address,
       billing_email: formData.billing_email,
+      billing_phone: formData.billing_phone,
       payment_data: formData.payment_data,
+      gallery: formData.gallery,
     }
 
     const { error } = await supabase
@@ -295,8 +303,11 @@ export default function HotelDetails() {
       </div>
 
       <Tabs
-        value={currentTab}
-        onValueChange={(v) => navigate(`/hotels/${id}/${v}`)}
+        value={activeTab}
+        onValueChange={(v) => {
+          setActiveTab(v)
+          navigate(`/hotels/${id}/${v}`, { replace: true })
+        }}
         className="w-full"
       >
         <TabsList className="mb-6 flex flex-wrap h-auto bg-slate-100 p-1 rounded-md gap-1 w-full lg:w-fit">
@@ -521,7 +532,7 @@ export default function HotelDetails() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>{t('common.tax_id') || 'Tax ID / EIN'}</Label>
                     <Input
@@ -548,7 +559,22 @@ export default function HotelDetails() {
                       disabled={!isEditing}
                     />
                   </div>
-                  <div className="space-y-2 col-span-2">
+                  <div className="space-y-2">
+                    <Label>
+                      {t('common.billing_phone') || 'Billing Phone'}
+                    </Label>
+                    <Input
+                      value={formData.billing_phone || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          billing_phone: e.target.value,
+                        })
+                      }
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2 md:col-span-3">
                     <Label>
                       {t('common.billing_address') || 'Billing Address'}
                     </Label>
@@ -562,8 +588,8 @@ export default function HotelDetails() {
                       }
                       disabled={!isEditing}
                     />
-                  </div>
-                  <div className="space-y-2 col-span-2">
+                  </div>{' '}
+                  <div className="space-y-2 col-span-2 md:col-span-3">
                     <Label>
                       {t('common.payment_data') || 'Payment Method / Data'}
                     </Label>
@@ -595,6 +621,98 @@ export default function HotelDetails() {
               </CardContent>
             </Card>
           )}
+
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <div>
+                <CardTitle>Photo Gallery</CardTitle>
+                <CardDescription>
+                  Upload photos for this hotel to be displayed to guests.
+                </CardDescription>
+              </div>
+              {isEditing && (
+                <div>
+                  <input
+                    type="file"
+                    id="hotel-gallery-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      const fileExt = file.name.split('.').pop()
+                      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+                      const { error } = await supabase.storage
+                        .from('hotel_photos')
+                        .upload(fileName, file)
+                      if (error) {
+                        toast({
+                          title: 'Error',
+                          description: error.message,
+                          variant: 'destructive',
+                        })
+                        return
+                      }
+                      const {
+                        data: { publicUrl },
+                      } = supabase.storage
+                        .from('hotel_photos')
+                        .getPublicUrl(fileName)
+                      setFormData({
+                        ...formData,
+                        gallery: [...(formData.gallery || []), publicUrl],
+                      })
+                    }}
+                  />
+                  <Button
+                    onClick={() =>
+                      document.getElementById('hotel-gallery-upload')?.click()
+                    }
+                    variant="outline"
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Upload Photo
+                  </Button>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {!formData.gallery || formData.gallery.length === 0 ? (
+                  <div className="col-span-full py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    No photos in gallery.
+                  </div>
+                ) : (
+                  formData.gallery.map((url: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="relative group aspect-square rounded-md overflow-hidden border"
+                    >
+                      <img
+                        src={url}
+                        alt={`Gallery ${idx}`}
+                        className="w-full h-full object-cover"
+                        crossOrigin="anonymous"
+                      />
+                      {isEditing && (
+                        <Button
+                          size="icon"
+                          variant="destructive"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            const newGallery = [...formData.gallery]
+                            newGallery.splice(idx, 1)
+                            setFormData({ ...formData, gallery: newGallery })
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="financial" className="space-y-4">

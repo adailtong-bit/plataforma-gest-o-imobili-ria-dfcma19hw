@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { supabase } from '@/lib/supabase/client'
 
 import { PropertyOverview } from '@/components/properties/PropertyOverview'
 import { PropertyLocation } from '@/components/properties/PropertyLocation'
@@ -36,8 +37,14 @@ import { PropertyHistory } from '@/components/properties/PropertyHistory'
 export default function PropertyDetails() {
   const { id, tab } = useParams()
   const navigate = useNavigate()
-  const currentTab = tab || 'overview'
+  const [activeTab, setActiveTab] = useState(tab || 'overview')
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
+
+  useEffect(() => {
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab)
+    }
+  }, [tab])
   const { condominiums } = useCondominiumStore()
   const { currentUser, hasPermissionSync } = useAuthStore()
   const { owners, partners } = useContext(AppContext)!
@@ -130,8 +137,21 @@ export default function PropertyDetails() {
     setFormData({ ...formData, [field]: value })
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     updateProperty(formData)
+
+    // Save owner details if changed
+    if (ownerDetails && property?.owner_id) {
+      await supabase
+        .from('profiles')
+        .update({
+          name: ownerDetails.name,
+          email: ownerDetails.email,
+          phone: ownerDetails.phone,
+        })
+        .eq('id', property.owner_id)
+    }
+
     setProperty(formData)
     setIsEditing(false)
     toast({
@@ -244,8 +264,11 @@ export default function PropertyDetails() {
       </div>
 
       <Tabs
-        value={currentTab}
-        onValueChange={(v) => navigate(`/properties/${id}/${v}`)}
+        value={activeTab}
+        onValueChange={(v) => {
+          setActiveTab(v)
+          navigate(`/properties/${id}/${v}`, { replace: true })
+        }}
         className="w-full"
       >
         <TabsList className="flex flex-wrap h-auto bg-slate-100 p-1 rounded-md gap-1 w-full lg:w-fit mb-6">
@@ -298,6 +321,7 @@ export default function PropertyDetails() {
               onChange={handleChange}
               canEdit={isEditing}
               ownerDetails={ownerDetails}
+              onOwnerChange={setOwnerDetails}
             />
           </TabsContent>
           <TabsContent value="management">

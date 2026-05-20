@@ -155,35 +155,61 @@ export default function PointOfSale() {
       0,
     )
 
-    addPosTransaction({
-      id: `trx-${Date.now()}`,
-      bookingId: selectedBookingId,
-      items: cart.map((c) => ({
-        itemId: c.item.id,
-        name: c.item.name,
-        quantity: c.quantity,
-        price: getCurrentPrice(c.item.price, c.item.prices),
-      })),
-      totalAmount: total,
-      timestamp: new Date().toISOString(),
-      status: 'charged',
-    })
+    const handleCheckoutAsync = async () => {
+      addPosTransaction({
+        id: `trx-${Date.now()}`,
+        bookingId: selectedBookingId,
+        items: cart.map((c) => ({
+          itemId: c.item.id,
+          name: c.item.name,
+          quantity: c.quantity,
+          price: getCurrentPrice(c.item.price, c.item.prices),
+        })),
+        totalAmount: total,
+        timestamp: new Date().toISOString(),
+        status: 'charged',
+      })
 
-    // Add to invoice as line item
-    addInvoice({
-      id: `inv-pos-${Date.now()}`,
-      description: `Consumo PDV: ${cart.map((c) => `${c.quantity}x ${c.item.name}`).join(', ')}`,
-      amount: total,
-      status: 'pending',
-      date: new Date().toISOString(),
-      type: 'generic',
-      bookingId: selectedBookingId,
-    })
+      const description = `Consumo PDV: ${cart.map((c) => `${c.quantity}x ${c.item.name}`).join(', ')}`;
 
-    toast({
-      title: 'Venda finalizada',
-      description: 'O valor foi lançado na fatura da reserva.',
-    })
+      // Add to invoice as line item
+      addInvoice({
+        id: `inv-pos-${Date.now()}`,
+        description,
+        amount: total,
+        status: 'pending',
+        date: new Date().toISOString(),
+        type: 'generic',
+        bookingId: selectedBookingId,
+      })
+
+      // Add to ledger
+      const { error } = await supabase.from('ledger_entries').insert({
+        description,
+        amount: total,
+        type: 'income',
+        category: 'consumption',
+        cost_type: 'consumption',
+        date: new Date().toISOString(),
+        status: 'pending',
+        booking_id: selectedBookingId,
+      });
+
+      if (error) {
+        console.error('Failed to create ledger entry:', error);
+      }
+
+      toast({
+        title: 'Venda finalizada',
+        description: 'O valor foi lançado na fatura da reserva e no livro razão (ledger).',
+      })
+      setIsSellOpen(false)
+      setCart([])
+      setSelectedBookingId('')
+    }
+    
+    handleCheckoutAsync();
+  }
     setIsSellOpen(false)
     setCart([])
     setSelectedBookingId('')

@@ -9,6 +9,7 @@ interface Props {
   onChange: (f: keyof Property, v: any) => void
   canEdit: boolean
   ownerDetails?: any
+  onOwnerChange?: (owner: any) => void
 }
 
 export function PropertyOverview({
@@ -16,6 +17,7 @@ export function PropertyOverview({
   onChange,
   canEdit,
   ownerDetails,
+  onOwnerChange,
 }: Props) {
   const { t } = useLanguageStore()
   return (
@@ -166,15 +168,33 @@ export function PropertyOverview({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>{t('common.name', 'Owner Name')}</Label>
-                <Input value={ownerDetails.name || ''} disabled />
+                <Input
+                  value={ownerDetails.name || ''}
+                  onChange={(e) =>
+                    onOwnerChange?.({ ...ownerDetails, name: e.target.value })
+                  }
+                  disabled={!canEdit}
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('common.email', 'Email')}</Label>
-                <Input value={ownerDetails.email || ''} disabled />
+                <Input
+                  value={ownerDetails.email || ''}
+                  onChange={(e) =>
+                    onOwnerChange?.({ ...ownerDetails, email: e.target.value })
+                  }
+                  disabled={!canEdit}
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('common.phone', 'Phone')}</Label>
-                <Input value={ownerDetails.phone || ''} disabled />
+                <Input
+                  value={ownerDetails.phone || ''}
+                  onChange={(e) =>
+                    onOwnerChange?.({ ...ownerDetails, phone: e.target.value })
+                  }
+                  disabled={!canEdit}
+                />
               </div>
             </div>
           </div>

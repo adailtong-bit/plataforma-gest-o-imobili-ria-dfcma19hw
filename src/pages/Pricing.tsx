@@ -16,14 +16,18 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { RoomTypesManager } from '@/components/hotels/RoomTypesManager'
+import { BulkPricingModal } from '@/components/hotels/BulkPricingModal'
+import { Button } from '@/components/ui/button'
 import useLanguageStore from '@/stores/useLanguageStore'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Settings } from 'lucide-react'
 
 export default function Pricing() {
   const { t } = useLanguageStore()
   const [hotels, setHotels] = useState<any[]>([])
   const [selectedHotel, setSelectedHotel] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [isBulkOpen, setIsBulkOpen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -39,18 +43,32 @@ export default function Pricing() {
       setLoading(false)
     }
     fetchHotels()
+
+    const handleUpdate = () => setRefreshKey((prev) => prev + 1)
+    window.addEventListener('roomTypesUpdated', handleUpdate)
+    return () => window.removeEventListener('roomTypesUpdated', handleUpdate)
   }, [])
 
   return (
     <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('sidebar.pricing') || 'Pricing'}
-        </h1>
-        <p className="text-muted-foreground">
-          {t('pricing.desc') ||
-            'Manage room categories, base prices, and apply them across your properties.'}
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            {t('sidebar.pricing') || 'Pricing'}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('pricing.desc') ||
+              'Manage room categories, base prices, and apply them across your properties.'}
+          </p>
+        </div>
+        {selectedHotel && (
+          <Button
+            onClick={() => setIsBulkOpen(true)}
+            className="bg-trust-blue text-white gap-2"
+          >
+            <Settings className="h-4 w-4" /> Bulk Pricing Engine
+          </Button>
+        )}
       </div>
 
       <Card className="bg-white border-slate-200">
@@ -93,7 +111,17 @@ export default function Pricing() {
         </CardContent>
       </Card>
 
-      {selectedHotel && <RoomTypesManager hotelId={selectedHotel} />}
+      {selectedHotel && (
+        <RoomTypesManager key={refreshKey} hotelId={selectedHotel} />
+      )}
+
+      {selectedHotel && (
+        <BulkPricingModal
+          hotelId={selectedHotel}
+          open={isBulkOpen}
+          onOpenChange={setIsBulkOpen}
+        />
+      )}
     </div>
   )
 }
