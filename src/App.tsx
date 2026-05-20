@@ -41,6 +41,7 @@ import FrontDesk from '@/pages/FrontDesk'
 import Analytics from '@/pages/admin/Analytics'
 import Automation from '@/pages/admin/Automation'
 import AuditPanel from '@/pages/admin/AuditPanel'
+import TranslationsAdmin from '@/pages/admin/TranslationsAdmin'
 import EnvironmentManager from '@/pages/admin/EnvironmentManager'
 import ShortTerm from '@/pages/ShortTerm'
 import Reports from '@/pages/Reports'
@@ -207,6 +208,10 @@ const App = () => {
                   <Route
                     path="/admin/environment"
                     element={<EnvironmentManager />}
+                  />
+                  <Route
+                    path="/admin/translations"
+                    element={<TranslationsAdmin />}
                   />
 
                   {/* Portals - Protected by RequirePermission internally or here */}

@@ -36,6 +36,7 @@ import {
   ConciergeBell,
   MonitorPlay,
   ShieldCheck,
+  Languages,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
@@ -280,6 +281,13 @@ export function AppSidebar() {
       icon: MonitorPlay,
       resource: 'settings',
       roles: ['platform_owner'],
+    },
+    {
+      title: getTitle('sidebar.translations', 'Translations'),
+      url: '/admin/translations',
+      icon: Languages,
+      resource: 'settings',
+      roles: ['platform_owner', 'master', 'internal_user', 'software_tenant'],
     },
   ]
 
