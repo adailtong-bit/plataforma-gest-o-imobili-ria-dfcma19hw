@@ -256,7 +256,12 @@ export default function PropertyDetails() {
           </TabsTrigger>
         </TabsList>
         <div className="mt-0">
-          <TabsContent value="overview">
+          <TabsContent value="overview" className="space-y-6">
+            <PropertyMedia
+              data={formData}
+              onChange={handleChange}
+              canEdit={isEditing}
+            />
             <PropertyOverview
               data={formData}
               onChange={handleChange}
@@ -287,11 +292,6 @@ export default function PropertyDetails() {
               onChange={handleChange}
               canEdit={isEditing}
               condominium={condo}
-            />
-            <PropertyMedia
-              data={formData}
-              onChange={handleChange}
-              canEdit={isEditing}
             />
           </TabsContent>
           <TabsContent value="inventory">

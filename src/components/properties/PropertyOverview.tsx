@@ -103,7 +103,7 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
                 disabled={!canEdit}
               />
             </div>
-            <div className="space-y-2 col-span-2">
+            <div className="space-y-2">
               <Label>{t('common.price', 'Listing Price')}</Label>
               <Input
                 type="number"
@@ -111,6 +111,73 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
                 onChange={(e) =>
                   onChange('listingPrice', parseFloat(e.target.value))
                 }
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('properties.hoa_fee', 'HOA Fee')}</Label>
+              <Input
+                type="number"
+                value={data.hoaValue || ''}
+                onChange={(e) =>
+                  onChange('hoaValue', parseFloat(e.target.value))
+                }
+                disabled={!canEdit}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <h4 className="font-medium text-sm mb-4">
+            {t('common.address', 'Location / Address')}
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="space-y-2 col-span-2">
+              <Label>{t('common.address', 'Address')}</Label>
+              <Input
+                value={data.address || ''}
+                onChange={(e) => onChange('address', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.number', 'Number')}</Label>
+              <Input
+                value={data.number || ''}
+                onChange={(e) => onChange('number', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.neighborhood', 'Neighborhood')}</Label>
+              <Input
+                value={data.neighborhood || ''}
+                onChange={(e) => onChange('neighborhood', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.city', 'City')}</Label>
+              <Input
+                value={data.city || ''}
+                onChange={(e) => onChange('city', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.state', 'State')}</Label>
+              <Input
+                value={data.state || ''}
+                onChange={(e) => onChange('state', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.zip_code', 'Zip Code')}</Label>
+              <Input
+                value={data.zipCode || ''}
+                onChange={(e) => onChange('zipCode', e.target.value)}
                 disabled={!canEdit}
               />
             </div>

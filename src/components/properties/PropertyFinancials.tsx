@@ -80,6 +80,7 @@ export function PropertyFinancials({
     updateLedgerEntry,
     deleteLedgerEntry,
     currency,
+    financials: { invoices },
   } = useFinancialStore()
 
   // Local state for Fixed Expense Dialog
@@ -519,6 +520,55 @@ export function PropertyFinancials({
                   </TableCell>
                 </TableRow>
               ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('common.invoices', 'Invoices')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('common.date', 'Date')}</TableHead>
+                <TableHead>{t('common.number', 'Number')}</TableHead>
+                <TableHead>{t('common.description', 'Description')}</TableHead>
+                <TableHead>{t('common.value', 'Value')}</TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {invoices.filter((inv) => inv.propertyId === data.id).length ===
+                0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-6 text-muted-foreground"
+                  >
+                    {t('common.empty', 'No records found.')}
+                  </TableCell>
+                </TableRow>
+              )}
+              {invoices
+                .filter((inv) => inv.propertyId === data.id)
+                .map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell>{formatDate(invoice.date, language)}</TableCell>
+                    <TableCell>
+                      {invoice.id.slice(0, 8).toUpperCase()}
+                    </TableCell>
+                    <TableCell>{invoice.description}</TableCell>
+                    <TableCell>
+                      {formatCurrency(invoice.amount, currency)}
+                    </TableCell>
+                    <TableCell className="capitalize">
+                      {invoice.status}
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>
