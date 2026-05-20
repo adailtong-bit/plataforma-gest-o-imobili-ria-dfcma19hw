@@ -253,7 +253,7 @@ export interface PaymentIntegration {
   enabled: boolean
   apiKey?: string
   accountNumber?: string
-  config?: Record<string, any>
+  config?: Record<string, unknown>
 }
 
 export interface User {
@@ -1087,7 +1087,7 @@ export interface WorkflowStep {
   description?: string
   role: UserRole
   actionType: 'task' | 'notification' | 'email' | 'approval'
-  config?: Record<string, any>
+  config?: Record<string, unknown>
 }
 
 export interface Workflow {

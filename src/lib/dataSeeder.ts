@@ -8,7 +8,7 @@ import type {
   Task,
   LedgerEntry,
   Invoice,
-} from './types'
+} from '@/lib/types'
 
 export function generateSeederData() {
   const data = {

@@ -56,6 +56,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import type { Database } from '@/lib/supabase/types'
 
 import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
@@ -143,14 +144,19 @@ export default function Dashboard() {
   ).length
 
   // Publicity Metrics
-  const activeCampaigns = campaigns.filter((c) => c.status === 'active')
+  const typedCampaigns =
+    campaigns as unknown as Database['public']['Tables']['publicity_campaigns']['Row'][]
+  const typedPricingMatrix =
+    pricingMatrix as unknown as Database['public']['Tables']['publicity_pricing_matrix']['Row'][]
+
+  const activeCampaigns = typedCampaigns.filter((c) => c.status === 'active')
   const totalCampaignRevenue = activeCampaigns.reduce(
     (acc, c) => acc + (c.total_amount || 0),
     0,
   )
 
   const locations = Array.from(
-    new Set(pricingMatrix.map((p) => p.location_key)),
+    new Set(typedPricingMatrix.map((p) => p.location_key)),
   )
   const totalSlots = locations.length * 10
   const occupiedSlots = activeCampaigns.length
@@ -166,7 +172,9 @@ export default function Dashboard() {
       return diffDays <= 7 && diffDays >= 0
     })
     .sort(
-      (a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime(),
+      (a, b) =>
+        new Date(a.end_date as string).getTime() -
+        new Date(b.end_date as string).getTime(),
     )
     .slice(0, 5)
 
@@ -458,7 +466,7 @@ export default function Dashboard() {
                     <div className="space-y-3">
                       {expiringCampaigns.map((c) => {
                         const daysLeft = Math.ceil(
-                          (new Date(c.end_date).getTime() -
+                          (new Date(c.end_date as string).getTime() -
                             new Date().getTime()) /
                             (1000 * 3600 * 24),
                         )
@@ -1094,7 +1102,7 @@ export default function Dashboard() {
                             {task.title}
                           </span>
                           <span className="text-xs text-slate-500">
-                            {task.property_name || 'General'}
+                            {task.propertyName || 'General'}
                           </span>
                         </div>
                         <div className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-md font-medium capitalize">
