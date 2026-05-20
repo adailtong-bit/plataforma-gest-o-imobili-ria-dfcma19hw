@@ -53,7 +53,7 @@ export function AdsManager() {
     updateCampaign,
     deleteCampaign,
   } = usePublicityStore()
-  const { addInvoice, addLedgerEntry, currency } = useFinancialStore()
+  const { addLedgerEntry, currency } = useFinancialStore()
   const { toast } = useToast()
   const { language } = useLanguageStore()
 
@@ -397,11 +397,6 @@ export function AdsManager() {
       const adv = advertisers.find((a) => a.id === camp.advertiser_id)
 
       if (owner && adv) {
-        const fullAddress =
-          `${adv.street || ''} ${adv.number || ''} ${adv.complement || ''}, ${adv.neighborhood || ''}, ${adv.city || ''} - ${adv.state || ''} ${adv.zipCode || ''} ${adv.country || ''}`.trim()
-
-        const invId = `inv-pub-${Date.now()}`
-
         // Revenue directly to platform (100% attribution as per requirements)
         // Note: Invoice is now generated automatically via database trigger upon campaign creation
         await addLedgerEntry({
