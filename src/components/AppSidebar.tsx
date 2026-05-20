@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useMemo } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import {
   Sidebar,
   SidebarContent,
@@ -37,13 +39,13 @@ import {
   MonitorPlay,
   ShieldCheck,
   Languages,
+  AlertCircle,
 } from 'lucide-react'
-import { useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
 import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Logo } from '@/components/Logo'
 import { NavUser } from '@/components/NavUser'
+import { supabase } from '@/lib/supabase/client'
 
 type AuthUser = {
   role?: string
@@ -51,11 +53,119 @@ type AuthUser = {
   [key: string]: unknown
 }
 
-export function AppSidebar() {
+// Error Boundary for the Sidebar component
+class SidebarErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Sidebar error:', error, errorInfo)
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 bg-slate-900 h-full flex flex-col items-center justify-center text-slate-400">
+          <AlertCircle className="h-8 w-8 text-red-500 mb-2" />
+          <p className="text-sm text-center">Failed to load navigation.</p>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
+const iconMap: Record<string, React.ElementType> = {
+  Home,
+  Building2,
+  Users,
+  Calendar,
+  Settings,
+  Wrench,
+  DollarSign,
+  MessageSquare,
+  FileText,
+  PieChart,
+  Repeat,
+  Megaphone,
+  HardHat,
+  Database,
+  Briefcase,
+  Activity,
+  HeartHandshake,
+  ShoppingCart,
+  Zap,
+  MapPin,
+  Hotel,
+  MoonStar,
+  ConciergeBell,
+  MonitorPlay,
+  ShieldCheck,
+  Languages,
+}
+
+type DbMenu = {
+  id: string
+  label: string
+  icon: string
+  path: string
+  parent_id: string | null
+  order_index: number
+  required_role: string[] | null
+  section: string
+  resource: string | null
+}
+
+function AppSidebarContent() {
   const location = useLocation()
   const { currentUser, hasPermissionSync, simulationMode, simulationRole } =
     useAuthStore()
   const { t } = useDbTranslations()
+
+  const [dbMenus, setDbMenus] = useState<DbMenu[]>([])
+  const [menusLoading, setMenusLoading] = useState(true)
+  const [menuError, setMenuError] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+    const fetchMenus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('app_menus')
+          .select('*')
+          .order('order_index', { ascending: true })
+
+        if (error) throw error
+
+        if (isMounted) {
+          if (data && data.length > 0) {
+            setDbMenus(data)
+          } else {
+            setMenuError(true)
+          }
+          setMenusLoading(false)
+        }
+      } catch (err) {
+        console.error('Failed to fetch menus:', err)
+        if (isMounted) {
+          setMenuError(true)
+          setMenusLoading(false)
+        }
+      }
+    }
+
+    fetchMenus()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
@@ -65,8 +175,20 @@ export function AppSidebar() {
       : currentUser
   ) as AuthUser
 
-  const mainNavItems = useMemo(
-    () => [
+  const mapDbMenu = (m: DbMenu) => ({
+    title: t(m.label, m.label.split('.').pop() || m.label),
+    url: m.path,
+    icon: iconMap[m.icon] || AlertCircle,
+    resource: m.resource,
+    roles: m.required_role,
+    role: m.required_role?.[0],
+  })
+
+  const mainNavItems = useMemo(() => {
+    if (!menusLoading && !menuError && dbMenus.length > 0) {
+      return dbMenus.filter((m) => m.section === 'main').map(mapDbMenu)
+    }
+    return [
       {
         title: t('menu.dashboard', 'Dashboard'),
         url: '/',
@@ -151,12 +273,14 @@ export function AppSidebar() {
         icon: PieChart,
         resource: 'market_analysis',
       },
-    ],
-    [t],
-  )
+    ]
+  }, [t, dbMenus, menusLoading, menuError])
 
-  const operationsItems = useMemo(
-    () => [
+  const operationsItems = useMemo(() => {
+    if (!menusLoading && !menuError && dbMenus.length > 0) {
+      return dbMenus.filter((m) => m.section === 'operations').map(mapDbMenu)
+    }
+    return [
       {
         title: t('sidebar.performance', 'Performance'),
         url: '/performance',
@@ -223,12 +347,14 @@ export function AppSidebar() {
         icon: Repeat,
         resource: 'workflows',
       },
-    ],
-    [t],
-  )
+    ]
+  }, [t, dbMenus, menusLoading, menuError])
 
-  const systemItems = useMemo(
-    () => [
+  const systemItems = useMemo(() => {
+    if (!menusLoading && !menuError && dbMenus.length > 0) {
+      return dbMenus.filter((m) => m.section === 'system').map(mapDbMenu)
+    }
+    return [
       {
         title: t('menu.settings', 'Settings'),
         url: '/settings',
@@ -298,12 +424,14 @@ export function AppSidebar() {
         resource: 'settings',
         roles: ['platform_owner', 'master', 'internal_user', 'software_tenant'],
       },
-    ],
-    [t],
-  )
+    ]
+  }, [t, dbMenus, menusLoading, menuError])
 
-  const portalItems = useMemo(
-    () => [
+  const portalItems = useMemo(() => {
+    if (!menusLoading && !menuError && dbMenus.length > 0) {
+      return dbMenus.filter((m) => m.section === 'portal').map(mapDbMenu)
+    }
+    return [
       {
         title: t('menu.main_dashboard', 'Main Dashboard'),
         url: '/',
@@ -332,9 +460,8 @@ export function AppSidebar() {
         resource: 'dashboard',
         role: 'partner_employee',
       },
-    ],
-    [t],
-  )
+    ]
+  }, [t, dbMenus, menusLoading, menuError])
 
   const filteredMain = useMemo(
     () =>
@@ -588,5 +715,13 @@ export function AppSidebar() {
         <NavUser user={currentUser as never} />
       </SidebarFooter>
     </Sidebar>
+  )
+}
+
+export function AppSidebar() {
+  return (
+    <SidebarErrorBoundary>
+      <AppSidebarContent />
+    </SidebarErrorBoundary>
   )
 }
