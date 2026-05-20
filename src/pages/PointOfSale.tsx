@@ -58,6 +58,7 @@ import { PosItem } from '@/lib/types'
 import { DataMask } from '@/components/DataMask'
 import { ProductDialog } from '@/components/pos/ProductDialog'
 import { getCurrentPrice } from '@/lib/utils'
+import { supabase } from '@/lib/supabase/client'
 
 export default function PointOfSale() {
   const {
@@ -170,7 +171,7 @@ export default function PointOfSale() {
         status: 'charged',
       })
 
-      const description = `Consumo PDV: ${cart.map((c) => `${c.quantity}x ${c.item.name}`).join(', ')}`;
+      const description = `Consumo PDV: ${cart.map((c) => `${c.quantity}x ${c.item.name}`).join(', ')}`
 
       // Add to invoice as line item
       addInvoice({
@@ -193,26 +194,23 @@ export default function PointOfSale() {
         date: new Date().toISOString(),
         status: 'pending',
         booking_id: selectedBookingId,
-      });
+      })
 
       if (error) {
-        console.error('Failed to create ledger entry:', error);
+        console.error('Failed to create ledger entry:', error)
       }
 
       toast({
         title: 'Venda finalizada',
-        description: 'O valor foi lançado na fatura da reserva e no livro razão (ledger).',
+        description:
+          'O valor foi lançado na fatura da reserva e no livro razão (ledger).',
       })
       setIsSellOpen(false)
       setCart([])
       setSelectedBookingId('')
     }
-    
-    handleCheckoutAsync();
-  }
-    setIsSellOpen(false)
-    setCart([])
-    setSelectedBookingId('')
+
+    handleCheckoutAsync()
   }
 
   return (
