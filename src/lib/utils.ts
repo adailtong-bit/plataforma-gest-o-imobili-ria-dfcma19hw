@@ -183,7 +183,7 @@ export const getCurrencyLocale = (currency: string) => {
   return currencyLocales[currency] || 'en-US'
 }
 
-export const formatCurrency = (value: number, currency: string = 'USD') => {
+export const formatCurrency = (value: number, currency = 'USD') => {
   let code = currency
   if (!code || typeof code !== 'string' || code.length !== 3) {
     code = 'USD'
