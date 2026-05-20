@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase/client'
 import useAuthStore from '@/stores/useAuthStore'
@@ -82,82 +82,15 @@ export default function Messages() {
     }
   }, [convIdParam])
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight
       }
     }, 100)
-  }
+  }, [])
 
-  useEffect(() => {
-    if (authLoading) return
-    if (!profile) {
-      setLoadingConvs(false)
-      return
-    }
-    loadConversations()
-    loadAvailableUsers()
-  }, [profile, authLoading])
-
-  useEffect(() => {
-    if (!profile) return
-
-    const convSub = supabase
-      .channel('conversations_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conversation_participants',
-          filter: `profile_id=eq.${profile.id}`,
-        },
-        () => loadConversations(),
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'conversations' },
-        () => loadConversations(),
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(convSub)
-    }
-  }, [profile])
-
-  useEffect(() => {
-    if (!activeConvId) return
-    loadMessages(activeConvId)
-
-    const msgSub = supabase
-      .channel(`messages_${activeConvId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${activeConvId}`,
-        },
-        (payload) => {
-          const newMsg = payload.new as Message
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMsg.id)) return prev
-            return [...prev, newMsg]
-          })
-          scrollToBottom()
-        },
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(msgSub)
-    }
-  }, [activeConvId])
-
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     if (!profile) return
     try {
       const { data: myParts, error: myPartsErr } = await supabase
@@ -218,28 +151,31 @@ export default function Messages() {
     } finally {
       setLoadingConvs(false)
     }
-  }
+  }, [profile])
 
-  const loadMessages = async (convId: string) => {
-    setLoadingMessages(true)
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', convId)
-        .order('created_at', { ascending: true })
+  const loadMessages = useCallback(
+    async (convId: string) => {
+      setLoadingMessages(true)
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('conversation_id', convId)
+          .order('created_at', { ascending: true })
 
-      if (error) throw error
-      setMessages(data || [])
-      scrollToBottom()
-    } catch (error) {
-      console.error('Error loading messages:', error)
-    } finally {
-      setLoadingMessages(false)
-    }
-  }
+        if (error) throw error
+        setMessages(data || [])
+        scrollToBottom()
+      } catch (error) {
+        console.error('Error loading messages:', error)
+      } finally {
+        setLoadingMessages(false)
+      }
+    },
+    [scrollToBottom],
+  )
 
-  const loadAvailableUsers = async () => {
+  const loadAvailableUsers = useCallback(async () => {
     try {
       const { data, error } = await supabase.from('profiles').select('*')
       if (error) throw error
@@ -266,7 +202,74 @@ export default function Messages() {
     } catch (error) {
       console.error('Error loading available users:', error)
     }
-  }
+  }, [profile])
+
+  useEffect(() => {
+    if (authLoading) return
+    if (!profile) {
+      setLoadingConvs(false)
+      return
+    }
+    loadConversations()
+    loadAvailableUsers()
+  }, [profile, authLoading, loadConversations, loadAvailableUsers])
+
+  useEffect(() => {
+    if (!profile) return
+
+    const convSub = supabase
+      .channel('conversations_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversation_participants',
+          filter: `profile_id=eq.${profile.id}`,
+        },
+        () => loadConversations(),
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'conversations' },
+        () => loadConversations(),
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(convSub)
+    }
+  }, [profile, loadConversations])
+
+  useEffect(() => {
+    if (!activeConvId) return
+    loadMessages(activeConvId)
+
+    const msgSub = supabase
+      .channel(`messages_${activeConvId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${activeConvId}`,
+        },
+        (payload) => {
+          const newMsg = payload.new as Message
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === newMsg.id)) return prev
+            return [...prev, newMsg]
+          })
+          scrollToBottom()
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(msgSub)
+    }
+  }, [activeConvId, loadMessages, scrollToBottom])
 
   const startConversation = async (targetUserId: string) => {
     if (!profile) return
