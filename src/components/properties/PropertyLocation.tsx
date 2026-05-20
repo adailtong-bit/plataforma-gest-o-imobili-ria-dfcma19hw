@@ -91,16 +91,34 @@ export function PropertyLocation({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t('properties.location.address') || 'Address'}</Label>
+          <div className="space-y-2 md:col-span-2">
+            <Label>
+              {t('properties.location.address') || 'Street/Address'}
+            </Label>
             <Input
-              value={data.address}
+              value={data.address || ''}
               onChange={(e) => onChange('address', e.target.value)}
               disabled={!canEdit}
             />
             {addressWarning && (
               <p className="text-xs text-amber-600">{addressWarning}</p>
             )}
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.number') || 'Number'}</Label>
+            <Input
+              value={data.number || ''}
+              onChange={(e) => onChange('number', e.target.value)}
+              disabled={!canEdit}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.neighborhood') || 'Neighborhood'}</Label>
+            <Input
+              value={data.neighborhood || ''}
+              onChange={(e) => onChange('neighborhood', e.target.value)}
+              disabled={!canEdit}
+            />
           </div>
           <div className="space-y-2">
             <Label>{t('common.city') || 'City'}</Label>

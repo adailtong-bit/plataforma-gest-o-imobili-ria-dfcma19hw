@@ -27,6 +27,7 @@ import { PropertyOverview } from '@/components/properties/PropertyOverview'
 import { PropertyLocation } from '@/components/properties/PropertyLocation'
 import { PropertyFeatures } from '@/components/properties/PropertyFeatures'
 import { PropertyMedia } from '@/components/properties/PropertyMedia'
+import { PropertyDocuments } from '@/components/properties/PropertyDocuments'
 import { PropertyFinancials } from '@/components/properties/PropertyFinancials'
 import { PropertyManagement } from '@/components/properties/PropertyManagement'
 import { PropertyInventory } from '@/components/properties/PropertyInventory'
@@ -55,21 +56,36 @@ export default function PropertyDetails() {
     'delete',
   )
 
+  const [ownerDetails, setOwnerDetails] = useState<any>(null)
+
   useEffect(() => {
-    const found = properties.find((p) => p.id === id)
-    if (found) {
-      setProperty(found)
-      setFormData((prev) => {
-        // Only update form data from store if not currently editing
-        if (isEditing) return prev
-        return found
-      })
-      setIsLoading(false)
-    } else if (properties.length > 0) {
-      // Properties are loaded but this one is not found
-      setIsLoading(false)
+    async function loadData() {
+      const found = properties.find((p) => p.id === id)
+      if (found) {
+        if (property?.id !== id) {
+          setProperty(found)
+          setFormData((prev) => {
+            if (isEditing) return prev
+            return found
+          })
+          setIsLoading(false)
+
+          if (found.owner_id) {
+            const { data: ownerData } = await supabase
+              .from('profiles')
+              .select('name, email, phone')
+              .eq('id', found.owner_id)
+              .single()
+            if (ownerData) setOwnerDetails(ownerData)
+          }
+        }
+      } else if (properties.length > 0) {
+        // Properties are loaded but this one is not found
+        setIsLoading(false)
+      }
     }
-  }, [id, properties, isEditing])
+    loadData()
+  }, [id, properties, isEditing, property?.id])
 
   // Fallback timeout to stop loading if property list takes too long
   useEffect(() => {
@@ -281,6 +297,7 @@ export default function PropertyDetails() {
               data={formData}
               onChange={handleChange}
               canEdit={isEditing}
+              ownerDetails={ownerDetails}
             />
           </TabsContent>
           <TabsContent value="management">
@@ -307,6 +324,11 @@ export default function PropertyDetails() {
               onChange={handleChange}
               canEdit={isEditing}
               condominium={condo}
+            />
+            <PropertyDocuments
+              property={formData}
+              onChange={handleChange}
+              canEdit={isEditing}
             />
           </TabsContent>
           <TabsContent value="inventory">

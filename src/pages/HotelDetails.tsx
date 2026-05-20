@@ -51,6 +51,7 @@ import {
 } from '@/components/ui/dialog'
 
 import { HotelFinancials } from '@/components/hotels/HotelFinancials'
+import useAuthStore from '@/stores/useAuthStore'
 
 export default function HotelDetails() {
   const { id, tab } = useParams()
@@ -61,7 +62,16 @@ export default function HotelDetails() {
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
-  const [hotel, setHotel] = useState<Hotel | null>(null)
+  // To check if current user is guest or admin
+  const { currentUser } = useAuthStore()
+  const isAdminOrPM = [
+    'master',
+    'software_tenant',
+    'platform_owner',
+    'internal_user',
+  ].includes(currentUser?.role || '')
+
+  const [hotel, setHotel] = useState<any>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<Hotel | null>(null)
   const [newTowerName, setNewTowerName] = useState('')
@@ -76,12 +86,16 @@ export default function HotelDetails() {
       if (hotels.length > 0) {
         const found = hotels.find((h) => h.id === id)
         if (found) {
-          setHotel(found)
-          setFormData(found)
-          setIsLoading(false)
+          if (hotel?.id !== id) {
+            setHotel(found)
+            setFormData(found)
+            setIsLoading(false)
+          }
           return
         }
       }
+
+      if (hotel?.id === id) return // Prevent re-fetching if we already have it
 
       setIsLoading(true)
       // Fallback to direct DB fetch if not in store
@@ -97,14 +111,14 @@ export default function HotelDetails() {
           managerPhone: data.manager_phone,
           managerEmail: data.manager_email,
           zipCode: data.zip_code,
-        } as unknown as Hotel
+        }
         setHotel(h)
         setFormData(h)
       }
       setIsLoading(false)
     }
     loadHotel()
-  }, [id, hotels])
+  }, [id, hotels, hotel?.id])
 
   if (isLoading) {
     return (
@@ -130,7 +144,40 @@ export default function HotelDetails() {
     )
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // Save to DB to persist billing fields, etc.
+    const payload = {
+      name: formData.name,
+      address: formData.address,
+      number: formData.number,
+      neighborhood: formData.neighborhood,
+      city: formData.city,
+      state: formData.state,
+      zip_code: formData.zipCode || formData.zip_code,
+      country: formData.country,
+      manager_name: formData.managerName,
+      manager_phone: formData.managerPhone,
+      manager_email: formData.managerEmail,
+      image: formData.image,
+      tax_id: formData.tax_id,
+      billing_address: formData.billing_address,
+      billing_email: formData.billing_email,
+      payment_data: formData.payment_data,
+    }
+
+    const { error } = await supabase
+      .from('hotels')
+      .update(payload)
+      .eq('id', hotel.id)
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      })
+      return
+    }
+
     updateHotel(formData)
     setHotel(formData)
     setIsEditing(false)
@@ -259,40 +306,76 @@ export default function HotelDetails() {
           >
             {t('properties.tabs.overview') || 'Overview'}
           </TabsTrigger>
-          <TabsTrigger
-            value="towers"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
-          >
-            {t('hotels.towers') || 'Towers'}
-          </TabsTrigger>
-          <TabsTrigger
-            value="room-types"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
-          >
-            {t('hotels.room_types') || 'Room Types & Rates'}
-          </TabsTrigger>
-          <TabsTrigger
-            value="rooms"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
-          >
-            {t('hotels.all_rooms') || 'All Rooms'}
-          </TabsTrigger>
-          <TabsTrigger
-            value="financial"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
-          >
-            {t('properties.tabs.financial') || 'Financial'}
-          </TabsTrigger>
+          {isAdminOrPM && (
+            <>
+              <TabsTrigger
+                value="towers"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+              >
+                {t('hotels.towers') || 'Towers'}
+              </TabsTrigger>
+              <TabsTrigger
+                value="room-types"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+              >
+                {t('hotels.room_types') || 'Room Types & Rates'}
+              </TabsTrigger>
+              <TabsTrigger
+                value="rooms"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+              >
+                {t('hotels.all_rooms') || 'All Rooms'}
+              </TabsTrigger>
+              <TabsTrigger
+                value="financial"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+              >
+                {t('properties.tabs.financial') || 'Financial'}
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <Card>
+            <CardContent className="p-0 overflow-hidden relative">
+              {formData.image ? (
+                <div className="w-full h-[300px]">
+                  <img
+                    src={formData.image}
+                    alt={formData.name}
+                    className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-[300px] bg-slate-100 flex items-center justify-center text-slate-400">
+                  <span>{t('hotels.no_image') || 'No image available'}</span>
+                </div>
+              )}
+              {isEditing && (
+                <div className="absolute top-4 right-4 bg-white/90 p-2 rounded-md shadow flex gap-2 items-center">
+                  <Label className="text-xs">Image URL</Label>
+                  <Input
+                    className="h-8 text-sm"
+                    value={formData.image || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, image: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>{t('hotels.info') || 'Hotel Information'}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-2">
                   <Label>{t('common.name') || 'Name'}</Label>
                   <Input
                     value={formData.name || ''}
@@ -302,42 +385,57 @@ export default function HotelDetails() {
                     disabled={!isEditing}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>
-                    {t('condominiums.manager_name') || 'Manager Name'}
-                  </Label>
-                  <Input
-                    value={formData.managerName || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, managerName: e.target.value })
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>
-                    {t('condominiums.manager_email') || 'Manager Email'}
-                  </Label>
-                  <Input
-                    value={formData.managerEmail || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, managerEmail: e.target.value })
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>
-                    {t('condominiums.manager_phone') || 'Manager Phone'}
-                  </Label>
-                  <Input
-                    value={formData.managerPhone || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, managerPhone: e.target.value })
-                    }
-                    disabled={!isEditing}
-                  />
-                </div>
+
+                {isAdminOrPM && (
+                  <>
+                    <div className="space-y-2">
+                      <Label>
+                        {t('condominiums.manager_name') || 'Manager Name'}
+                      </Label>
+                      <Input
+                        value={formData.managerName || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            managerName: e.target.value,
+                          })
+                        }
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>
+                        {t('condominiums.manager_email') || 'Manager Email'}
+                      </Label>
+                      <Input
+                        value={formData.managerEmail || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            managerEmail: e.target.value,
+                          })
+                        }
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <Label>
+                        {t('condominiums.manager_phone') || 'Manager Phone'}
+                      </Label>
+                      <Input
+                        value={formData.managerPhone || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            managerPhone: e.target.value,
+                          })
+                        }
+                        disabled={!isEditing}
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="space-y-2">
                   <Label>{t('common.address') || 'Street/Address'}</Label>
                   <Input
@@ -411,6 +509,92 @@ export default function HotelDetails() {
               </div>
             </CardContent>
           </Card>
+
+          {isAdminOrPM && (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {t('hotels.billing_data') || 'Billing & Payment Data'}
+                </CardTitle>
+                <CardDescription>
+                  Private billing and tax information for hotel management.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('common.tax_id') || 'Tax ID / EIN'}</Label>
+                    <Input
+                      value={formData.tax_id || ''}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tax_id: e.target.value })
+                      }
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>
+                      {t('common.billing_email') || 'Billing Email'}
+                    </Label>
+                    <Input
+                      type="email"
+                      value={formData.billing_email || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          billing_email: e.target.value,
+                        })
+                      }
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label>
+                      {t('common.billing_address') || 'Billing Address'}
+                    </Label>
+                    <Input
+                      value={formData.billing_address || ''}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          billing_address: e.target.value,
+                        })
+                      }
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label>
+                      {t('common.payment_data') || 'Payment Method / Data'}
+                    </Label>
+                    <Input
+                      value={
+                        formData.payment_data
+                          ? JSON.stringify(formData.payment_data)
+                          : ''
+                      }
+                      onChange={(e) => {
+                        try {
+                          const parsed = e.target.value
+                            ? JSON.parse(e.target.value)
+                            : {}
+                          setFormData({ ...formData, payment_data: parsed })
+                        } catch {
+                          // Allow typing partial JSON
+                          setFormData({
+                            ...formData,
+                            payment_data: e.target.value as any,
+                          })
+                        }
+                      }}
+                      placeholder='{"method": "Bank Transfer", "bank": "Chase"}'
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="financial" className="space-y-4">

@@ -153,6 +153,8 @@ export default function Hotels() {
   const formatAddress = (hotel: any) => {
     const parts = [
       hotel.address,
+      hotel.number,
+      hotel.neighborhood,
       hotel.city,
       hotel.state,
       hotel.country,

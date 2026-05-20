@@ -175,7 +175,8 @@ export default function Properties() {
       prop.neighborhood,
       prop.city,
       prop.state,
-      prop.zip_code,
+      prop.zip_code || prop.zipCode,
+      prop.country,
     ].filter(Boolean)
     return parts.join(', ')
   }

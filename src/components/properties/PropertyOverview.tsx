@@ -8,9 +8,15 @@ interface Props {
   data: Property
   onChange: (f: keyof Property, v: any) => void
   canEdit: boolean
+  ownerDetails?: any
 }
 
-export function PropertyOverview({ data, onChange, canEdit }: Props) {
+export function PropertyOverview({
+  data,
+  onChange,
+  canEdit,
+  ownerDetails,
+}: Props) {
   const { t } = useLanguageStore()
   return (
     <Card className="border-slate-200 shadow-sm bg-white">
@@ -152,8 +158,30 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
           </div>
         </div>
 
+        {ownerDetails && (
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-sm mb-4 text-slate-900">
+              {t('properties.owner_contact', 'Owner Contact Info')}
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>{t('common.name', 'Owner Name')}</Label>
+                <Input value={ownerDetails.name || ''} disabled />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('common.email', 'Email')}</Label>
+                <Input value={ownerDetails.email || ''} disabled />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('common.phone', 'Phone')}</Label>
+                <Input value={ownerDetails.phone || ''} disabled />
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="border-t pt-4">
-          <h4 className="font-medium text-sm mb-4">
+          <h4 className="font-medium text-sm mb-4 text-slate-900">
             {t('common.address', 'Location / Address')}
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
