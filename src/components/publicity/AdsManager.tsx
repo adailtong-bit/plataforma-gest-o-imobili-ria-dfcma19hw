@@ -62,7 +62,10 @@ export function AdsManager() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const isExpiringSoon = (endDate: string | null) => {
+  const isExpiringSoon = (
+    endDate: string | null,
+    lastNotifiedAt: string | null,
+  ) => {
     if (!endDate) return false
     const end = new Date(endDate)
     const now = new Date()
@@ -71,11 +74,22 @@ export function AdsManager() {
     const diffDays = Math.ceil(
       (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
     )
-    return diffDays === 7 || diffDays === 3 || diffDays === 1
+
+    if (diffDays !== 7 && diffDays !== 3 && diffDays !== 1) return false
+
+    // Avoid redundant notifications on the same day threshold
+    if (lastNotifiedAt) {
+      const notified = new Date(lastNotifiedAt)
+      notified.setHours(0, 0, 0, 0)
+      if (notified.getTime() === now.getTime()) return false
+    }
+
+    return true
   }
 
   const expiringCampaigns = campaigns.filter(
-    (c) => c.status === 'active' && isExpiringSoon(c.end_date),
+    (c) =>
+      c.status === 'active' && isExpiringSoon(c.end_date, c.last_notified_at),
   )
 
   const initialFormState = {
@@ -693,7 +707,10 @@ export function AdsManager() {
                             </Badge>
                           )}
                           {camp.status === 'active' &&
-                            isExpiringSoon(camp.end_date) && (
+                            isExpiringSoon(
+                              camp.end_date,
+                              camp.last_notified_at,
+                            ) && (
                               <Badge
                                 variant="outline"
                                 className="bg-orange-50 text-orange-700 border-orange-200 text-[10px] px-1 py-0 h-4"
@@ -701,6 +718,14 @@ export function AdsManager() {
                                 Expiring Soon
                               </Badge>
                             )}
+                          {camp.invoice_status && (
+                            <span className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                              Inv:{' '}
+                              <span className="capitalize font-medium">
+                                {camp.invoice_status}
+                              </span>
+                            </span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">

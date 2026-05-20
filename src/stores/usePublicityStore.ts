@@ -91,6 +91,7 @@ export interface Campaign {
   impressions_count: number | null
   clicks_count: number | null
   created_at?: string
+  invoice_status?: string | null
 }
 
 let globalAdvertisers: Advertiser[] = []
@@ -104,15 +105,42 @@ const fetchPublicityData = async () => {
   // Update expired campaigns before fetching the updated data
   await supabase.rpc('update_expired_campaigns').catch(console.error)
 
-  const [advRes, priceRes, campRes] = await Promise.all([
+  const [advRes, priceRes, campRes, invRes] = await Promise.all([
     supabase.from('advertisers').select('*'),
     supabase.from('publicity_pricing_matrix').select('*'),
     supabase.from('publicity_campaigns').select('*'),
+    supabase
+      .from('invoices')
+      .select('*')
+      .in('type', ['publicity_sale', 'publicity_renewal']),
   ])
 
   if (advRes.data) globalAdvertisers = advRes.data as Advertiser[]
   if (priceRes.data) globalPricingMatrix = priceRes.data as PricingMatrix[]
-  if (campRes.data) globalCampaigns = campRes.data as Campaign[]
+  if (campRes.data && invRes.data) {
+    const invoices = invRes.data
+    globalCampaigns = (campRes.data as Campaign[]).map((c) => {
+      const campaignInvoices = invoices.filter(
+        (i) =>
+          i.booking_id === c.id ||
+          (i.description && i.description.includes(c.title)),
+      )
+
+      campaignInvoices.sort(
+        (a, b) =>
+          new Date(b.created_at || b.date || 0).getTime() -
+          new Date(a.created_at || a.date || 0).getTime(),
+      )
+
+      return {
+        ...c,
+        invoice_status:
+          campaignInvoices.length > 0 ? campaignInvoices[0].status : null,
+      }
+    })
+  } else if (campRes.data) {
+    globalCampaigns = campRes.data as Campaign[]
+  }
 
   notify()
 }
