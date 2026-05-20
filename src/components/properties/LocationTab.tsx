@@ -63,18 +63,10 @@ export function LocationTab({ form, setForm }: any) {
 
       <div className="col-span-2 space-y-2 border-t pt-4 mt-2">
         <Label className="text-trust-blue font-semibold">
-          Internet & Access Details
+          Security & Access Details
         </Label>
       </div>
 
-      <div className="col-span-2 space-y-2">
-        <Label>Internet Link (Wi-Fi details / Portal)</Label>
-        <Input
-          value={form.internet_link || ''}
-          onChange={(e) => setForm({ ...form, internet_link: e.target.value })}
-          placeholder="https://..."
-        />
-      </div>
       <div className="space-y-2">
         <Label>Locker Code</Label>
         <Input

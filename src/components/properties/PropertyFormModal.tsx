@@ -68,6 +68,25 @@ export function PropertyFormModal({
       })
     }
 
+    if (form.type === 'room' && (!form.hotel_id || form.hotel_id === 'none')) {
+      return toast({
+        title: 'Error',
+        description: 'You must associate the property with a Hotel.',
+        variant: 'destructive',
+      })
+    }
+
+    if (
+      form.type !== 'room' &&
+      (!form.condominium_id || form.condominium_id === 'none')
+    ) {
+      return toast({
+        title: 'Error',
+        description: 'You must associate the property with a Condominium.',
+        variant: 'destructive',
+      })
+    }
+
     setIsUploading(true)
     let imageUrl = form.image
     if (imageFile) {
@@ -93,6 +112,12 @@ export function PropertyFormModal({
       ...form,
       image: imageUrl,
       pm_id: property ? form.pm_id : currentUser?.id,
+    }
+
+    if (payload.type === 'room') {
+      payload.condominium_id = null
+    } else {
+      payload.hotel_id = null
     }
 
     if (payload.bedrooms) payload.bedrooms = parseInt(payload.bedrooms)
@@ -135,9 +160,11 @@ export function PropertyFormModal({
         <ScrollArea className="flex-1 p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="basic">Dados Básicos e Vínculos</TabsTrigger>
-              <TabsTrigger value="location">Localização e Acesso</TabsTrigger>
-              <TabsTrigger value="media">Mídia e Estrutura</TabsTrigger>
+              <TabsTrigger value="basic">
+                General Info & Associations
+              </TabsTrigger>
+              <TabsTrigger value="location">Location & Access</TabsTrigger>
+              <TabsTrigger value="media">Connectivity & Media</TabsTrigger>
             </TabsList>
             <TabsContent value="basic">
               <BasicTab

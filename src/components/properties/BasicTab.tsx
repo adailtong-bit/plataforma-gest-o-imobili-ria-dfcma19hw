@@ -119,23 +119,45 @@ export function BasicTab({ form, setForm, owners, hotels, condos }: any) {
         </Select>
       </div>
 
+      <div className="space-y-2">
+        <Label>Bedrooms</Label>
+        <Input
+          type="number"
+          value={form.bedrooms || ''}
+          onChange={(e) => setForm({ ...form, bedrooms: e.target.value })}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Bathrooms</Label>
+        <Input
+          type="number"
+          value={form.bathrooms || ''}
+          onChange={(e) => setForm({ ...form, bathrooms: e.target.value })}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Max Guests</Label>
+        <Input
+          type="number"
+          value={form.guests || ''}
+          onChange={(e) => setForm({ ...form, guests: e.target.value })}
+        />
+      </div>
+
       {form.type === 'room' ? (
         <>
           <div className="space-y-2">
             <Label className="text-trust-blue font-semibold">
-              Vínculo Hotel
+              Hotel Association
             </Label>
             <Select
-              value={form.hotel_id || 'none'}
-              onValueChange={(v) =>
-                setForm({ ...form, hotel_id: v === 'none' ? null : v })
-              }
+              value={form.hotel_id || ''}
+              onValueChange={(v) => setForm({ ...form, hotel_id: v })}
             >
               <SelectTrigger className="border-trust-blue">
                 <SelectValue placeholder="Select Hotel" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
                 {hotels.map((h: any) => (
                   <SelectItem key={h.id} value={h.id}>
                     {h.name}
@@ -164,19 +186,16 @@ export function BasicTab({ form, setForm, owners, hotels, condos }: any) {
       ) : (
         <div className="space-y-2">
           <Label className="text-trust-blue font-semibold">
-            Vínculo Condomínio
+            Condominium Association
           </Label>
           <Select
-            value={form.condominium_id || 'none'}
-            onValueChange={(v) =>
-              setForm({ ...form, condominium_id: v === 'none' ? null : v })
-            }
+            value={form.condominium_id || ''}
+            onValueChange={(v) => setForm({ ...form, condominium_id: v })}
           >
             <SelectTrigger className="border-trust-blue">
               <SelectValue placeholder="Select Condominium" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
               {condos.map((c: any) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
