@@ -530,7 +530,7 @@ export default function Dashboard() {
                         axisLine={false}
                         tickLine={false}
                         tick={{ fill: '#64748b', fontSize: 12 }}
-                        tickFormatter={(value) => `${value / 1000}k`}
+                        tickFormatter={(value: number) => `${value / 1000}k`}
                       />
                       <RechartsTooltip
                         cursor={{ fill: '#f1f5f9' }}
@@ -738,7 +738,7 @@ export default function Dashboard() {
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(v) => `${v / 1000}k`}
+                      tickFormatter={(v: number) => `${v / 1000}k`}
                     />
                     <RechartsTooltip
                       contentStyle={{ borderRadius: '8px', border: 'none' }}
@@ -896,14 +896,14 @@ export default function Dashboard() {
                         yAxisId="left"
                         axisLine={false}
                         tickLine={false}
-                        tickFormatter={(v) => `${v}`}
+                        tickFormatter={(v: number) => `${v}`}
                       />
                       <YAxis
                         yAxisId="right"
                         orientation="right"
                         axisLine={false}
                         tickLine={false}
-                        tickFormatter={(v) => `${v}%`}
+                        tickFormatter={(v: number) => `${v}%`}
                       />
                       <RechartsTooltip
                         contentStyle={{ borderRadius: '8px', border: 'none' }}
