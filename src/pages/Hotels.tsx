@@ -12,7 +12,7 @@ import { useDbTranslations } from '@/hooks/use-db-translations'
 import { supabase } from '@/lib/supabase/client'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Link } from 'react-router-dom'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function Hotels() {
   const { t } = useDbTranslations()
@@ -70,7 +72,7 @@ export default function Hotels() {
 
   const handleOpenAdd = () => {
     setEditingId(null)
-    setForm({})
+    setForm({ country: 'US' })
     setIsOpen(true)
   }
 
@@ -94,6 +96,11 @@ export default function Hotels() {
       name: form.name,
       city: form.city,
       address: form.address,
+      number: form.number,
+      neighborhood: form.neighborhood,
+      state: form.state,
+      zip_code: form.zip_code,
+      country: form.country,
       manager_name: form.manager_name,
       manager_email: form.manager_email,
       manager_phone: form.manager_phone,
@@ -143,15 +150,25 @@ export default function Hotels() {
     }
   }
 
+  const formatAddress = (hotel: any) => {
+    const parts = [
+      hotel.address,
+      hotel.city,
+      hotel.state,
+      hotel.country,
+    ].filter(Boolean)
+    return parts.join(', ')
+  }
+
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 animate-in fade-in duration-500 p-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
-            {t('hotels.title', 'Hotels')}
+            {t('hotels.title', 'Hotels & Resorts')}
           </h1>
           <p className="text-slate-500">
-            {t('hotels.subtitle', 'Manage your hotels')}
+            {t('hotels.subtitle', 'Manage your hotel properties and complexes')}
           </p>
         </div>
         <Button
@@ -163,90 +180,138 @@ export default function Hotels() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-2 border-b">
             <DialogTitle>
               {editingId
                 ? t('common.edit_hotel', 'Edit Hotel')
                 : t('common.add_hotel', 'Add Hotel')}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                {t('common.name', 'Name')}
-              </Label>
-              <Input
-                id="name"
-                value={form.name || ''}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="col-span-3"
-              />
+          <ScrollArea className="flex-1 p-6">
+            <div className="grid gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">{t('common.name', 'Hotel Name')}</Label>
+                <Input
+                  id="name"
+                  value={form.name || ''}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm border-b pb-2">
+                  {t('common.manager_info', 'Management Info')}
+                </h4>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="manager_name">
+                      {t('common.manager_name', 'Manager Name')}
+                    </Label>
+                    <Input
+                      id="manager_name"
+                      value={form.manager_name || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, manager_name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="manager_email">
+                      {t('common.email', 'Email')}
+                    </Label>
+                    <Input
+                      id="manager_email"
+                      type="email"
+                      value={form.manager_email || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, manager_email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="manager_phone">
+                      {t('common.phone', 'Phone')}
+                    </Label>
+                    <Input
+                      id="manager_phone"
+                      value={form.manager_phone || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, manager_phone: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm border-b pb-2">
+                  {t('common.address_info', 'Address Info')}
+                </h4>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="address">
+                      {t('common.address', 'Address')}
+                    </Label>
+                    <Input
+                      id="address"
+                      value={form.address || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, address: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">{t('common.city', 'City')}</Label>
+                    <Input
+                      id="city"
+                      value={form.city || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, city: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">
+                      {t('common.state', 'State/Province')}
+                    </Label>
+                    <Input
+                      id="state"
+                      value={form.state || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, state: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="zip_code">
+                      {t('common.zip_code', 'Zip Code')}
+                    </Label>
+                    <Input
+                      id="zip_code"
+                      value={form.zip_code || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, zip_code: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">
+                      {t('common.country', 'Country')}
+                    </Label>
+                    <Input
+                      id="country"
+                      value={form.country || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, country: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="city" className="text-right">
-                {t('common.city', 'City')}
-              </Label>
-              <Input
-                id="city"
-                value={form.city || ''}
-                onChange={(e) => setForm({ ...form, city: e.target.value })}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="address" className="text-right">
-                {t('common.address', 'Address')}
-              </Label>
-              <Input
-                id="address"
-                value={form.address || ''}
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="manager_name" className="text-right">
-                {t('common.manager_name', 'Manager Name')}
-              </Label>
-              <Input
-                id="manager_name"
-                value={form.manager_name || ''}
-                onChange={(e) =>
-                  setForm({ ...form, manager_name: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="manager_email" className="text-right">
-                {t('common.email', 'Email')}
-              </Label>
-              <Input
-                id="manager_email"
-                type="email"
-                value={form.manager_email || ''}
-                onChange={(e) =>
-                  setForm({ ...form, manager_email: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="manager_phone" className="text-right">
-                {t('common.phone', 'Phone')}
-              </Label>
-              <Input
-                id="manager_phone"
-                value={form.manager_phone || ''}
-                onChange={(e) =>
-                  setForm({ ...form, manager_phone: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter>
+          </ScrollArea>
+          <DialogFooter className="p-6 border-t mt-auto">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               {t('common.cancel', 'Cancel')}
             </Button>
@@ -269,11 +334,13 @@ export default function Hotels() {
             <Table>
               <TableHeader className="bg-slate-50">
                 <TableRow>
-                  <TableHead>{t('table_header_name', 'Nome')}</TableHead>
-                  <TableHead>{t('table_header_city', 'Cidade')}</TableHead>
-                  <TableHead>{t('table_header_manager', 'Gerente')}</TableHead>
+                  <TableHead>{t('common.name', 'Hotel Name')}</TableHead>
+                  <TableHead>{t('common.address', 'Location')}</TableHead>
+                  <TableHead>
+                    {t('common.manager', 'Manager Details')}
+                  </TableHead>
                   <TableHead className="text-right">
-                    {t('common.actions', 'Ações')}
+                    {t('common.actions', 'Actions')}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -293,28 +360,46 @@ export default function Hotels() {
                       <TableCell className="font-medium text-slate-900">
                         {hotel.name}
                       </TableCell>
-                      <TableCell className="text-slate-600">
-                        {hotel.city}
+                      <TableCell className="text-slate-600 max-w-[250px] truncate">
+                        {formatAddress(hotel)}
                       </TableCell>
                       <TableCell className="text-slate-600">
-                        {hotel.manager_name ||
-                          t('common.unassigned', 'Não atribuído')}
+                        <div className="flex flex-col">
+                          <span className="font-medium text-slate-800">
+                            {hotel.manager_name ||
+                              t('common.unassigned', 'Unassigned')}
+                          </span>
+                          {hotel.manager_email && (
+                            <span className="text-xs text-slate-500">
+                              {hotel.manager_email}
+                            </span>
+                          )}
+                          {hotel.manager_phone && (
+                            <span className="text-xs text-slate-500">
+                              {hotel.manager_phone}
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Link to={`/hotels/${hotel.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4 mr-2" />{' '}
+                              {t('common.view', 'Manage')}
+                            </Button>
+                          </Link>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleOpenEdit(hotel)}
                           >
-                            <Pencil className="h-4 w-4 mr-2" />{' '}
-                            {t('common.edit', 'Edit')}
+                            <Pencil className="h-4 w-4" />
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4 mr-2" />{' '}
-                                {t('common.delete', 'Delete')}
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>

@@ -17,12 +17,12 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
       <CardHeader>
         <CardTitle>{t('properties.tabs.overview') || 'Overview'}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>{t('common.name') || 'Name'}</Label>
             <Input
-              value={data.name}
+              value={data.name || ''}
               onChange={(e) => onChange('name', e.target.value)}
               disabled={!canEdit}
             />
@@ -53,6 +53,67 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
               value={t(`status.${data.status}`, data.status || '')}
               disabled
             />
+          </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <h4 className="font-medium text-sm mb-4">
+            {t('common.property_details', 'Property Details')}
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label>{t('common.area', 'Area')}</Label>
+              <Input
+                type="number"
+                value={data.area || ''}
+                onChange={(e) => onChange('area', parseFloat(e.target.value))}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.bedrooms', 'Bedrooms')}</Label>
+              <Input
+                type="number"
+                value={data.bedrooms || ''}
+                onChange={(e) =>
+                  onChange('bedrooms', parseInt(e.target.value, 10))
+                }
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.bathrooms', 'Bathrooms')}</Label>
+              <Input
+                type="number"
+                value={data.bathrooms || ''}
+                onChange={(e) =>
+                  onChange('bathrooms', parseInt(e.target.value, 10))
+                }
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.guests', 'Guests')}</Label>
+              <Input
+                type="number"
+                value={data.guests || ''}
+                onChange={(e) =>
+                  onChange('guests', parseInt(e.target.value, 10))
+                }
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2 col-span-2">
+              <Label>{t('common.price', 'Listing Price')}</Label>
+              <Input
+                type="number"
+                value={data.listingPrice || ''}
+                onChange={(e) =>
+                  onChange('listingPrice', parseFloat(e.target.value))
+                }
+                disabled={!canEdit}
+              />
+            </div>
           </div>
         </div>
       </CardContent>

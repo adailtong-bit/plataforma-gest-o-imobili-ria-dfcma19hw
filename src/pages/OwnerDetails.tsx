@@ -114,13 +114,28 @@ export default function OwnerDetails() {
                   <Mail className="h-4 w-4 text-slate-400" /> {owner.email}
                 </div>
                 <div className="flex items-center gap-3 text-sm text-slate-700">
-                  <Phone className="h-4 w-4 text-slate-400" /> {owner.phone}
+                  <Phone className="h-4 w-4 text-slate-400" />{' '}
+                  {owner.phone || 'No phone provided'}
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-700">
-                  <MapPin className="h-4 w-4 text-slate-400" />
-                  {owner.city
-                    ? `${owner.city}, ${owner.state || ''}`
-                    : owner.country || 'N/A'}
+                <div className="flex items-start gap-3 text-sm text-slate-700">
+                  <MapPin className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                  <div>
+                    {owner.address && <div>{owner.address}</div>}
+                    <div>
+                      {owner.city ? `${owner.city}, ` : ''}
+                      {owner.state ? `${owner.state} ` : ''}
+                      {owner.zipCode || owner.zip_code || ''}
+                    </div>
+                    {!owner.city && !owner.address && (
+                      <span className="text-slate-400">
+                        No address provided
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-slate-700 border-t pt-4 mt-2">
+                  <span className="font-semibold text-slate-500">Tax ID:</span>{' '}
+                  {owner.document || 'Not provided'}
                 </div>
               </CardContent>
             </Card>
