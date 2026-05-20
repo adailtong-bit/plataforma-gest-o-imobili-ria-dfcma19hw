@@ -169,7 +169,7 @@ const App = () => {
     const removeDebug = () => {
       document.querySelectorAll('pre').forEach((el) => {
         if (el.textContent?.includes('currentRoute')) {
-          el.style.display = 'none'
+          el.remove()
         }
       })
     }

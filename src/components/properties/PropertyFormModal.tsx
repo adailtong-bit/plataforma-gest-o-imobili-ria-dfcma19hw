@@ -71,7 +71,7 @@ export function PropertyFormModal({
     if (form.type === 'room' && (!form.hotel_id || form.hotel_id === 'none')) {
       return toast({
         title: 'Error',
-        description: 'You must associate the property with a Hotel.',
+        description: 'You must associate the room with a Hotel.',
         variant: 'destructive',
       })
     }
@@ -151,13 +151,13 @@ export function PropertyFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="sm:max-w-[800px] h-[85vh] flex flex-col p-0">
         <DialogHeader className="p-6 pb-2 border-b">
           <DialogTitle>
             {property ? 'Edit Property' : 'Add Property'}
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="basic">
@@ -186,7 +186,7 @@ export function PropertyFormModal({
               />
             </TabsContent>
           </Tabs>
-        </ScrollArea>
+        </div>
         <DialogFooter className="p-6 border-t mt-auto">
           <Button
             variant="outline"
