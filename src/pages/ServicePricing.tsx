@@ -90,17 +90,20 @@ export default function ServicePricing() {
           software_tenant: [
             {
               value: 'software_fee_per_house',
-              label: t('type_software_fee', 'Software Fee (Per House)'),
+              label: t(
+                'type_software_fee_per_house',
+                'Software Fee (Per House)',
+              ),
             },
             {
               value: 'fixed_admin_fee',
-              label: t('type_platform_fixed', 'Platform Fixed Fee'),
+              label: t('type_fixed_admin_fee', 'Platform Fixed Fee'),
             },
           ],
           advertiser: [
             {
               value: 'ad_placement_fee',
-              label: t('type_ad_fee', 'Ad Placement Fee'),
+              label: t('type_ad_placement_fee', 'Ad Placement Fee'),
             },
           ],
         },
@@ -119,11 +122,11 @@ export default function ServicePricing() {
           property_owner: [
             {
               value: 'booking_percentage',
-              label: t('type_booking_share', 'Booking Revenue Share (%)'),
+              label: t('type_booking_percentage', 'Booking Revenue Share (%)'),
             },
             {
               value: 'fixed_admin_fee',
-              label: t('type_fixed_admin', 'Fixed Admin Fee'),
+              label: t('type_fixed_admin_fee', 'Fixed Admin Fee'),
             },
             {
               value: 'markup_cleaning',
@@ -154,15 +157,15 @@ export default function ServicePricing() {
           software_tenant: [
             {
               value: 'partner_cleaning_fee',
-              label: t('type_partner_cleaning', 'Cleaning Fee'),
+              label: t('type_partner_cleaning_fee', 'Cleaning Fee'),
             },
             {
               value: 'partner_maintenance_fee',
-              label: t('type_partner_maintenance', 'Maintenance Fee'),
+              label: t('type_partner_maintenance_fee', 'Maintenance Fee'),
             },
             {
               value: 'partner_parts_fee',
-              label: t('type_partner_parts', 'Parts & Materials Fee'),
+              label: t('type_partner_parts_fee', 'Parts & Materials Fee'),
             },
           ],
         },
@@ -181,15 +184,15 @@ export default function ServicePricing() {
           partner: [
             {
               value: 'team_cleaning_fee',
-              label: t('type_team_cleaning', 'Cleaning Payout'),
+              label: t('type_team_cleaning_fee', 'Cleaning Payout'),
             },
             {
               value: 'team_maintenance_fee',
-              label: t('type_team_maintenance', 'Maintenance Payout'),
+              label: t('type_team_maintenance_fee', 'Maintenance Payout'),
             },
             {
               value: 'team_parts_fee',
-              label: t('type_team_parts', 'Parts Reimbursement'),
+              label: t('type_team_parts_fee', 'Parts Reimbursement'),
             },
           ],
         },
@@ -230,8 +233,8 @@ export default function ServicePricing() {
   const handleSave = () => {
     if (!form.name) {
       toast({
-        title: 'Error',
-        description: 'Name is required',
+        title: t('toast_error_title', 'Error'),
+        description: t('toast_name_required', 'Name is required'),
         variant: 'destructive',
       })
       return
@@ -240,8 +243,11 @@ export default function ServicePricing() {
     if (editingRecord) {
       updateAgreement({ ...editingRecord, ...form } as BillingAgreement)
       toast({
-        title: 'Success',
-        description: 'Agreement updated successfully.',
+        title: t('toast_success_title', 'Success'),
+        description: t(
+          'toast_agreement_updated',
+          'Agreement updated successfully.',
+        ),
       })
     } else {
       addAgreement({
@@ -262,8 +268,11 @@ export default function ServicePricing() {
         status: form.status || 'active',
       } as BillingAgreement)
       toast({
-        title: 'Success',
-        description: 'Agreement created successfully.',
+        title: t('toast_success_title', 'Success'),
+        description: t(
+          'toast_agreement_created',
+          'Agreement created successfully.',
+        ),
       })
     }
     setIsAddOpen(false)
@@ -275,8 +284,11 @@ export default function ServicePricing() {
     if (deleteId) {
       deleteAgreement(deleteId)
       toast({
-        title: 'Success',
-        description: 'Agreement deleted successfully.',
+        title: t('toast_success_title', 'Success'),
+        description: t(
+          'toast_agreement_deleted',
+          'Agreement deleted successfully.',
+        ),
       })
       setDeleteId(null)
     }
@@ -487,7 +499,7 @@ export default function ServicePricing() {
                           ),
                         )}
                         <SelectItem value="custom">
-                          {t('option_custom_rule', 'Custom Rule')}
+                          {t('type_custom', 'Custom Rule')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -617,11 +629,13 @@ export default function ServicePricing() {
                   <TableCell>
                     <div className="flex items-center gap-2 text-xs font-semibold">
                       <span className="text-blue-600">
-                        {roleLabels[agreement.sourceRole as string] || 'System'}
+                        {roleLabels[agreement.sourceRole as string] ||
+                          t('role_system', 'System')}
                       </span>
                       <span className="text-slate-400">➔</span>
                       <span className="text-emerald-600">
-                        {roleLabels[agreement.targetRole as string] || 'User'}
+                        {roleLabels[agreement.targetRole as string] ||
+                          t('role_user', 'User')}
                       </span>
                     </div>
                   </TableCell>
@@ -635,7 +649,10 @@ export default function ServicePricing() {
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-slate-600 capitalize">
-                      {agreement.type.replace(/_/g, ' ')}
+                      {t(
+                        `type_${agreement.type}`,
+                        agreement.type.replace(/_/g, ' '),
+                      )}
                     </span>
                   </TableCell>
                   <TableCell className="font-bold text-slate-800">
@@ -649,7 +666,9 @@ export default function ServicePricing() {
                           : 'bg-slate-100 text-slate-800'
                       }
                     >
-                      {agreement.status}
+                      {agreement.status === 'active'
+                        ? t('status_active', 'Active')
+                        : t('status_inactive', 'Inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">

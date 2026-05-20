@@ -16,7 +16,10 @@ export function useDbTranslations() {
 
   // Fetch user's language preference
   useEffect(() => {
-    if (currentUser?.id) {
+    const lang = (currentUser as any)?.language_preference
+    if (lang && lang !== locale) {
+      setLocale(lang)
+    } else if (currentUser?.id && !lang) {
       const fetchUserLang = async () => {
         const { data } = await supabase
           .from('profiles')
@@ -28,11 +31,7 @@ export function useDbTranslations() {
           setLocale(data.language_preference)
 
           // Sync with global store if needed
-          if (
-            (currentUser as any).language_preference !==
-              data.language_preference &&
-            setCurrentUser
-          ) {
+          if (setCurrentUser) {
             setCurrentUser({
               ...currentUser,
               language_preference: data.language_preference,
@@ -42,7 +41,7 @@ export function useDbTranslations() {
       }
       fetchUserLang()
     }
-  }, [currentUser?.id, setCurrentUser])
+  }, [currentUser, locale, setCurrentUser])
 
   // Load translations from DB
   useEffect(() => {
@@ -105,8 +104,11 @@ export function useDbTranslations() {
           language_preference: newLocale,
         } as any)
         toast({
-          title: 'Language updated',
-          description: 'Your language preference has been saved.',
+          title: t('toast_lang_updated', 'Language updated'),
+          description: t(
+            'toast_lang_saved',
+            'Your language preference has been saved.',
+          ),
         })
       }
     }
