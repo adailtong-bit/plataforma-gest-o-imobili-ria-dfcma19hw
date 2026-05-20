@@ -492,7 +492,7 @@ export function AdsManager() {
                             <a
                               href={camp.link_url}
                               target="_blank"
-                              rel="noreferrer"
+                              rel="noopener noreferrer"
                               className="text-xs text-blue-600 flex items-center gap-1 hover:underline"
                             >
                               <LinkIcon className="h-3 w-3" /> Link

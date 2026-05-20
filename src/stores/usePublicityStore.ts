@@ -8,7 +8,7 @@ let listeners: (() => void)[] = []
 
 const notify = () => listeners.forEach((l) => l())
 
-export const fetchPublicityData = async () => {
+const fetchPublicityData = async () => {
   const [advRes, priceRes, campRes] = await Promise.all([
     supabase.from('advertisers').select('*'),
     supabase.from('publicity_pricing_matrix').select('*'),
@@ -23,7 +23,7 @@ export const fetchPublicityData = async () => {
 }
 
 // Fetch on initialization
-fetchPublicityData()
+fetchPublicityData().catch(console.error)
 
 const usePublicityStore = () => {
   const [advertisers, setAdvertisers] = useState<any[]>(globalAdvertisers)
