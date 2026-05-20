@@ -52,9 +52,7 @@ export function AppSidebar() {
   const { t } = useLanguageStore()
 
   const getTitle = (key: string, fallback: string) => {
-    const text = t(key)
-    if (!text || text === key || text.includes('.')) return fallback
-    return text
+    return t(key, fallback)
   }
 
   const effectiveRole =
@@ -67,13 +65,13 @@ export function AppSidebar() {
   const mainNavItems = React.useMemo(
     () => [
       {
-        title: getTitle('sidebar.dashboard', 'Dashboard'),
+        title: getTitle('menu.dashboard', 'Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
       },
       {
-        title: getTitle('sidebar.units', 'Properties'),
+        title: getTitle('menu.properties', 'Properties'),
         url: '/properties',
         icon: Building2,
         resource: 'properties',
@@ -115,7 +113,7 @@ export function AppSidebar() {
         resource: 'financial',
       },
       {
-        title: getTitle('common.invoices', 'Invoices'),
+        title: getTitle('menu.invoices', 'Invoices'),
         url: '/invoices',
         icon: FileText,
         resource: 'financial',
@@ -181,7 +179,7 @@ export function AppSidebar() {
         resource: 'marketing',
       },
       {
-        title: getTitle('common.tasks', 'Tasks'),
+        title: getTitle('menu.tasks', 'Tasks'),
         url: '/tasks',
         icon: Wrench,
         resource: 'tasks',
@@ -211,7 +209,7 @@ export function AppSidebar() {
         resource: 'partners',
       },
       {
-        title: getTitle('common.messages', 'Messages'),
+        title: getTitle('menu.messages', 'Messages'),
         url: '/messages',
         icon: MessageSquare,
         resource: 'messages',
@@ -304,28 +302,28 @@ export function AppSidebar() {
   const portalItems = React.useMemo(
     () => [
       {
-        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        title: getTitle('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'tenant',
       },
       {
-        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        title: getTitle('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'property_owner',
       },
       {
-        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        title: getTitle('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'partner',
       },
       {
-        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        title: getTitle('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
@@ -435,7 +433,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.messages', 'Messages')} (PM Sync)
+                            {getTitle('menu.messages', 'Messages')} (PM Sync)
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -452,7 +450,7 @@ export function AppSidebar() {
                       <Link to="/messages" className="px-4 py-2.5">
                         <MessageSquare className="h-4 w-4 mr-3" />
                         <span className="font-medium text-sm">
-                          {getTitle('common.messages', 'Messages')}
+                          {getTitle('menu.messages', 'Messages')}
                         </span>{' '}
                       </Link>
                     </SidebarMenuButton>
@@ -470,7 +468,7 @@ export function AppSidebar() {
                         <Link to="/tasks" className="px-4 py-2.5">
                           <Wrench className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.tasks', 'Tasks')}
+                            {getTitle('menu.tasks', 'Tasks')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -484,7 +482,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('common.messages', 'Messages')}
+                            {getTitle('menu.messages', 'Messages')}
                           </span>
                         </Link>
                       </SidebarMenuButton>

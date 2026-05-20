@@ -66,6 +66,7 @@ import useBillingStore from '@/stores/useBillingStore'
 import useShortTermStore from '@/stores/useShortTermStore'
 import useTaskStore from '@/stores/useTaskStore'
 import { supabase } from '@/lib/supabase/client'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 const emptyForm = (): Partial<Invoice> => ({
   description: '',
@@ -99,6 +100,7 @@ export default function Invoices() {
   const { agreements } = useBillingStore()
   const { bookings } = useShortTermStore()
   const { tasks } = useTaskStore()
+  const { t } = useLanguageStore()
 
   const [search, setSearch] = useState('')
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -480,7 +482,7 @@ export default function Invoices() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Invoices
+            {t('menu.invoices', 'Invoices')}
           </h1>
           <p className="text-muted-foreground">
             Manage service invoices and billing hierarchy.
@@ -1035,13 +1037,19 @@ export default function Invoices() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="w-24">Invoice No.</TableHead>
-                <TableHead>Billed To</TableHead>
-                <TableHead>Reference</TableHead>
-                <TableHead>Issue Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total Amount</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-24">
+                  {t('invoices.invoice_no', 'Invoice No.')}
+                </TableHead>
+                <TableHead>{t('invoices.billed_to', 'Billed To')}</TableHead>
+                <TableHead>{t('common.reference', 'Reference')}</TableHead>
+                <TableHead>{t('invoices.issue_date', 'Issue Date')}</TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.total_amount', 'Total Amount')}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions', 'Actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

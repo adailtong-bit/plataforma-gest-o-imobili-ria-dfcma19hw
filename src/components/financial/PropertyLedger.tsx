@@ -72,8 +72,7 @@ export function PropertyLedger({ propertyId, entries }: PropertyLedgerProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-4">
         <h3 className="text-lg font-bold text-slate-900">
-          {t('financial.title') || 'Financial'} -{' '}
-          {t('common.history') || 'History'}
+          {t('menu.ledger', 'Ledger')} - {t('common.history', 'History')}
         </h3>
         <div className="flex items-center gap-4">
           <div className="text-right">

@@ -25,6 +25,7 @@ import { format } from 'date-fns'
 import { canChat } from '@/lib/permissions'
 import { User } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 interface Profile {
   id: string
@@ -52,6 +53,7 @@ interface Message {
 export default function Messages() {
   const { currentUser: profile, isAuthLoading: authLoading } = useAuthStore()
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [searchParams, setSearchParams] = useSearchParams()
   const convIdParam = searchParams.get('chat')
 
@@ -387,7 +389,9 @@ export default function Messages() {
         )}
       >
         <div className="p-4 border-b border-slate-200 bg-white flex justify-between items-center">
-          <h2 className="font-semibold text-lg text-slate-800">Messages</h2>
+          <h2 className="font-semibold text-lg text-slate-800">
+            {t('menu.messages', 'Messages')}
+          </h2>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -400,7 +404,9 @@ export default function Messages() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Start New Conversation</DialogTitle>
+                <DialogTitle>
+                  {t('messages.start_conversation', 'Start New Conversation')}
+                </DialogTitle>
               </DialogHeader>
               <div className="mt-4 space-y-1 max-h-[60vh] overflow-y-auto pr-2">
                 {availableUsers.length === 0 ? (
@@ -455,7 +461,7 @@ export default function Messages() {
           ) : conversations.length === 0 ? (
             <div className="p-8 text-center text-slate-500 text-sm flex flex-col items-center">
               <MessageSquarePlus className="w-8 h-8 mb-3 opacity-20" />
-              <p>No conversations yet.</p>
+              <p>{t('messages.no_conversations', 'No conversations yet.')}</p>
               <p className="text-xs mt-1">Click the + button to start one.</p>
             </div>
           ) : (
@@ -611,7 +617,7 @@ export default function Messages() {
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
+                  placeholder={t('messages.type_message', 'Type a message...')}
                   className="flex-1 bg-slate-50 focus-visible:ring-1 focus-visible:bg-white"
                   autoComplete="off"
                 />

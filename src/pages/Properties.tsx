@@ -505,7 +505,7 @@ export default function Properties() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
-            {t('properties.title')}
+            {t('menu.properties', t('properties.title', 'Properties'))}
           </h1>
           <p className="text-black font-medium">{t('properties.subtitle')}</p>
         </div>
@@ -1115,21 +1115,25 @@ export default function Properties() {
             <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
               <tr>
                 <th className="px-4 py-3 font-bold text-black w-[80px]">
-                  Foto
+                  {t('properties.photo', 'Foto')}
                 </th>
                 <th className="px-4 py-3 font-bold text-black">
-                  Nome / Identificação
+                  {t('properties.name_id', 'Nome / Identificação')}
                 </th>
                 <th className="px-4 py-3 font-bold text-black">
-                  Hotel / Condomínio
+                  {t('properties.hotel_condo', 'Hotel / Condomínio')}
                 </th>
                 <th className="px-4 py-3 font-bold text-black">
-                  Torre / Andar / Quarto
+                  {t('properties.tower_floor_room', 'Torre / Andar / Quarto')}
                 </th>
-                <th className="px-4 py-3 font-bold text-black">Perfil</th>
-                <th className="px-4 py-3 font-bold text-black">Status</th>
+                <th className="px-4 py-3 font-bold text-black">
+                  {t('properties.profile', 'Perfil')}
+                </th>
+                <th className="px-4 py-3 font-bold text-black">
+                  {t('common.status', 'Status')}
+                </th>
                 <th className="px-4 py-3 font-bold text-black text-right">
-                  Ações
+                  {t('common.actions', 'Ações')}
                 </th>
               </tr>
             </thead>

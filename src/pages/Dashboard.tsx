@@ -352,7 +352,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('dashboard.title', 'Central Control Panel')}
+            {t('dashboard.welcome', 'Welcome to Dashboard')}
           </h1>
           <p className="text-muted-foreground">
             {t(
@@ -374,7 +374,7 @@ export default function Dashboard() {
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-4"
           >
-            {t('dashboard.tabs.overview', 'Overview')}
+            {t('dashboard.summary', 'Summary')}
           </TabsTrigger>
           <TabsTrigger
             value="financial"
@@ -1170,7 +1170,7 @@ export default function Dashboard() {
             <Card className="shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>
-                  {t('dashboard.operations_tab.latest_issues', 'Latest Issues')}
+                  {t('dashboard.recent_activity', 'Recent Activity')}
                 </CardTitle>
                 <Link
                   to="/tasks"

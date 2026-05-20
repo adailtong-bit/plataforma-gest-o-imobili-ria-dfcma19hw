@@ -67,9 +67,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     let isMounted = true
 
     const loadTranslations = async () => {
-      setLoading(true)
-
       if (!globalTranslationsCache) {
+        setLoading(true)
         const { data, error } = await supabase
           .from('ui_translations')
           .select('key, locale, value')

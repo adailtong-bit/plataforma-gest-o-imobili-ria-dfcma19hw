@@ -225,7 +225,7 @@ export default function Tasks() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
-            {t('tasks.title')}
+            {t('menu.tasks', t('tasks.title', 'Tasks'))}
           </h1>
           <p className="text-black font-medium">{t('tasks.subtitle')}</p>
         </div>
