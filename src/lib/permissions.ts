@@ -238,8 +238,12 @@ export const hasPermission = (
 }
 
 export const canChat = (initiator: User, target: User): boolean => {
+  if (!initiator || !target) return false
+
   const initiatorRole = initiator.role
   const targetRole = target.role
+
+  if (!initiatorRole || !targetRole) return false
 
   if (
     initiatorRole === 'platform_owner' ||

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase/client'
-import { useAuth } from '@/hooks/use-auth'
+import useAuthStore from '@/stores/useAuthStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -11,6 +11,7 @@ import {
   MessageSquarePlus,
   User as UserIcon,
   Loader2,
+  ChevronLeft,
 } from 'lucide-react'
 import {
   Dialog,
@@ -23,6 +24,7 @@ import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
 import { canChat } from '@/lib/permissions'
 import { User } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface Profile {
   id: string
@@ -48,7 +50,7 @@ interface Message {
 }
 
 export default function Messages() {
-  const { profile, loading: authLoading } = useAuth()
+  const { currentUser: profile, isAuthLoading: authLoading } = useAuthStore()
   const { toast } = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
   const convIdParam = searchParams.get('chat')
@@ -87,7 +89,11 @@ export default function Messages() {
   }
 
   useEffect(() => {
-    if (authLoading || !profile) return
+    if (authLoading) return
+    if (!profile) {
+      setLoadingConvs(false)
+      return
+    }
     loadConversations()
     loadAvailableUsers()
   }, [profile, authLoading])
@@ -374,7 +380,12 @@ export default function Messages() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-300">
-      <div className="w-80 border-r border-slate-200 flex flex-col bg-slate-50/50">
+      <div
+        className={cn(
+          'w-full md:w-80 border-r border-slate-200 flex flex-col bg-slate-50/50',
+          activeConvId ? 'hidden md:flex' : 'flex',
+        )}
+      >
         <div className="p-4 border-b border-slate-200 bg-white flex justify-between items-center">
           <h2 className="font-semibold text-lg text-slate-800">Messages</h2>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -499,10 +510,26 @@ export default function Messages() {
         </ScrollArea>
       </div>
 
-      <div className="flex-1 flex flex-col bg-white">
+      <div
+        className={cn(
+          'flex-1 flex flex-col bg-white',
+          !activeConvId ? 'hidden md:flex' : 'flex',
+        )}
+      >
         {activeConvId && activeConversation ? (
           <>
             <div className="p-4 border-b border-slate-200 flex items-center gap-3 bg-white/95 backdrop-blur z-10 sticky top-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden mr-1 -ml-2"
+                onClick={() => {
+                  setActiveConvId(null)
+                  setSearchParams({}, { replace: true })
+                }}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
               <Avatar className="h-10 w-10 border shadow-sm">
                 <img
                   src={`https://img.usecurling.com/ppl/thumbnail?seed=${activeOtherUser?.id}`}
