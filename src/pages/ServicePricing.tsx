@@ -624,7 +624,7 @@ export default function ServicePricing() {
               {filteredRates.map((agreement) => (
                 <TableRow key={agreement.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
-                    {agreement.name}
+                    {t(agreement.name, agreement.name)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-xs font-semibold">
