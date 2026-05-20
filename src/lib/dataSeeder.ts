@@ -207,7 +207,11 @@ export function generateSeederData() {
             totalAmount: amt,
             baseAmount: amt,
             paid: true,
-            platform: ['airbnb', 'vrbo', 'direct', 'booking.com'][b % 4] as any,
+            platform: ['airbnb', 'vrbo', 'direct', 'booking.com'][b % 4] as
+              | 'airbnb'
+              | 'vrbo'
+              | 'direct'
+              | 'booking.com',
             organizationId: pm.id,
           })
           data.invoices.push({

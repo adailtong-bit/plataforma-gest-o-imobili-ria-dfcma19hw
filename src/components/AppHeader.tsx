@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
-import { usePrivacyStore } from '@/stores/usePrivacyStore'
+import usePrivacyStore from '@/stores/usePrivacyStore'
 
 export function AppHeader() {
   const { language, setLanguage, t } = useLanguageStore()
