@@ -88,11 +88,9 @@ const emptyForm = (): Partial<Invoice> => ({
 export default function Invoices() {
   const context = useContext(AppContext)
   const financials = context?.financials || { invoices: [] }
-  const ledgerEntries = context?.ledgerEntries || []
   const addInvoice = context?.addInvoice || (() => {})
   const updateInvoice = context?.updateInvoice || (() => {})
   const deleteInvoice = context?.deleteInvoice || (() => {})
-  const updateLedgerEntry = context?.updateLedgerEntry || (() => {})
   const formatAppCurrency =
     context?.formatAppCurrency || ((v: number) => `$${v}`)
 

@@ -23,13 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import {
-  TrendingUp,
-  Star,
-  MessageSquare,
-  DollarSign,
-  Activity,
-} from 'lucide-react'
+import { Star, MessageSquare, DollarSign, Activity } from 'lucide-react'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { useAdRotation } from '@/hooks/useAdRotation'
 import usePublicityStore from '@/stores/usePublicityStore'
