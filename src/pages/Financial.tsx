@@ -137,6 +137,7 @@ export default function Financial() {
     category: 'other',
     date: new Date().toISOString().substring(0, 10),
     propertyId: 'none',
+    bookingId: '',
     costType: 'variable',
     isRecurring: false,
     recurrenceFrequency: 'monthly',
@@ -327,6 +328,7 @@ export default function Financial() {
       status: form.status as 'pending' | 'cleared',
       category: form.category,
       propertyId: form.propertyId === 'none' ? '' : form.propertyId,
+      bookingId: form.bookingId || null,
       costType: form.costType as 'fixed' | 'variable',
       isRecurring: form.isRecurring,
       recurrenceFrequency: form.recurrenceFrequency as 'monthly' | 'yearly',
@@ -371,6 +373,7 @@ export default function Financial() {
         category: form.category,
         date: new Date(form.date).toISOString(),
         propertyId: form.propertyId === 'none' ? '' : form.propertyId,
+        bookingId: form.bookingId || null,
         costType: form.costType as 'fixed' | 'variable',
         isRecurring: form.isRecurring,
         recurrenceFrequency: form.recurrenceFrequency as 'monthly' | 'yearly',
@@ -392,6 +395,7 @@ export default function Financial() {
       category: entry.category || 'other',
       date: entry.date.substring(0, 10),
       propertyId: entry.propertyId || 'none',
+      bookingId: entry.bookingId || '',
       costType: entry.costType || 'variable',
       isRecurring: entry.isRecurring || false,
       recurrenceFrequency: entry.recurrenceFrequency || 'monthly',
@@ -599,6 +603,22 @@ export default function Financial() {
                       }}
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label>
+                      {t('financial.booking_optional') ||
+                        'Booking / Guest ID (Optional)'}
+                    </Label>
+                    <Input
+                      placeholder="Booking ID for Guest Consumption"
+                      value={form.bookingId}
+                      onChange={(e) =>
+                        setForm({ ...form, bookingId: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>
                       {t('financial.property_optional') ||
@@ -1284,6 +1304,25 @@ export default function Financial() {
                                         }}
                                       />
                                     </div>
+                                    <div className="grid gap-2">
+                                      <Label>
+                                        {t('financial.booking_optional') ||
+                                          'Booking / Guest ID'}
+                                      </Label>
+                                      <Input
+                                        placeholder="Booking ID for Guest Consumption"
+                                        value={form.bookingId}
+                                        onChange={(e) =>
+                                          setForm({
+                                            ...form,
+                                            bookingId: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                       <Label>
                                         {t('common.property') || 'Property'}

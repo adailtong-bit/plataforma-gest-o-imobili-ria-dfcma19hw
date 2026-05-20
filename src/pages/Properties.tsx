@@ -44,6 +44,9 @@ import {
 } from '@/components/ui/select'
 import { Link } from 'react-router-dom'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { ImportPropertiesModal } from '@/components/properties/ImportPropertiesModal'
+import { BulkPricingModal } from '@/components/properties/BulkPricingModal'
+import { Download, DollarSign } from 'lucide-react'
 
 export default function Properties() {
   const { t } = useDbTranslations()
@@ -52,6 +55,8 @@ export default function Properties() {
   const [properties, setProperties] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
+  const [isImportOpen, setIsImportOpen] = useState(false)
+  const [isBulkOpen, setIsBulkOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<any>({})
 
@@ -192,14 +197,41 @@ export default function Properties() {
             {t('properties.subtitle', 'Manage your properties')}
           </p>
         </div>
-        <Button
-          onClick={handleOpenAdd}
-          className="bg-trust-blue text-white gap-2"
-        >
-          <Plus className="h-4 w-4" />{' '}
-          {t('common.add_property', 'Add Property')}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setIsBulkOpen(true)}
+            variant="outline"
+            className="gap-2"
+          >
+            <DollarSign className="h-4 w-4" /> Bulk Pricing
+          </Button>
+          <Button
+            onClick={() => setIsImportOpen(true)}
+            variant="outline"
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" /> Import
+          </Button>
+          <Button
+            onClick={handleOpenAdd}
+            className="bg-trust-blue text-white gap-2"
+          >
+            <Plus className="h-4 w-4" />{' '}
+            {t('common.add_property', 'Add Property')}
+          </Button>
+        </div>
       </div>
+
+      <ImportPropertiesModal
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+        onImported={fetchProperties}
+      />
+      <BulkPricingModal
+        open={isBulkOpen}
+        onOpenChange={setIsBulkOpen}
+        onUpdated={fetchProperties}
+      />
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0">

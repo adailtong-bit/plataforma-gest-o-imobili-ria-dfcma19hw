@@ -28,6 +28,8 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import { BulkPricingModal } from '@/components/hotels/BulkPricingModal'
+import { DollarSign } from 'lucide-react'
 
 interface RoomType {
   id: string
@@ -46,7 +48,14 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isBulkOpen, setIsBulkOpen] = useState(false)
   const [editingType, setEditingType] = useState<Partial<RoomType>>({})
+
+  useEffect(() => {
+    const handleUpdate = () => fetchRoomTypes()
+    window.addEventListener('roomTypesUpdated', handleUpdate)
+    return () => window.removeEventListener('roomTypesUpdated', handleUpdate)
+  }, [hotelId])
 
   const fetchRoomTypes = async () => {
     setLoading(true)
@@ -143,16 +152,30 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
             to apply them in bulk to rooms.
           </CardDescription>
         </div>
-        <Button
-          onClick={() => {
-            setEditingType({})
-            setIsDialogOpen(true)
-          }}
-          className="bg-trust-blue text-white"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Category
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setIsBulkOpen(true)}
+            variant="outline"
+            className="gap-2"
+          >
+            <DollarSign className="h-4 w-4" /> Bulk Pricing
+          </Button>
+          <Button
+            onClick={() => {
+              setEditingType({})
+              setIsDialogOpen(true)
+            }}
+            className="bg-trust-blue text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Category
+          </Button>
+        </div>
       </CardHeader>
+      <BulkPricingModal
+        hotelId={hotelId}
+        open={isBulkOpen}
+        onOpenChange={setIsBulkOpen}
+      />
       <CardContent>
         {loading ? (
           <div className="text-center py-4">Loading...</div>
