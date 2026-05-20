@@ -3,7 +3,8 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AppContext } from '@/stores/AppContext'
 import useAuthStore from '@/stores/useAuthStore'
-import { formatCurrency } from '@/lib/utils'
+import usePublicityStore from '@/stores/usePublicityStore'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -18,6 +19,7 @@ import {
   Users,
   Building,
   ArrowRight,
+  AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -82,7 +84,22 @@ export default function Index() {
       : 0
   const revPar = adr * (occupancy / 100)
 
+  const { campaigns } = usePublicityStore()
+
   const pendingApprovals = tasks.filter((t) => t.status === 'pending_approval')
+
+  const now = new Date()
+  const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+  const expiringCampaigns = campaigns
+    .filter((c) => {
+      if (c.status !== 'active' || !c.end_date) return false
+      const endDate = new Date(c.end_date)
+      return endDate >= now && endDate <= next7Days
+    })
+    .sort(
+      (a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime(),
+    )
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -205,6 +222,66 @@ export default function Index() {
                 </Button>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      )}
+
+      {isRealAdmin && expiringCampaigns.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <h2 className="text-lg font-semibold text-slate-800">
+              Campaigns Expiring Soon
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {expiringCampaigns.map((camp) => {
+              const endDate = new Date(camp.end_date)
+              const timeDiff = endDate.getTime() - now.getTime()
+              const hoursDiff = timeDiff / (1000 * 3600)
+              const isUrgent = hoursDiff < 48
+
+              return (
+                <Card
+                  key={camp.id}
+                  className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-start">
+                      <span className="font-semibold text-slate-900 truncate pr-2">
+                        {camp.title}
+                      </span>
+                      <Badge
+                        className={
+                          isUrgent
+                            ? 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'
+                            : 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200'
+                        }
+                      >
+                        {isUrgent ? 'Urgent' : 'Warning'}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-slate-500">
+                      <span>Expires: {formatDate(camp.end_date)}</span>
+                      {isUrgent && (
+                        <span className="font-medium text-red-600">
+                          {Math.max(0, Math.floor(hoursDiff))}h left
+                        </span>
+                      )}
+                    </div>
+                    <Link to="/admin/publicity" className="mt-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs h-8"
+                      >
+                        Manage Campaign
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       )}

@@ -210,7 +210,11 @@ const usePublicityStore = () => {
     updatePricingMatrix,
     deletePricingMatrix,
 
-    campaigns,
+    campaigns: campaigns.map((c) => ({
+      ...c,
+      impressions_count: c.impressions_count || 0,
+      clicks_count: c.clicks_count || 0,
+    })),
     addCampaign,
     updateCampaign,
     deleteCampaign,

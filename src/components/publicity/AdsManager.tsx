@@ -35,6 +35,7 @@ import {
   Play,
   Calculator,
   AlertCircle,
+  FileText,
 } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -276,6 +277,92 @@ export function AdsManager() {
     }
   }
 
+  const generatePDFReport = (camp: any) => {
+    const adv = advertisers.find((a) => a.id === camp.advertiser_id)
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Campaign Report - ${camp.title}</title>
+          <style>
+            body { font-family: system-ui, sans-serif; padding: 40px; color: #333; }
+            .header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo { font-size: 24px; font-weight: bold; color: #1e40af; }
+            .title { font-size: 28px; margin-top: 10px; }
+            .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #e0e7ff; color: #1e40af; font-size: 14px; font-weight: 500; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+            .box { padding: 20px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
+            .label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+            .val { font-size: 18px; font-weight: 600; margin-top: 5px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+            th { color: #666; font-size: 12px; text-transform: uppercase; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">SUMMERPM</div>
+            <div class="title">Campaign Performance Report</div>
+            <p style="color: #666;">Generated on ${new Date().toLocaleDateString()}</p>
+          </div>
+          
+          <div class="grid">
+            <div class="box">
+              <div class="label">Campaign Title</div>
+              <div class="val">${camp.title}</div>
+              <div style="margin-top: 10px;">
+                <span class="badge">${camp.status.toUpperCase()}</span>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">Advertiser</div>
+              <div class="val">${adv?.name || 'N/A'}</div>
+              <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                ${adv?.billing_email || 'No email provided'}<br/>
+                ${adv?.billing_phone || 'No phone provided'}
+              </div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="box">
+              <div class="label">Duration</div>
+              <div class="val">
+                ${camp.start_date ? new Date(camp.start_date).toLocaleDateString() : 'N/A'} to ${camp.end_date ? new Date(camp.end_date).toLocaleDateString() : 'N/A'}
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">Total Amount</div>
+              <div class="val">$${(camp.total_amount || 0).toFixed(2)}</div>
+            </div>
+          </div>
+
+          <h3>Performance Metrics</h3>
+          <table>
+            <tr>
+              <th>Impressions</th>
+              <th>Clicks</th>
+              <th>CTR (Click-Through Rate)</th>
+            </tr>
+            <tr>
+              <td>${camp.impressions_count || 0}</td>
+              <td>${camp.clicks_count || 0}</td>
+              <td>${camp.impressions_count ? (((camp.clicks_count || 0) / camp.impressions_count) * 100).toFixed(2) : 0}%</td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `
+    printWindow.document.write(htmlContent)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => {
+      printWindow.print()
+    }, 250)
+  }
+
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this campaign?')) {
       try {
@@ -315,25 +402,8 @@ export function AdsManager() {
 
         const invId = `inv-pub-${Date.now()}`
 
-        // Invoice FROM platform TO advertiser
-        await addInvoice({
-          id: invId,
-          description: `Publicity Campaign: ${camp.title}`,
-          amount: camp.total_amount,
-          status: 'issued',
-          date: new Date().toISOString(),
-          toId: adv.id,
-          toName: adv.name,
-          toEmail: adv.email,
-          toPhone: adv.phone,
-          toAddress: fullAddress,
-          fromId: owner.id,
-          fromName: owner.name,
-          fromEmail: owner.email,
-          type: 'publicity',
-        })
-
         // Revenue directly to platform (100% attribution as per requirements)
+        // Note: Invoice is now generated automatically via database trigger upon campaign creation
         await addLedgerEntry({
           id: `ldg-${Date.now()}`,
           propertyId: undefined, // Not property specific
@@ -505,6 +575,14 @@ export function AdsManager() {
                           <Play className="h-4 w-4 text-emerald-600" />
                         </Button>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => generatePDFReport(camp)}
+                        title="Download Report"
+                      >
+                        <FileText className="h-4 w-4 text-blue-600" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
