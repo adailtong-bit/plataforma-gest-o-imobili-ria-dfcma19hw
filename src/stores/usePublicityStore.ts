@@ -1,23 +1,71 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 
-let globalAdvertisers: any[] = []
-let globalPricingMatrix: any[] = []
-let globalCampaigns: any[] = []
+export interface Advertiser {
+  id: string
+  name: string
+  tax_id: string | null
+  billing_email: string
+  billing_phone: string | null
+  billing_address: string | null
+  street: string | null
+  number: string | null
+  complement: string | null
+  neighborhood: string | null
+  city: string | null
+  state: string | null
+  zip_code: string | null
+  country: string | null
+  contacts: any[] | null
+  created_at?: string
+}
+
+export interface PricingMatrix {
+  id: string
+  location_key: string
+  duration_days: number
+  price: number
+  valid_from: string
+  created_at?: string
+}
+
+export interface Campaign {
+  id: string
+  title: string
+  advertiser_id: string | null
+  pricing_id: string | null
+  start_date: string | null
+  end_date: string | null
+  status: string | null
+  total_amount: number | null
+  image_url: string | null
+  link_url: string | null
+  last_notified_at: string | null
+  impressions_count: number | null
+  clicks_count: number | null
+  created_at?: string
+}
+
+let globalAdvertisers: Advertiser[] = []
+let globalPricingMatrix: PricingMatrix[] = []
+let globalCampaigns: Campaign[] = []
 let listeners: (() => void)[] = []
 
 const notify = () => listeners.forEach((l) => l())
 
 const fetchPublicityData = async () => {
+  // Update expired campaigns before fetching the updated data
+  await supabase.rpc('update_expired_campaigns').catch(console.error)
+
   const [advRes, priceRes, campRes] = await Promise.all([
     supabase.from('advertisers').select('*'),
     supabase.from('publicity_pricing_matrix').select('*'),
     supabase.from('publicity_campaigns').select('*'),
   ])
 
-  if (advRes.data) globalAdvertisers = advRes.data
-  if (priceRes.data) globalPricingMatrix = priceRes.data
-  if (campRes.data) globalCampaigns = campRes.data
+  if (advRes.data) globalAdvertisers = advRes.data as Advertiser[]
+  if (priceRes.data) globalPricingMatrix = priceRes.data as PricingMatrix[]
+  if (campRes.data) globalCampaigns = campRes.data as Campaign[]
 
   notify()
 }
@@ -26,9 +74,11 @@ const fetchPublicityData = async () => {
 fetchPublicityData().catch(console.error)
 
 const usePublicityStore = () => {
-  const [advertisers, setAdvertisers] = useState<any[]>(globalAdvertisers)
-  const [pricingMatrix, setPricingMatrix] = useState<any[]>(globalPricingMatrix)
-  const [campaigns, setCampaigns] = useState<any[]>(globalCampaigns)
+  const [advertisers, setAdvertisers] =
+    useState<Advertiser[]>(globalAdvertisers)
+  const [pricingMatrix, setPricingMatrix] =
+    useState<PricingMatrix[]>(globalPricingMatrix)
+  const [campaigns, setCampaigns] = useState<Campaign[]>(globalCampaigns)
 
   useEffect(() => {
     const l = () => {

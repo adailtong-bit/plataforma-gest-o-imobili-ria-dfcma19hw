@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Advertisement } from '@/lib/types'
+
+export interface Advertisement {
+  id: string
+  imageUrl?: string
+  linkUrl?: string
+  tier?: 'gold' | 'silver' | 'standard'
+  [key: string]: any
+}
 
 export function useAdRotation(
   ads: Advertisement[],
@@ -19,21 +26,32 @@ export function useAdRotation(
       return
     }
 
-    // Initial shuffle
-    const shuffled = [...ads].sort(() => 0.5 - Math.random())
-    setVisibleAds(shuffled.slice(0, displayCount))
+    const getTierWeight = (ad: Advertisement) => {
+      const tier = ad.tier?.toLowerCase() || 'standard'
+      if (tier === 'gold') return 3
+      if (tier === 'silver') return 2
+      return 1
+    }
+
+    const sortAds = (adList: Advertisement[]) => {
+      return [...adList].sort((a, b) => {
+        const weightDiff = getTierWeight(b) - getTierWeight(a)
+        if (weightDiff !== 0) return weightDiff
+        return 0.5 - Math.random() // fallback to random within same tier
+      })
+    }
+
+    // Initial load
+    const sorted = sortAds(ads)
+    setVisibleAds(sorted.slice(0, displayCount))
 
     const interval = setInterval(() => {
       setVisibleAds((current) => {
-        const nextAds = [...ads].filter(
-          (a) => !current.find((c) => c.id === a.id),
-        )
+        const nextAds = ads.filter((a) => !current.find((c) => c.id === a.id))
         const candidates =
           nextAds.length >= displayCount ? nextAds : [...nextAds, ...current]
-        const nextShuffled = candidates
-          .sort(() => 0.5 - Math.random())
-          .slice(0, displayCount)
-        return nextShuffled
+
+        return sortAds(candidates).slice(0, displayCount)
       })
     }, rotationIntervalSeconds * 1000)
 

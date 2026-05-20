@@ -67,10 +67,12 @@ export function AdsManager() {
     if (!endDate) return false
     const end = new Date(endDate)
     const now = new Date()
+    end.setHours(0, 0, 0, 0)
+    now.setHours(0, 0, 0, 0)
     const diffDays = Math.ceil(
       (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
     )
-    return diffDays <= 7 && diffDays >= 0
+    return diffDays === 7 || diffDays === 3 || diffDays === 1
   }
 
   const expiringCampaigns = campaigns.filter(
@@ -500,8 +502,11 @@ export function AdsManager() {
               {expiringCampaigns.map((camp) => {
                 const adv = advertisers.find((a) => a.id === camp.advertiser_id)
                 const end = new Date(camp.end_date)
+                const now = new Date()
+                end.setHours(0, 0, 0, 0)
+                now.setHours(0, 0, 0, 0)
                 const diffDays = Math.ceil(
-                  (end.getTime() - new Date().getTime()) / (1000 * 3600 * 24),
+                  (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
                 )
 
                 return (
@@ -673,12 +678,13 @@ export function AdsManager() {
                             <Badge className="bg-green-600 text-white border-transparent">
                               Active
                             </Badge>
-                          ) : camp.status === 'expired' ? (
+                          ) : camp.status === 'concluded' ||
+                            camp.status === 'expired' ? (
                             <Badge
                               variant="outline"
                               className="bg-slate-100 text-slate-700"
                             >
-                              Expired
+                              Concluded
                             </Badge>
                           ) : (
                             <Badge
