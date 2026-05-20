@@ -176,7 +176,7 @@ export default function Dashboard() {
 
     // Publicity Metrics
     const activeCampaigns = (
-      campaigns as Array<{
+      (campaigns || []) as Array<{
         status?: string
         total_amount?: number
         totalAmount?: number
@@ -194,7 +194,7 @@ export default function Dashboard() {
     const locations = Array.from(
       new Set(
         (
-          pricingMatrix as Array<{
+          (pricingMatrix || []) as Array<{
             location_key?: string
             locationKey?: string
           }>
@@ -216,8 +216,8 @@ export default function Dashboard() {
         return diffDays <= 7 && diffDays >= 0
       })
       .sort((a, b) => {
-        const aEnd = a.end_date || a.endDate
-        const bEnd = b.end_date || b.endDate
+        const aEnd = a.end_date || a.endDate || ''
+        const bEnd = b.end_date || b.endDate || ''
         return new Date(aEnd).getTime() - new Date(bEnd).getTime()
       })
       .slice(0, 5)
@@ -569,8 +569,9 @@ export default function Dashboard() {
                   {expiringCampaigns.length > 0 ? (
                     <div className="space-y-3">
                       {expiringCampaigns.map((c) => {
+                        const endDate = c.end_date || c.endDate || ''
                         const daysLeft = Math.ceil(
-                          (new Date(c.end_date as string).getTime() -
+                          (new Date(endDate as string).getTime() -
                             new Date().getTime()) /
                             (1000 * 3600 * 24),
                         )
