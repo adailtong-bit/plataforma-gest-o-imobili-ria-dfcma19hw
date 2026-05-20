@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import {
+  useState,
+  useEffect,
+  useMemo,
+  Component,
+  ErrorInfo,
+  ReactNode,
+  ElementType,
+} from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   Sidebar,
@@ -55,18 +63,18 @@ type AuthUser = {
 }
 
 // Error Boundary for the Sidebar component
-class SidebarErrorBoundary extends React.Component<
-  { children: React.ReactNode },
+class SidebarErrorBoundary extends Component<
+  { children: ReactNode },
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode }) {
+  constructor(props: { children: ReactNode }) {
     super(props)
     this.state = { hasError: false }
   }
   static getDerivedStateFromError() {
     return { hasError: true }
   }
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Sidebar error:', error, errorInfo)
   }
   render() {
@@ -82,7 +90,7 @@ class SidebarErrorBoundary extends React.Component<
   }
 }
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, ElementType> = {
   Home,
   Building2,
   Users,
