@@ -34,6 +34,7 @@ import {
   Link as LinkIcon,
   Play,
   Calculator,
+  AlertCircle,
 } from 'lucide-react'
 import usePublicityStore from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
@@ -90,6 +91,43 @@ export function AdsManager() {
     )
   }, [pricingMatrix, formData.location_key])
 
+  // Overlap logic and slot limitation
+  const overlappingCampaigns = useMemo(() => {
+    if (
+      !formData.location_key ||
+      !formData.start_date ||
+      !formData.duration_days
+    )
+      return []
+
+    const targetStart = new Date(formData.start_date)
+    const targetEnd = new Date(targetStart)
+    targetEnd.setDate(targetEnd.getDate() + Number(formData.duration_days))
+
+    return campaigns.filter((c) => {
+      if (editingId && c.id === editingId) return false
+      if (!['active', 'pending'].includes(c.status)) return false
+
+      const cPricing = pricingMatrix.find((p) => p.id === c.pricing_id)
+      if (cPricing?.location_key !== formData.location_key) return false
+
+      if (!c.start_date || !c.end_date) return false
+
+      const cStart = new Date(c.start_date)
+      const cEnd = new Date(c.end_date)
+      return cStart <= targetEnd && cEnd >= targetStart
+    })
+  }, [
+    campaigns,
+    pricingMatrix,
+    formData.location_key,
+    formData.start_date,
+    formData.duration_days,
+    editingId,
+  ])
+
+  const isSlotFull = overlappingCampaigns.length >= 10
+
   // Core Logic: Get applicable price based on location, duration and start date (Time-Based Validity)
   const applicablePricing = useMemo(() => {
     if (
@@ -143,6 +181,16 @@ export function AdsManager() {
   }
 
   const handleSave = async () => {
+    if (isSlotFull) {
+      toast({
+        title: 'Validation Error',
+        description:
+          'No available slots for this location in the selected period.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     if (
       !formData.title ||
       !formData.advertiser_id ||
@@ -584,6 +632,15 @@ export function AdsManager() {
                 </div>
               </div>
 
+              {isSlotFull && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>
+                    No available slots for this location in the selected period.
+                  </span>
+                </div>
+              )}
+
               <div className="flex items-center gap-3 text-sm p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-100">
                 <Calculator className="h-5 w-5 text-blue-500" />
                 <div className="flex-1">
@@ -638,7 +695,7 @@ export function AdsManager() {
               <Button
                 onClick={handleSave}
                 className="bg-trust-blue"
-                disabled={!applicablePricing || isSubmitting}
+                disabled={!applicablePricing || isSubmitting || isSlotFull}
               >
                 {isSubmitting ? 'Saving...' : 'Save Campaign'}
               </Button>

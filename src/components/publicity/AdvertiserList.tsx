@@ -63,7 +63,10 @@ export function AdvertiserList() {
     state: '',
     zipCode: '',
     country: 'US' as 'US' | 'BR' | 'ES',
-    contacts: [] as {
+    contacts: [
+      { name: '', role: '', phone: '', email: '' },
+      { name: '', role: '', phone: '', email: '' },
+    ] as {
       name: string
       role: string
       phone: string
@@ -71,6 +74,23 @@ export function AdvertiserList() {
     }[],
   }
   const [formData, setFormData] = useState(initialFormState)
+
+  const isFormValid = !!(
+    formData.name &&
+    formData.email &&
+    formData.country &&
+    formData.zipCode &&
+    formData.street &&
+    formData.number &&
+    formData.complement &&
+    formData.neighborhood &&
+    formData.city &&
+    formData.state &&
+    formData.taxId &&
+    formData.contacts.length >= 2 &&
+    formData.contacts.every((c) => c.name && c.role && c.phone && c.email) &&
+    EMAIL_REGEX.test(formData.email)
+  )
 
   const filteredAdvertisers = advertisers.filter(
     (a) =>
@@ -94,38 +114,41 @@ export function AdvertiserList() {
         state: adv.state || '',
         zipCode: adv.zipCode || '',
         country: (adv.country as 'US' | 'BR' | 'ES') || 'US',
-        contacts: adv.contacts || [],
+        contacts:
+          adv.contacts && adv.contacts.length >= 2
+            ? adv.contacts
+            : [
+                ...(adv.contacts || []),
+                ...Array.from({
+                  length: Math.max(0, 2 - (adv.contacts?.length || 0)),
+                }).map(() => ({
+                  name: '',
+                  role: '',
+                  phone: '',
+                  email: '',
+                })),
+              ],
       })
     } else {
       setEditingId(null)
-      setFormData(initialFormState)
+      setFormData({
+        ...initialFormState,
+        contacts: [
+          { name: '', role: '', phone: '', email: '' },
+          { name: '', role: '', phone: '', email: '' },
+        ],
+      })
     }
     setIsOpen(true)
   }
 
   const handleSave = async () => {
     // Validation
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.country ||
-      !formData.zipCode ||
-      !formData.street ||
-      !formData.city
-    ) {
+    if (!isFormValid) {
       toast({
         title: 'Validation Error',
         description:
-          'Company Name, Email, Country, Zip Code, Street, and City are required fields.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (!EMAIL_REGEX.test(formData.email)) {
-      toast({
-        title: 'Invalid Email',
-        description: 'Please enter a valid billing email format.',
+          'Please complete all required fiscal fields, Tax ID, and provide at least 2 complete contacts.',
         variant: 'destructive',
       })
       return
@@ -135,27 +158,6 @@ export function AdvertiserList() {
       toast({
         title: 'Invalid Zip Code',
         description: `Please enter a valid zip code for ${formData.country}.`,
-        variant: 'destructive',
-      })
-      return
-    }
-
-    if (formData.contacts.length === 0) {
-      toast({
-        title: 'Validation Error',
-        description: 'At least one contact person is required.',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    const invalidContact = formData.contacts.find(
-      (c) => !c.name || !c.role || !c.email,
-    )
-    if (invalidContact) {
-      toast({
-        title: 'Incomplete Contact',
-        description: 'Each contact must have a name, role, and email.',
         variant: 'destructive',
       })
       return
@@ -235,6 +237,14 @@ export function AdvertiserList() {
   }
 
   const removeContact = (index: number) => {
+    if (formData.contacts.length <= 2) {
+      toast({
+        title: 'Action Prevented',
+        description: 'You must maintain at least 2 contact persons.',
+        variant: 'destructive',
+      })
+      return
+    }
     const newContacts = formData.contacts.filter((_, i) => i !== index)
     setFormData({ ...formData, contacts: newContacts })
   }
@@ -349,13 +359,13 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Tax ID (CNPJ/EIN)</Label>
+                      <Label>Tax ID (CNPJ/EIN) *</Label>
                       <Input
                         value={formData.taxId}
                         onChange={(e) =>
                           setFormData({ ...formData, taxId: e.target.value })
                         }
-                        placeholder="Optional"
+                        placeholder="Required"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -400,7 +410,7 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Number</Label>
+                      <Label>Number *</Label>
                       <Input
                         value={formData.number}
                         onChange={(e) =>
@@ -409,7 +419,7 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Complement</Label>
+                      <Label>Complement *</Label>
                       <Input
                         value={formData.complement}
                         onChange={(e) =>
@@ -421,7 +431,7 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Neighborhood</Label>
+                      <Label>Neighborhood *</Label>
                       <Input
                         value={formData.neighborhood}
                         onChange={(e) =>
@@ -442,7 +452,7 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>State / Province</Label>
+                      <Label>State / Province *</Label>
                       <Input
                         value={formData.state}
                         onChange={(e) =>
@@ -451,7 +461,7 @@ export function AdvertiserList() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Zip Code</Label>
+                      <Label>Zip Code *</Label>
                       <Input
                         value={formData.zipCode}
                         onChange={(e) =>
@@ -483,7 +493,7 @@ export function AdvertiserList() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold">
-                      Contact Persons * (Max 3)
+                      Contact Persons * (Min 2, Max 3)
                     </h3>
                     <Button
                       type="button"
@@ -539,15 +549,16 @@ export function AdvertiserList() {
                           size="icon"
                           className="text-red-500 mt-0.5 shrink-0"
                           onClick={() => removeContact(idx)}
+                          disabled={formData.contacts.length <= 2}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
-                    {formData.contacts.length === 0 && (
+                    {formData.contacts.length < 2 && (
                       <div className="flex items-center gap-2 text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
                         <AlertCircle className="h-4 w-4" />
-                        <span>Please add at least one contact person.</span>
+                        <span>Please add at least two contact persons.</span>
                       </div>
                     )}
                   </div>
@@ -565,7 +576,7 @@ export function AdvertiserList() {
               <Button
                 onClick={handleSave}
                 className="bg-trust-blue"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
               >
                 {isSubmitting ? 'Saving...' : 'Save Advertiser'}
               </Button>
