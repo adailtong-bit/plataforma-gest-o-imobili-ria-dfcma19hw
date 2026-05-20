@@ -61,7 +61,7 @@ import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
 import PartnerPortal from '@/pages/portal/PartnerPortal'
 import { AppContext } from '@/stores/AppContext'
-import React, { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 
 export default function Dashboard() {
   const { properties } = usePropertyStore()
@@ -113,7 +113,7 @@ export default function Dashboard() {
     adr,
     revPar,
     totalPendingInvoicesAmount,
-  } = React.useMemo(() => {
+  } = useMemo(() => {
     // Properties Metrics
     const totalProperties = properties.length
     const rentedProperties = properties.filter(
@@ -175,9 +175,17 @@ export default function Dashboard() {
     ).length
 
     // Publicity Metrics
-    const activeCampaigns = (campaigns as any[]).filter(
-      (c) => c.status === 'active',
-    )
+    const activeCampaigns = (
+      campaigns as Array<{
+        status?: string
+        total_amount?: number
+        totalAmount?: number
+        end_date?: string
+        endDate?: string
+        id?: string
+        title?: string
+      }>
+    ).filter((c) => c.status === 'active')
     const totalCampaignRevenue = activeCampaigns.reduce(
       (acc, c) => acc + (c.total_amount || c.totalAmount || 0),
       0,
@@ -185,7 +193,12 @@ export default function Dashboard() {
 
     const locations = Array.from(
       new Set(
-        (pricingMatrix as any[]).map((p) => p.location_key || p.locationKey),
+        (
+          pricingMatrix as Array<{
+            location_key?: string
+            locationKey?: string
+          }>
+        ).map((p) => p.location_key || p.locationKey),
       ),
     )
     const totalSlots = locations.length * 10
