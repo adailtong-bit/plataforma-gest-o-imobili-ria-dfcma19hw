@@ -61,6 +61,8 @@ import type { Database } from '@/lib/supabase/types'
 import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
 import PartnerPortal from '@/pages/portal/PartnerPortal'
+import { AppContext } from '@/stores/AppContext'
+import { useContext } from 'react'
 
 export default function Dashboard() {
   const { properties } = usePropertyStore()
@@ -71,6 +73,10 @@ export default function Dashboard() {
   const { currentUser, simulationMode, simulationRole } = useAuthStore()
   const { t } = useLanguageStore()
   const { campaigns, pricingMatrix } = usePublicityStore()
+
+  const context = useContext(AppContext)
+  const bookings = context?.bookings || []
+  const invoices = context?.financials?.invoices || []
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
@@ -144,39 +150,59 @@ export default function Dashboard() {
   ).length
 
   // Publicity Metrics
-  const typedCampaigns =
-    campaigns as unknown as Database['public']['Tables']['publicity_campaigns']['Row'][]
-  const typedPricingMatrix =
-    pricingMatrix as unknown as Database['public']['Tables']['publicity_pricing_matrix']['Row'][]
-
-  const activeCampaigns = typedCampaigns.filter((c) => c.status === 'active')
+  const activeCampaigns = (campaigns as any[]).filter(
+    (c) => c.status === 'active',
+  )
   const totalCampaignRevenue = activeCampaigns.reduce(
-    (acc, c) => acc + (c.total_amount || 0),
+    (acc, c) => acc + (c.total_amount || c.totalAmount || 0),
     0,
   )
 
   const locations = Array.from(
-    new Set(typedPricingMatrix.map((p) => p.location_key)),
+    new Set(
+      (pricingMatrix as any[]).map((p) => p.location_key || p.locationKey),
+    ),
   )
   const totalSlots = locations.length * 10
   const occupiedSlots = activeCampaigns.length
 
   const expiringCampaigns = activeCampaigns
     .filter((c) => {
-      if (!c.end_date) return false
-      const end = new Date(c.end_date)
+      const endDate = c.end_date || c.endDate
+      if (!endDate) return false
+      const end = new Date(endDate)
       const now = new Date()
       const diffDays = Math.ceil(
         (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
       )
       return diffDays <= 7 && diffDays >= 0
     })
-    .sort(
-      (a, b) =>
-        new Date(a.end_date as string).getTime() -
-        new Date(b.end_date as string).getTime(),
-    )
+    .sort((a, b) => {
+      const aEnd = a.end_date || a.endDate
+      const bEnd = b.end_date || b.endDate
+      return new Date(aEnd).getTime() - new Date(bEnd).getTime()
+    })
     .slice(0, 5)
+
+  // Dynamic Hospitality Metrics
+  const todayStr = new Date().toISOString().split('T')[0]
+  const bookingsToday = bookings.filter(
+    (b) => b.checkIn && b.checkIn.startsWith(todayStr),
+  ).length
+
+  const adr =
+    bookings.length > 0
+      ? bookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
+        bookings.length
+      : 0
+
+  const revPar = adr * (occupancyRate / 100)
+
+  const pendingInvoices = invoices.filter((i) => i.status === 'pending')
+  const totalPendingInvoicesAmount = pendingInvoices.reduce(
+    (acc, i) => acc + i.amount,
+    0,
+  )
 
   // Charts Data
   const propertyStatusData = [
@@ -375,7 +401,9 @@ export default function Dashboard() {
                     {defaultRate > 0 ? defaultRate.toFixed(1) : 3.4}%
                   </div>
                   <p className="text-xs text-orange-600 mt-1">
-                    {formatCurrency(defaultAmount || 4250)}{' '}
+                    {formatCurrency(
+                      defaultAmount + totalPendingInvoicesAmount || 4250,
+                    )}{' '}
                     {t('dashboard.cards.pending_amount', 'pending')}
                   </p>
                 </CardContent>
@@ -790,7 +818,9 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-cyan-900">142</div>
+                <div className="text-3xl font-bold text-cyan-900">
+                  {bookingsToday > 0 ? bookingsToday : 142}
+                </div>
               </CardContent>
             </Card>
             <Card className="shadow-sm">
@@ -803,7 +833,9 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-slate-900">$185.50</div>
+                <div className="text-3xl font-bold text-slate-900">
+                  {formatCurrency(adr > 0 ? adr : 185.5)}
+                </div>
               </CardContent>
             </Card>
             <Card className="shadow-sm">
@@ -813,7 +845,9 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-slate-900">$142.30</div>
+                <div className="text-3xl font-bold text-slate-900">
+                  {formatCurrency(revPar > 0 ? revPar : 142.3)}
+                </div>
               </CardContent>
             </Card>
           </div>
