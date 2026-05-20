@@ -89,10 +89,10 @@ export function PricingConfig() {
 
       if (isEditing) {
         await updatePricingMatrix(payload)
-        toast({ title: 'Pricing Matrix updated' })
+        toast({ title: 'Price registered successfully.' })
       } else {
         await addPricingMatrix(payload)
-        toast({ title: 'Pricing Matrix created' })
+        toast({ title: 'Price registered successfully.' })
       }
 
       setForm({

@@ -632,8 +632,25 @@ export function AdsManager() {
                 </div>
               </div>
 
+              {formData.location_key &&
+                formData.start_date &&
+                formData.duration_days && (
+                  <div className="flex items-center justify-between mt-2 mb-2">
+                    <span className="text-sm font-medium text-slate-700">
+                      [{overlappingCampaigns.length}]/10 vacancies occupied
+                    </span>
+                  </div>
+                )}
+
+              {overlappingCampaigns.length === 9 && (
+                <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 mb-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Warning: Location with 9/10 vacancies filled.</span>
+                </div>
+              )}
+
               {isSlotFull && (
-                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 mb-2">
                   <AlertCircle className="h-4 w-4" />
                   <span>
                     No available slots for this location in the selected period.

@@ -77,19 +77,9 @@ export function AdvertiserList() {
 
   const isFormValid = !!(
     formData.name &&
-    formData.email &&
     formData.country &&
-    formData.zipCode &&
-    formData.street &&
-    formData.number &&
-    formData.complement &&
-    formData.neighborhood &&
     formData.city &&
-    formData.state &&
-    formData.taxId &&
-    formData.contacts.length >= 2 &&
-    formData.contacts.every((c) => c.name && c.role && c.phone && c.email) &&
-    EMAIL_REGEX.test(formData.email)
+    formData.state
   )
 
   const filteredAdvertisers = advertisers.filter(
@@ -143,8 +133,31 @@ export function AdvertiserList() {
   }
 
   const handleSave = async () => {
+    if (!formData.country || !formData.state || !formData.city) {
+      toast({
+        title: 'Validation Error',
+        description: 'Country, State, and City are mandatory.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!EMAIL_REGEX.test(formData.email)) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please enter a valid email address.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     // Validation
-    if (!isFormValid) {
+    if (
+      !formData.name ||
+      !formData.taxId ||
+      formData.contacts.length < 2 ||
+      !formData.contacts.every((c) => c.name && c.role && c.phone && c.email)
+    ) {
       toast({
         title: 'Validation Error',
         description:
@@ -464,9 +477,33 @@ export function AdvertiserList() {
                       <Label>Zip Code *</Label>
                       <Input
                         value={formData.zipCode}
-                        onChange={(e) =>
-                          setFormData({ ...formData, zipCode: e.target.value })
-                        }
+                        onChange={async (e) => {
+                          const val = e.target.value
+                          setFormData({ ...formData, zipCode: val })
+                          if (
+                            formData.country === 'BR' &&
+                            val.replace(/\D/g, '').length === 8
+                          ) {
+                            try {
+                              const res = await fetch(
+                                `https://viacep.com.br/ws/${val.replace(/\D/g, '')}/json/`,
+                              )
+                              const data = await res.json()
+                              if (!data.erro) {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  street: data.logradouro || prev.street,
+                                  neighborhood:
+                                    data.bairro || prev.neighborhood,
+                                  city: data.localidade || prev.city,
+                                  state: data.uf || prev.state,
+                                }))
+                              }
+                            } catch (err) {
+                              console.error('ViaCEP error', err)
+                            }
+                          }
+                        }}
                       />
                     </div>
                     <div className="grid gap-2 col-span-2">
