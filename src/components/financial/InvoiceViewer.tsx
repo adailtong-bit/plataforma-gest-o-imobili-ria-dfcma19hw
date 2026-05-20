@@ -233,14 +233,37 @@ export function InvoiceViewer({
           </div>
 
           {/* Notes */}
-          {invoice.notes && (
-            <div className="pt-8 border-t border-slate-100 mt-8">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                Notes / Terms / Traceability
-              </p>
-              <div className="bg-slate-50 p-4 rounded border border-slate-100 font-mono text-xs text-slate-600 whitespace-pre-wrap">
-                {invoice.notes}
-              </div>
+          {((invoice as any).payment_link || invoice.notes) && (
+            <div className="pt-8 border-t border-slate-100 mt-8 space-y-4">
+              {(invoice as any).payment_link && (
+                <div className="bg-blue-50/50 p-4 rounded border border-blue-100">
+                  <p className="text-xs font-bold uppercase tracking-wider text-blue-800 mb-2">
+                    Payment Link
+                  </p>
+                  <a
+                    href={(invoice as any).payment_link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium break-all flex items-center gap-2"
+                  >
+                    {(invoice as any).payment_link}
+                  </a>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Use this link to securely pay your balance.
+                  </p>
+                </div>
+              )}
+
+              {invoice.notes && (
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    Notes / Terms / Traceability
+                  </p>
+                  <div className="bg-slate-50 p-4 rounded border border-slate-100 font-mono text-xs text-slate-600 whitespace-pre-wrap">
+                    {invoice.notes}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -164,6 +164,7 @@ const usePublicityStore = () => {
         total_amount: camp.total_amount,
         image_url: camp.image_url,
         link_url: camp.link_url,
+        last_notified_at: camp.last_notified_at,
       })
       .eq('id', camp.id)
       .select()
@@ -214,6 +215,7 @@ const usePublicityStore = () => {
       ...c,
       impressions_count: c.impressions_count || 0,
       clicks_count: c.clicks_count || 0,
+      last_notified_at: c.last_notified_at || null,
     })),
     addCampaign,
     updateCampaign,

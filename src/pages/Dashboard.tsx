@@ -12,6 +12,7 @@ import useTenantStore from '@/stores/useTenantStore'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import usePartnerStore from '@/stores/usePartnerStore'
+import usePublicityStore from '@/stores/usePublicityStore'
 import { formatCurrency } from '@/lib/utils'
 import {
   Building2,
@@ -69,6 +70,7 @@ export default function Dashboard() {
   const { partners } = usePartnerStore()
   const { currentUser, simulationMode, simulationRole } = useAuthStore()
   const { t } = useLanguageStore()
+  const { campaigns, pricingMatrix } = usePublicityStore()
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
@@ -140,6 +142,34 @@ export default function Dashboard() {
   const promotedTenants = tenants.filter((t) =>
     t.tags?.includes('promoted'),
   ).length
+
+  // Publicity Metrics
+  const activeCampaigns = campaigns.filter((c) => c.status === 'active')
+  const totalCampaignRevenue = activeCampaigns.reduce(
+    (acc, c) => acc + (c.total_amount || 0),
+    0,
+  )
+
+  const locations = Array.from(
+    new Set(pricingMatrix.map((p) => p.location_key)),
+  )
+  const totalSlots = locations.length * 10
+  const occupiedSlots = activeCampaigns.length
+
+  const expiringCampaigns = activeCampaigns
+    .filter((c) => {
+      if (!c.end_date) return false
+      const end = new Date(c.end_date)
+      const now = new Date()
+      const diffDays = Math.ceil(
+        (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
+      )
+      return diffDays <= 7 && diffDays >= 0
+    })
+    .sort(
+      (a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime(),
+    )
+    .slice(0, 5)
 
   // Charts Data
   const propertyStatusData = [
@@ -367,6 +397,99 @@ export default function Dashboard() {
               </Card>
             </Link>
           </div>
+
+          {/* Publicity Health Widget */}
+          {activeCampaigns.length > 0 && (
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card className="col-span-2 shadow-sm border-blue-100 bg-gradient-to-br from-white to-blue-50/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-slate-800">
+                    Publicity Health
+                  </CardTitle>
+                  <CardDescription>
+                    Active campaigns and revenue overview
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm text-slate-500">
+                        Active Campaigns
+                      </span>
+                      <span className="text-2xl font-bold text-slate-900">
+                        {activeCampaigns.length}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm text-slate-500">
+                        Slots Occupied
+                      </span>
+                      <span className="text-2xl font-bold text-slate-900">
+                        {occupiedSlots} / {totalSlots > 0 ? totalSlots : 10}
+                      </span>
+                      <div className="w-full bg-slate-200 h-1.5 rounded-full mt-1">
+                        <div
+                          className="bg-blue-500 h-1.5 rounded-full"
+                          style={{
+                            width: `${totalSlots > 0 ? (occupiedSlots / totalSlots) * 100 : 0}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm text-slate-500">
+                        Total Ad Revenue
+                      </span>
+                      <span className="text-2xl font-bold text-emerald-600">
+                        {formatCurrency(totalCampaignRevenue)}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="col-span-1 shadow-sm border-amber-100 bg-gradient-to-br from-white to-amber-50/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-amber-800 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" /> Top Renewals Needed
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {expiringCampaigns.length > 0 ? (
+                    <div className="space-y-3">
+                      {expiringCampaigns.map((c) => {
+                        const daysLeft = Math.ceil(
+                          (new Date(c.end_date).getTime() -
+                            new Date().getTime()) /
+                            (1000 * 3600 * 24),
+                        )
+                        return (
+                          <div
+                            key={c.id}
+                            className="flex justify-between items-center text-sm border-b border-amber-100 pb-2 last:border-0 last:pb-0"
+                          >
+                            <span
+                              className="font-medium text-slate-700 truncate mr-2"
+                              title={c.title}
+                            >
+                              {c.title}
+                            </span>
+                            <span className="text-amber-700 font-semibold whitespace-nowrap">
+                              {daysLeft}d left
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-slate-500 text-center py-4">
+                      No campaigns expiring soon.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4 shadow-sm bg-white">
