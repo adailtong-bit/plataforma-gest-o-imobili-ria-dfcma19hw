@@ -38,12 +38,18 @@ import {
   ShieldCheck,
   Languages,
 } from 'lucide-react'
-import React from 'react'
+import { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Logo } from '@/components/Logo'
 import { NavUser } from '@/components/NavUser'
+
+type AuthUser = {
+  role?: string
+  permissions?: unknown[]
+  [key: string]: unknown
+}
 
 export function AppSidebar() {
   const location = useLocation()
@@ -53,12 +59,13 @@ export function AppSidebar() {
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
-  const effectiveUser =
+  const effectiveUser = (
     simulationMode && simulationRole && currentUser
-      ? ({ ...currentUser, role: simulationRole, permissions: [] } as any)
-      : (currentUser as any)
+      ? { ...currentUser, role: simulationRole, permissions: [] }
+      : currentUser
+  ) as AuthUser
 
-  const mainNavItems = React.useMemo(
+  const mainNavItems = useMemo(
     () => [
       {
         title: t('menu.dashboard', 'Dashboard'),
@@ -148,7 +155,7 @@ export function AppSidebar() {
     [t],
   )
 
-  const operationsItems = React.useMemo(
+  const operationsItems = useMemo(
     () => [
       {
         title: t('sidebar.performance', 'Performance'),
@@ -220,7 +227,7 @@ export function AppSidebar() {
     [t],
   )
 
-  const systemItems = React.useMemo(
+  const systemItems = useMemo(
     () => [
       {
         title: t('sidebar.settings', 'Settings'),
@@ -295,7 +302,7 @@ export function AppSidebar() {
     [t],
   )
 
-  const portalItems = React.useMemo(
+  const portalItems = useMemo(
     () => [
       {
         title: t('menu.main_dashboard', 'Main Dashboard'),
@@ -329,23 +336,23 @@ export function AppSidebar() {
     [t],
   )
 
-  const filteredMain = React.useMemo(
+  const filteredMain = useMemo(
     () =>
       mainNavItems.filter((item) =>
-        hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+        hasPermissionSync(effectiveUser, item.resource as never, 'view'),
       ),
     [mainNavItems, effectiveUser, hasPermissionSync],
   )
 
-  const filteredOps = React.useMemo(
+  const filteredOps = useMemo(
     () =>
       operationsItems.filter((item) =>
-        hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+        hasPermissionSync(effectiveUser, item.resource as never, 'view'),
       ),
     [operationsItems, effectiveUser, hasPermissionSync],
   )
 
-  const filteredSystem = React.useMemo(
+  const filteredSystem = useMemo(
     () =>
       systemItems.filter((item) => {
         if (item.roles && effectiveUser?.role === 'platform_owner') {
@@ -353,7 +360,7 @@ export function AppSidebar() {
         }
         const hasPerm = hasPermissionSync(
           effectiveUser,
-          item.resource as any,
+          item.resource as never,
           'view',
         )
         if (
@@ -448,7 +455,7 @@ export function AppSidebar() {
                         <span className="font-medium text-sm">
                           {t('menu.messages', 'Messages')}
                         </span>
-                      </Link>{' '}
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
@@ -578,7 +585,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-slate-800 p-4 shrink-0 bg-slate-900 z-10">
-        <NavUser user={currentUser as any} />
+        <NavUser user={currentUser as never} />
       </SidebarFooter>
     </Sidebar>
   )
