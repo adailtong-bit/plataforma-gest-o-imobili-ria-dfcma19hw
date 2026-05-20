@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useAdRotation } from '@/hooks/useAdRotation'
 import { Card } from '@/components/ui/card'
 
-import { Advertisement } from '@/hooks/useAdRotation'
+import type { Advertisement } from '@/hooks/useAdRotation'
 
 export function AdDisplay({ locationKey }: { locationKey: string }) {
   const [ads, setAds] = useState<Advertisement[]>([])

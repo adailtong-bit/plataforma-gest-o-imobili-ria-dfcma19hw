@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { ENV } from '@/lib/env'
 import useAuthStore from '@/stores/useAuthStore'
-import { LedgerEntry, Invoice } from '@/lib/types'
+import type { LedgerEntry, Invoice } from '@/lib/types'
 
 let globalLedger: LedgerEntry[] = []
 let globalInvoices: Invoice[] = []

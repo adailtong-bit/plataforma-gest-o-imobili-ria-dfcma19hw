@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Invoice, InvoiceItem } from '@/lib/types'
+import type { Invoice, InvoiceItem } from '@/lib/types'
 import { format, isValid } from 'date-fns'
 import { Printer } from 'lucide-react'
 import useFinancialStore from '@/stores/useFinancialStore'

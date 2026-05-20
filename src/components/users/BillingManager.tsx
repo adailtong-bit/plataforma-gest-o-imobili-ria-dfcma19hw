@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BillingAgreement, BillingPeriod, UserRole } from '@/lib/types'
+import type { BillingAgreement, BillingPeriod, UserRole } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

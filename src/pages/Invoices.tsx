@@ -59,7 +59,7 @@ import {
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { format, isValid } from 'date-fns'
-import { Invoice, InvoiceItem } from '@/lib/types'
+import type { Invoice, InvoiceItem } from '@/lib/types'
 import { InvoiceViewer } from '@/components/financial/InvoiceViewer'
 import useAuthStore from '@/stores/useAuthStore'
 import useBillingStore from '@/stores/useBillingStore'
