@@ -59,9 +59,13 @@ import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function ServicePricing() {
   const { t, loading: isI18nLoading } = useDbTranslations()
-  const { agreements, addAgreement, updateAgreement, deleteAgreement } =
-    useBillingStore()
-  const { allUsers, currentUser } = useAuthStore()
+  const {
+    agreements = [],
+    addAgreement,
+    updateAgreement,
+    deleteAgreement,
+  } = useBillingStore()
+  const { allUsers = [], currentUser } = useAuthStore()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
@@ -215,9 +219,9 @@ export default function ServicePricing() {
     name: '',
     sourceRole: effectiveSourceRole,
     targetId: 'global',
-    targetRole: hierarchy.allowedTargets[0]?.value as any,
-    type: hierarchy.allowedTypes[hierarchy.allowedTargets[0]?.value]?.[0]
-      ?.value as any,
+    targetRole: (hierarchy.allowedTargets[0]?.value || 'global') as any,
+    type: (hierarchy.allowedTypes[hierarchy.allowedTargets[0]?.value || '']?.[0]
+      ?.value || 'custom') as any,
     valueType: 'percentage',
     value: 0,
     frequency: 'per_booking',
@@ -228,13 +232,13 @@ export default function ServicePricing() {
   const [form, setForm] = useState<Partial<BillingAgreement>>(defaultForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const visibleAgreements = agreements.filter((a) => {
+  const visibleAgreements = (agreements || []).filter((a) => {
     if (isPlatformAdmin) return true
     return a.sourceId === currentUser?.id || a.sourceRole === currentUser?.role
   })
 
   const filteredRates = visibleAgreements.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase()),
+    (r?.name || '').toLowerCase().includes((search || '').toLowerCase()),
   )
 
   const handleSave = () => {
@@ -263,7 +267,8 @@ export default function ServicePricing() {
         sourceId: currentUser?.id,
         sourceRole: form.sourceRole || effectiveSourceRole,
         targetId: form.targetId || 'global',
-        targetRole: form.targetRole || hierarchy.allowedTargets[0]?.value,
+        targetRole:
+          form.targetRole || hierarchy.allowedTargets[0]?.value || 'global',
         type:
           form.type ||
           hierarchy.allowedTypes[form.targetRole as string]?.[0]?.value ||
@@ -303,7 +308,7 @@ export default function ServicePricing() {
 
   const getTargetName = (id: string) => {
     if (id === 'global') return t('target_global', 'Global')
-    const u = allUsers.find((user) => user.id === id)
+    const u = (allUsers || []).find((user) => user.id === id)
     return u ? `${u.name}` : id
   }
 
@@ -399,7 +404,8 @@ export default function ServicePricing() {
                       <Input
                         value={
                           roleLabels[form.sourceRole as string] ||
-                          form.sourceRole
+                          form.sourceRole ||
+                          ''
                         }
                         disabled
                         className="bg-slate-100 text-slate-500"
@@ -410,7 +416,7 @@ export default function ServicePricing() {
                         {t('label_target_role', 'Billed To (Target Role)')}
                       </Label>
                       <Select
-                        value={form.targetRole as string}
+                        value={(form.targetRole as string) || ''}
                         onValueChange={(val: any) => {
                           const allowedTypes = hierarchy.allowedTypes[val] || []
                           setForm({
@@ -427,11 +433,16 @@ export default function ServicePricing() {
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          {hierarchy.allowedTargets.map((t) => (
-                            <SelectItem key={t.value} value={t.value}>
-                              {t.label}
+                          {hierarchy.allowedTargets.map((tItem) => (
+                            <SelectItem key={tItem.value} value={tItem.value}>
+                              {tItem.label}
                             </SelectItem>
                           ))}
+                          {hierarchy.allowedTargets.length === 0 && (
+                            <SelectItem value="global" disabled>
+                              {t('target_global', 'Global')}
+                            </SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -446,7 +457,7 @@ export default function ServicePricing() {
                         'placeholder_rule_name',
                         'e.g. Monthly PM Admin Fee',
                       )}
-                      value={form.name}
+                      value={form.name || ''}
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
                       }
@@ -457,7 +468,7 @@ export default function ServicePricing() {
                       {t('label_target_scope', 'Target Player Scope')}
                     </Label>
                     <Select
-                      value={form.targetId}
+                      value={form.targetId || 'global'}
                       onValueChange={(val: any) =>
                         setForm({ ...form, targetId: val })
                       }
@@ -474,7 +485,7 @@ export default function ServicePricing() {
                             t('target_users', 'Users')}
                           )
                         </SelectItem>
-                        {allUsers
+                        {(allUsers || [])
                           .filter((u) => u.role === form.targetRole)
                           .map((u) => (
                             <SelectItem key={u.id} value={u.id}>
@@ -495,7 +506,7 @@ export default function ServicePricing() {
                       )}
                     </Label>
                     <Select
-                      value={form.type}
+                      value={form.type || ''}
                       onValueChange={(val: any) =>
                         setForm({ ...form, type: val })
                       }
@@ -526,7 +537,7 @@ export default function ServicePricing() {
                   <div className="space-y-2">
                     <Label>{t('label_value_type', 'Value Type')}</Label>
                     <Select
-                      value={form.valueType}
+                      value={form.valueType || 'percentage'}
                       onValueChange={(val: any) =>
                         setForm({ ...form, valueType: val })
                       }
@@ -554,7 +565,7 @@ export default function ServicePricing() {
                     <Input
                       type="number"
                       step="0.01"
-                      value={form.value}
+                      value={form.value || 0}
                       onChange={(e) =>
                         setForm({ ...form, value: Number(e.target.value) })
                       }
@@ -566,7 +577,7 @@ export default function ServicePricing() {
                   <div className="space-y-2">
                     <Label>{t('label_frequency', 'Frequency')}</Label>
                     <Select
-                      value={form.frequency}
+                      value={form.frequency || 'per_booking'}
                       onValueChange={(val: any) =>
                         setForm({ ...form, frequency: val })
                       }
@@ -596,7 +607,7 @@ export default function ServicePricing() {
                     <Label>{t('label_valid_from', 'Valid From')}</Label>
                     <Input
                       type="date"
-                      value={form.validFrom}
+                      value={form.validFrom || ''}
                       onChange={(e) =>
                         setForm({ ...form, validFrom: e.target.value })
                       }
@@ -669,7 +680,7 @@ export default function ServicePricing() {
                     <span className="text-sm text-slate-600 capitalize">
                       {t(
                         `type_${agreement.type}`,
-                        agreement.type.replace(/_/g, ' '),
+                        (agreement.type || '').replace(/_/g, ' '),
                       )}
                     </span>
                   </TableCell>
