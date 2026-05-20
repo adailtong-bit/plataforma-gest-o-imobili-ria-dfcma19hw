@@ -162,3 +162,5 @@ export const useTranslationContext = () => {
   }
   return context
 }
+
+export const useDbTranslations = useTranslationContext
