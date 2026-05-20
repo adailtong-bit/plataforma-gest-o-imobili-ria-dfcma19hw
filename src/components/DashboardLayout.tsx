@@ -46,7 +46,7 @@ class LayoutErrorBoundary extends Component<
   }
 }
 
-export default function DashboardLayout() {
+export function DashboardLayout() {
   const { simulationMode, simulationRole, setSimulationMode } = useAuthStore()
 
   return (
