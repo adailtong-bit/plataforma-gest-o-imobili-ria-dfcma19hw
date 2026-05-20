@@ -115,14 +115,15 @@ export default function Dashboard() {
     totalPendingInvoicesAmount,
   } = useMemo(() => {
     // Properties Metrics
-    const totalProperties = properties.length
-    const rentedProperties = properties.filter(
+    const safeProperties = properties || []
+    const totalProperties = safeProperties.length
+    const rentedProperties = safeProperties.filter(
       (p) => p.status === 'rented' || p.status === 'occupied',
     ).length
-    const availableProperties = properties.filter(
+    const availableProperties = safeProperties.filter(
       (p) => p.status === 'available' || p.status === 'vacant',
     ).length
-    const maintenanceProperties = properties.filter(
+    const maintenanceProperties = safeProperties.filter(
       (p) => p.status === 'maintenance',
     ).length
 
@@ -130,8 +131,9 @@ export default function Dashboard() {
       totalProperties > 0 ? (rentedProperties / totalProperties) * 100 : 0
 
     // Financial Metrics
-    const incomes = ledgerEntries.filter((e) => e.type === 'income')
-    const expenses = ledgerEntries.filter((e) => e.type === 'expense')
+    const safeLedger = ledgerEntries || []
+    const incomes = safeLedger.filter((e) => e.type === 'income')
+    const expenses = safeLedger.filter((e) => e.type === 'expense')
 
     const totalRevenue = incomes
       .filter((e) => e.status === 'cleared')
@@ -146,31 +148,37 @@ export default function Dashboard() {
       incomes.length > 0 ? (pendingIncomes.length / incomes.length) * 100 : 0
 
     // Operational Metrics
-    const pendingTasks = tasks.filter(
+    const safeTasks = tasks || []
+    const safeTenants = tenants || []
+    const safePartners = partners || []
+
+    const pendingTasks = safeTasks.filter(
       (t) =>
         t.status === 'pending' ||
         t.status === 'in_progress' ||
         t.status === 'pending_acceptance',
     ).length
-    const completedTasks = tasks.filter((t) => t.status === 'completed').length
-    const pendingRenewals = tenants.filter(
+    const completedTasks = safeTasks.filter(
+      (t) => t.status === 'completed',
+    ).length
+    const pendingRenewals = safeTenants.filter(
       (t) => t.ownerDecision === 'pending' || t.status === 'expiring_soon',
     ).length
 
     // Opporjob Metrics
-    const opporjobPartners = partners.filter(
+    const opporjobPartners = safePartners.filter(
       (p) =>
         p.source === 'opporjob' ||
         p.origin === 'opporjob' ||
         p.tags?.includes('opporjob') ||
         p.name?.toLowerCase().includes('opporjob'),
     ).length
-    const opporjobTasks = tasks.filter(
+    const opporjobTasks = safeTasks.filter(
       (t) =>
         t.status === 'pending_acceptance' ||
         (t.assignee && t.assignee.toLowerCase().includes('opporjob')),
     ).length
-    const promotedTenants = tenants.filter((t) =>
+    const promotedTenants = safeTenants.filter((t) =>
       t.tags?.includes('promoted'),
     ).length
 
@@ -224,19 +232,22 @@ export default function Dashboard() {
 
     // Dynamic Hospitality Metrics
     const todayStr = new Date().toISOString().split('T')[0]
-    const bookingsToday = bookings.filter(
+    const safeBookings = bookings || []
+    const safeInvoices = invoices || []
+
+    const bookingsToday = safeBookings.filter(
       (b) => b.checkIn && b.checkIn.startsWith(todayStr),
     ).length
 
     const adr =
-      bookings.length > 0
-        ? bookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
-          bookings.length
+      safeBookings.length > 0
+        ? safeBookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
+          safeBookings.length
         : 0
 
     const revPar = adr * (occupancyRate / 100)
 
-    const pendingInvoices = invoices.filter((i) => i.status === 'pending')
+    const pendingInvoices = safeInvoices.filter((i) => i.status === 'pending')
     const totalPendingInvoicesAmount = pendingInvoices.reduce(
       (acc, i) => acc + i.amount,
       0,
@@ -1107,8 +1118,8 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-slate-900">
-                    {tenants.length}
-                  </div>
+                    {(tenants || []).length}
+                  </div>{' '}
                 </CardContent>
               </Card>
             </Link>
@@ -1194,7 +1205,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {tasks
+                  {(tasks || [])
                     .filter(
                       (t) =>
                         t.status === 'pending' ||
@@ -1221,7 +1232,7 @@ export default function Dashboard() {
                         </div>
                       </Link>
                     ))}
-                  {tasks.filter(
+                  {(tasks || []).filter(
                     (t) =>
                       t.status === 'pending' ||
                       t.status === 'in_progress' ||
