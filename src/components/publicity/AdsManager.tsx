@@ -37,11 +37,10 @@ import {
   AlertCircle,
   FileText,
 } from 'lucide-react'
-import usePublicityStore, { Campaign } from '@/stores/usePublicityStore'
+import usePublicityStore, { type Campaign } from '@/stores/usePublicityStore'
 import useFinancialStore from '@/stores/useFinancialStore'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { supabase } from '@/lib/supabase/client'
 import useLanguageStore from '@/stores/useLanguageStore'
 
 export function AdsManager() {
@@ -456,16 +455,9 @@ export function AdsManager() {
       return
 
     try {
-      // Find platform owner for 100% revenue attribution
-      const { data: owners } = await supabase
-        .from('profiles')
-        .select('id, name, email')
-        .in('role', ['platform_owner', 'master'])
-        .limit(1)
-      const owner = owners?.[0]
       const adv = advertisers.find((a) => a.id === camp.advertiser_id)
 
-      if (owner && adv) {
+      if (adv) {
         // Revenue directly to platform (100% attribution as per requirements)
         // Note: Invoice is now generated automatically via database trigger upon campaign creation
         await addLedgerEntry({
