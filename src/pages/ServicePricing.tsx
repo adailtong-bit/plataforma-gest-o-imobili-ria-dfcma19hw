@@ -80,19 +80,28 @@ export default function ServicePricing() {
     ) {
       return {
         allowedTargets: [
-          { value: 'software_tenant', label: 'Property Manager' },
-          { value: 'advertiser', label: 'Advertiser' },
+          {
+            value: 'software_tenant',
+            label: t('role_label_pm', 'Property Manager'),
+          },
+          { value: 'advertiser', label: t('role_label_adv', 'Advertiser') },
         ],
         allowedTypes: {
           software_tenant: [
             {
               value: 'software_fee_per_house',
-              label: 'Software Fee (Per House)',
+              label: t('type_software_fee', 'Software Fee (Per House)'),
             },
-            { value: 'fixed_admin_fee', label: 'Platform Fixed Fee' },
+            {
+              value: 'fixed_admin_fee',
+              label: t('type_platform_fixed', 'Platform Fixed Fee'),
+            },
           ],
           advertiser: [
-            { value: 'ad_placement_fee', label: 'Ad Placement Fee' },
+            {
+              value: 'ad_placement_fee',
+              label: t('type_ad_fee', 'Ad Placement Fee'),
+            },
           ],
         },
       }
@@ -100,14 +109,34 @@ export default function ServicePricing() {
 
     if (sourceRole === 'software_tenant') {
       return {
-        allowedTargets: [{ value: 'property_owner', label: 'Property Owner' }],
+        allowedTargets: [
+          {
+            value: 'property_owner',
+            label: t('role_label_owner', 'Property Owner'),
+          },
+        ],
         allowedTypes: {
           property_owner: [
-            { value: 'booking_percentage', label: 'Booking Revenue Share (%)' },
-            { value: 'fixed_admin_fee', label: 'Fixed Admin Fee' },
-            { value: 'markup_cleaning', label: 'Cleaning Markup' },
-            { value: 'markup_maintenance', label: 'Maintenance Markup' },
-            { value: 'markup_purchases', label: 'Purchases/Parts Markup' },
+            {
+              value: 'booking_percentage',
+              label: t('type_booking_share', 'Booking Revenue Share (%)'),
+            },
+            {
+              value: 'fixed_admin_fee',
+              label: t('type_fixed_admin', 'Fixed Admin Fee'),
+            },
+            {
+              value: 'markup_cleaning',
+              label: t('type_markup_cleaning', 'Cleaning Markup'),
+            },
+            {
+              value: 'markup_maintenance',
+              label: t('type_markup_maintenance', 'Maintenance Markup'),
+            },
+            {
+              value: 'markup_purchases',
+              label: t('type_markup_purchases', 'Purchases/Parts Markup'),
+            },
           ],
         },
       }
@@ -116,13 +145,25 @@ export default function ServicePricing() {
     if (sourceRole === 'partner') {
       return {
         allowedTargets: [
-          { value: 'software_tenant', label: 'Property Manager' },
+          {
+            value: 'software_tenant',
+            label: t('role_label_pm', 'Property Manager'),
+          },
         ],
         allowedTypes: {
           software_tenant: [
-            { value: 'partner_cleaning_fee', label: 'Cleaning Fee' },
-            { value: 'partner_maintenance_fee', label: 'Maintenance Fee' },
-            { value: 'partner_parts_fee', label: 'Parts & Materials Fee' },
+            {
+              value: 'partner_cleaning_fee',
+              label: t('type_partner_cleaning', 'Cleaning Fee'),
+            },
+            {
+              value: 'partner_maintenance_fee',
+              label: t('type_partner_maintenance', 'Maintenance Fee'),
+            },
+            {
+              value: 'partner_parts_fee',
+              label: t('type_partner_parts', 'Parts & Materials Fee'),
+            },
           ],
         },
       }
@@ -131,13 +172,25 @@ export default function ServicePricing() {
     if (sourceRole === 'partner_employee') {
       return {
         allowedTargets: [
-          { value: 'partner', label: 'Service Partner (Your Boss)' },
+          {
+            value: 'partner',
+            label: t('role_label_partner_boss', 'Service Partner (Your Boss)'),
+          },
         ],
         allowedTypes: {
           partner: [
-            { value: 'team_cleaning_fee', label: 'Cleaning Payout' },
-            { value: 'team_maintenance_fee', label: 'Maintenance Payout' },
-            { value: 'team_parts_fee', label: 'Parts Reimbursement' },
+            {
+              value: 'team_cleaning_fee',
+              label: t('type_team_cleaning', 'Cleaning Payout'),
+            },
+            {
+              value: 'team_maintenance_fee',
+              label: t('type_team_maintenance', 'Maintenance Payout'),
+            },
+            {
+              value: 'team_parts_fee',
+              label: t('type_team_parts', 'Parts Reimbursement'),
+            },
           ],
         },
       }
@@ -230,7 +283,7 @@ export default function ServicePricing() {
   }
 
   const getTargetName = (id: string) => {
-    if (id === 'global') return 'Global'
+    if (id === 'global') return t('target_global', 'Global')
     const u = allUsers.find((user) => user.id === id)
     return u ? `${u.name}` : id
   }
@@ -264,7 +317,7 @@ export default function ServicePricing() {
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Search rules..."
+            placeholder={t('search_rules_placeholder', 'Search rules...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -297,17 +350,22 @@ export default function ServicePricing() {
                 <div className="bg-slate-50 p-4 rounded-lg border space-y-4">
                   <div className="flex flex-col gap-1">
                     <h3 className="font-semibold text-sm text-slate-700 uppercase tracking-wider">
-                      Financial Hierarchy
+                      {t('dialog_financial_hierarchy', 'Financial Hierarchy')}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Only valid relationships for your role (
-                      {roleLabels[effectiveSourceRole] || effectiveSourceRole})
-                      are shown.
+                      {t(
+                        'dialog_hierarchy_desc',
+                        'Only valid relationships for your role (',
+                      )}
+                      {roleLabels[effectiveSourceRole] || effectiveSourceRole}
+                      {t('dialog_hierarchy_desc_suffix', ') are shown.')}
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Billed By (Source Role)</Label>
+                      <Label>
+                        {t('label_source_role', 'Billed By (Source Role)')}
+                      </Label>
                       <Input
                         value={
                           roleLabels[form.sourceRole as string] ||
@@ -318,7 +376,9 @@ export default function ServicePricing() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Billed To (Target Role)</Label>
+                      <Label>
+                        {t('label_target_role', 'Billed To (Target Role)')}
+                      </Label>
                       <Select
                         value={form.targetRole as string}
                         onValueChange={(val: any) => {
@@ -332,7 +392,9 @@ export default function ServicePricing() {
                         }}
                       >
                         <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Who pays?" />
+                          <SelectValue
+                            placeholder={t('placeholder_who_pays', 'Who pays?')}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           {hierarchy.allowedTargets.map((t) => (
@@ -348,9 +410,12 @@ export default function ServicePricing() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Rule Name</Label>
+                    <Label>{t('label_rule_name', 'Rule Name')}</Label>
                     <Input
-                      placeholder="e.g. Monthly PM Admin Fee"
+                      placeholder={t(
+                        'placeholder_rule_name',
+                        'e.g. Monthly PM Admin Fee',
+                      )}
                       value={form.name}
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
@@ -358,7 +423,9 @@ export default function ServicePricing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Target Player Scope</Label>
+                    <Label>
+                      {t('label_target_scope', 'Target Player Scope')}
+                    </Label>
                     <Select
                       value={form.targetId}
                       onValueChange={(val: any) =>
@@ -366,12 +433,16 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Global" />
+                        <SelectValue
+                          placeholder={t('target_global', 'Global')}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="global">
-                          Global (All{' '}
-                          {roleLabels[form.targetRole as string] || 'Users'})
+                          {t('target_global', 'Global')} (All{' '}
+                          {roleLabels[form.targetRole as string] ||
+                            t('target_users', 'Users')}
+                          )
                         </SelectItem>
                         {allUsers
                           .filter((u) => u.role === form.targetRole)
@@ -387,7 +458,12 @@ export default function ServicePricing() {
 
                 <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-slate-50">
                   <div className="space-y-2 col-span-2">
-                    <Label>Calculation Logic (Rule Type)</Label>
+                    <Label>
+                      {t(
+                        'label_calculation_logic',
+                        'Calculation Logic (Rule Type)',
+                      )}
+                    </Label>
                     <Select
                       value={form.type}
                       onValueChange={(val: any) =>
@@ -395,23 +471,30 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select type..." />
+                        <SelectValue
+                          placeholder={t(
+                            'placeholder_select_type',
+                            'Select type...',
+                          )}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {hierarchy.allowedTypes[form.targetRole as string]?.map(
-                          (t: any) => (
-                            <SelectItem key={t.value} value={t.value}>
-                              {t.label}
+                          (tItem: any) => (
+                            <SelectItem key={tItem.value} value={tItem.value}>
+                              {tItem.label}
                             </SelectItem>
                           ),
                         )}
-                        <SelectItem value="custom">Custom Rule</SelectItem>
+                        <SelectItem value="custom">
+                          {t('option_custom_rule', 'Custom Rule')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Value Type</Label>
+                    <Label>{t('label_value_type', 'Value Type')}</Label>
                     <Select
                       value={form.valueType}
                       onValueChange={(val: any) =>
@@ -419,18 +502,25 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Value type" />
+                        <SelectValue
+                          placeholder={t(
+                            'placeholder_value_type',
+                            'Value type',
+                          )}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="percentage">
-                          Percentage (%)
+                          {t('option_percentage', 'Percentage (%)')}
                         </SelectItem>
-                        <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
+                        <SelectItem value="fixed">
+                          {t('option_fixed', 'Fixed Amount ($)')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Amount / Rate</Label>
+                    <Label>{t('label_amount_rate', 'Amount / Rate')}</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -444,7 +534,7 @@ export default function ServicePricing() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Frequency</Label>
+                    <Label>{t('label_frequency', 'Frequency')}</Label>
                     <Select
                       value={form.frequency}
                       onValueChange={(val: any) =>
@@ -452,22 +542,28 @@ export default function ServicePricing() {
                       }
                     >
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Frequency" />
+                        <SelectValue
+                          placeholder={t('placeholder_frequency', 'Frequency')}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="per_booking">
-                          Per Booking (Auto)
+                          {t('option_per_booking', 'Per Booking (Auto)')}
                         </SelectItem>
                         <SelectItem value="per_task">
-                          Per Task (Auto)
+                          {t('option_per_task', 'Per Task (Auto)')}
                         </SelectItem>
-                        <SelectItem value="monthly">Monthly Fixed</SelectItem>
-                        <SelectItem value="yearly">Yearly Fixed</SelectItem>
+                        <SelectItem value="monthly">
+                          {t('option_monthly', 'Monthly Fixed')}
+                        </SelectItem>
+                        <SelectItem value="yearly">
+                          {t('option_yearly', 'Yearly Fixed')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Valid From</Label>
+                    <Label>{t('label_valid_from', 'Valid From')}</Label>
                     <Input
                       type="date"
                       value={form.validFrom}
@@ -625,19 +721,23 @@ export default function ServicePricing() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('msg_delete_confirm_title', 'Confirm Deletion')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this billing rule? It will no
-              longer be applied to future automated invoices.
+              {t(
+                'msg_delete_confirm_desc',
+                'Are you sure you want to delete this billing rule? It will no longer be applied to future automated invoices.',
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('btn_cancel', 'Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 text-white"
             >
-              Delete Rule
+              {t('btn_delete_rule', 'Delete Rule')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
