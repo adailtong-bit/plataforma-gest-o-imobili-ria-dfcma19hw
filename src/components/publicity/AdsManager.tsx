@@ -54,6 +54,15 @@ export function AdsManager() {
     deleteCampaign,
   } = usePublicityStore()
 
+  const { addLedgerEntry, currency } = useFinancialStore()
+  const { toast } = useToast()
+  const { language } = useLanguageStore()
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const isExpiringSoon = (endDate: string | null) => {
     if (!endDate) return false
     const end = new Date(endDate)
@@ -67,14 +76,6 @@ export function AdsManager() {
   const expiringCampaigns = campaigns.filter(
     (c) => c.status === 'active' && isExpiringSoon(c.end_date),
   )
-  const { addLedgerEntry, currency } = useFinancialStore()
-  const { toast } = useToast()
-  const { language } = useLanguageStore()
-
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const initialFormState = {
     title: '',

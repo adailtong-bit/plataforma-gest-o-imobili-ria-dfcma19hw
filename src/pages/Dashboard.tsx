@@ -28,7 +28,6 @@ import {
   Wrench,
 } from 'lucide-react'
 import {
-  BarChart,
   Bar,
   XAxis,
   YAxis,
