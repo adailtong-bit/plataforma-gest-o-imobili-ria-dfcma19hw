@@ -17,7 +17,15 @@ import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useToast } from '@/hooks/use-toast'
-import { Shield, User, Bell, CreditCard, KeyRound } from 'lucide-react'
+import { Shield, User, Bell, CreditCard, KeyRound, Globe } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function Settings() {
@@ -26,6 +34,7 @@ export default function Settings() {
   const { toast } = useToast()
 
   const [isLoading, setIsLoading] = useState(true)
+  const { locale, changeLanguage } = useDbTranslations()
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -178,6 +187,24 @@ export default function Settings() {
                       setProfileData({ ...profileData, phone: e.target.value })
                     }
                   />
+                </div>
+                <div className="grid gap-2 md:col-span-2 mt-4 pt-4 border-t">
+                  <Label className="flex items-center gap-2 text-base font-bold">
+                    <Globe className="h-4 w-4" /> Interface Language
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Change the language of the application interfaces.
+                  </p>
+                  <Select value={locale} onValueChange={changeLanguage}>
+                    <SelectTrigger className="max-w-xs">
+                      <SelectValue placeholder="Select Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="pt">Português</SelectItem>
+                      <SelectItem value="es">Español</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CardContent>

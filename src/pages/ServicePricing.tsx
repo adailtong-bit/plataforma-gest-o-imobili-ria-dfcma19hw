@@ -48,8 +48,10 @@ import { useToast } from '@/hooks/use-toast'
 import useBillingStore from '@/stores/useBillingStore'
 import useAuthStore from '@/stores/useAuthStore'
 import { BillingAgreement } from '@/lib/types'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function ServicePricing() {
+  const { t } = useDbTranslations()
   const { agreements, addAgreement, updateAgreement, deleteAgreement } =
     useBillingStore()
   const { allUsers, currentUser } = useAuthStore()
@@ -238,12 +240,12 @@ export default function ServicePricing() {
   }
 
   const roleLabels: Record<string, string> = {
-    master: 'Admin',
-    software_tenant: 'PM',
-    property_owner: 'Owner',
-    partner: 'Partner',
-    partner_employee: 'Team',
-    advertiser: 'Advertiser',
+    master: t('role_master', 'Admin'),
+    software_tenant: t('role_software_tenant', 'PM'),
+    property_owner: t('role_property_owner', 'Owner'),
+    partner: t('role_partner', 'Partner'),
+    partner_employee: t('role_partner_employee', 'Team'),
+    advertiser: t('role_advertiser', 'Advertiser'),
   }
 
   return (
@@ -251,11 +253,13 @@ export default function ServicePricing() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            N-Tier Billing & Agreements
+            {t('service_pricing_title', 'N-Tier Billing & Agreements')}
           </h1>
           <p className="text-muted-foreground">
-            Configure automated hierarchy rules (Admin ➔ PM ➔ Owner & Partner ➔
-            PM).
+            {t(
+              'service_pricing_desc',
+              'Configure automated hierarchy rules (Admin ➔ PM ➔ Owner & Partner ➔ PM).',
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -277,13 +281,16 @@ export default function ServicePricing() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white hover:bg-blue-700">
-                <Network className="h-4 w-4" /> New Billing Rule
+                <Network className="h-4 w-4" />{' '}
+                {t('btn_new_rule', 'New Billing Rule')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[700px] bg-white">
               <DialogHeader>
                 <DialogTitle>
-                  {editingRecord ? 'Edit Billing Rule' : 'New Billing Rule'}
+                  {editingRecord
+                    ? t('btn_edit_rule', 'Edit Billing Rule')
+                    : t('btn_new_rule', 'New Billing Rule')}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-6 py-4">
@@ -473,13 +480,13 @@ export default function ServicePricing() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddOpen(false)}>
-                  Cancel
+                  {t('btn_cancel', 'Cancel')}
                 </Button>
                 <Button
                   onClick={handleSave}
                   className="bg-trust-blue text-white"
                 >
-                  Save Rule
+                  {t('btn_save_rule', 'Save Rule')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -492,13 +499,17 @@ export default function ServicePricing() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Rule Name</TableHead>
-                <TableHead>Hierarchy (By ➔ To)</TableHead>
-                <TableHead>Target Scope</TableHead>
-                <TableHead>Logic Type</TableHead>
-                <TableHead>Rate</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('column_name', 'Rule Name')}</TableHead>
+                <TableHead>
+                  {t('column_hierarchy', 'Hierarchy (By ➔ To)')}
+                </TableHead>
+                <TableHead>{t('column_scope', 'Target Scope')}</TableHead>
+                <TableHead>{t('column_logic', 'Logic Type')}</TableHead>
+                <TableHead>{t('column_rate', 'Rate')}</TableHead>
+                <TableHead>{t('column_status', 'Status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('column_actions', 'Actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -563,13 +574,14 @@ export default function ServicePricing() {
                             }}
                           >
                             <Pencil className="h-4 w-4 mr-2 text-slate-600" />{' '}
-                            Edit Rule
+                            {t('btn_edit_rule', 'Edit Rule')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600 focus:text-red-600 focus:bg-red-50"
                             onClick={() => setDeleteId(agreement.id)}
                           >
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete Rule
+                            <Trash2 className="h-4 w-4 mr-2" />{' '}
+                            {t('btn_delete_rule', 'Delete Rule')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -585,13 +597,18 @@ export default function ServicePricing() {
                   >
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <Network className="h-10 w-10 text-slate-300" />
-                      <p>No billing hierarchy rules configured.</p>
+                      <p>
+                        {t(
+                          'msg_no_rules',
+                          'No billing hierarchy rules configured.',
+                        )}
+                      </p>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setIsAddOpen(true)}
                       >
-                        Create rule
+                        {t('btn_create_rule', 'Create rule')}
                       </Button>
                     </div>
                   </TableCell>
