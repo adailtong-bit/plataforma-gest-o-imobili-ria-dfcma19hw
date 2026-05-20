@@ -5,6 +5,7 @@ export interface AdvertiserContact {
   name?: string
   email?: string
   phone?: string
+  role?: string
   [key: string]: unknown
 }
 
@@ -94,9 +95,22 @@ export interface Campaign {
   invoice_status?: string | null
 }
 
+export interface PublicityInvoice {
+  id: string
+  invoice_number?: string
+  description?: string
+  amount?: number
+  status?: string
+  date?: string
+  created_at?: string
+  to_name?: string
+  booking_id?: string
+}
+
 let globalAdvertisers: Advertiser[] = []
 let globalPricingMatrix: PricingMatrix[] = []
 let globalCampaigns: Campaign[] = []
+let globalInvoices: PublicityInvoice[] = []
 let listeners: (() => void)[] = []
 
 const notify = () => listeners.forEach((l) => l())
@@ -125,6 +139,7 @@ const fetchPublicityData = async () => {
       date?: string
       status?: string
     }>
+    globalInvoices = invoices as PublicityInvoice[]
     globalCampaigns = (campRes.data as Campaign[]).map((c) => {
       const campaignInvoices = invoices.filter(
         (i) =>
@@ -160,12 +175,14 @@ const usePublicityStore = () => {
   const [pricingMatrix, setPricingMatrix] =
     useState<PricingMatrix[]>(globalPricingMatrix)
   const [campaigns, setCampaigns] = useState<Campaign[]>(globalCampaigns)
+  const [invoices, setInvoices] = useState<PublicityInvoice[]>(globalInvoices)
 
   useEffect(() => {
     const l = () => {
       setAdvertisers(globalAdvertisers)
       setPricingMatrix(globalPricingMatrix)
       setCampaigns(globalCampaigns)
+      setInvoices(globalInvoices)
     }
     listeners.push(l)
     return () => {
@@ -351,6 +368,8 @@ const usePublicityStore = () => {
     addCampaign,
     updateCampaign,
     deleteCampaign,
+
+    invoices,
   }
 }
 

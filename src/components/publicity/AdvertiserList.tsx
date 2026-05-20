@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Edit, Trash2, Search, Users, AlertCircle } from 'lucide-react'
-import usePublicityStore from '@/stores/usePublicityStore'
+import usePublicityStore, { AdvFormData } from '@/stores/usePublicityStore'
 import { useToast } from '@/hooks/use-toast'
 import { PhoneInput } from '@/components/ui/phone-input'
 import {
@@ -88,9 +88,18 @@ export function AdvertiserList() {
       a.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleOpen = (adv?: any) => {
+  const handleOpen = (adv?: AdvFormData) => {
     if (adv) {
-      setEditingId(adv.id)
+      setEditingId(adv.id!)
+
+      const mappedContacts =
+        adv.contacts?.map((c: any) => ({
+          name: c.name || '',
+          role: c.role || '',
+          phone: c.phone || '',
+          email: c.email || '',
+        })) || []
+
       setFormData({
         name: adv.name || '',
         taxId: adv.taxId || '',
@@ -105,12 +114,12 @@ export function AdvertiserList() {
         zipCode: adv.zipCode || '',
         country: (adv.country as 'US' | 'BR' | 'ES') || 'US',
         contacts:
-          adv.contacts && adv.contacts.length >= 2
-            ? adv.contacts
+          mappedContacts.length >= 2
+            ? mappedContacts
             : [
-                ...(adv.contacts || []),
+                ...mappedContacts,
                 ...Array.from({
-                  length: Math.max(0, 2 - (adv.contacts?.length || 0)),
+                  length: Math.max(0, 2 - mappedContacts.length),
                 }).map(() => ({
                   name: '',
                   role: '',
@@ -191,14 +200,15 @@ export function AdvertiserList() {
         toast({ title: 'Advertiser registered successfully.' })
       }
       setIsOpen(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error & { code?: string }
       const isRlsError =
-        error.message?.includes('row-level security') || error.code === '42501'
+        err.message?.includes('row-level security') || err.code === '42501'
       toast({
         title: 'Error saving advertiser',
         description: isRlsError
           ? 'Error saving: You do not have permission to perform this action. Please check your administrative role.'
-          : error.message || 'An unexpected error occurred.',
+          : err.message || 'An unexpected error occurred.',
         variant: 'destructive',
       })
     } finally {
@@ -208,17 +218,18 @@ export function AdvertiserList() {
 
   const handleDelete = async (id: string) => {
     if (
-      confirm(
+      window.confirm(
         'Are you sure you want to delete this advertiser? All their campaigns might be affected.',
       )
     ) {
       try {
         await deleteAdvertiser(id)
         toast({ title: 'Advertiser deleted.' })
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as Error
         toast({
           title: 'Error deleting',
-          description: error.message || 'Could not delete the advertiser.',
+          description: err.message || 'Could not delete the advertiser.',
           variant: 'destructive',
         })
       }

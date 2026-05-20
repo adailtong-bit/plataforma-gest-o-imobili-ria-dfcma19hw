@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AdsManager } from '@/components/publicity/AdsManager'
 import { AdvertiserList } from '@/components/publicity/AdvertiserList'
 import { PricingConfig } from '@/components/publicity/PricingConfig'
+import { CampaignInvoices } from '@/components/publicity/CampaignInvoices'
 import useLanguageStore from '@/stores/useLanguageStore'
 
 export default function PublicityAdmin() {
@@ -36,6 +37,12 @@ export default function PublicityAdmin() {
           >
             Pricing Rules
           </TabsTrigger>
+          <TabsTrigger
+            value="invoices"
+            className="data-[state=active]:bg-slate-100"
+          >
+            Billing & Invoices
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="ads" className="m-0">
@@ -48,6 +55,10 @@ export default function PublicityAdmin() {
 
         <TabsContent value="pricing" className="m-0">
           <PricingConfig />
+        </TabsContent>
+
+        <TabsContent value="invoices" className="m-0">
+          <CampaignInvoices />
         </TabsContent>
       </Tabs>
     </div>
