@@ -10,7 +10,7 @@ import useFinancialStore from '@/stores/useFinancialStore'
 import useTaskStore from '@/stores/useTaskStore'
 import useTenantStore from '@/stores/useTenantStore'
 import useAuthStore from '@/stores/useAuthStore'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import usePartnerStore from '@/stores/usePartnerStore'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { formatCurrency } from '@/lib/utils'
@@ -70,7 +70,7 @@ export default function Dashboard() {
   const { tenants } = useTenantStore()
   const { partners } = usePartnerStore()
   const { currentUser, simulationMode, simulationRole } = useAuthStore()
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { campaigns, pricingMatrix } = usePublicityStore()
 
   const context = useContext(AppContext)

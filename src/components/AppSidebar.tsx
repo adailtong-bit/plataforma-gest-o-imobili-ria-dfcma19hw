@@ -41,7 +41,7 @@ import {
 import { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Logo } from '@/components/Logo'
 import { NavUser } from '@/components/NavUser'
 
@@ -55,7 +55,7 @@ export function AppSidebar() {
   const location = useLocation()
   const { currentUser, hasPermissionSync, simulationMode, simulationRole } =
     useAuthStore()
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
 
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
@@ -110,7 +110,7 @@ export function AppSidebar() {
         resource: 'calendar',
       },
       {
-        title: t('sidebar.financial', 'Financial'),
+        title: t('menu.finances', 'Finances'),
         url: '/financial',
         icon: DollarSign,
         resource: 'financial',
@@ -230,7 +230,7 @@ export function AppSidebar() {
   const systemItems = useMemo(
     () => [
       {
-        title: t('sidebar.settings', 'Settings'),
+        title: t('menu.settings', 'Settings'),
         url: '/settings',
         icon: Settings,
         resource: 'settings',
