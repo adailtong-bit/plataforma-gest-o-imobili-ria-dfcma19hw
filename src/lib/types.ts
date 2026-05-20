@@ -391,6 +391,7 @@ export type PropertyStatus =
   | 'cleaning'
   | 'maintenance'
   | 'occupied'
+  | 'vacant'
 
 export interface FixedExpense {
   id: string
@@ -661,7 +662,7 @@ export interface Tenant {
   rentValue: number
   leaseStart?: string
   leaseEnd?: string
-  status: 'active' | 'past' | 'prospective'
+  status: 'active' | 'past' | 'prospective' | 'expiring_soon'
   role: UserRole
   avatar?: string
   documents?: GenericDocument[]
@@ -677,6 +678,7 @@ export interface Tenant {
   suggestedRenewalPrice?: number
   ownerDecision?: 'pending' | 'accepted' | 'rejected' | 'counter'
   tenantDecision?: 'pending' | 'accepted' | 'rejected' | 'counter'
+  tags?: string[]
   rentAdjustmentConfig?: {
     type: 'percentage' | 'fixed'
     value: number
@@ -859,6 +861,9 @@ export interface Partner {
     bankNumber?: string
     zelle?: string
   }
+  source?: string
+  origin?: string
+  tags?: string[]
   serviceRates?: ServiceRate[]
   employees?: PartnerEmployee[]
   linkedPropertyIds?: string[]
