@@ -379,7 +379,7 @@ export function AdsManager() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this campaign?')) {
+    if (window.confirm('Are you sure you want to delete this campaign?')) {
       try {
         await deleteCampaign(id)
         toast({ title: 'Campaign deleted.' })
@@ -395,7 +395,7 @@ export function AdsManager() {
 
   const handleRenew = async (camp: any) => {
     if (
-      !confirm(
+      !window.confirm(
         'Are you sure you want to renew this campaign? This will generate a new invoice.',
       )
     )
@@ -442,7 +442,7 @@ export function AdsManager() {
 
   const handleActivate = async (camp: any) => {
     if (
-      !confirm(
+      !window.confirm(
         'Activate campaign? This will generate an invoice billed directly to the Advertiser and allocate 100% revenue to the platform.',
       )
     )
