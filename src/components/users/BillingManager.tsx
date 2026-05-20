@@ -339,7 +339,7 @@ export function BillingManager({
                 <Label>Type</Label>
                 <Select
                   value={agreementForm.type}
-                  onValueChange={(v: any) =>
+                  onValueChange={(v: BillingAgreement['type']) =>
                     setAgreementForm({ ...agreementForm, type: v })
                   }
                 >
@@ -379,7 +379,7 @@ export function BillingManager({
                 <Label>Value Type</Label>
                 <Select
                   value={agreementForm.valueType}
-                  onValueChange={(v: any) =>
+                  onValueChange={(v: 'fixed' | 'percentage') =>
                     setAgreementForm({ ...agreementForm, valueType: v })
                   }
                 >
@@ -415,7 +415,7 @@ export function BillingManager({
                 <Label>Frequency</Label>
                 <Select
                   value={agreementForm.frequency}
-                  onValueChange={(v: any) =>
+                  onValueChange={(v: BillingAgreement['frequency']) =>
                     setAgreementForm({ ...agreementForm, frequency: v })
                   }
                 >
@@ -450,7 +450,7 @@ export function BillingManager({
                 <Label>Status</Label>
                 <Select
                   value={agreementForm.status}
-                  onValueChange={(v: any) =>
+                  onValueChange={(v: 'active' | 'historical') =>
                     setAgreementForm({ ...agreementForm, status: v })
                   }
                 >

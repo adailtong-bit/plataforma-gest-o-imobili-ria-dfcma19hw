@@ -3,31 +3,34 @@ import { supabase } from '@/lib/supabase/client'
 import { useAdRotation } from '@/hooks/useAdRotation'
 import { Card } from '@/components/ui/card'
 
+import { Advertisement } from '@/hooks/useAdRotation'
+
 export function AdDisplay({ locationKey }: { locationKey: string }) {
-  const [ads, setAds] = useState<any[]>([])
+  const [ads, setAds] = useState<Advertisement[]>([])
 
   useEffect(() => {
     const fetchAds = async () => {
       const { data, error } = await supabase
         .from('publicity_campaigns')
-        .select(
-          `
-          *,
-          publicity_pricing_matrix!inner(*)
-        `,
-        )
+        .select(`*, publicity_pricing_matrix!inner(*)`)
         .eq('status', 'active')
         .eq('publicity_pricing_matrix.location_key', locationKey)
 
       if (data && !error) {
-        setAds(data)
+        const formattedAds: Advertisement[] = data.map((d: any) => ({
+          id: d.id,
+          imageUrl: d.image_url || undefined,
+          linkUrl: d.link_url || undefined,
+          title: d.title,
+        }))
+        setAds(formattedAds)
       }
     }
-    fetchAds()
+    void fetchAds()
   }, [locationKey])
 
   // Show up to 1 ad at a time, rotate every 5 seconds dynamically
-  const visibleAds = useAdRotation(ads as any, 1, 5)
+  const visibleAds = useAdRotation(ads, 1, 5)
 
   if (visibleAds.length === 0) return null
 

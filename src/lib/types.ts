@@ -1022,6 +1022,7 @@ export interface LedgerEntry {
   isRecurring?: boolean
   recurrenceFrequency?: 'monthly' | 'yearly'
   nextRecurrenceGenerated?: boolean
+  invoiceId?: string
   organizationId?: string
 }
 

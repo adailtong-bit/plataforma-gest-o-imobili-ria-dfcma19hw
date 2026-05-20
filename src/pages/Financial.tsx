@@ -383,7 +383,7 @@ export default function Financial() {
     })
   }
 
-  const openEdit = (entry: any) => {
+  const openEdit = (entry: import('@/lib/types').LedgerEntry) => {
     setEditingRecord(entry)
     setForm({
       description: entry.description,
@@ -419,7 +419,7 @@ export default function Financial() {
     })
   }
 
-  const markAsPaid = (entry: any) => {
+  const markAsPaid = (entry: import('@/lib/types').LedgerEntry) => {
     updateLedgerEntry({
       ...entry,
       status: 'cleared',
@@ -746,7 +746,7 @@ export default function Financial() {
               {!isOwner && (
                 <Tabs
                   value={viewMode}
-                  onValueChange={(v: any) => {
+                  onValueChange={(v: 'pm' | 'owner' | 'property') => {
                     setViewMode(v)
                     setSelectedOwnerId('all')
                     setSelectedPropertyId('all')

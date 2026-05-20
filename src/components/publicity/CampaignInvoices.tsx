@@ -109,7 +109,7 @@ export function CampaignInvoices() {
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold text-slate-900">
-                    {formatCurrency(inv.amount || 0, 'USD')}
+                    {formatCurrency(inv.amount || 0, language)}
                   </TableCell>
                   <TableCell>
                     {inv.status === 'paid' ? (

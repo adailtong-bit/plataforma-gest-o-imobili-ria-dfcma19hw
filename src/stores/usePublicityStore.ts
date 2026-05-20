@@ -129,19 +129,54 @@ const fetchPublicityData = async () => {
       .in('type', ['publicity_sale', 'publicity_renewal']),
   ])
 
-  if (advRes.data) globalAdvertisers = advRes.data as Advertiser[]
-  if (priceRes.data) globalPricingMatrix = priceRes.data as PricingMatrix[]
+  if (advRes.data) {
+    globalAdvertisers = advRes.data.map((d) => ({
+      id: d.id,
+      name: d.name,
+      tax_id: d.tax_id,
+      billing_email: d.billing_email,
+      billing_phone: d.billing_phone,
+      billing_address: d.billing_address,
+      street: d.street,
+      number: d.number,
+      complement: d.complement,
+      neighborhood: d.neighborhood,
+      city: d.city,
+      state: d.state,
+      zip_code: d.zip_code,
+      country: d.country,
+      contacts: (d.contacts as AdvertiserContact[]) || [],
+      created_at: d.created_at,
+    }))
+  }
+
+  if (priceRes.data) {
+    globalPricingMatrix = priceRes.data.map((d) => ({
+      id: d.id,
+      location_key: d.location_key,
+      duration_days: d.duration_days,
+      price: Number(d.price),
+      valid_from: d.valid_from || new Date().toISOString(),
+      created_at: d.created_at,
+    }))
+  }
+
   if (campRes.data && invRes.data) {
-    const invoices = invRes.data as Array<{
-      booking_id?: string
-      description?: string
-      created_at?: string
-      date?: string
-      status?: string
-    }>
-    globalInvoices = invoices as PublicityInvoice[]
-    globalCampaigns = (campRes.data as Campaign[]).map((c) => {
-      const campaignInvoices = invoices.filter(
+    const invoicesData = invRes.data
+    globalInvoices = invoicesData.map((inv) => ({
+      id: inv.id,
+      invoice_number: inv.invoice_number || undefined,
+      description: inv.description || undefined,
+      amount: Number(inv.amount || 0),
+      status: inv.status || undefined,
+      date: inv.date || inv.created_at || undefined,
+      created_at: inv.created_at || undefined,
+      to_name: inv.to_name || undefined,
+      booking_id: inv.booking_id || undefined,
+    }))
+
+    globalCampaigns = campRes.data.map((c) => {
+      const campaignInvoices = invoicesData.filter(
         (i) =>
           i.booking_id === c.id ||
           (i.description && i.description.includes(c.title)),
@@ -154,13 +189,42 @@ const fetchPublicityData = async () => {
       )
 
       return {
-        ...c,
+        id: c.id,
+        title: c.title,
+        advertiser_id: c.advertiser_id,
+        pricing_id: c.pricing_id,
+        start_date: c.start_date,
+        end_date: c.end_date,
+        status: c.status,
+        total_amount: Number(c.total_amount || 0),
+        image_url: c.image_url,
+        link_url: c.link_url,
+        last_notified_at: c.last_notified_at,
+        impressions_count: c.impressions_count || 0,
+        clicks_count: c.clicks_count || 0,
+        created_at: c.created_at,
         invoice_status:
           campaignInvoices.length > 0 ? campaignInvoices[0].status : null,
       }
     })
   } else if (campRes.data) {
-    globalCampaigns = campRes.data as Campaign[]
+    globalCampaigns = campRes.data.map((c) => ({
+      id: c.id,
+      title: c.title,
+      advertiser_id: c.advertiser_id,
+      pricing_id: c.pricing_id,
+      start_date: c.start_date,
+      end_date: c.end_date,
+      status: c.status,
+      total_amount: Number(c.total_amount || 0),
+      image_url: c.image_url,
+      link_url: c.link_url,
+      last_notified_at: c.last_notified_at,
+      impressions_count: c.impressions_count || 0,
+      clicks_count: c.clicks_count || 0,
+      created_at: c.created_at,
+      invoice_status: null,
+    }))
   }
 
   notify()
@@ -300,6 +364,7 @@ const usePublicityStore = () => {
   }
 
   const updateCampaign = async (camp: CampFormData) => {
+    if (!camp.id) throw new Error('Campaign ID is required for update')
     const { data, error } = await supabase
       .from('publicity_campaigns')
       .update({

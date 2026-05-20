@@ -156,44 +156,52 @@ export function InvoiceViewer({
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {invoice.items && invoice.items.length > 0 ? (
-                  invoice.items.map((item: any, idx: number) => (
-                    <tr key={idx} className="bg-white">
-                      <td className="py-4 px-4 text-slate-800 font-medium">
-                        {item.description || '-'}
-                      </td>
-                      <td className="py-4 px-4 text-slate-600 text-right">
-                        {item.quantity || 1}
-                      </td>
-                      <td className="py-4 px-4 text-slate-600 text-right">
-                        {formatAppCurrency(item.unitPrice || 0)}
-                      </td>
-                      <td className="py-4 px-4 text-slate-800 font-medium text-right">
-                        {formatAppCurrency(item.total || 0)}
-                      </td>
-                      <td className="py-4 px-4 text-center print:hidden">
-                        {item.sourceId ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 text-xs text-blue-600 hover:text-blue-800"
-                            onClick={() =>
-                              window.open(
-                                item.sourceType === 'booking'
-                                  ? `/calendar`
-                                  : `/tasks`,
-                                '_blank',
-                              )
-                            }
-                            title={`Trace back to ${item.sourceType || 'source'}`}
-                          >
-                            Trace
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-slate-400">N/A</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                  invoice.items.map(
+                    (
+                      item: InvoiceItem & {
+                        sourceId?: string
+                        sourceType?: string
+                      },
+                      idx: number,
+                    ) => (
+                      <tr key={idx} className="bg-white">
+                        <td className="py-4 px-4 text-slate-800 font-medium">
+                          {item.description || '-'}
+                        </td>
+                        <td className="py-4 px-4 text-slate-600 text-right">
+                          {item.quantity || 1}
+                        </td>
+                        <td className="py-4 px-4 text-slate-600 text-right">
+                          {formatAppCurrency(item.unitPrice || 0)}
+                        </td>
+                        <td className="py-4 px-4 text-slate-800 font-medium text-right">
+                          {formatAppCurrency(item.total || 0)}
+                        </td>
+                        <td className="py-4 px-4 text-center print:hidden">
+                          {item.sourceId ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs text-blue-600 hover:text-blue-800"
+                              onClick={() =>
+                                window.open(
+                                  item.sourceType === 'booking'
+                                    ? `/calendar`
+                                    : `/tasks`,
+                                  '_blank',
+                                )
+                              }
+                              title={`Trace back to ${item.sourceType || 'source'}`}
+                            >
+                              Trace
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-slate-400">N/A</span>
+                          )}
+                        </td>
+                      </tr>
+                    ),
+                  )
                 ) : (
                   <tr className="bg-white">
                     <td className="py-4 px-4 text-slate-800 font-medium">

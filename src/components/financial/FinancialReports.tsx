@@ -165,21 +165,22 @@ export function FinancialReports() {
   // --- Breakdown by Tower ---
   const revenueByTower = useMemo(() => {
     const data: Record<string, number> = {}
-    towers.forEach((t) => (data[t.name] = 0))
-    data[t('common.other') || 'Other'] = 0
+    towers.forEach((tw) => (data[tw.name] = 0))
+    const otherLabel = t('common.other') || 'Other'
+    data[otherLabel] = 0
 
     filteredEntries.forEach((e) => {
       if (e.type === 'income') {
         const prop = properties.find((p) => p.id === e.propertyId)
         if (prop && prop.towerId) {
-          const tower = towers.find((t) => t.id === prop.towerId)
+          const tower = towers.find((tw) => tw.id === prop.towerId)
           if (tower) {
             data[tower.name] = (data[tower.name] || 0) + e.amount
           } else {
-            data[t('common.other') || 'Other'] += e.amount
+            data[otherLabel] += e.amount
           }
         } else {
-          data[t('common.other') || 'Other'] += e.amount
+          data[otherLabel] += e.amount
         }
       }
     })

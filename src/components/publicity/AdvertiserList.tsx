@@ -507,7 +507,10 @@ export function AdvertiserList() {
                                 const res = await fetch(
                                   `https://viacep.com.br/ws/${val.replace(/\D/g, '')}/json/`,
                                 )
-                                const data = await res.json()
+                                const data = (await res.json()) as Record<
+                                  string,
+                                  any
+                                >
                                 if (!data.erro) {
                                   setFormData((prev) => ({
                                     ...prev,

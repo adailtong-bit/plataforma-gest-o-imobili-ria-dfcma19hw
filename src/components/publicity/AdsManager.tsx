@@ -54,7 +54,7 @@ export function AdsManager() {
     deleteCampaign,
   } = usePublicityStore()
 
-  const { addLedgerEntry, currency } = useFinancialStore()
+  const { addLedgerEntry } = useFinancialStore()
   const { toast } = useToast()
   const { language } = useLanguageStore()
 
@@ -382,7 +382,7 @@ export function AdsManager() {
             <tr>
               <td>${camp.impressions_count || 0}</td>
               <td>${camp.clicks_count || 0}</td>
-              <td>${camp.impressions_count ? (((camp.clicks_count || 0) / camp.impressions_count) * 100).toFixed(2) : 0}%</td>
+              <td>${camp.impressions_count ? (((camp.clicks_count || 0) / camp.impressions_count) * 100).toFixed(2) : '0.00'}%</td>
             </tr>
           </table>
         </body>
@@ -679,7 +679,7 @@ export function AdsManager() {
                       </TableCell>
                       <TableCell>
                         <span className="font-semibold text-slate-900">
-                          {formatCurrency(camp.total_amount || 0, currency)}
+                          {formatCurrency(camp.total_amount || 0, language)}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -910,7 +910,7 @@ export function AdsManager() {
                   </div>
                   <div className="text-xl font-bold">
                     {applicablePricing
-                      ? formatCurrency(applicablePricing.price, currency)
+                      ? formatCurrency(applicablePricing.price, language)
                       : '-'}
                   </div>
                 </div>

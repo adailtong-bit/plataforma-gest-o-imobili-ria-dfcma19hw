@@ -2,22 +2,38 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { ENV } from '@/lib/env'
 import useAuthStore from '@/stores/useAuthStore'
+import { LedgerEntry, Invoice } from '@/lib/types'
 
-let globalLedger: any[] = []
-let globalInvoices: any[] = []
+let globalLedger: LedgerEntry[] = []
+let globalInvoices: Invoice[] = []
 let listeners: (() => void)[] = []
 const notify = () => listeners.forEach((l) => l())
 
 export const fetchFinancials = async () => {
   const { data: ledgerData } = await supabase.from('ledger_entries').select('*')
   if (ledgerData) {
-    globalLedger = ledgerData.map((e: any) => ({
-      ...e,
-      propertyId: e.property_id,
-      costType: e.cost_type,
-      isRecurring: e.is_recurring,
-      recurrenceFrequency: e.recurrence_frequency,
-      invoiceId: e.invoice_id,
+    globalLedger = ledgerData.map((e) => ({
+      id: e.id,
+      propertyId: e.property_id || '',
+      date: e.date,
+      dueDate: undefined,
+      paymentDate: undefined,
+      type: e.type as 'income' | 'expense',
+      category: e.category || 'other',
+      amount: Number(e.amount),
+      description: e.description,
+      status: (e.status || 'pending') as
+        | 'pending'
+        | 'cleared'
+        | 'void'
+        | 'overdue'
+        | 'unpaid',
+      costType: (e.cost_type || 'variable') as 'fixed' | 'variable',
+      isRecurring: e.is_recurring || false,
+      recurrenceFrequency: (e.recurrence_frequency || 'monthly') as
+        | 'monthly'
+        | 'yearly',
+      invoiceId: e.invoice_id || undefined,
     }))
   }
 
@@ -26,31 +42,43 @@ export const fetchFinancials = async () => {
     .select('*')
     .order('created_at', { ascending: false })
   if (invData) {
-    globalInvoices = invData.map((inv: any) => ({
-      ...inv,
-      dueDate: inv.due_date,
-      fromName: inv.from_name,
-      fromEmail: inv.from_email,
-      fromPhone: inv.from_phone,
-      fromAddress: inv.from_address,
-      toName: inv.to_name,
-      toEmail: inv.to_email,
-      toPhone: inv.to_phone,
-      toAddress: inv.to_address,
-      fromId: inv.from_id,
-      toId: inv.to_id,
-      propertyId: inv.property_id,
-      bookingId: inv.booking_id,
+    globalInvoices = invData.map((inv) => ({
+      id: inv.id,
+      description: inv.description || '',
+      amount: Number(inv.amount || 0),
+      status: (inv.status || 'pending') as
+        | 'pending'
+        | 'paid'
+        | 'approved'
+        | 'sent',
+      date: inv.date || new Date().toISOString(),
+      dueDate: inv.due_date || undefined,
+      fromName: inv.from_name || undefined,
+      fromEmail: inv.from_email || undefined,
+      fromPhone: inv.from_phone || undefined,
+      fromAddress: inv.from_address || undefined,
+      toName: inv.to_name || undefined,
+      toEmail: inv.to_email || undefined,
+      toPhone: inv.to_phone || undefined,
+      toAddress: inv.to_address || undefined,
+      fromId: inv.from_id || undefined,
+      toId: inv.to_id || undefined,
+      propertyId: inv.property_id || undefined,
+      bookingId: inv.booking_id || undefined,
+      type: (inv.type || 'generic') as any,
+      items: (inv.items as import('@/lib/types').InvoiceItem[]) || [],
+      notes: inv.notes || undefined,
     }))
   }
   notify()
 }
 
-fetchFinancials()
+void fetchFinancials()
 
 const useFinancialStore = () => {
-  const [ledgerEntries, setLedgerEntries] = useState<any[]>(globalLedger)
-  const [invoices, setInvoices] = useState<any[]>(globalInvoices)
+  const [ledgerEntries, setLedgerEntries] =
+    useState<LedgerEntry[]>(globalLedger)
+  const [invoices, setInvoices] = useState<Invoice[]>(globalInvoices)
   const { currentUser, simulationMode, simulationRole, allUsers } =
     useAuthStore()
 
@@ -65,8 +93,8 @@ const useFinancialStore = () => {
     }
   }, [])
 
-  const addInvoice = async (inv: any) => {
-    const dbInv: any = {
+  const addInvoice = async (inv: Invoice) => {
+    const dbInv: Record<string, unknown> = {
       description: inv.description,
       amount: inv.amount,
       status: inv.status,
@@ -88,12 +116,12 @@ const useFinancialStore = () => {
       items: inv.items || [],
       notes: inv.notes,
     }
-    if (inv.id) dbInv.id = inv.id
+    if (inv.id && !inv.id.startsWith('new-')) dbInv.id = inv.id
     const { error } = await supabase.from('invoices').insert(dbInv)
     if (!error) await fetchFinancials()
   }
 
-  const updateInvoice = async (inv: any) => {
+  const updateInvoice = async (inv: Invoice) => {
     const dbInv = {
       description: inv.description,
       amount: inv.amount,
@@ -123,7 +151,6 @@ const useFinancialStore = () => {
 
     if (!error) {
       if (inv.status === 'paid' || inv.status === 'finalized') {
-        // Automatically mark associated ledger entries as cleared
         await supabase
           .from('ledger_entries')
           .update({ status: inv.status === 'paid' ? 'cleared' : 'pending' })
@@ -138,25 +165,25 @@ const useFinancialStore = () => {
     if (!error) await fetchFinancials()
   }
 
-  const addLedgerEntry = async (entry: any) => {
+  const addLedgerEntry = async (entry: Partial<LedgerEntry>) => {
     const dbEntry = {
-      description: entry.description,
-      amount: entry.amount,
-      type: entry.type,
-      date: entry.date,
-      status: entry.status,
+      description: entry.description || 'Entry',
+      amount: entry.amount || 0,
+      type: entry.type || 'income',
+      date: entry.date || new Date().toISOString(),
+      status: entry.status || 'pending',
       category: entry.category,
       property_id: entry.propertyId,
       cost_type: entry.costType,
       is_recurring: entry.isRecurring,
       recurrence_frequency: entry.recurrenceFrequency,
-      invoice_id: entry.invoiceId,
+      invoice_id: entry.invoiceId || null,
     }
     const { error } = await supabase.from('ledger_entries').insert(dbEntry)
     if (!error) await fetchFinancials()
   }
 
-  const updateLedgerEntry = async (entry: any) => {
+  const updateLedgerEntry = async (entry: LedgerEntry) => {
     const dbEntry = {
       description: entry.description,
       amount: entry.amount,

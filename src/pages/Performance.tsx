@@ -46,15 +46,22 @@ import { format } from 'date-fns'
 
 export default function Performance() {
   const { t, language } = useLanguageStore()
-  const { advertisements } = usePublicityStore()
-  const { feedbacks } = useContext(AppContext) || { feedbacks: [] }
+  const { campaigns } = usePublicityStore()
+  const appContext = useContext(AppContext)
+  const feedbacks = appContext?.feedbacks || []
   const [reviewsOpen, setReviewsOpen] = useState(false)
 
-  const performanceAds = useMemo(
-    () =>
-      advertisements.filter((a) => a.active && a.placement === 'performance'),
-    [advertisements],
-  )
+  const performanceAds = useMemo(() => {
+    return campaigns
+      .filter((c) => c.status === 'active')
+      .map((c) => ({
+        id: c.id,
+        imageUrl: c.image_url || undefined,
+        linkUrl: c.link_url || undefined,
+        title: c.title,
+        tier: 'standard' as const,
+      }))
+  }, [campaigns])
   const visibleAds = useAdRotation(performanceAds, 2, 8)
 
   // Mock data
@@ -117,16 +124,23 @@ export default function Performance() {
               rel="noreferrer"
               className="block relative h-24 rounded-lg overflow-hidden border bg-muted group animate-in fade-in duration-500"
             >
-              <img
-                src={ad.imageUrl}
-                alt={ad.title}
-                crossOrigin="anonymous"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg'
-                  e.currentTarget.onerror = null
-                }}
-                className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
+              {ad.imageUrl ? (
+                <img
+                  src={ad.imageUrl}
+                  alt={ad.title || 'Ad'}
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      'https://img.usecurling.com/p/400/100?q=abstract'
+                    e.currentTarget.onerror = null
+                  }}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                />
+              ) : (
+                <div className="absolute inset-0 w-full h-full bg-slate-200 flex items-center justify-center">
+                  <span className="text-slate-400 font-medium">No Image</span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-black/50 p-4 flex flex-col justify-center">
                 <span className="text-white text-[10px] font-bold uppercase tracking-wider mb-1 bg-black/60 w-fit px-1.5 py-0.5 rounded">
                   Sponsored
@@ -134,11 +148,6 @@ export default function Performance() {
                 <h4 className="text-white font-bold truncate text-sm">
                   {ad.title}
                 </h4>
-                {ad.description && (
-                  <p className="text-white/80 text-xs truncate mt-0.5">
-                    {ad.description}
-                  </p>
-                )}
               </div>
             </a>
           ))}

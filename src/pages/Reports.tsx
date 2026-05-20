@@ -28,15 +28,23 @@ import { DataMask } from '@/components/DataMask'
 
 export default function Reports() {
   const { t } = useLanguageStore()
-  const { properties, financials, formatAppCurrency, tenants } =
-    useContext(AppContext)!
+  const appContext = useContext(AppContext)
+  if (!appContext) return null
+  const { properties, financials, formatAppCurrency, tenants } = appContext
 
   // Aggregate Data
   const totalProperties = properties.length
-  const totalInvoices = financials.invoices.length
-  const totalRevenue = financials.invoices
-    .filter((i) => i.status === 'paid')
-    .reduce((acc, i) => acc + i.amount, 0)
+
+  const invoices = Array.isArray(financials)
+    ? financials
+    : financials.invoices || []
+  const totalInvoices = invoices.length
+  const totalRevenue = invoices
+    .filter((i: import('@/lib/types').Invoice) => i.status === 'paid')
+    .reduce(
+      (acc: number, i: import('@/lib/types').Invoice) => acc + i.amount,
+      0,
+    )
   const activeTenants = tenants.filter((t) => t.status === 'active').length
 
   // Property by City

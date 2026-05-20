@@ -123,7 +123,9 @@ export default function Invoices() {
   const [previewTotal, setPreviewTotal] = useState(0)
 
   // Fetch properties lightly for mapping
-  const [propertiesMap, setPropertiesMap] = useState<any[]>([])
+  const [propertiesMap, setPropertiesMap] = useState<
+    { id: string; pmId: string | null; ownerId: string | null }[]
+  >([])
   useEffect(() => {
     supabase
       .from('properties')
@@ -141,12 +143,12 @@ export default function Invoices() {
       })
   }, [])
 
-  const invoiceList = Array.isArray(financials)
-    ? financials
+  const invoiceList: Invoice[] = Array.isArray(financials)
+    ? (financials as Invoice[])
     : financials?.invoices || []
 
-  const filteredInvoices = (invoiceList || []).filter(
-    (inv: any) =>
+  const filteredInvoices = invoiceList.filter(
+    (inv: Invoice) =>
       (inv?.description || '').toLowerCase().includes(search.toLowerCase()) ||
       (inv?.toName || '').toLowerCase().includes(search.toLowerCase()) ||
       (inv?.id || '').toLowerCase().includes(search.toLowerCase()),
@@ -171,7 +173,7 @@ export default function Invoices() {
   const handleItemChange = (
     index: number,
     field: keyof InvoiceItem,
-    value: any,
+    value: string | number,
   ) => {
     const newItems = [...(form.items || [])]
     newItems[index] = { ...newItems[index], [field]: value }
@@ -309,12 +311,12 @@ export default function Invoices() {
     const pStart = new Date(autoForm.startDate).getTime()
     const pEnd = new Date(autoForm.endDate).getTime()
 
-    const periodBookings = bookings.filter((b: any) => {
+    const periodBookings = bookings.filter((b) => {
       const bStart = new Date(b.checkIn).getTime()
       return bStart >= pStart && bStart <= pEnd
     })
 
-    const periodTasks = tasks.filter((t: any) => {
+    const periodTasks = tasks.filter((t) => {
       if (!t.date) return false
       const tTime = new Date(t.date).getTime()
       return tTime >= pStart && tTime <= pEnd
@@ -347,7 +349,7 @@ export default function Invoices() {
         const ownerBookings = periodBookings.filter((b) =>
           ownerProps.includes(b.propertyId),
         )
-        ownerBookings.forEach((b: any) => {
+        ownerBookings.forEach((b) => {
           const amount = (b.totalAmount || 0) * (agreement.value / 100)
           if (amount > 0) {
             newItems.push({
@@ -365,7 +367,7 @@ export default function Invoices() {
         const ownerTasks = periodTasks.filter((t) =>
           ownerProps.includes(t.propertyId),
         )
-        ownerTasks.forEach((t: any) => {
+        ownerTasks.forEach((t) => {
           if (
             (agreement.type === 'markup_cleaning' && t.type === 'cleaning') ||
             (agreement.type === 'markup_maintenance' &&
@@ -391,7 +393,7 @@ export default function Invoices() {
         const partnerTasks = periodTasks.filter(
           (t) => t.assigneeId === payee.id || t.assignee === payee.name,
         )
-        partnerTasks.forEach((t: any) => {
+        partnerTasks.forEach((t) => {
           if (
             (agreement.type === 'partner_cleaning_fee' &&
               t.type === 'cleaning') ||
@@ -414,7 +416,7 @@ export default function Invoices() {
         const teamTasks = periodTasks.filter(
           (t) => t.partnerEmployeeId === payee.id,
         )
-        teamTasks.forEach((t: any) => {
+        teamTasks.forEach((t) => {
           const amount = t.teamMemberPayout || agreement.value
           if (amount > 0) {
             newItems.push({
@@ -1045,7 +1047,7 @@ export default function Invoices() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInvoices.map((inv: any) => (
+              {filteredInvoices.map((inv: Invoice) => (
                 <TableRow key={inv.id} className="hover:bg-slate-50">
                   <TableCell className="font-mono text-xs font-medium text-slate-600">
                     {inv.id ? inv.id.split('-')[0].substring(0, 8) : '-'}
