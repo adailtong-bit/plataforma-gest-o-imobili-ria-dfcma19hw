@@ -298,28 +298,28 @@ export function AppSidebar() {
   const portalItems = React.useMemo(
     () => [
       {
-        title: t('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.main_dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'tenant',
       },
       {
-        title: t('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.main_dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'property_owner',
       },
       {
-        title: t('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.main_dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'partner',
       },
       {
-        title: t('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.main_dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
@@ -385,7 +385,7 @@ export function AppSidebar() {
         <div className="text-center mt-2">
           {currentUser && (
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-1 rounded-full">
-              {t(`roles.${effectiveRole}`) || effectiveRole}
+              {t(`roles.${effectiveRole}`, effectiveRole as string)}
             </span>
           )}
         </div>
@@ -395,7 +395,7 @@ export function AppSidebar() {
         {isPortalUser ? (
           <SidebarGroup>
             <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-              Portal
+              {t('sidebar.portal', 'Portal')}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -429,7 +429,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {t('menu.messages', 'Messages')} (PM Sync)
+                            {t('menu.messages_pm_sync', 'Messages (PM Sync)')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -447,8 +447,8 @@ export function AppSidebar() {
                         <MessageSquare className="h-4 w-4 mr-3" />
                         <span className="font-medium text-sm">
                           {t('menu.messages', 'Messages')}
-                        </span>{' '}
-                      </Link>
+                        </span>
+                      </Link>{' '}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
