@@ -1,10 +1,10 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { format } from 'date-fns'
-
-export type Language = 'en' | 'pt' | 'es' | string
 import { ptBR, es, enUS } from 'date-fns/locale'
 import type { ItemPrice } from './types'
+
+export type Language = 'en' | 'pt' | 'es' | string
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
