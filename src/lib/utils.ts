@@ -239,3 +239,15 @@ export const getCurrentPrice = (
   )
   return active ? active.price : basePrice
 }
+
+export const translateStatus = (
+  status: string | null | undefined,
+  t: (key: string, fallback?: string) => string,
+): string => {
+  if (!status) return t('status.unknown', 'Unknown')
+  const key = `status.${status.toLowerCase()}`
+  return t(
+    key,
+    status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
+  )
+}

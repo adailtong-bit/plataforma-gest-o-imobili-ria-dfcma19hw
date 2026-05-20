@@ -106,7 +106,14 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback(
     (key: string, fallback?: string) => {
-      return translations[key] || fallback || key
+      if (translations[key]) return translations[key]
+      if (fallback) return fallback
+
+      const parts = key.split('.')
+      const lastPart = parts[parts.length - 1] || key
+      return lastPart
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (l) => l.toUpperCase())
     },
     [translations],
   )
@@ -160,7 +167,14 @@ export const useTranslationContext = () => {
   const context = useContext(TranslationContext)
   if (!context) {
     return {
-      t: (key: string, fallback?: string) => fallback || key,
+      t: (key: string, fallback?: string) => {
+        if (fallback) return fallback
+        const parts = key.split('.')
+        const lastPart = parts[parts.length - 1] || key
+        return lastPart
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (l) => l.toUpperCase())
+      },
       locale: 'en',
       changeLanguage: async () => {},
       loading: false,

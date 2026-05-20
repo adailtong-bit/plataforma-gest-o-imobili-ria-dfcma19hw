@@ -1,569 +1,111 @@
-import { useContext, useState } from 'react'
-import { AppContext } from '@/stores/AppContext'
-import { Card, CardContent } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useDbTranslations } from '@/hooks/use-db-translations'
+import { supabase } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, Briefcase } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { DataMask } from '@/components/DataMask'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PhoneInput } from '@/components/ui/phone-input'
-import { applyDocumentMask, applyZipCodeMask } from '@/lib/utils'
-import { DocumentVault } from '@/components/documents/DocumentVault'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Tenant } from '@/lib/types'
-import { CurrencyInput } from '@/components/ui/currency-input'
+import { translateStatus } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function Tenants() {
-  const { tenants, addTenant, updateTenant, formatAppCurrency, currency } =
-    useContext(AppContext)!
-  const { t, language } = useLanguageStore()
-  const { toast } = useToast()
-  const locale = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }[language] || 'en-US'
+  const { t } = useDbTranslations()
+  const [tenants, setTenants] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState<Partial<Tenant>>({})
-
-  const [promoteTenantId, setPromoteTenantId] = useState<string | null>(null)
-  const [promoteFunction, setPromoteFunction] = useState('')
-
-  const handleOpenAdd = () => {
-    setEditingId(null)
-    setForm({ country: 'US' })
-    setIsOpen(true)
-  }
-  const handleOpenEdit = (tenant: Tenant) => {
-    setEditingId(tenant.id)
-    setForm({ country: 'US', ...tenant })
-    setIsOpen(true)
-  }
-
-  const handleSave = () => {
-    if (editingId) {
-      updateTenant({ ...form } as Tenant)
-      toast({ title: t('common.tenant_updated') })
-    } else {
-      addTenant({
-        ...form,
-        id: `tenant-${Date.now()}`,
-        name: form.name || t('common.new'),
-        status: 'active',
-        role: 'tenant',
-        rentValue: form.rentValue || 0,
-      } as Tenant)
-      toast({
-        title: t('common.tenant_added'),
-        description: form.email
-          ? `Invitation email automatically sent to ${form.email} for password setup.`
-          : 'Tenant created successfully.',
-      })
+  useEffect(() => {
+    let isMounted = true
+    const fetchTenants = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, name, email, status')
+        .eq('role', 'tenant')
+        .order('created_at', { ascending: false })
+        .limit(50)
+      if (isMounted) {
+        setTenants(data || [])
+        setLoading(false)
+      }
     }
-    setIsOpen(false)
-  }
-
-  const ctry = (form.country as 'US' | 'BR' | 'ES') || 'US'
-
-  const handlePromote = () => {
-    const tenant = tenants.find((t) => t.id === promoteTenantId)
-    if (tenant && context?.addPartner) {
-      context.addPartner({
-        id: `partner-${Date.now()}`,
-        name: tenant.name,
-        companyName: '',
-        type: promoteFunction || 'General Services',
-        entityType: 'individual',
-        email: tenant.email || '',
-        phone: tenant.phone || '',
-        cpfCnpj: tenant.cpfCnpj || '',
-        address: tenant.address || '',
-        city: tenant.city || '',
-        state: tenant.state || '',
-        zipCode: tenant.zipCode || '',
-        status: 'active',
-        role: 'partner',
-        origin: 'tenant_promotion',
-        serviceRates: [],
-        employees: [],
-      } as any)
-      toast({
-        title: t('common.success') || 'Success',
-        description: 'Tenant promoted to Partner (Opporjob Integration).',
-      })
+    fetchTenants()
+    return () => {
+      isMounted = false
     }
-    setPromoteTenantId(null)
-    setPromoteFunction('')
-  }
+  }, [])
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.tenants')}
-          </h1>
-          <p className="text-muted-foreground">{t('tenants.subtitle')}</p>
-        </div>
-        <Button
-          onClick={handleOpenAdd}
-          className="bg-trust-blue gap-2 text-white"
-        >
-          <Plus className="h-4 w-4" /> {t('common.add')}
-        </Button>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900">
+          {t('tenants.title', 'Tenants')}
+        </h1>
+        <p className="text-slate-500">
+          {t('tenants.subtitle', 'Manage your tenants')}
+        </p>
       </div>
 
-      <Dialog
-        open={!!promoteTenantId}
-        onOpenChange={(v) => !v && setPromoteTenantId(null)}
-      >
-        <DialogContent className="max-w-md bg-white">
-          <DialogHeader>
-            <DialogTitle>Promote to Service Provider</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <p className="text-sm text-slate-600">
-              Integrate this tenant with the Opporjob network as a Service
-              Provider.
-            </p>
-            <div className="space-y-2">
-              <Label>Function / Service Type</Label>
-              <Input
-                placeholder="e.g., General Maintenance, Cleaning"
-                value={promoteFunction}
-                onChange={(e) => setPromoteFunction(e.target.value)}
-              />
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('tenants.list', 'Tenant List')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPromoteTenantId(null)}>
-              {t('common.cancel')}
-            </Button>
-            <Button
-              onClick={handlePromote}
-              className="bg-indigo-600 text-white hover:bg-indigo-700"
-            >
-              Confirm Integration
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-black">
-          <DialogHeader>
-            <DialogTitle>
-              {editingId ? t('common.edit_tenant') : t('common.add_tenant')}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-            <div className="space-y-1">
-              <Label>{t('common.country')}</Label>
-              <Select
-                value={form.country || 'US'}
-                onValueChange={(v) => setForm({ ...form, country: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('common.select_country')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="US">{t('common.country_us')}</SelectItem>
-                  <SelectItem value="BR">{t('common.country_br')}</SelectItem>
-                  <SelectItem value="ES">{t('common.country_es')}</SelectItem>
-                </SelectContent>
-              </Select>
+          ) : (
+            <div className="border rounded-md overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-slate-50 border-b">
+                  <tr>
+                    <th className="px-4 py-3 font-medium text-slate-500">
+                      {t('table_header_name', 'Name')}
+                    </th>
+                    <th className="px-4 py-3 font-medium text-slate-500">
+                      {t('table_header_email', 'Email')}
+                    </th>
+                    <th className="px-4 py-3 font-medium text-slate-500">
+                      {t('table_header_status', 'Status')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {tenants.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="px-4 py-8 text-center text-slate-500"
+                      >
+                        {t('common.no_data', 'No data available')}
+                      </td>
+                    </tr>
+                  ) : (
+                    tenants.map((tenant) => (
+                      <tr
+                        key={tenant.id}
+                        className="hover:bg-slate-50/50 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-medium text-slate-900">
+                          {tenant.name}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600">
+                          {tenant.email}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant="secondary"
+                            className="capitalize font-medium"
+                          >
+                            {translateStatus(tenant.status, t)}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          </div>
-          <Tabs defaultValue="personal" className="w-full mt-2">
-            <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="personal">
-                {t('common.personal_data')}
-              </TabsTrigger>
-              <TabsTrigger value="contact">
-                {t('common.contact_address')}
-              </TabsTrigger>
-              <TabsTrigger value="documents">
-                {t('common.documents')}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent
-              value="personal"
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
-            >
-              <div className="space-y-1">
-                <Label>{t('common.full_name_label')}</Label>
-                <Input
-                  value={form.name || ''}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.email')}</Label>
-                <Input
-                  type="email"
-                  value={form.email || ''}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.tax_id_label')}</Label>
-                <Input
-                  maxLength={18}
-                  value={form.cpfCnpj || ''}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      cpfCnpj: applyDocumentMask(e.target.value, ctry),
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.rg_id')}</Label>
-                <Input
-                  value={form.rg || ''}
-                  onChange={(e) => setForm({ ...form, rg: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.dob')}</Label>
-                <Input
-                  type="date"
-                  value={form.dob || ''}
-                  onChange={(e) => setForm({ ...form, dob: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.nationality')}</Label>
-                <Input
-                  value={form.nationality || ''}
-                  onChange={(e) =>
-                    setForm({ ...form, nationality: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.marital_status')}</Label>
-                <Select
-                  value={form.maritalStatus || ''}
-                  onValueChange={(v) => setForm({ ...form, maritalStatus: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('common.select')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Single">{t('common.single')}</SelectItem>
-                    <SelectItem value="Married">
-                      {t('common.married')}
-                    </SelectItem>
-                    <SelectItem value="Divorced">
-                      {t('common.divorced')}
-                    </SelectItem>
-                    <SelectItem value="Widowed">
-                      {t('common.widowed')}
-                    </SelectItem>
-                    <SelectItem value="Other">{t('common.other')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.profession')}</Label>
-                <Input
-                  value={form.profession || ''}
-                  onChange={(e) =>
-                    setForm({ ...form, profession: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.monthly_income')}</Label>
-                <CurrencyInput
-                  value={form.monthlyIncome || 0}
-                  onChange={(v) => setForm({ ...form, monthlyIncome: v })}
-                  currency={currency}
-                  locale={locale}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t('common.base_rent')}</Label>
-                <CurrencyInput
-                  value={form.rentValue || 0}
-                  onChange={(v) => setForm({ ...form, rentValue: v })}
-                  currency={currency}
-                  locale={locale}
-                />
-              </div>
-            </TabsContent>
-            <TabsContent value="contact" className="space-y-6">
-              <div>
-                <h3 className="text-sm font-medium mb-3 border-b pb-2">
-                  {t('common.phone')}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <Label>{t('common.phone')}</Label>
-                    <PhoneInput
-                      value={form.phone || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
-                      country={ctry}
-                      onCountryChange={(c) => setForm({ ...form, country: c })}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>{t('common.secondary_phone')}</Label>
-                    <PhoneInput
-                      value={form.secondaryPhone || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, secondaryPhone: e.target.value })
-                      }
-                      country={ctry}
-                      onCountryChange={(c) => setForm({ ...form, country: c })}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>{t('common.whatsapp')}</Label>
-                    <PhoneInput
-                      value={form.whatsapp || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, whatsapp: e.target.value })
-                      }
-                      country={ctry}
-                      onCountryChange={(c) => setForm({ ...form, country: c })}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium mb-3 border-b pb-2">
-                  {t('common.address')}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.zip_code')}</Label>
-                    <Input
-                      maxLength={10}
-                      value={form.zipCode || ''}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          zipCode: applyZipCodeMask(e.target.value, ctry),
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-3">
-                    <Label>{t('common.street')}</Label>
-                    <Input
-                      value={form.address || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, address: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.complement')}</Label>
-                    <Input
-                      value={form.complement || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, complement: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.neighborhood')}</Label>
-                    <Input
-                      value={form.neighborhood || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, neighborhood: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.city')}</Label>
-                    <Input
-                      value={form.city || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, city: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1 md:col-span-1">
-                    <Label>{t('common.state')}</Label>
-                    <Input
-                      value={form.state || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, state: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="documents">
-              <DocumentVault
-                documents={form.documents || []}
-                onUpdate={(docs) => setForm({ ...form, documents: docs })}
-                canEdit={true}
-                entityContext={
-                  form.name
-                    ? {
-                        id: editingId || 'new',
-                        name: form.name,
-                        type: 'tenant',
-                      }
-                    : undefined
-                }
-              />
-            </TabsContent>
-          </Tabs>
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={handleSave}>{t('common.save')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardContent className="p-0 overflow-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.tax_id_label')}</TableHead>
-                <TableHead>{t('common.email')}</TableHead>
-                <TableHead>{t('common.base_rent')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">
-                  {t('common.actions')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tenants.map((tenant) => (
-                <TableRow key={tenant.id} className="hover:bg-slate-50">
-                  <TableCell className="font-medium text-slate-900">
-                    <DataMask>{tenant.name}</DataMask>
-                  </TableCell>
-                  <TableCell>
-                    <DataMask>{tenant.cpfCnpj || '-'}</DataMask>
-                  </TableCell>
-                  <TableCell>
-                    <DataMask>{tenant.email}</DataMask>
-                  </TableCell>
-                  <TableCell>{formatAppCurrency(tenant.rentValue)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {t(`status.${tenant.status}`) || tenant.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
-                        onClick={() => setPromoteTenantId(tenant.id)}
-                        title="Promote to Partner (Opporjob)"
-                      >
-                        <Briefcase className="h-4 w-4 md:mr-2" />{' '}
-                        <span className="hidden md:inline">Promote</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenEdit(tenant)}
-                      >
-                        <Pencil className="h-4 w-4 md:mr-2" />{' '}
-                        <span className="hidden md:inline">
-                          {t('common.edit')}
-                        </span>
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 md:mr-2" />{' '}
-                            <span className="hidden md:inline">
-                              {t('common.delete')}
-                            </span>
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {t('common.delete_tenant')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t('common.delete_tenant_desc')}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              {t('common.cancel')}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                toast({ title: t('common.delete_success') })
-                              }
-                            >
-                              {t('common.confirm')}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {tenants.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center py-6 text-muted-foreground"
-                  >
-                    {t('common.empty')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          )}
         </CardContent>
       </Card>
     </div>
