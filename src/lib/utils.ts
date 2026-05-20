@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { Language } from './translations'
 import { format } from 'date-fns'
+
+export type Language = 'en' | 'pt' | 'es' | string
 import { ptBR, es, enUS } from 'date-fns/locale'
 import type { ItemPrice } from './types'
 
