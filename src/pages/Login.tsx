@@ -31,7 +31,7 @@ export default function Login() {
   const { toast } = useToast()
 
   const [email, setEmail] = useState('adailtong@gmail.com')
-  const [password, setPassword] = useState('Skip@Pass123')
+  const [password, setPassword] = useState('123456')
   const [showPassword, setShowPassword] = useState(false)
 
   const from = location.state?.from?.pathname || '/'

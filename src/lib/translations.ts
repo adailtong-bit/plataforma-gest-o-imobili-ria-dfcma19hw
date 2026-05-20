@@ -44,6 +44,8 @@ export const translations: Record<string, Record<string, string>> = {
     'sidebar.translations': 'Traduções',
     'dashboard.title': 'Dashboard',
     'dashboard.subtitle': 'Visão geral das suas operações',
+    'dashboard.recent_bookings': 'Reservas Recentes',
+    'common.view_all': 'Ver Todas',
     'properties.title': 'Propriedades',
     'properties.subtitle': 'Gerencie suas propriedades',
     'properties.list': 'Lista de Propriedades',
