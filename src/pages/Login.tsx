@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/use-auth'
 import useAuthStore from '@/stores/useAuthStore'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   User,
   Shield,
@@ -21,43 +21,32 @@ import { Logo } from '@/components/Logo'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Login() {
-  const {
-    signIn,
-    signOut,
-    loading: isAuthLoading,
-    profile: currentUser,
-    session,
-  } = useAuth()
+  const { signIn, loading: isAuthLoading, session } = useAuth()
+
+  const { currentUser, isAuthLoading: appLoading } = useAuthStore()
 
   const isAuthenticated = !!session
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
 
-  const [email, setEmail] = useState('master@plataforma.com')
-  const [password, setPassword] = useState('master123')
+  const [email, setEmail] = useState('adailtong@gmail.com')
+  const [password, setPassword] = useState('Skip@Pass123')
   const [showPassword, setShowPassword] = useState(false)
 
   const from = location.state?.from?.pathname || '/'
 
   useEffect(() => {
-    if (isAuthenticated && !isAuthLoading) {
-      if (!currentUser) {
-        // If we are authenticated but have no profile, we must sign out to prevent an infinite loop.
-        // RequirePermission will bounce the user back to /login if there's no profile.
-        signOut()
-        toast({
-          title: 'Authentication Error',
-          description: 'Profile not found. Please contact support.',
-          variant: 'destructive',
-        })
+    if (isAuthenticated && !isAuthLoading && !appLoading) {
+      if (session && !currentUser) {
+        // Still loading profile or no profile, just wait.
         return
       }
 
       let targetPath = from
 
       if (targetPath === '/' || targetPath === '/login') {
-        const role = currentUser.role?.toLowerCase() || 'master'
+        const role = (currentUser as any)?.role?.toLowerCase() || 'master'
         switch (role) {
           case 'owner':
           case 'property_owner':
@@ -87,19 +76,19 @@ export default function Login() {
   }, [
     isAuthenticated,
     isAuthLoading,
+    appLoading,
     currentUser,
+    session,
     navigate,
     from,
-    signOut,
-    toast,
   ])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) {
       toast({
-        title: 'Authentication Error',
-        description: 'Please enter an email address.',
+        title: 'Erro de Autenticação',
+        description: 'Por favor, insira um endereço de e-mail.',
         variant: 'destructive',
       })
       return
@@ -108,15 +97,14 @@ export default function Login() {
     const { error } = await signIn(email, password)
     if (!error) {
       toast({
-        title: 'Welcome Back',
-        description: 'Authentication successful.',
+        title: 'Bem-vindo(a) de volta',
+        description: 'Autenticação realizada com sucesso.',
       })
     } else {
-      signOut()
       toast({
-        title: 'Authentication Failed',
+        title: 'Falha na Autenticação',
         description:
-          'Invalid credentials. Please check your email and password and try again.',
+          'Credenciais inválidas. Verifique seu e-mail e senha e tente novamente.',
         variant: 'destructive',
       })
     }
@@ -135,15 +123,14 @@ export default function Login() {
     const { error } = await signIn(demoEmail, pwd)
     if (!error) {
       toast({
-        title: 'Welcome Back',
-        description: 'Authentication successful.',
+        title: 'Bem-vindo(a) de volta',
+        description: 'Autenticação realizada com sucesso.',
       })
     } else {
-      signOut()
       toast({
-        title: 'Authentication Failed',
+        title: 'Falha na Autenticação',
         description:
-          'Invalid credentials. Please check your email and password and try again.',
+          'Credenciais inválidas. Verifique seu e-mail e senha e tente novamente.',
         variant: 'destructive',
       })
     }
@@ -220,11 +207,11 @@ export default function Login() {
         </div>
         <div className="z-10 space-y-6 max-w-md">
           <h1 className="text-4xl font-bold text-white leading-tight">
-            The complete platform for property management
+            A plataforma completa para gestão imobiliária
           </h1>
           <p className="text-slate-400 text-lg">
-            Manage properties, owners, partners, and financials in one place
-            with Summerpm.
+            Gerencie propriedades, proprietários, parceiros e finanças em um só
+            lugar com o Summerpm.
           </p>
         </div>
       </div>
@@ -236,80 +223,24 @@ export default function Login() {
               <Logo />
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              Welcome back
+              Bem-vindo(a) de volta
             </h2>
             <p className="text-sm text-slate-500">
-              Enter your credentials to access your account
+              Insira suas credenciais para acessar sua conta
             </p>
           </div>
 
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8 bg-slate-100/50">
               <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="demo">Demo Accounts</TabsTrigger>
+              <TabsTrigger value="demo">Contas de Teste</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
-              <div className="bg-blue-50/50 p-4 rounded-md text-sm mb-6 text-left border border-blue-100">
-                <p className="font-semibold text-blue-900 mb-2">
-                  Credenciais de Teste / Default Credentials:
-                </p>
-                <ul className="text-blue-800 space-y-1.5">
-                  <li
-                    className="cursor-pointer hover:underline"
-                    onClick={() => {
-                      setEmail('master@plataforma.com')
-                      setPassword('master123')
-                    }}
-                  >
-                    <strong>Master:</strong> master@plataforma.com / master123
-                  </li>
-                  <li
-                    className="cursor-pointer hover:underline"
-                    onClick={() => {
-                      setEmail('admin@plataforma.com')
-                      setPassword('admin123')
-                    }}
-                  >
-                    <strong>Admin:</strong> admin@plataforma.com / admin123
-                  </li>
-                  <li
-                    className="cursor-pointer hover:underline"
-                    onClick={() => {
-                      setEmail('parceiro@plataforma.com')
-                      setPassword('parceiro123')
-                    }}
-                  >
-                    <strong>Partner:</strong> parceiro@plataforma.com /
-                    parceiro123
-                  </li>
-                  <li
-                    className="cursor-pointer hover:underline"
-                    onClick={() => {
-                      setEmail('proprietario@plataforma.com')
-                      setPassword('proprietario123')
-                    }}
-                  >
-                    <strong>Owner:</strong> proprietario@plataforma.com /
-                    proprietario123
-                  </li>
-                  <li
-                    className="cursor-pointer hover:underline"
-                    onClick={() => {
-                      setEmail('locatario@plataforma.com')
-                      setPassword('locatario123')
-                    }}
-                  >
-                    <strong>Tenant:</strong> locatario@plataforma.com /
-                    locatario123
-                  </li>
-                </ul>
-              </div>
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">E-mail</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                       <Input
@@ -326,13 +257,13 @@ export default function Login() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password">Senha</Label>
                       <Button
                         variant="link"
                         type="button"
                         className="p-0 h-auto text-xs text-trust-blue font-medium"
                       >
-                        Forgot password?
+                        Esqueceu a senha?
                       </Button>
                     </div>
                     <div className="relative">
@@ -367,21 +298,32 @@ export default function Login() {
                   className="w-full h-11 bg-trust-blue hover:bg-blue-700 text-base shadow-sm"
                   disabled={isAuthLoading}
                 >
-                  {isAuthLoading ? 'Signing In...' : 'Sign In'}
+                  {isAuthLoading ? 'Entrando...' : 'Entrar'}
                 </Button>
 
-                <p className="text-center text-xs text-slate-500 mt-4">
-                  By signing in, you agree to our Terms of Service and Privacy
-                  Policy.
-                </p>
+                <div className="text-center mt-4 space-y-2">
+                  <p className="text-xs text-slate-500">
+                    Ao entrar, você concorda com nossos Termos de Serviço e
+                    Política de Privacidade.
+                  </p>
+                  <p className="text-sm">
+                    Não tem uma conta?{' '}
+                    <Link
+                      to="/register"
+                      className="text-trust-blue hover:underline font-medium"
+                    >
+                      Criar conta
+                    </Link>
+                  </p>
+                </div>
               </form>
             </TabsContent>
 
             <TabsContent value="demo">
               <div className="space-y-4">
                 <p className="text-sm text-slate-500 mb-4">
-                  Select a demo account to instantly sign in and explore the
-                  platform from different perspectives.
+                  Selecione uma conta de teste para entrar instantaneamente e
+                  explorar a plataforma sob diferentes perspectivas.
                 </p>
                 <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                   {demoUsers.map((user, index) => (

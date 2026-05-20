@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase/client'
 import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
 import { Skeleton } from '@/components/ui/skeleton'
+import { translations as staticTranslations } from '@/lib/translations'
 
 // Simple in-memory cache to avoid repeated queries
 let globalTranslationsCache: Record<string, Record<string, string>> | null =
@@ -88,8 +89,14 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
       if (!isMounted) return
 
-      const currentLangMap = globalTranslationsCache[locale] || {}
-      const fallbackMap = globalTranslationsCache['en'] || {}
+      const currentLangMap = {
+        ...(staticTranslations[locale] || {}),
+        ...(globalTranslationsCache[locale] || {}),
+      }
+      const fallbackMap = {
+        ...(staticTranslations['en'] || {}),
+        ...(globalTranslationsCache['en'] || {}),
+      }
 
       // Fallback mechanism: English fills missing keys
       const merged = { ...fallbackMap, ...currentLangMap }

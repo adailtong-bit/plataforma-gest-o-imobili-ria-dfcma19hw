@@ -179,15 +179,15 @@ export const getCurrencyLocale = (currency: string) => {
   const currencyLocales: Record<string, string> = {
     USD: 'en-US',
     BRL: 'pt-BR',
-    EUR: 'de-DE',
+    EUR: 'es-ES',
   }
-  return currencyLocales[currency] || 'en-US'
+  return currencyLocales[currency] || 'pt-BR'
 }
 
-export const formatCurrency = (value: number, currency = 'USD') => {
+export const formatCurrency = (value: number, currency = 'BRL') => {
   let code = currency
   if (!code || typeof code !== 'string' || code.length !== 3) {
-    code = 'USD'
+    code = 'BRL'
   }
   code = code.toUpperCase()
 
@@ -199,16 +199,16 @@ export const formatCurrency = (value: number, currency = 'USD') => {
       currency: code,
     }).format(value)
   } catch {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'BRL',
     }).format(value)
   }
 }
 
 export const formatDate = (
   date: string | Date | undefined,
-  language: Language = 'en',
+  language: Language = 'pt',
 ) => {
   if (!date) return ''
   const d = new Date(date)
@@ -244,10 +244,9 @@ export const translateStatus = (
   status: string | null | undefined,
   t: (key: string, fallback?: string) => string,
 ): string => {
-  if (!status) return t('status.unknown', 'Unknown')
+  if (!status) return t('status.unknown', 'Desconhecido')
   const key = `status.${status.toLowerCase()}`
-  return t(
-    key,
-    status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
-  )
+  const fallback =
+    status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')
+  return t(key, fallback)
 }

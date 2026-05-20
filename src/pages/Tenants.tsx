@@ -93,7 +93,11 @@ export default function Tenants() {
                         </td>
                         <td className="px-4 py-3">
                           <Badge
-                            variant="secondary"
+                            variant={
+                              tenant.status === 'active'
+                                ? 'default'
+                                : 'secondary'
+                            }
                             className="capitalize font-medium"
                           >
                             {translateStatus(tenant.status, t)}
