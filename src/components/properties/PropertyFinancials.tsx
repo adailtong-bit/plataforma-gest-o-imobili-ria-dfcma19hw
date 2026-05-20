@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  Property,
-  Owner,
-  Partner,
-  FixedExpense,
-  LedgerEntry,
-} from '@/lib/types'
+import { Property, Owner, Partner, LedgerEntry } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -26,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2, Edit2, Upload, FileCheck } from 'lucide-react'
+import { Plus, Trash2, Edit2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -48,13 +42,9 @@ import {
 } from '@/components/ui/alert-dialog'
 import { PropertyLedger } from '@/components/financial/PropertyLedger'
 import useFinancialStore from '@/stores/useFinancialStore'
-import usePropertyStore from '@/stores/usePropertyStore'
 import { useToast } from '@/hooks/use-toast'
-import { setDate, getDaysInMonth, parseISO, addMonths } from 'date-fns'
-import { FileUpload } from '@/components/ui/file-upload'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { DataMask } from '@/components/DataMask'
 
 interface PropertyFinancialsProps {
   data: Property
@@ -73,7 +63,6 @@ export function PropertyFinancials({
 }: PropertyFinancialsProps) {
   const { toast } = useToast()
   const { t, language } = useLanguageStore()
-  const { properties, updateProperty } = usePropertyStore()
   const {
     ledgerEntries,
     addLedgerEntry,
@@ -83,69 +72,52 @@ export function PropertyFinancials({
     financials: { invoices },
   } = useFinancialStore()
 
-  // Local state for Fixed Expense Dialog
   const [openExpense, setOpenExpense] = useState(false)
   const [confirmActionOpen, setConfirmActionOpen] = useState(false)
   const [actionType, setActionType] = useState<'add' | 'edit'>('add')
   const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null)
 
-  // Form State
   const [formData, setFormData] = useState({
-    name: '',
-    provider: '',
-    accountNumber: '',
+    description: '',
     amount: 0,
-    paymentDate: new Date().toISOString().split('T')[0],
-    receiptUrl: '',
-    contractStartDate: '',
-    contractEndDate: '',
-    recurringValue: 0,
+    date: new Date().toISOString().split('T')[0],
+    recurrenceFrequency: 'monthly',
   })
 
-  const currentProperty = properties.find((p) => p.id === data.id) || data
+  // Filter entries to only match this property
   const propertyEntries = ledgerEntries.filter((e) => e.propertyId === data.id)
+
+  // Isolate recurring expenses for the fixed expenses table view
+  const recurringEntries = propertyEntries.filter(
+    (e) => e.isRecurring && e.type === 'expense',
+  )
 
   const handleOpenAdd = () => {
     setFormData({
-      name: '',
-      provider: '',
-      accountNumber: '',
+      description: '',
       amount: 0,
-      paymentDate: new Date().toISOString().split('T')[0],
-      receiptUrl: '',
-      contractStartDate: '',
-      contractEndDate: '',
-      recurringValue: 0,
+      date: new Date().toISOString().split('T')[0],
+      recurrenceFrequency: 'monthly',
     })
     setCurrentExpenseId(null)
     setActionType('add')
     setOpenExpense(true)
   }
 
-  const handleOpenEdit = (expense: FixedExpense) => {
-    const today = new Date()
-    const daysInMonth = getDaysInMonth(today)
-    const validDay = Math.min(expense.dueDay, daysInMonth)
-    const estimatedDate = setDate(today, validDay).toISOString().split('T')[0]
-
+  const handleOpenEdit = (entry: LedgerEntry) => {
     setFormData({
-      name: expense.name,
-      provider: expense.provider || '',
-      accountNumber: expense.accountNumber || '',
-      amount: expense.amount,
-      paymentDate: estimatedDate,
-      receiptUrl: '',
-      contractStartDate: expense.contractStartDate || '',
-      contractEndDate: expense.contractEndDate || '',
-      recurringValue: expense.recurringValue || expense.amount,
+      description: entry.description,
+      amount: entry.amount,
+      date: entry.date.split('T')[0],
+      recurrenceFrequency: entry.recurrenceFrequency || 'monthly',
     })
-    setCurrentExpenseId(expense.id)
+    setCurrentExpenseId(entry.id)
     setActionType('edit')
     setOpenExpense(true)
   }
 
   const validateForm = () => {
-    if (!formData.name || !formData.provider || !formData.paymentDate) {
+    if (!formData.description || !formData.date) {
       toast({
         title: 'Validation Error',
         description: 'Please fill in all required fields.',
@@ -163,17 +135,6 @@ export function PropertyFinancials({
       return false
     }
 
-    if (formData.contractStartDate && formData.contractEndDate) {
-      if (formData.contractEndDate < formData.contractStartDate) {
-        toast({
-          title: 'Validation Error',
-          description: 'Contract end date cannot be before start date.',
-          variant: 'destructive',
-        })
-        return false
-      }
-    }
-
     return true
   }
 
@@ -186,138 +147,52 @@ export function PropertyFinancials({
     }
   }
 
-  const getNextDueDate = (currentDate: Date, fixedDay: number) => {
-    const nextMonth = addMonths(currentDate, 1)
-    const daysInNext = getDaysInMonth(nextMonth)
-    const day = Math.min(fixedDay, daysInNext)
-    return setDate(nextMonth, day)
-  }
-
   const executeSave = () => {
-    const parts = formData.paymentDate.split('-')
-    const dueDay = parseInt(parts[2])
-    const initialDate = new Date(formData.paymentDate)
-
-    const expenseId = currentExpenseId || `fe-${Date.now()}`
-
-    const expense: FixedExpense = {
-      id: expenseId,
-      name: formData.name,
-      amount: formData.amount,
-      dueDay: dueDay,
-      frequency: 'monthly',
-      provider: formData.provider,
-      accountNumber: formData.accountNumber,
-      contractStartDate: formData.contractStartDate,
-      contractEndDate: formData.contractEndDate,
-      recurringValue: formData.recurringValue || formData.amount,
-    }
-
-    let updatedExpenses = [...(currentProperty.fixedExpenses || [])]
-
     if (actionType === 'add') {
-      updatedExpenses.push(expense)
-
-      const isPaid = !!formData.receiptUrl
-
-      const entry: LedgerEntry = {
-        id: `auto-fe-${expense.id}-${Date.now()}`,
+      addLedgerEntry({
         propertyId: data.id,
-        date: new Date().toISOString(),
-        dueDate: initialDate.toISOString(),
+        description: formData.description,
+        amount: formData.amount,
         type: 'expense',
-        category: expense.name,
-        amount: expense.amount,
-        description: `${expense.name} - ${expense.provider || ''}`,
-        referenceId: expense.id,
-        status: isPaid ? 'cleared' : 'pending',
-        paymentDate: isPaid ? initialDate.toISOString() : undefined,
-        attachments: formData.receiptUrl
-          ? [{ name: t('common.documents'), url: formData.receiptUrl }]
-          : [],
-        payee: expense.provider,
-      }
-
-      addLedgerEntry(entry)
-
-      if (isPaid) {
-        const nextDate = getNextDueDate(initialDate, dueDay)
-        const nextEntry: LedgerEntry = {
-          id: `auto-fe-${expense.id}-${Date.now() + 1}`,
-          propertyId: data.id,
-          date: new Date().toISOString(),
-          dueDate: nextDate.toISOString(),
-          type: 'expense',
-          category: expense.name,
-          amount: expense.amount,
-          description: `${expense.name} - ${expense.provider || ''} (${t('common.automation')})`,
-          referenceId: expense.id,
-          status: 'pending',
-          payee: expense.provider,
-        }
-        setTimeout(() => addLedgerEntry(nextEntry), 100)
-      }
-
-      toast({
-        title: t('common.success'),
-        description: t('common.save'),
-      })
-    } else {
-      updatedExpenses = updatedExpenses.map((e) =>
-        e.id === expense.id ? expense : e,
-      )
-
-      const pendingEntries = ledgerEntries.filter(
-        (e) => e.referenceId === expense.id && e.status === 'pending',
-      )
-
-      pendingEntries.forEach((entry) => {
-        const entryDate = parseISO(entry.dueDate || entry.date)
-        const daysInMonth = getDaysInMonth(entryDate)
-        const validDay = Math.min(dueDay, daysInMonth)
-        const newDueDate = setDate(entryDate, validDay)
-
-        const updatedEntry: LedgerEntry = {
-          ...entry,
-          category: expense.name,
-          amount: expense.amount,
-          description: `${expense.name} - ${expense.provider || ''}`,
-          dueDate: newDueDate.toISOString(),
-          payee: expense.provider,
-        }
-        updateLedgerEntry(updatedEntry)
+        category: 'fixed_expense',
+        date: new Date(formData.date).toISOString(),
+        isRecurring: true,
+        recurrenceFrequency: formData.recurrenceFrequency as
+          | 'monthly'
+          | 'yearly',
+        status: 'pending',
       })
 
       toast({
         title: t('common.success'),
         description: t('common.save'),
       })
+    } else if (currentExpenseId) {
+      const existing = ledgerEntries.find((e) => e.id === currentExpenseId)
+      if (existing) {
+        updateLedgerEntry({
+          ...existing,
+          description: formData.description,
+          amount: formData.amount,
+          date: new Date(formData.date).toISOString(),
+          recurrenceFrequency: formData.recurrenceFrequency as
+            | 'monthly'
+            | 'yearly',
+        })
+
+        toast({
+          title: t('common.success'),
+          description: t('common.save'),
+        })
+      }
     }
-
-    updateProperty({
-      ...currentProperty,
-      fixedExpenses: updatedExpenses,
-    })
 
     setConfirmActionOpen(false)
     setOpenExpense(false)
   }
 
   const handleRemoveExpense = (id: string) => {
-    const updatedExpenses = (currentProperty.fixedExpenses || []).filter(
-      (e) => e.id !== id,
-    )
-
-    updateProperty({
-      ...currentProperty,
-      fixedExpenses: updatedExpenses,
-    })
-
-    const pendingEntries = ledgerEntries.filter(
-      (e) => e.referenceId === id && e.status === 'pending',
-    )
-    pendingEntries.forEach((entry) => deleteLedgerEntry(entry.id))
-
+    deleteLedgerEntry(id)
     toast({
       title: t('common.removed'),
       description: t('common.delete_success'),
@@ -334,14 +209,17 @@ export function PropertyFinancials({
           <div className="grid gap-2">
             <Label>{t('common.owners')}</Label>
             <Select
-              value={data.ownerId}
-              onValueChange={(v) => onChange('ownerId', v)}
+              value={data.ownerId || 'none'}
+              onValueChange={(v) =>
+                onChange('ownerId', v === 'none' ? undefined : v)
+              }
               disabled={!canEdit}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder={t('common.select')} />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
                 {owners.map((o) => (
                   <SelectItem key={o.id} value={o.id}>
                     {o.name}
@@ -426,7 +304,7 @@ export function PropertyFinancials({
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>{t('common.financial')}</CardTitle>
+          <CardTitle>{t('common.financial') || 'Fixed Expenses'}</CardTitle>
           <Button onClick={handleOpenAdd} className="bg-trust-blue gap-2">
             <Plus className="h-4 w-4" /> {t('common.add_title')}
           </Button>
@@ -436,46 +314,37 @@ export function PropertyFinancials({
             <TableHeader>
               <TableRow>
                 <TableHead>{t('common.description')}</TableHead>
-                <TableHead>{t('common.provider')}</TableHead>
-                <TableHead>{t('common.contracts')}</TableHead>
                 <TableHead>{t('common.value')}</TableHead>
-                <TableHead>{t('common.due_date')}</TableHead>
+                <TableHead>{t('common.frequency') || 'Frequency'}</TableHead>
+                <TableHead>{t('common.date')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(!currentProperty.fixedExpenses ||
-                currentProperty.fixedExpenses.length === 0) && (
+              {recurringEntries.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={5}
                     className="text-center py-6 text-muted-foreground"
                   >
                     {t('common.empty')}
                   </TableCell>
                 </TableRow>
               )}
-              {currentProperty.fixedExpenses?.map((expense) => (
+              {recurringEntries.map((expense) => (
                 <TableRow key={expense.id}>
-                  <TableCell className="font-medium">{expense.name}</TableCell>
-                  <TableCell>
-                    <DataMask>{expense.provider || '-'}</DataMask>
-                  </TableCell>
-                  <TableCell>
-                    {expense.contractEndDate ? (
-                      <span className="text-xs">
-                        {formatDate(expense.contractEndDate, language)}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
+                  <TableCell className="font-medium">
+                    {expense.description}
                   </TableCell>
                   <TableCell>
                     {formatCurrency(expense.amount, currency)}
                   </TableCell>
-                  <TableCell>{expense.dueDay}</TableCell>
+                  <TableCell className="capitalize">
+                    {expense.recurrenceFrequency || 'Monthly'}
+                  </TableCell>
+                  <TableCell>{formatDate(expense.date, language)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
@@ -591,51 +460,18 @@ export function PropertyFinancials({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>
-                {t('common.name')} <span className="text-red-500">*</span>
+                {t('common.description')}{' '}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
-                value={formData.name}
+                value={formData.description}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData({ ...formData, description: e.target.value })
                 }
                 placeholder={t('properties.financial_fields.name_placeholder')}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>
-                  {t('common.provider')} <span className="text-red-500">*</span>
-                </Label>
-                <DataMask className="w-full block">
-                  <Input
-                    value={formData.provider}
-                    onChange={(e) =>
-                      setFormData({ ...formData, provider: e.target.value })
-                    }
-                    placeholder={t(
-                      'properties.financial_fields.provider_placeholder',
-                    )}
-                  />
-                </DataMask>
-              </div>
-              <div className="grid gap-2">
-                <Label>{t('common.account_number')}</Label>
-                <DataMask className="w-full block">
-                  <Input
-                    value={formData.accountNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        accountNumber: e.target.value,
-                      })
-                    }
-                    placeholder={t(
-                      'properties.financial_fields.account_placeholder',
-                    )}
-                  />
-                </DataMask>
-              </div>
-            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>
@@ -647,7 +483,6 @@ export function PropertyFinancials({
                     setFormData({
                       ...formData,
                       amount: val,
-                      recurringValue: val,
                     })
                   }
                   currency={currency}
@@ -666,83 +501,29 @@ export function PropertyFinancials({
                 </Label>
                 <Input
                   type="date"
-                  value={formData.paymentDate}
+                  value={formData.date}
                   onChange={(e) =>
-                    setFormData({ ...formData, paymentDate: e.target.value })
+                    setFormData({ ...formData, date: e.target.value })
                   }
                 />
               </div>
-            </div>
-
-            <div className="border-t pt-4 mt-2">
-              <h4 className="text-sm font-medium mb-3">
-                {t('common.contracts')}
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>{t('common.start_date')}</Label>
-                  <Input
-                    type="date"
-                    value={formData.contractStartDate}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        contractStartDate: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.end_date')}</Label>
-                  <Input
-                    type="date"
-                    value={formData.contractEndDate}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        contractEndDate: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t('common.recurring')}</Label>
-                  <CurrencyInput
-                    value={formData.recurringValue}
-                    onChange={(val) =>
-                      setFormData({ ...formData, recurringValue: val })
-                    }
-                    currency={currency}
-                    locale={
-                      language === 'pt'
-                        ? 'pt-BR'
-                        : language === 'es'
-                          ? 'es-ES'
-                          : 'en-US'
-                    }
-                  />
-                </div>
+              <div className="grid gap-2 col-span-2">
+                <Label>{t('common.frequency') || 'Frequency'}</Label>
+                <Select
+                  value={formData.recurrenceFrequency}
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, recurrenceFrequency: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-
-            <div className="grid gap-2 pt-2">
-              <Label className="flex items-center gap-2">
-                <Upload className="h-4 w-4" /> {t('common.upload')}
-              </Label>
-              <FileUpload
-                value={formData.receiptUrl}
-                onChange={(url) =>
-                  setFormData({ ...formData, receiptUrl: url })
-                }
-                accept=".pdf,.jpg,.png,.jpeg"
-                label={t('common.upload')}
-              />
-              {actionType === 'add' && formData.receiptUrl && (
-                <div className="bg-green-50 text-green-700 p-2 rounded text-xs flex items-center gap-2 border border-green-200">
-                  <FileCheck className="h-4 w-4" />
-                  {t('common.success')}
-                </div>
-              )}
             </div>
           </div>
           <DialogFooter>

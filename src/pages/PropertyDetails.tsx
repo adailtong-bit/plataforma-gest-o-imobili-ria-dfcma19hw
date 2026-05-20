@@ -55,18 +55,28 @@ export default function PropertyDetails() {
   )
 
   useEffect(() => {
-    setIsLoading(true)
-    const timer = setTimeout(() => {
-      const found = properties.find((p) => p.id === id)
-      if (found) {
-        setProperty(found)
-        setFormData(found)
-      }
+    const found = properties.find((p) => p.id === id)
+    if (found) {
+      setProperty(found)
+      setFormData((prev) => {
+        // Only update form data from store if not currently editing
+        if (isEditing) return prev
+        return found
+      })
       setIsLoading(false)
-    }, 500)
+    } else if (properties.length > 0) {
+      // Properties are loaded but this one is not found
+      setIsLoading(false)
+    }
+  }, [id, properties, isEditing])
 
+  // Fallback timeout to stop loading if property list takes too long
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
     return () => clearTimeout(timer)
-  }, [id, properties])
+  }, [])
 
   if (isLoading) {
     return (
