@@ -275,6 +275,7 @@ export type Database = {
           invoice_number: string | null
           items: Json | null
           notes: string | null
+          payment_link: string | null
           property_id: string | null
           status: string | null
           to_address: string | null
@@ -301,6 +302,7 @@ export type Database = {
           invoice_number?: string | null
           items?: Json | null
           notes?: string | null
+          payment_link?: string | null
           property_id?: string | null
           status?: string | null
           to_address?: string | null
@@ -327,6 +329,7 @@ export type Database = {
           invoice_number?: string | null
           items?: Json | null
           notes?: string | null
+          payment_link?: string | null
           property_id?: string | null
           status?: string | null
           to_address?: string | null
@@ -1132,6 +1135,7 @@ export const Constants = {
 //   notes: text (nullable)
 //   created_at: timestamp with time zone (nullable, default: now())
 //   updated_at: timestamp with time zone (nullable, default: now())
+//   payment_link: text (nullable)
 // Table: ledger_entries
 //   id: uuid (not null, default: gen_random_uuid())
 //   description: text (not null)
@@ -1345,6 +1349,8 @@ export const Constants = {
 //     USING: true
 //     WITH CHECK: true
 // Table: invoices
+//   Policy "invoices_advertiser_select" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: (is_admin_or_pm() OR (from_id = auth.uid()) OR (to_id = auth.uid()) OR (property_id IN ( SELECT properties.id    FROM properties   WHERE ((properties.owner_id = auth.uid()) OR (properties.agent_id = auth.uid())))) OR (to_email = (( SELECT users.email    FROM auth.users   WHERE (users.id = auth.uid())))::text))
 //   Policy "invoices_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
 //     WITH CHECK: true
@@ -1392,6 +1398,8 @@ export const Constants = {
 //   Policy "admin_all_campaigns" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
 //     WITH CHECK: is_admin_or_pm()
+//   Policy "campaigns_advertiser_select" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: (is_admin_or_pm() OR (advertiser_id IN ( SELECT advertisers.id    FROM advertisers   WHERE (advertisers.billing_email = (( SELECT users.email            FROM auth.users           WHERE (users.id = auth.uid())))::text))))
 // Table: publicity_pricing_matrix
 //   Policy "admin_all_pricing" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
@@ -1463,33 +1471,42 @@ export const Constants = {
 //   DECLARE
 //     adv_name text;
 //     inv_number text;
+//     invoice_exists boolean;
 //   BEGIN
 //     -- Get advertiser name
 //     SELECT name INTO adv_name FROM public.advertisers WHERE id = NEW.advertiser_id;
 //
-//     -- Generate invoice number
+//     -- Generate invoice number base
 //     inv_number := 'PUB-' || to_char(NEW.created_at, 'YYYY') || '-' || lpad(floor(random() * 10000)::text, 4, '0');
 //
-//     -- Insert invoice
-//     INSERT INTO public.invoices (
-//       invoice_number,
-//       description,
-//       amount,
-//       status,
-//       date,
-//       to_name,
-//       type,
-//       from_name
-//     ) VALUES (
-//       inv_number,
-//       'Publicity Campaign: ' || NEW.title,
-//       NEW.total_amount,
-//       'pending',
-//       NEW.created_at,
-//       adv_name,
-//       'publicity_sale',
-//       'Platform Admin'
-//     );
+//     IF TG_OP = 'INSERT' THEN
+//       INSERT INTO public.invoices (
+//         invoice_number, description, amount, status, date, to_name, type, from_name
+//       ) VALUES (
+//         inv_number, 'Publicity Campaign: ' || NEW.title, NEW.total_amount, 'pending', NEW.created_at, adv_name, 'publicity_sale', 'Platform Admin'
+//       );
+//     ELSIF TG_OP = 'UPDATE' THEN
+//       -- Check if it's a renewal: end_date changed and increased
+//       IF NEW.end_date IS DISTINCT FROM OLD.end_date AND NEW.end_date > OLD.end_date THEN
+//         -- Create renewal invoice
+//         inv_number := 'PUB-REN-' || to_char(NOW(), 'YYYY') || '-' || lpad(floor(random() * 10000)::text, 4, '0');
+//
+//         -- Check idempotency: avoid creating duplicate invoice for the same campaign renewal on the same day
+//         SELECT EXISTS (
+//           SELECT 1 FROM public.invoices
+//           WHERE description = 'Publicity Campaign Renewal: ' || NEW.title
+//             AND date::date = NOW()::date
+//         ) INTO invoice_exists;
+//
+//         IF NOT invoice_exists THEN
+//           INSERT INTO public.invoices (
+//             invoice_number, description, amount, status, date, to_name, type, from_name
+//           ) VALUES (
+//             inv_number, 'Publicity Campaign Renewal: ' || NEW.title, NEW.total_amount, 'pending', NOW(), adv_name, 'publicity_sale', 'Platform Admin'
+//           );
+//         END IF;
+//       END IF;
+//     END IF;
 //
 //     RETURN NEW;
 //   END;
@@ -1564,6 +1581,6 @@ export const Constants = {
 //   trg_prevent_locked_invoice_update: CREATE TRIGGER trg_prevent_locked_invoice_update BEFORE UPDATE ON public.invoices FOR EACH ROW EXECUTE FUNCTION prevent_locked_invoice_update()
 // Table: publicity_campaigns
 //   trg_check_campaign_slot_limit: CREATE TRIGGER trg_check_campaign_slot_limit BEFORE INSERT OR UPDATE ON public.publicity_campaigns FOR EACH ROW EXECUTE FUNCTION check_campaign_slot_limit()
-//   trg_create_campaign_invoice: CREATE TRIGGER trg_create_campaign_invoice AFTER INSERT ON public.publicity_campaigns FOR EACH ROW EXECUTE FUNCTION handle_campaign_invoice()
+//   trg_create_campaign_invoice: CREATE TRIGGER trg_create_campaign_invoice AFTER INSERT OR UPDATE ON public.publicity_campaigns FOR EACH ROW EXECUTE FUNCTION handle_campaign_invoice()
 // Table: room_types
 //   on_room_type_price_update: CREATE TRIGGER on_room_type_price_update AFTER UPDATE ON public.room_types FOR EACH ROW EXECUTE FUNCTION sync_room_type_price()
