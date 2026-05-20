@@ -20,7 +20,10 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Edit, Trash2, Search, Users, AlertCircle } from 'lucide-react'
-import usePublicityStore, { AdvFormData } from '@/stores/usePublicityStore'
+import usePublicityStore, {
+  AdvFormData,
+  AdvertiserContact,
+} from '@/stores/usePublicityStore'
 import { useToast } from '@/hooks/use-toast'
 import { PhoneInput } from '@/components/ui/phone-input'
 import {
@@ -93,7 +96,7 @@ export function AdvertiserList() {
       setEditingId(adv.id!)
 
       const mappedContacts =
-        adv.contacts?.map((c: any) => ({
+        adv.contacts?.map((c: AdvertiserContact) => ({
           name: c.name || '',
           role: c.role || '',
           phone: c.phone || '',
