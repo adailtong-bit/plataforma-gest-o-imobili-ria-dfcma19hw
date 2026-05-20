@@ -108,12 +108,19 @@ export default function Properties() {
       city: form.city,
       state: form.state,
       zip_code: form.zip_code,
+      country: form.country || 'US',
       status: form.status,
       bedrooms: form.bedrooms ? parseInt(form.bedrooms) : null,
       bathrooms: form.bathrooms ? parseInt(form.bathrooms) : null,
       guests: form.guests ? parseInt(form.guests) : null,
       area: form.area ? parseFloat(form.area) : null,
       listing_price: form.listing_price ? parseFloat(form.listing_price) : null,
+      hoa_value: form.hoa_value ? parseFloat(form.hoa_value) : null,
+      type: form.type,
+      profile_type: form.profile_type,
+      community: form.community,
+      floor: form.floor,
+      room_number: form.room_number,
       image: form.image,
     }
 
@@ -212,6 +219,51 @@ export default function Properties() {
                     value={form.name || ''}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="type">{t('common.type', 'Type')}</Label>
+                  <Select
+                    value={form.type || 'house'}
+                    onValueChange={(v) => setForm({ ...form, type: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('common.type', 'Type')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="house">House</SelectItem>
+                      <SelectItem value="apartment">Apartment</SelectItem>
+                      <SelectItem value="condo">Condo</SelectItem>
+                      <SelectItem value="townhouse">Townhouse</SelectItem>
+                      <SelectItem value="room">Room</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="profile_type">
+                    {t('properties.rental_type', 'Rental Profile')}
+                  </Label>
+                  <Select
+                    value={form.profile_type || 'short_term'}
+                    onValueChange={(v) => setForm({ ...form, profile_type: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t(
+                          'properties.rental_type',
+                          'Rental Profile',
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short_term">
+                        Short Term (Vacation)
+                      </SelectItem>
+                      <SelectItem value="long_term">Long Term</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="status">{t('common.status', 'Status')}</Label>
@@ -326,6 +378,52 @@ export default function Properties() {
                       }
                     />
                   </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="country">
+                      {t('common.country', 'Country')}
+                    </Label>
+                    <Input
+                      id="country"
+                      value={form.country || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, country: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="community">
+                      {t('common.community', 'Community')}
+                    </Label>
+                    <Input
+                      id="community"
+                      value={form.community || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, community: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="floor">{t('common.floor', 'Floor')}</Label>
+                    <Input
+                      id="floor"
+                      value={form.floor || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, floor: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="room_number">
+                      {t('common.room_number', 'Room Number')}
+                    </Label>
+                    <Input
+                      id="room_number"
+                      value={form.room_number || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, room_number: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -386,7 +484,7 @@ export default function Properties() {
                       }
                     />
                   </div>
-                  <div className="space-y-2 col-span-2">
+                  <div className="space-y-2">
                     <Label htmlFor="listing_price">
                       {t('common.price', 'Listing Price')}
                     </Label>
@@ -396,6 +494,19 @@ export default function Properties() {
                       value={form.listing_price || ''}
                       onChange={(e) =>
                         setForm({ ...form, listing_price: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hoa_value">
+                      {t('common.hoa_value', 'HOA / Condo Fee')}
+                    </Label>
+                    <Input
+                      id="hoa_value"
+                      type="number"
+                      value={form.hoa_value || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, hoa_value: e.target.value })
                       }
                     />
                   </div>

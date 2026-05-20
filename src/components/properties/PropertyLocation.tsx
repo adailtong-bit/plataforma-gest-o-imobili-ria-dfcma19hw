@@ -121,7 +121,7 @@ export function PropertyLocation({
           <div className="space-y-2">
             <Label>{t('properties.zip_code') || 'Zip Code'}</Label>
             <Input
-              value={data.zipCode || ''}
+              value={data.zipCode || data.zip_code || ''}
               onChange={(e) => {
                 const val = e.target.value
                 onChange('zipCode', val)
@@ -133,6 +133,14 @@ export function PropertyLocation({
               }
             />
             {zipError && <p className="text-xs text-red-500">{zipError}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.country') || 'Country'}</Label>
+            <Input
+              value={data.country || ''}
+              onChange={(e) => onChange('country', e.target.value)}
+              disabled={!canEdit}
+            />
           </div>
           <div className="space-y-2 col-span-2">
             <Label>

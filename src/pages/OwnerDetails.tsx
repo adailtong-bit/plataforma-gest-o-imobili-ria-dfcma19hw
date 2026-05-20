@@ -20,8 +20,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Owner } from '@/lib/types'
 
 export default function OwnerDetails() {
-  const { id } = useParams()
+  const { id, tab } = useParams()
   const navigate = useNavigate()
+  const currentTab = tab || 'overview'
   const { owners } = useOwnerStore()
   const { properties } = usePropertyStore()
   const { ledgerEntries } = useFinancialStore()
@@ -96,7 +97,11 @@ export default function OwnerDetails() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs
+        value={currentTab}
+        onValueChange={(v) => navigate(`/owners/${id}/${v}`)}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-3 md:w-[500px] mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="financials">Financials</TabsTrigger>

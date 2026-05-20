@@ -33,8 +33,9 @@ import { PropertyInventory } from '@/components/properties/PropertyInventory'
 import { PropertyHistory } from '@/components/properties/PropertyHistory'
 
 export default function PropertyDetails() {
-  const { id } = useParams()
+  const { id, tab } = useParams()
   const navigate = useNavigate()
+  const currentTab = tab || 'overview'
   const { properties, updateProperty, deleteProperty } = usePropertyStore()
   const { condominiums } = useCondominiumStore()
   const { currentUser, hasPermissionSync } = useAuthStore()
@@ -226,7 +227,11 @@ export default function PropertyDetails() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs
+        value={currentTab}
+        onValueChange={(v) => navigate(`/properties/${id}/${v}`)}
+        className="w-full"
+      >
         <TabsList className="flex flex-wrap h-auto bg-slate-100 p-1 rounded-md gap-1 w-full lg:w-fit mb-6">
           <TabsTrigger
             value="overview"

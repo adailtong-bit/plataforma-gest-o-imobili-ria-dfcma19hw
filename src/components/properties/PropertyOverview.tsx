@@ -54,6 +54,30 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
               disabled
             />
           </div>
+          <div className="space-y-2">
+            <Label>{t('common.community') || 'Community'}</Label>
+            <Input
+              value={data.community || ''}
+              onChange={(e) => onChange('community', e.target.value)}
+              disabled={!canEdit}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.floor') || 'Floor'}</Label>
+            <Input
+              value={data.floor || ''}
+              onChange={(e) => onChange('floor', e.target.value)}
+              disabled={!canEdit}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.room_number') || 'Room Number'}</Label>
+            <Input
+              value={data.roomNumber || data.room_number || ''}
+              onChange={(e) => onChange('roomNumber', e.target.value)}
+              disabled={!canEdit}
+            />
+          </div>
         </div>
 
         <div className="border-t pt-4">
@@ -176,8 +200,16 @@ export function PropertyOverview({ data, onChange, canEdit }: Props) {
             <div className="space-y-2">
               <Label>{t('common.zip_code', 'Zip Code')}</Label>
               <Input
-                value={data.zipCode || ''}
+                value={data.zipCode || data.zip_code || ''}
                 onChange={(e) => onChange('zipCode', e.target.value)}
+                disabled={!canEdit}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('common.country', 'Country')}</Label>
+              <Input
+                value={data.country || ''}
+                onChange={(e) => onChange('country', e.target.value)}
                 disabled={!canEdit}
               />
             </div>

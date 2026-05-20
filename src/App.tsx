@@ -237,8 +237,16 @@ const App = () => {
                           path="/properties/:id"
                           element={<PropertyDetails />}
                         />
+                        <Route
+                          path="/properties/:id/:tab"
+                          element={<PropertyDetails />}
+                        />
                         <Route path="/hotels" element={<Hotels />} />
                         <Route path="/hotels/:id" element={<HotelDetails />} />
+                        <Route
+                          path="/hotels/:id/:tab"
+                          element={<HotelDetails />}
+                        />
                         {/* Direct Room Navigation */}
                         <Route
                           path="/hotels/:hotelId/rooms/:roomId"
@@ -270,6 +278,10 @@ const App = () => {
                         />
                         <Route path="/owners" element={<Owners />} />
                         <Route path="/owners/:id" element={<OwnerDetails />} />
+                        <Route
+                          path="/owners/:id/:tab"
+                          element={<OwnerDetails />}
+                        />
                         <Route path="/partners" element={<Partners />} />
                         <Route
                           path="/partners/:id"

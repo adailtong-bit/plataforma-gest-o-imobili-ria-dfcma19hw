@@ -249,15 +249,39 @@ export default function Hotels() {
                   {t('common.address_info', 'Address Info')}
                 </h4>
                 <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="col-span-2 space-y-2">
+                  <div className="space-y-2">
                     <Label htmlFor="address">
-                      {t('common.address', 'Address')}
+                      {t('common.address', 'Street/Address')}
                     </Label>
                     <Input
                       id="address"
                       value={form.address || ''}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="number">
+                      {t('common.number', 'Number')}
+                    </Label>
+                    <Input
+                      id="number"
+                      value={form.number || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, number: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="neighborhood">
+                      {t('common.neighborhood', 'Neighborhood')}
+                    </Label>
+                    <Input
+                      id="neighborhood"
+                      value={form.neighborhood || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, neighborhood: e.target.value })
                       }
                     />
                   </div>

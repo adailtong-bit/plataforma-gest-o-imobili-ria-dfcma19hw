@@ -50,9 +50,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 
+import { HotelFinancials } from '@/components/hotels/HotelFinancials'
+
 export default function HotelDetails() {
-  const { id } = useParams()
+  const { id, tab } = useParams()
   const navigate = useNavigate()
+  const currentTab = tab || 'overview'
   const { hotels, towers, updateHotel, deleteHotel, addTower, deleteTower } =
     useHotelStore()
   const { t } = useLanguageStore()
@@ -244,19 +247,41 @@ export default function HotelDetails() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="overview">
+      <Tabs
+        value={currentTab}
+        onValueChange={(v) => navigate(`/hotels/${id}/${v}`)}
+        className="w-full"
+      >
+        <TabsList className="mb-6 flex flex-wrap h-auto bg-slate-100 p-1 rounded-md gap-1 w-full lg:w-fit">
+          <TabsTrigger
+            value="overview"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
             {t('properties.tabs.overview') || 'Overview'}
           </TabsTrigger>
-          <TabsTrigger value="towers">
+          <TabsTrigger
+            value="towers"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
             {t('hotels.towers') || 'Towers'}
           </TabsTrigger>
-          <TabsTrigger value="room-types">
+          <TabsTrigger
+            value="room-types"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
             {t('hotels.room_types') || 'Room Types & Rates'}
           </TabsTrigger>
-          <TabsTrigger value="rooms">
+          <TabsTrigger
+            value="rooms"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
             {t('hotels.all_rooms') || 'All Rooms'}
+          </TabsTrigger>
+          <TabsTrigger
+            value="financial"
+            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded"
+          >
+            {t('properties.tabs.financial') || 'Financial'}
           </TabsTrigger>
         </TabsList>
 
@@ -313,12 +338,32 @@ export default function HotelDetails() {
                     disabled={!isEditing}
                   />
                 </div>
-                <div className="space-y-2 col-span-2">
-                  <Label>{t('common.address') || 'Address'}</Label>
+                <div className="space-y-2">
+                  <Label>{t('common.address') || 'Street/Address'}</Label>
                   <Input
                     value={formData.address || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, address: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('common.number') || 'Number'}</Label>
+                  <Input
+                    value={formData.number || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, number: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('common.neighborhood') || 'Neighborhood'}</Label>
+                  <Input
+                    value={formData.neighborhood || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, neighborhood: e.target.value })
                     }
                     disabled={!isEditing}
                   />
@@ -343,9 +388,33 @@ export default function HotelDetails() {
                     disabled={!isEditing}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>{t('common.zip_code') || 'Zip Code'}</Label>
+                  <Input
+                    value={formData.zipCode || formData.zip_code || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, zipCode: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <Label>{t('common.country') || 'Country'}</Label>
+                  <Input
+                    value={formData.country || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, country: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="financial" className="space-y-4">
+          <HotelFinancials hotelId={hotel.id} />
         </TabsContent>
 
         <TabsContent value="towers" className="space-y-4">
