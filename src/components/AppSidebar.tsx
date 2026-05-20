@@ -46,6 +46,7 @@ import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Logo } from '@/components/Logo'
 import { NavUser } from '@/components/NavUser'
 import { supabase } from '@/lib/supabase/client'
+import { Skeleton } from '@/components/ui/skeleton'
 
 type AuthUser = {
   role?: string
@@ -526,7 +527,21 @@ function AppSidebarContent() {
       </SidebarHeader>
 
       <SidebarContent className="custom-scrollbar">
-        {isPortalUser ? (
+        {menusLoading ? (
+          <div className="p-4 space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-20 bg-slate-800" />
+              <Skeleton className="h-10 w-full bg-slate-800" />
+              <Skeleton className="h-10 w-full bg-slate-800" />
+              <Skeleton className="h-10 w-full bg-slate-800" />
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-3 w-24 bg-slate-800" />
+              <Skeleton className="h-10 w-full bg-slate-800" />
+              <Skeleton className="h-10 w-full bg-slate-800" />
+            </div>
+          </div>
+        ) : isPortalUser ? (
           <SidebarGroup>
             <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
               {t('sidebar.portal', 'Portal')}

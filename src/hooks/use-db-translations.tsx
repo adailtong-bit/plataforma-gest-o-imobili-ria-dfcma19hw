@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase/client'
 import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Simple in-memory cache to avoid repeated queries
 let globalTranslationsCache: Record<string, Record<string, string>> | null =
@@ -136,8 +137,14 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
+        <div className="w-full max-w-md space-y-6 flex flex-col items-center animate-in fade-in duration-500">
+          <Skeleton className="h-16 w-16 rounded-full shadow-sm" />
+          <div className="space-y-3 w-full text-center">
+            <Skeleton className="h-6 w-3/4 mx-auto" />
+            <Skeleton className="h-4 w-1/2 mx-auto" />
+          </div>
+        </div>
       </div>
     )
   }

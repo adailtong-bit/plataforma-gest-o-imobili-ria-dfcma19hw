@@ -15,6 +15,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
 import useAuthStore from '@/stores/useAuthStore'
 import { Loader2 } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import { TourGuide } from '@/components/tour/TourGuide'
 import logoImg from '@/assets/summerpm-logo-d35a2.jpg'
 import { TranslationProvider } from '@/hooks/use-db-translations'
@@ -77,8 +78,12 @@ const Marketing = lazy(() => import('@/pages/Marketing'))
 const Pricing = lazy(() => import('@/pages/Pricing'))
 
 const PageLoader = () => (
-  <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  <div className="flex flex-col h-[calc(100vh-4rem)] items-center justify-center p-8 space-y-6">
+    <Skeleton className="h-12 w-12 rounded-full" />
+    <div className="space-y-2 w-full max-w-[200px]">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-4/5 mx-auto" />
+    </div>
   </div>
 )
 
@@ -93,9 +98,12 @@ const AuthGuard = ({ children }: { children: JSX.Element }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-4 animate-in fade-in duration-500">
-        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-        <h2 className="text-xl font-medium text-slate-700">Carregando...</h2>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4 gap-6 animate-in fade-in duration-500">
+        <div className="flex flex-col items-center space-y-4 w-full max-w-sm">
+          <Skeleton className="h-16 w-16 rounded-full shadow-sm" />
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
       </div>
     )
   }
