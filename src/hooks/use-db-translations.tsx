@@ -1,13 +1,32 @@
-import { useState, useEffect, useCallback } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react'
 import { supabase } from '@/lib/supabase/client'
 import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
+import { Loader2 } from 'lucide-react'
 
 // Simple in-memory cache to avoid repeated queries
 let globalTranslationsCache: Record<string, Record<string, string>> | null =
   null
 
-export function useDbTranslations() {
+interface TranslationContextType {
+  t: (key: string, fallback?: string) => string
+  locale: string
+  changeLanguage: (newLocale: string) => Promise<void>
+  loading: boolean
+}
+
+const TranslationContext = createContext<TranslationContextType | undefined>(
+  undefined,
+)
+
+export function TranslationProvider({ children }: { children: ReactNode }) {
   const { currentUser, setCurrentUser } = useAuthStore()
   const { toast } = useToast()
   const [translations, setTranslations] = useState<Record<string, string>>({})
@@ -51,10 +70,11 @@ export function useDbTranslations() {
       setLoading(true)
 
       if (!globalTranslationsCache) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('ui_translations')
           .select('key, locale, value')
-        if (data) {
+
+        if (data && !error) {
           const grouped: Record<string, Record<string, string>> = {}
           data.forEach((t) => {
             if (!grouped[t.locale]) grouped[t.locale] = {}
@@ -71,6 +91,7 @@ export function useDbTranslations() {
       const currentLangMap = globalTranslationsCache[locale] || {}
       const fallbackMap = globalTranslationsCache['en'] || {}
 
+      // Fallback mechanism: English fills missing keys
       const merged = { ...fallbackMap, ...currentLangMap }
       setTranslations(merged)
       setLoading(false)
@@ -104,7 +125,7 @@ export function useDbTranslations() {
           language_preference: newLocale,
         } as any)
         toast({
-          title: t('toast_lang_updated', 'Language updated'),
+          title: t('common.success', 'Success'),
           description: t(
             'toast_lang_saved',
             'Your language preference has been saved.',
@@ -114,5 +135,30 @@ export function useDbTranslations() {
     }
   }
 
-  return { t, locale, changeLanguage, loading }
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  return (
+    <TranslationContext.Provider value={{ t, locale, changeLanguage, loading }}>
+      {children}
+    </TranslationContext.Provider>
+  )
+}
+
+export const useTranslationContext = () => {
+  const context = useContext(TranslationContext)
+  if (!context) {
+    return {
+      t: (key: string, fallback?: string) => fallback || key,
+      locale: 'en',
+      changeLanguage: async () => {},
+      loading: false,
+    }
+  }
+  return context
 }

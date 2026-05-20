@@ -27,7 +27,7 @@ import {
   List,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import usePropertyStore from '@/stores/usePropertyStore'
 import useCondominiumStore from '@/stores/useCondominiumStore'
 import useHotelStore from '@/stores/useHotelStore'
@@ -123,51 +123,64 @@ export default function Properties() {
     area: 0,
   })
 
-  const accessibleProperties = properties.filter((p) => {
-    // Owner data isolation
-    if (isOwner) {
-      if (p.ownerId !== currentUser?.id) return false
-    }
-    // Profile type restriction (for normal staff)
-    if (
-      currentUser &&
-      'allowedProfileTypes' in currentUser &&
-      Array.isArray((currentUser as any).allowedProfileTypes) &&
-      (currentUser as any).allowedProfileTypes.length > 0 &&
-      !(currentUser as any).allowedProfileTypes.includes(p.profileType)
-    ) {
-      return false
-    }
-    return true
-  })
+  const filteredProperties = React.useMemo(() => {
+    const accessibleProperties = properties.filter((p) => {
+      // Owner data isolation
+      if (isOwner) {
+        if (p.ownerId !== currentUser?.id) return false
+      }
+      // Profile type restriction (for normal staff)
+      if (
+        currentUser &&
+        'allowedProfileTypes' in currentUser &&
+        Array.isArray((currentUser as any).allowedProfileTypes) &&
+        (currentUser as any).allowedProfileTypes.length > 0 &&
+        !(currentUser as any).allowedProfileTypes.includes(p.profileType)
+      ) {
+        return false
+      }
+      return true
+    })
 
-  const filteredProperties = accessibleProperties.filter((p) => {
-    const pName = p.name || ''
-    const pAddress = p.address || ''
-    const condoName =
-      condominiums.find((c) => c.id === p.condominiumId)?.name || ''
-    const hotelName = hotels.find((h) => h.id === p.hotelId)?.name || ''
+    return accessibleProperties.filter((p) => {
+      const pName = p.name || ''
+      const pAddress = p.address || ''
+      const condoName =
+        condominiums.find((c) => c.id === p.condominiumId)?.name || ''
+      const hotelName = hotels.find((h) => h.id === p.hotelId)?.name || ''
 
-    const matchesFilter =
-      pName.toLowerCase().includes(filter.toLowerCase()) ||
-      pAddress.toLowerCase().includes(filter.toLowerCase()) ||
-      condoName.toLowerCase().includes(filter.toLowerCase()) ||
-      hotelName.toLowerCase().includes(filter.toLowerCase())
+      const matchesFilter =
+        pName.toLowerCase().includes(filter.toLowerCase()) ||
+        pAddress.toLowerCase().includes(filter.toLowerCase()) ||
+        condoName.toLowerCase().includes(filter.toLowerCase()) ||
+        hotelName.toLowerCase().includes(filter.toLowerCase())
 
-    const matchesStatus = statusFilter === 'all' || p.status === statusFilter
-    const matchesProfile =
-      profileFilter === 'all' || p.profileType === profileFilter
-    const matchesHotel = hotelFilter === 'all' || p.hotelId === hotelFilter
-    const matchesTower = towerFilter === 'all' || p.towerId === towerFilter
+      const matchesStatus = statusFilter === 'all' || p.status === statusFilter
+      const matchesProfile =
+        profileFilter === 'all' || p.profileType === profileFilter
+      const matchesHotel = hotelFilter === 'all' || p.hotelId === hotelFilter
+      const matchesTower = towerFilter === 'all' || p.towerId === towerFilter
 
-    return (
-      matchesFilter &&
-      matchesStatus &&
-      matchesProfile &&
-      matchesHotel &&
-      matchesTower
-    )
-  })
+      return (
+        matchesFilter &&
+        matchesStatus &&
+        matchesProfile &&
+        matchesHotel &&
+        matchesTower
+      )
+    })
+  }, [
+    properties,
+    isOwner,
+    currentUser,
+    filter,
+    statusFilter,
+    profileFilter,
+    hotelFilter,
+    towerFilter,
+    condominiums,
+    hotels,
+  ])
 
   const getStatusColor = (status: string) => {
     switch (status) {

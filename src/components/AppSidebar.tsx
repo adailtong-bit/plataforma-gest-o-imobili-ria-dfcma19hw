@@ -38,6 +38,7 @@ import {
   ShieldCheck,
   Languages,
 } from 'lucide-react'
+import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '@/stores/useAuthStore'
 import useLanguageStore from '@/stores/useLanguageStore'
@@ -63,290 +64,314 @@ export function AppSidebar() {
       ? ({ ...currentUser, role: simulationRole, permissions: [] } as any)
       : (currentUser as any)
 
-  const mainNavItems = [
-    {
-      title: getTitle('sidebar.dashboard', 'Dashboard'),
-      url: '/',
-      icon: Home,
-      resource: 'dashboard',
-    },
-    {
-      title: getTitle('sidebar.units', 'Properties'),
-      url: '/properties',
-      icon: Building2,
-      resource: 'properties',
-    },
-    {
-      title: getTitle('hotels.title', 'Hotels'),
-      url: '/hotels',
-      icon: Hotel,
-      resource: 'hotels',
-    },
-    {
-      title: getTitle('sidebar.condominiums', 'Condominiums'),
-      url: '/condominiums',
-      icon: MapPin,
-      resource: 'condominiums',
-    },
-    {
-      title: getTitle('sidebar.owners', 'Owners'),
-      url: '/owners',
-      icon: Briefcase,
-      resource: 'owners',
-    },
-    {
-      title: getTitle('sidebar.tenants', 'Tenants'),
-      url: '/tenants',
-      icon: Users,
-      resource: 'tenants',
-    },
-    {
-      title: getTitle('sidebar.calendar', 'Calendar'),
-      url: '/calendar',
-      icon: Calendar,
-      resource: 'calendar',
-    },
-    {
-      title: getTitle('sidebar.financial', 'Financial'),
-      url: '/financial',
-      icon: DollarSign,
-      resource: 'financial',
-    },
-    {
-      title: getTitle('common.invoices', 'Invoices'),
-      url: '/invoices',
-      icon: FileText,
-      resource: 'financial',
-    },
-    {
-      title: getTitle('common.short_term', 'Short Term Rental'),
-      url: '/short-term',
-      icon: Building2,
-      resource: 'short_term',
-    },
-    {
-      title: getTitle('common.visits', 'Visits'),
-      url: '/visits',
-      icon: MapPin,
-      resource: 'visits',
-    },
-    {
-      title: getTitle('common.renewals', 'Renewals'),
-      url: '/renewals',
-      icon: Repeat,
-      resource: 'renewals',
-    },
-    {
-      title: getTitle('sidebar.reports', 'Reports'),
-      url: '/reports',
-      icon: FileText,
-      resource: 'reports',
-    },
-    {
-      title: getTitle('common.market_analysis', 'Market Analysis'),
-      url: '/market-analysis',
-      icon: PieChart,
-      resource: 'market_analysis',
-    },
-  ]
-
-  const operationsItems = [
-    {
-      title: getTitle('sidebar.performance', 'Performance'),
-      url: '/performance',
-      icon: Activity,
-      resource: 'performance',
-    },
-    {
-      title: getTitle('sidebar.guest_services', 'Guest Services'),
-      url: '/guest-services',
-      icon: HeartHandshake,
-      resource: 'guest_services',
-    },
-    {
-      title: getTitle('sidebar.pos', 'POS'),
-      url: '/pos',
-      icon: ShoppingCart,
-      resource: 'pos',
-    },
-    {
-      title: getTitle('sidebar.marketing', 'Marketing'),
-      url: '/marketing',
-      icon: Zap,
-      resource: 'marketing',
-    },
-    {
-      title: getTitle('common.tasks', 'Tasks'),
-      url: '/tasks',
-      icon: Wrench,
-      resource: 'tasks',
-    },
-    {
-      title: getTitle('sidebar.front_desk', 'Front Desk'),
-      url: '/front-desk',
-      icon: ConciergeBell,
-      resource: 'properties',
-    },
-    {
-      title: getTitle('sidebar.housekeeping', 'Housekeeping'),
-      url: '/housekeeping',
-      icon: HardHat,
-      resource: 'tasks',
-    },
-    {
-      title: getTitle('sidebar.night_audit', 'Night Audit'),
-      url: '/night-audit',
-      icon: MoonStar,
-      resource: 'financial',
-    },
-    {
-      title: getTitle('sidebar.partners', 'Partners'),
-      url: '/partners',
-      icon: HardHat,
-      resource: 'partners',
-    },
-    {
-      title: getTitle('common.messages', 'Messages'),
-      url: '/messages',
-      icon: MessageSquare,
-      resource: 'messages',
-    },
-    {
-      title: getTitle('common.workflows', 'Workflows'),
-      url: '/workflows',
-      icon: Repeat,
-      resource: 'workflows',
-    },
-  ]
-
-  const systemItems = [
-    {
-      title: getTitle('sidebar.settings', 'Settings'),
-      url: '/settings',
-      icon: Settings,
-      resource: 'settings',
-    },
-    {
-      title: getTitle('sidebar.pricing', 'Pricing'),
-      url: '/pricing',
-      icon: DollarSign,
-      resource: 'settings',
-    },
-    {
-      title: getTitle('common.service_pricing', 'Price Catalog'),
-      url: '/service-pricing',
-      icon: DollarSign,
-      resource: 'service_pricing',
-    },
-    {
-      title: getTitle('sidebar.users', 'Users'),
-      url: '/users',
-      icon: Users,
-      resource: 'users',
-    },
-    {
-      title: getTitle('sidebar.publicity_admin', 'Publicity Administration'),
-      url: '/admin/publicity',
-      icon: Megaphone,
-      resource: 'publicity',
-    },
-    {
-      title: getTitle('sidebar.migration_hub', 'Migration Hub'),
-      url: '/admin/migration',
-      icon: Database,
-      resource: 'migration',
-    },
-    {
-      title: getTitle('common.advanced_analytics', 'Advanced Analytics'),
-      url: '/admin/analytics',
-      icon: PieChart,
-      resource: 'analytics',
-    },
-    {
-      title: getTitle('common.automation_rules', 'Automation Rules'),
-      url: '/admin/automation',
-      icon: Zap,
-      resource: 'automation',
-    },
-    {
-      title: getTitle('sidebar.audit_panel', 'Audit Panel'),
-      url: '/admin/audit',
-      icon: ShieldCheck,
-      resource: 'audit_logs',
-      roles: ['platform_owner'],
-    },
-    {
-      title: getTitle('sidebar.environment', 'Environment'),
-      url: '/admin/environment',
-      icon: MonitorPlay,
-      resource: 'settings',
-      roles: ['platform_owner'],
-    },
-    {
-      title: getTitle('sidebar.translations', 'Translations'),
-      url: '/admin/translations',
-      icon: Languages,
-      resource: 'settings',
-      roles: ['platform_owner', 'master', 'internal_user', 'software_tenant'],
-    },
-  ]
-
-  const portalItems = [
-    {
-      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
-      url: '/',
-      icon: Home,
-      resource: 'dashboard',
-      role: 'tenant',
-    },
-    {
-      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
-      url: '/',
-      icon: Home,
-      resource: 'dashboard',
-      role: 'property_owner',
-    },
-    {
-      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
-      url: '/',
-      icon: Home,
-      resource: 'dashboard',
-      role: 'partner',
-    },
-    {
-      title: getTitle('sidebar.dashboard', 'Main Dashboard'),
-      url: '/',
-      icon: Home,
-      resource: 'dashboard',
-      role: 'partner_employee',
-    },
-  ]
-
-  const filteredMain = mainNavItems.filter((item) =>
-    hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+  const mainNavItems = React.useMemo(
+    () => [
+      {
+        title: getTitle('sidebar.dashboard', 'Dashboard'),
+        url: '/',
+        icon: Home,
+        resource: 'dashboard',
+      },
+      {
+        title: getTitle('sidebar.units', 'Properties'),
+        url: '/properties',
+        icon: Building2,
+        resource: 'properties',
+      },
+      {
+        title: getTitle('hotels.title', 'Hotels'),
+        url: '/hotels',
+        icon: Hotel,
+        resource: 'hotels',
+      },
+      {
+        title: getTitle('sidebar.condominiums', 'Condominiums'),
+        url: '/condominiums',
+        icon: MapPin,
+        resource: 'condominiums',
+      },
+      {
+        title: getTitle('sidebar.owners', 'Owners'),
+        url: '/owners',
+        icon: Briefcase,
+        resource: 'owners',
+      },
+      {
+        title: getTitle('sidebar.tenants', 'Tenants'),
+        url: '/tenants',
+        icon: Users,
+        resource: 'tenants',
+      },
+      {
+        title: getTitle('sidebar.calendar', 'Calendar'),
+        url: '/calendar',
+        icon: Calendar,
+        resource: 'calendar',
+      },
+      {
+        title: getTitle('sidebar.financial', 'Financial'),
+        url: '/financial',
+        icon: DollarSign,
+        resource: 'financial',
+      },
+      {
+        title: getTitle('common.invoices', 'Invoices'),
+        url: '/invoices',
+        icon: FileText,
+        resource: 'financial',
+      },
+      {
+        title: getTitle('common.short_term', 'Short Term Rental'),
+        url: '/short-term',
+        icon: Building2,
+        resource: 'short_term',
+      },
+      {
+        title: getTitle('common.visits', 'Visits'),
+        url: '/visits',
+        icon: MapPin,
+        resource: 'visits',
+      },
+      {
+        title: getTitle('common.renewals', 'Renewals'),
+        url: '/renewals',
+        icon: Repeat,
+        resource: 'renewals',
+      },
+      {
+        title: getTitle('sidebar.reports', 'Reports'),
+        url: '/reports',
+        icon: FileText,
+        resource: 'reports',
+      },
+      {
+        title: getTitle('common.market_analysis', 'Market Analysis'),
+        url: '/market-analysis',
+        icon: PieChart,
+        resource: 'market_analysis',
+      },
+    ],
+    [t],
   )
 
-  const filteredOps = operationsItems.filter((item) =>
-    hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+  const operationsItems = React.useMemo(
+    () => [
+      {
+        title: getTitle('sidebar.performance', 'Performance'),
+        url: '/performance',
+        icon: Activity,
+        resource: 'performance',
+      },
+      {
+        title: getTitle('sidebar.guest_services', 'Guest Services'),
+        url: '/guest-services',
+        icon: HeartHandshake,
+        resource: 'guest_services',
+      },
+      {
+        title: getTitle('sidebar.pos', 'POS'),
+        url: '/pos',
+        icon: ShoppingCart,
+        resource: 'pos',
+      },
+      {
+        title: getTitle('sidebar.marketing', 'Marketing'),
+        url: '/marketing',
+        icon: Zap,
+        resource: 'marketing',
+      },
+      {
+        title: getTitle('common.tasks', 'Tasks'),
+        url: '/tasks',
+        icon: Wrench,
+        resource: 'tasks',
+      },
+      {
+        title: getTitle('sidebar.front_desk', 'Front Desk'),
+        url: '/front-desk',
+        icon: ConciergeBell,
+        resource: 'properties',
+      },
+      {
+        title: getTitle('sidebar.housekeeping', 'Housekeeping'),
+        url: '/housekeeping',
+        icon: HardHat,
+        resource: 'tasks',
+      },
+      {
+        title: getTitle('sidebar.night_audit', 'Night Audit'),
+        url: '/night-audit',
+        icon: MoonStar,
+        resource: 'financial',
+      },
+      {
+        title: getTitle('sidebar.partners', 'Partners'),
+        url: '/partners',
+        icon: HardHat,
+        resource: 'partners',
+      },
+      {
+        title: getTitle('common.messages', 'Messages'),
+        url: '/messages',
+        icon: MessageSquare,
+        resource: 'messages',
+      },
+      {
+        title: getTitle('common.workflows', 'Workflows'),
+        url: '/workflows',
+        icon: Repeat,
+        resource: 'workflows',
+      },
+    ],
+    [t],
   )
 
-  const filteredSystem = systemItems.filter((item) => {
-    if (item.roles && effectiveUser?.role === 'platform_owner') {
-      return true
-    }
-    const hasPerm = hasPermissionSync(
-      effectiveUser,
-      item.resource as any,
-      'view',
-    )
-    if (
-      item.roles &&
-      (!effectiveUser || !item.roles.includes(effectiveUser.role))
-    ) {
-      return false
-    }
-    return hasPerm
-  })
+  const systemItems = React.useMemo(
+    () => [
+      {
+        title: getTitle('sidebar.settings', 'Settings'),
+        url: '/settings',
+        icon: Settings,
+        resource: 'settings',
+      },
+      {
+        title: getTitle('sidebar.pricing', 'Pricing'),
+        url: '/pricing',
+        icon: DollarSign,
+        resource: 'settings',
+      },
+      {
+        title: getTitle('common.service_pricing', 'Price Catalog'),
+        url: '/service-pricing',
+        icon: DollarSign,
+        resource: 'service_pricing',
+      },
+      {
+        title: getTitle('sidebar.users', 'Users'),
+        url: '/users',
+        icon: Users,
+        resource: 'users',
+      },
+      {
+        title: getTitle('sidebar.publicity_admin', 'Publicity Administration'),
+        url: '/admin/publicity',
+        icon: Megaphone,
+        resource: 'publicity',
+      },
+      {
+        title: getTitle('sidebar.migration_hub', 'Migration Hub'),
+        url: '/admin/migration',
+        icon: Database,
+        resource: 'migration',
+      },
+      {
+        title: getTitle('common.advanced_analytics', 'Advanced Analytics'),
+        url: '/admin/analytics',
+        icon: PieChart,
+        resource: 'analytics',
+      },
+      {
+        title: getTitle('common.automation_rules', 'Automation Rules'),
+        url: '/admin/automation',
+        icon: Zap,
+        resource: 'automation',
+      },
+      {
+        title: getTitle('sidebar.audit_panel', 'Audit Panel'),
+        url: '/admin/audit',
+        icon: ShieldCheck,
+        resource: 'audit_logs',
+        roles: ['platform_owner'],
+      },
+      {
+        title: getTitle('sidebar.environment', 'Environment'),
+        url: '/admin/environment',
+        icon: MonitorPlay,
+        resource: 'settings',
+        roles: ['platform_owner'],
+      },
+      {
+        title: getTitle('sidebar.translations', 'Translations'),
+        url: '/admin/translations',
+        icon: Languages,
+        resource: 'settings',
+        roles: ['platform_owner', 'master', 'internal_user', 'software_tenant'],
+      },
+    ],
+    [t],
+  )
+
+  const portalItems = React.useMemo(
+    () => [
+      {
+        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        url: '/',
+        icon: Home,
+        resource: 'dashboard',
+        role: 'tenant',
+      },
+      {
+        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        url: '/',
+        icon: Home,
+        resource: 'dashboard',
+        role: 'property_owner',
+      },
+      {
+        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        url: '/',
+        icon: Home,
+        resource: 'dashboard',
+        role: 'partner',
+      },
+      {
+        title: getTitle('sidebar.dashboard', 'Main Dashboard'),
+        url: '/',
+        icon: Home,
+        resource: 'dashboard',
+        role: 'partner_employee',
+      },
+    ],
+    [t],
+  )
+
+  const filteredMain = React.useMemo(
+    () =>
+      mainNavItems.filter((item) =>
+        hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+      ),
+    [mainNavItems, effectiveUser, hasPermissionSync],
+  )
+
+  const filteredOps = React.useMemo(
+    () =>
+      operationsItems.filter((item) =>
+        hasPermissionSync(effectiveUser, item.resource as any, 'view'),
+      ),
+    [operationsItems, effectiveUser, hasPermissionSync],
+  )
+
+  const filteredSystem = React.useMemo(
+    () =>
+      systemItems.filter((item) => {
+        if (item.roles && effectiveUser?.role === 'platform_owner') {
+          return true
+        }
+        const hasPerm = hasPermissionSync(
+          effectiveUser,
+          item.resource as any,
+          'view',
+        )
+        if (
+          item.roles &&
+          (!effectiveUser || !item.roles.includes(effectiveUser.role))
+        ) {
+          return false
+        }
+        return hasPerm
+      }),
+    [systemItems, effectiveUser, hasPermissionSync],
+  )
 
   const isPortalUser = [
     'tenant',

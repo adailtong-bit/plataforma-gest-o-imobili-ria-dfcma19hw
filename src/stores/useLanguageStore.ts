@@ -1,14 +1,11 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useTranslationContext } from '@/hooks/use-db-translations'
 
 const useLanguageStore = () => {
-  const context = useContext(AppContext)
-  if (!context)
-    throw new Error('useLanguageStore must be used within AppProvider')
+  const context = useTranslationContext()
 
   return {
-    language: context.language,
-    setLanguage: context.setLanguage,
+    language: context.locale,
+    setLanguage: context.changeLanguage,
     t: context.t,
   }
 }

@@ -62,7 +62,7 @@ import OwnerPortal from '@/pages/portal/OwnerPortal'
 import TenantPortal from '@/pages/portal/TenantPortal'
 import PartnerPortal from '@/pages/portal/PartnerPortal'
 import { AppContext } from '@/stores/AppContext'
-import { useContext } from 'react'
+import React, { useContext } from 'react'
 
 export default function Dashboard() {
   const { properties } = usePropertyStore()
@@ -89,120 +89,184 @@ export default function Dashboard() {
 
   // ----- MAIN DASHBOARD FOR ADMIN, PM AND INTERNAL ROLES -----
 
-  // Properties Metrics
-  const totalProperties = properties.length
-  const rentedProperties = properties.filter(
-    (p) => p.status === 'rented' || p.status === 'occupied',
-  ).length
-  const availableProperties = properties.filter(
-    (p) => p.status === 'available' || p.status === 'vacant',
-  ).length
-  const maintenanceProperties = properties.filter(
-    (p) => p.status === 'maintenance',
-  ).length
+  const {
+    totalProperties,
+    rentedProperties,
+    availableProperties,
+    maintenanceProperties,
+    occupancyRate,
+    totalRevenue,
+    totalExpenses,
+    defaultAmount,
+    defaultRate,
+    pendingTasks,
+    completedTasks,
+    pendingRenewals,
+    opporjobPartners,
+    opporjobTasks,
+    promotedTenants,
+    activeCampaigns,
+    totalCampaignRevenue,
+    totalSlots,
+    occupiedSlots,
+    expiringCampaigns,
+    bookingsToday,
+    adr,
+    revPar,
+    totalPendingInvoicesAmount,
+  } = React.useMemo(() => {
+    // Properties Metrics
+    const totalProperties = properties.length
+    const rentedProperties = properties.filter(
+      (p) => p.status === 'rented' || p.status === 'occupied',
+    ).length
+    const availableProperties = properties.filter(
+      (p) => p.status === 'available' || p.status === 'vacant',
+    ).length
+    const maintenanceProperties = properties.filter(
+      (p) => p.status === 'maintenance',
+    ).length
 
-  const occupancyRate =
-    totalProperties > 0 ? (rentedProperties / totalProperties) * 100 : 0
+    const occupancyRate =
+      totalProperties > 0 ? (rentedProperties / totalProperties) * 100 : 0
 
-  // Financial Metrics
-  const incomes = ledgerEntries.filter((e) => e.type === 'income')
-  const expenses = ledgerEntries.filter((e) => e.type === 'expense')
+    // Financial Metrics
+    const incomes = ledgerEntries.filter((e) => e.type === 'income')
+    const expenses = ledgerEntries.filter((e) => e.type === 'expense')
 
-  const totalRevenue = incomes
-    .filter((e) => e.status === 'cleared')
-    .reduce((acc, e) => acc + e.amount, 0)
-  const totalExpenses = expenses
-    .filter((e) => e.status === 'cleared')
-    .reduce((acc, e) => acc + e.amount, 0)
+    const totalRevenue = incomes
+      .filter((e) => e.status === 'cleared')
+      .reduce((acc, e) => acc + e.amount, 0)
+    const totalExpenses = expenses
+      .filter((e) => e.status === 'cleared')
+      .reduce((acc, e) => acc + e.amount, 0)
 
-  const pendingIncomes = incomes.filter((e) => e.status === 'pending')
-  const defaultAmount = pendingIncomes.reduce((acc, e) => acc + e.amount, 0)
-  const defaultRate =
-    incomes.length > 0 ? (pendingIncomes.length / incomes.length) * 100 : 0
+    const pendingIncomes = incomes.filter((e) => e.status === 'pending')
+    const defaultAmount = pendingIncomes.reduce((acc, e) => acc + e.amount, 0)
+    const defaultRate =
+      incomes.length > 0 ? (pendingIncomes.length / incomes.length) * 100 : 0
 
-  // Operational Metrics
-  const pendingTasks = tasks.filter(
-    (t) =>
-      t.status === 'pending' ||
-      t.status === 'in_progress' ||
-      t.status === 'pending_acceptance',
-  ).length
-  const completedTasks = tasks.filter((t) => t.status === 'completed').length
-  const pendingRenewals = tenants.filter(
-    (t) => t.ownerDecision === 'pending' || t.status === 'expiring_soon',
-  ).length
+    // Operational Metrics
+    const pendingTasks = tasks.filter(
+      (t) =>
+        t.status === 'pending' ||
+        t.status === 'in_progress' ||
+        t.status === 'pending_acceptance',
+    ).length
+    const completedTasks = tasks.filter((t) => t.status === 'completed').length
+    const pendingRenewals = tenants.filter(
+      (t) => t.ownerDecision === 'pending' || t.status === 'expiring_soon',
+    ).length
 
-  // Opporjob Metrics
-  const opporjobPartners = partners.filter(
-    (p) =>
-      p.source === 'opporjob' ||
-      p.origin === 'opporjob' ||
-      p.tags?.includes('opporjob') ||
-      p.name?.toLowerCase().includes('opporjob'),
-  ).length
-  const opporjobTasks = tasks.filter(
-    (t) =>
-      t.status === 'pending_acceptance' ||
-      (t.assignee && t.assignee.toLowerCase().includes('opporjob')),
-  ).length
-  const promotedTenants = tenants.filter((t) =>
-    t.tags?.includes('promoted'),
-  ).length
+    // Opporjob Metrics
+    const opporjobPartners = partners.filter(
+      (p) =>
+        p.source === 'opporjob' ||
+        p.origin === 'opporjob' ||
+        p.tags?.includes('opporjob') ||
+        p.name?.toLowerCase().includes('opporjob'),
+    ).length
+    const opporjobTasks = tasks.filter(
+      (t) =>
+        t.status === 'pending_acceptance' ||
+        (t.assignee && t.assignee.toLowerCase().includes('opporjob')),
+    ).length
+    const promotedTenants = tenants.filter((t) =>
+      t.tags?.includes('promoted'),
+    ).length
 
-  // Publicity Metrics
-  const activeCampaigns = (campaigns as any[]).filter(
-    (c) => c.status === 'active',
-  )
-  const totalCampaignRevenue = activeCampaigns.reduce(
-    (acc, c) => acc + (c.total_amount || c.totalAmount || 0),
-    0,
-  )
+    // Publicity Metrics
+    const activeCampaigns = (campaigns as any[]).filter(
+      (c) => c.status === 'active',
+    )
+    const totalCampaignRevenue = activeCampaigns.reduce(
+      (acc, c) => acc + (c.total_amount || c.totalAmount || 0),
+      0,
+    )
 
-  const locations = Array.from(
-    new Set(
-      (pricingMatrix as any[]).map((p) => p.location_key || p.locationKey),
-    ),
-  )
-  const totalSlots = locations.length * 10
-  const occupiedSlots = activeCampaigns.length
+    const locations = Array.from(
+      new Set(
+        (pricingMatrix as any[]).map((p) => p.location_key || p.locationKey),
+      ),
+    )
+    const totalSlots = locations.length * 10
+    const occupiedSlots = activeCampaigns.length
 
-  const expiringCampaigns = activeCampaigns
-    .filter((c) => {
-      const endDate = c.end_date || c.endDate
-      if (!endDate) return false
-      const end = new Date(endDate)
-      const now = new Date()
-      const diffDays = Math.ceil(
-        (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
-      )
-      return diffDays <= 7 && diffDays >= 0
-    })
-    .sort((a, b) => {
-      const aEnd = a.end_date || a.endDate
-      const bEnd = b.end_date || b.endDate
-      return new Date(aEnd).getTime() - new Date(bEnd).getTime()
-    })
-    .slice(0, 5)
+    const expiringCampaigns = activeCampaigns
+      .filter((c) => {
+        const endDate = c.end_date || c.endDate
+        if (!endDate) return false
+        const end = new Date(endDate)
+        const now = new Date()
+        const diffDays = Math.ceil(
+          (end.getTime() - now.getTime()) / (1000 * 3600 * 24),
+        )
+        return diffDays <= 7 && diffDays >= 0
+      })
+      .sort((a, b) => {
+        const aEnd = a.end_date || a.endDate
+        const bEnd = b.end_date || b.endDate
+        return new Date(aEnd).getTime() - new Date(bEnd).getTime()
+      })
+      .slice(0, 5)
 
-  // Dynamic Hospitality Metrics
-  const todayStr = new Date().toISOString().split('T')[0]
-  const bookingsToday = bookings.filter(
-    (b) => b.checkIn && b.checkIn.startsWith(todayStr),
-  ).length
+    // Dynamic Hospitality Metrics
+    const todayStr = new Date().toISOString().split('T')[0]
+    const bookingsToday = bookings.filter(
+      (b) => b.checkIn && b.checkIn.startsWith(todayStr),
+    ).length
 
-  const adr =
-    bookings.length > 0
-      ? bookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
-        bookings.length
-      : 0
+    const adr =
+      bookings.length > 0
+        ? bookings.reduce((acc, b) => acc + (b.baseAmount || 0), 0) /
+          bookings.length
+        : 0
 
-  const revPar = adr * (occupancyRate / 100)
+    const revPar = adr * (occupancyRate / 100)
 
-  const pendingInvoices = invoices.filter((i) => i.status === 'pending')
-  const totalPendingInvoicesAmount = pendingInvoices.reduce(
-    (acc, i) => acc + i.amount,
-    0,
-  )
+    const pendingInvoices = invoices.filter((i) => i.status === 'pending')
+    const totalPendingInvoicesAmount = pendingInvoices.reduce(
+      (acc, i) => acc + i.amount,
+      0,
+    )
+
+    return {
+      totalProperties,
+      rentedProperties,
+      availableProperties,
+      maintenanceProperties,
+      occupancyRate,
+      totalRevenue,
+      totalExpenses,
+      defaultAmount,
+      defaultRate,
+      pendingTasks,
+      completedTasks,
+      pendingRenewals,
+      opporjobPartners,
+      opporjobTasks,
+      promotedTenants,
+      activeCampaigns,
+      totalCampaignRevenue,
+      totalSlots,
+      occupiedSlots,
+      expiringCampaigns,
+      bookingsToday,
+      adr,
+      revPar,
+      totalPendingInvoicesAmount,
+    }
+  }, [
+    properties,
+    ledgerEntries,
+    tasks,
+    tenants,
+    partners,
+    campaigns,
+    pricingMatrix,
+    bookings,
+    invoices,
+  ])
 
   // Charts Data
   const propertyStatusData = [
