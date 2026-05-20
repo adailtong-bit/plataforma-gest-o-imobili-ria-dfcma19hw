@@ -51,10 +51,6 @@ export function AppSidebar() {
     useAuthStore()
   const { t } = useLanguageStore()
 
-  const getTitle = (key: string, fallback: string) => {
-    return t(key, fallback)
-  }
-
   const effectiveRole =
     simulationMode && simulationRole ? simulationRole : currentUser?.role
   const effectiveUser =
@@ -65,85 +61,85 @@ export function AppSidebar() {
   const mainNavItems = React.useMemo(
     () => [
       {
-        title: getTitle('menu.dashboard', 'Dashboard'),
+        title: t('menu.dashboard', 'Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
       },
       {
-        title: getTitle('menu.properties', 'Properties'),
+        title: t('menu.properties', 'Properties'),
         url: '/properties',
         icon: Building2,
         resource: 'properties',
       },
       {
-        title: getTitle('hotels.title', 'Hotels'),
+        title: t('hotels.title', 'Hotels'),
         url: '/hotels',
         icon: Hotel,
         resource: 'hotels',
       },
       {
-        title: getTitle('sidebar.condominiums', 'Condominiums'),
+        title: t('sidebar.condominiums', 'Condominiums'),
         url: '/condominiums',
         icon: MapPin,
         resource: 'condominiums',
       },
       {
-        title: getTitle('sidebar.owners', 'Owners'),
+        title: t('sidebar.owners', 'Owners'),
         url: '/owners',
         icon: Briefcase,
         resource: 'owners',
       },
       {
-        title: getTitle('sidebar.tenants', 'Tenants'),
+        title: t('sidebar.tenants', 'Tenants'),
         url: '/tenants',
         icon: Users,
         resource: 'tenants',
       },
       {
-        title: getTitle('sidebar.calendar', 'Calendar'),
+        title: t('sidebar.calendar', 'Calendar'),
         url: '/calendar',
         icon: Calendar,
         resource: 'calendar',
       },
       {
-        title: getTitle('sidebar.financial', 'Financial'),
+        title: t('sidebar.financial', 'Financial'),
         url: '/financial',
         icon: DollarSign,
         resource: 'financial',
       },
       {
-        title: getTitle('menu.invoices', 'Invoices'),
+        title: t('menu.invoices', 'Invoices'),
         url: '/invoices',
         icon: FileText,
         resource: 'financial',
       },
       {
-        title: getTitle('common.short_term', 'Short Term Rental'),
+        title: t('common.short_term', 'Short Term Rental'),
         url: '/short-term',
         icon: Building2,
         resource: 'short_term',
       },
       {
-        title: getTitle('common.visits', 'Visits'),
+        title: t('common.visits', 'Visits'),
         url: '/visits',
         icon: MapPin,
         resource: 'visits',
       },
       {
-        title: getTitle('common.renewals', 'Renewals'),
+        title: t('common.renewals', 'Renewals'),
         url: '/renewals',
         icon: Repeat,
         resource: 'renewals',
       },
       {
-        title: getTitle('sidebar.reports', 'Reports'),
+        title: t('sidebar.reports', 'Reports'),
         url: '/reports',
         icon: FileText,
         resource: 'reports',
       },
       {
-        title: getTitle('common.market_analysis', 'Market Analysis'),
+        title: t('common.market_analysis', 'Market Analysis'),
         url: '/market-analysis',
         icon: PieChart,
         resource: 'market_analysis',
@@ -155,67 +151,67 @@ export function AppSidebar() {
   const operationsItems = React.useMemo(
     () => [
       {
-        title: getTitle('sidebar.performance', 'Performance'),
+        title: t('sidebar.performance', 'Performance'),
         url: '/performance',
         icon: Activity,
         resource: 'performance',
       },
       {
-        title: getTitle('sidebar.guest_services', 'Guest Services'),
+        title: t('sidebar.guest_services', 'Guest Services'),
         url: '/guest-services',
         icon: HeartHandshake,
         resource: 'guest_services',
       },
       {
-        title: getTitle('sidebar.pos', 'POS'),
+        title: t('sidebar.pos', 'POS'),
         url: '/pos',
         icon: ShoppingCart,
         resource: 'pos',
       },
       {
-        title: getTitle('sidebar.marketing', 'Marketing'),
+        title: t('sidebar.marketing', 'Marketing'),
         url: '/marketing',
         icon: Zap,
         resource: 'marketing',
       },
       {
-        title: getTitle('menu.tasks', 'Tasks'),
+        title: t('menu.tasks', 'Tasks'),
         url: '/tasks',
         icon: Wrench,
         resource: 'tasks',
       },
       {
-        title: getTitle('sidebar.front_desk', 'Front Desk'),
+        title: t('sidebar.front_desk', 'Front Desk'),
         url: '/front-desk',
         icon: ConciergeBell,
         resource: 'properties',
       },
       {
-        title: getTitle('sidebar.housekeeping', 'Housekeeping'),
+        title: t('sidebar.housekeeping', 'Housekeeping'),
         url: '/housekeeping',
         icon: HardHat,
         resource: 'tasks',
       },
       {
-        title: getTitle('sidebar.night_audit', 'Night Audit'),
+        title: t('sidebar.night_audit', 'Night Audit'),
         url: '/night-audit',
         icon: MoonStar,
         resource: 'financial',
       },
       {
-        title: getTitle('sidebar.partners', 'Partners'),
+        title: t('sidebar.partners', 'Partners'),
         url: '/partners',
         icon: HardHat,
         resource: 'partners',
       },
       {
-        title: getTitle('menu.messages', 'Messages'),
+        title: t('menu.messages', 'Messages'),
         url: '/messages',
         icon: MessageSquare,
         resource: 'messages',
       },
       {
-        title: getTitle('common.workflows', 'Workflows'),
+        title: t('common.workflows', 'Workflows'),
         url: '/workflows',
         icon: Repeat,
         resource: 'workflows',
@@ -227,69 +223,69 @@ export function AppSidebar() {
   const systemItems = React.useMemo(
     () => [
       {
-        title: getTitle('sidebar.settings', 'Settings'),
+        title: t('sidebar.settings', 'Settings'),
         url: '/settings',
         icon: Settings,
         resource: 'settings',
       },
       {
-        title: getTitle('sidebar.pricing', 'Pricing'),
+        title: t('sidebar.pricing', 'Pricing'),
         url: '/pricing',
         icon: DollarSign,
         resource: 'settings',
       },
       {
-        title: getTitle('common.service_pricing', 'Price Catalog'),
+        title: t('common.service_pricing', 'Price Catalog'),
         url: '/service-pricing',
         icon: DollarSign,
         resource: 'service_pricing',
       },
       {
-        title: getTitle('sidebar.users', 'Users'),
+        title: t('sidebar.users', 'Users'),
         url: '/users',
         icon: Users,
         resource: 'users',
       },
       {
-        title: getTitle('sidebar.publicity_admin', 'Publicity Administration'),
+        title: t('sidebar.publicity_admin', 'Publicity Administration'),
         url: '/admin/publicity',
         icon: Megaphone,
         resource: 'publicity',
       },
       {
-        title: getTitle('sidebar.migration_hub', 'Migration Hub'),
+        title: t('sidebar.migration_hub', 'Migration Hub'),
         url: '/admin/migration',
         icon: Database,
         resource: 'migration',
       },
       {
-        title: getTitle('common.advanced_analytics', 'Advanced Analytics'),
+        title: t('common.advanced_analytics', 'Advanced Analytics'),
         url: '/admin/analytics',
         icon: PieChart,
         resource: 'analytics',
       },
       {
-        title: getTitle('common.automation_rules', 'Automation Rules'),
+        title: t('common.automation_rules', 'Automation Rules'),
         url: '/admin/automation',
         icon: Zap,
         resource: 'automation',
       },
       {
-        title: getTitle('sidebar.audit_panel', 'Audit Panel'),
+        title: t('sidebar.audit_panel', 'Audit Panel'),
         url: '/admin/audit',
         icon: ShieldCheck,
         resource: 'audit_logs',
         roles: ['platform_owner'],
       },
       {
-        title: getTitle('sidebar.environment', 'Environment'),
+        title: t('sidebar.environment', 'Environment'),
         url: '/admin/environment',
         icon: MonitorPlay,
         resource: 'settings',
         roles: ['platform_owner'],
       },
       {
-        title: getTitle('sidebar.translations', 'Translations'),
+        title: t('sidebar.translations', 'Translations'),
         url: '/admin/translations',
         icon: Languages,
         resource: 'settings',
@@ -302,28 +298,28 @@ export function AppSidebar() {
   const portalItems = React.useMemo(
     () => [
       {
-        title: getTitle('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'tenant',
       },
       {
-        title: getTitle('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'property_owner',
       },
       {
-        title: getTitle('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
         role: 'partner',
       },
       {
-        title: getTitle('menu.dashboard', 'Main Dashboard'),
+        title: t('menu.dashboard', 'Main Dashboard'),
         url: '/',
         icon: Home,
         resource: 'dashboard',
@@ -433,7 +429,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('menu.messages', 'Messages')} (PM Sync)
+                            {t('menu.messages', 'Messages')} (PM Sync)
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -450,7 +446,7 @@ export function AppSidebar() {
                       <Link to="/messages" className="px-4 py-2.5">
                         <MessageSquare className="h-4 w-4 mr-3" />
                         <span className="font-medium text-sm">
-                          {getTitle('menu.messages', 'Messages')}
+                          {t('menu.messages', 'Messages')}
                         </span>{' '}
                       </Link>
                     </SidebarMenuButton>
@@ -468,7 +464,7 @@ export function AppSidebar() {
                         <Link to="/tasks" className="px-4 py-2.5">
                           <Wrench className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('menu.tasks', 'Tasks')}
+                            {t('menu.tasks', 'Tasks')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -482,7 +478,7 @@ export function AppSidebar() {
                         <Link to="/messages" className="px-4 py-2.5">
                           <MessageSquare className="h-4 w-4 mr-3" />
                           <span className="font-medium text-sm">
-                            {getTitle('menu.messages', 'Messages')}
+                            {t('menu.messages', 'Messages')}
                           </span>
                         </Link>
                       </SidebarMenuButton>
@@ -497,7 +493,7 @@ export function AppSidebar() {
             {filteredMain.length > 0 && (
               <SidebarGroup>
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('sidebar.main_menu', 'Main Menu')}
+                  {t('sidebar.main_menu', 'Main Menu')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
@@ -525,7 +521,7 @@ export function AppSidebar() {
             {filteredOps.length > 0 && (
               <SidebarGroup className="mt-4">
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('common.operations', 'Operations')}
+                  {t('common.operations', 'Operations')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
@@ -553,7 +549,7 @@ export function AppSidebar() {
             {filteredSystem.length > 0 && (
               <SidebarGroup className="mt-4">
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {getTitle('sidebar.system', 'System')}
+                  {t('sidebar.system', 'System')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>

@@ -1,13 +1,11 @@
-import { useTranslationContext } from '@/hooks/use-db-translations'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
-const useLanguageStore = () => {
-  const context = useTranslationContext()
-
+export default function useLanguageStore() {
+  const { t, locale, changeLanguage, loading } = useDbTranslations()
   return {
-    language: context.locale,
-    setLanguage: context.changeLanguage,
-    t: context.t,
+    t,
+    language: locale,
+    setLanguage: changeLanguage,
+    loading,
   }
 }
-
-export default useLanguageStore
