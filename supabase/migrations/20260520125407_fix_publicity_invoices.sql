@@ -48,7 +48,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$function$
+$function$;
 
 -- Safely backfill existing invoices with the correct campaign references
 DO $$

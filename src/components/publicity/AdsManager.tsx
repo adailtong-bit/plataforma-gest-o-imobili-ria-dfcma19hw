@@ -256,7 +256,7 @@ export function AdsManager() {
         selectedAdv.city &&
         selectedAdv.country &&
         selectedAdv.zipCode &&
-        selectedAdv.contacts?.length > 0
+        (selectedAdv.contacts?.length ?? 0) > 0
       if (!isComplete) {
         toast({
           title: 'Incomplete Advertiser Profile',
@@ -513,7 +513,7 @@ export function AdsManager() {
             <div className="grid gap-3">
               {expiringCampaigns.map((camp) => {
                 const adv = advertisers.find((a) => a.id === camp.advertiser_id)
-                const end = new Date(camp.end_date)
+                const end = new Date(camp.end_date!)
                 const now = new Date()
                 end.setHours(0, 0, 0, 0)
                 now.setHours(0, 0, 0, 0)
