@@ -9,7 +9,6 @@ import {
 import { supabase } from '@/lib/supabase/client'
 import useAuthStore from '@/stores/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Simple in-memory cache to avoid repeated queries
@@ -36,7 +35,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   // Fetch user's language preference
   useEffect(() => {
-    const lang = (currentUser as any)?.language_preference
+    const lang = (currentUser as Record<string, unknown>)
+      ?.language_preference as string | undefined
     if (lang && lang !== locale) {
       setLocale(lang)
     } else if (currentUser?.id && !lang) {
@@ -55,7 +55,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
             setCurrentUser({
               ...currentUser,
               language_preference: data.language_preference,
-            } as any)
+            } as Record<string, unknown>)
           }
         }
       }
@@ -116,14 +116,14 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     if (currentUser?.id) {
       const { error } = await supabase
         .from('profiles')
-        .update({ language_preference: newLocale } as any)
+        .update({ language_preference: newLocale })
         .eq('id', currentUser.id)
 
       if (!error && setCurrentUser) {
         setCurrentUser({
           ...currentUser,
           language_preference: newLocale,
-        } as any)
+        } as Record<string, unknown>)
         toast({
           title: t('common.success', 'Success'),
           description: t(
