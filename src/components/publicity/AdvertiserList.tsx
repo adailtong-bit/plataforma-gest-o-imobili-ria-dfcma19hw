@@ -21,8 +21,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Edit, Trash2, Search, Users, AlertCircle } from 'lucide-react'
 import usePublicityStore, {
-  AdvFormData,
-  AdvertiserContact,
+  type AdvFormData,
+  type AdvertiserContact,
 } from '@/stores/usePublicityStore'
 import { useToast } from '@/hooks/use-toast'
 import { PhoneInput } from '@/components/ui/phone-input'
@@ -87,8 +87,12 @@ export function AdvertiserList() {
 
   const filteredAdvertisers = advertisers.filter(
     (a) =>
-      a.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      a.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+      String(a.name || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      String(a.email || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   )
 
   const handleOpen = (adv?: AdvFormData) => {
@@ -350,7 +354,7 @@ export function AdvertiserList() {
                       variant="ghost"
                       size="icon"
                       className="text-red-500"
-                      onClick={() => handleDelete(adv.id)}
+                      onClick={() => void handleDelete(adv.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -491,31 +495,34 @@ export function AdvertiserList() {
                       <Label>Zip Code *</Label>
                       <Input
                         value={formData.zipCode}
-                        onChange={async (e) => {
+                        onChange={(e) => {
                           const val = e.target.value
                           setFormData({ ...formData, zipCode: val })
                           if (
                             formData.country === 'BR' &&
                             val.replace(/\D/g, '').length === 8
                           ) {
-                            try {
-                              const res = await fetch(
-                                `https://viacep.com.br/ws/${val.replace(/\D/g, '')}/json/`,
-                              )
-                              const data = await res.json()
-                              if (!data.erro) {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  street: data.logradouro || prev.street,
-                                  neighborhood:
-                                    data.bairro || prev.neighborhood,
-                                  city: data.localidade || prev.city,
-                                  state: data.uf || prev.state,
-                                }))
+                            const fetchCep = async () => {
+                              try {
+                                const res = await fetch(
+                                  `https://viacep.com.br/ws/${val.replace(/\D/g, '')}/json/`,
+                                )
+                                const data = await res.json()
+                                if (!data.erro) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    street: data.logradouro || prev.street,
+                                    neighborhood:
+                                      data.bairro || prev.neighborhood,
+                                    city: data.localidade || prev.city,
+                                    state: data.uf || prev.state,
+                                  }))
+                                }
+                              } catch (err) {
+                                console.error('ViaCEP error', err)
                               }
-                            } catch (err) {
-                              console.error('ViaCEP error', err)
                             }
+                            void fetchCep()
                           }
                         }}
                       />
@@ -625,7 +632,7 @@ export function AdvertiserList() {
                 Cancel
               </Button>
               <Button
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 className="bg-trust-blue"
                 disabled={isSubmitting || !isFormValid}
               >

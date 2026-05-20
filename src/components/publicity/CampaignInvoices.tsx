@@ -22,9 +22,15 @@ export function CampaignInvoices() {
 
   const filteredInvoices = invoices.filter(
     (inv) =>
-      inv.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inv.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inv.to_name?.toLowerCase().includes(searchTerm.toLowerCase()),
+      String(inv.invoice_number || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      String(inv.description || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      String(inv.to_name || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   )
 
   const getCampaignTitle = (bookingId?: string) => {

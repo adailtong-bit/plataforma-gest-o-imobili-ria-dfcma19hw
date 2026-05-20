@@ -167,7 +167,7 @@ const fetchPublicityData = async () => {
 }
 
 // Fetch on initialization
-fetchPublicityData().catch(console.error)
+void fetchPublicityData().catch(console.error)
 
 const usePublicityStore = () => {
   const [advertisers, setAdvertisers] =
