@@ -200,7 +200,10 @@ export function InvoiceForm({
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (!isLocked && name?.startsWith('items')) {
+      if (
+        !isLocked &&
+        (!name || name === 'items' || name.startsWith('items'))
+      ) {
         const items = value.items || []
         const total = items.reduce(
           (sum, item) =>
@@ -219,15 +222,21 @@ export function InvoiceForm({
   const sortedProfiles = useMemo(() => {
     if (!fromIdValue || fromIdValue === 'none') return profiles
     const sender = profiles.find((p) => p.id === fromIdValue)
-    if (!sender || sender.role !== 'pm') return profiles
+    if (!sender) return profiles
 
-    return [...profiles].sort((a, b) => {
-      const aRel = a.pm_id === sender.id || a.id === sender.id
-      const bRel = b.pm_id === sender.id || b.id === sender.id
-      if (aRel && !bRel) return -1
-      if (!aRel && bRel) return 1
-      return 0
-    })
+    if (sender.role === 'pm') {
+      return profiles.filter(
+        (p) => p.pm_id === sender.id || p.id === sender.id || p.role === 'pm',
+      )
+    }
+
+    if (sender.role === 'partner') {
+      return profiles.filter(
+        (p) => p.pm_id === sender.pm_id || p.id === sender.pm_id,
+      )
+    }
+
+    return profiles
   }, [profiles, fromIdValue])
 
   const onSubmit = async (values: z.infer<typeof invoiceSchema>) => {
@@ -259,7 +268,12 @@ export function InvoiceForm({
           values.property_id === 'none' ? null : values.property_id
         payload.from_id = values.from_id === 'none' ? null : values.from_id
         payload.to_id = values.to_id === 'none' ? null : values.to_id
-        payload.items = values.items
+        payload.items =
+          values.items?.map((item) => ({
+            ...item,
+            total:
+              (Number(item.quantity) || 0) * (Number(item.unit_price) || 0),
+          })) || []
       }
 
       if (invoice?.id) {
@@ -751,7 +765,8 @@ export function InvoiceForm({
                             onChange={field.onChange}
                             onBlur={field.onBlur}
                             name={field.name}
-                            disabled={isLocked || fields.length > 0}
+                            disabled={true}
+                            className="bg-slate-100 font-semibold text-slate-700 cursor-not-allowed"
                           />
                         </FormControl>
                         <FormMessage />
@@ -881,7 +896,7 @@ export function InvoiceForm({
                                 {...f}
                                 disabled={isLocked}
                                 placeholder="Qty"
-                                className="bg-white no-spinner"
+                                className="bg-white no-spinner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </FormControl>
                           </FormItem>
@@ -900,7 +915,7 @@ export function InvoiceForm({
                                 name={f.name}
                                 disabled={isLocked}
                                 placeholder="Price"
-                                className="bg-white"
+                                className="bg-white no-spinner"
                               />
                             </FormControl>
                           </FormItem>
@@ -920,7 +935,7 @@ export function InvoiceForm({
                   ))}
                   {fields.length === 0 && (
                     <p className="text-sm text-slate-500 italic">
-                      No line items added. The total amount can be set manually.
+                      No line items added. Add items to calculate the total amount.
                     </p>
                   )}
                 </div>
