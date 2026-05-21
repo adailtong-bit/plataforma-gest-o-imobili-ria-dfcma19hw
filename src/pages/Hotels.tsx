@@ -47,7 +47,6 @@ export default function Hotels() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<any>({})
   const [activeTab, setActiveTab] = useState('general')
-  const [paymentDataStr, setPaymentDataStr] = useState('{}')
   const [uploading, setUploading] = useState(false)
 
   const handleGalleryUpload = async (
@@ -117,7 +116,6 @@ export default function Hotels() {
       game_room_access_code: '',
       website_url: '',
     })
-    setPaymentDataStr('{}')
     setActiveTab('general')
     setIsOpen(true)
   }
@@ -132,7 +130,6 @@ export default function Hotels() {
       game_room_access_code: hotel.game_room_access_code || '',
       website_url: hotel.website_url || '',
     })
-    setPaymentDataStr(JSON.stringify(hotel.payment_data || {}, null, 2))
     setActiveTab('general')
     setIsOpen(true)
   }
@@ -170,17 +167,7 @@ export default function Hotels() {
       }
     }
 
-    let parsedPaymentData = {}
-    try {
-      parsedPaymentData = JSON.parse(paymentDataStr || '{}')
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Invalid JSON in Payment Data',
-        variant: 'destructive',
-      })
-      return
-    }
+    const parsedPaymentData = {}
 
     const payload = {
       name: form.name,
@@ -652,7 +639,7 @@ export default function Hotels() {
                         </div>
                       )}
                     </div>
-                    <div className="space-y-2 mt-4">
+                    <div className="space-y-2 mt-4 pb-4">
                       <Label>{t('common.gallery', 'Gallery')}</Label>
                       <div className="flex items-center gap-2">
                         <Button
@@ -710,17 +697,6 @@ export default function Hotels() {
                           ))}
                         </div>
                       )}
-                    </div>
-                    <div className="space-y-2 border-t border-slate-100 pt-4">
-                      <Label htmlFor="payment_data">
-                        {t('common.payment_data', 'Payment Data (JSON)')}
-                      </Label>
-                      <textarea
-                        id="payment_data"
-                        className="flex min-h-[100px] font-mono w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        value={paymentDataStr}
-                        onChange={(e) => setPaymentDataStr(e.target.value)}
-                      />
                     </div>
                   </div>
                 </div>
