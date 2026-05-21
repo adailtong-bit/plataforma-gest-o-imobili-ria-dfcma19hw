@@ -191,19 +191,17 @@ export function InvoiceForm({
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name?.startsWith('items')) {
+      if (!isLocked && name?.startsWith('items')) {
         const items = value.items || []
-        if (items.length > 0) {
-          const total = items.reduce(
-            (sum, item) => sum + (Number(item?.amount) || 0),
-            0,
-          )
-          form.setValue('amount', total)
-        }
+        const total = items.reduce(
+          (sum, item) => sum + (Number(item?.amount) || 0),
+          0,
+        )
+        form.setValue('amount', total, { shouldValidate: true })
       }
     })
     return () => subscription.unsubscribe()
-  }, [form.watch, form])
+  }, [form.watch, form, isLocked])
 
   const fromIdValue = form.watch('from_id')
 

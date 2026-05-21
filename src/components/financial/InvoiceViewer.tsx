@@ -161,6 +161,7 @@ export function InvoiceViewer({
                       item: InvoiceItem & {
                         sourceId?: string
                         sourceType?: string
+                        amount?: number
                       },
                       idx: number,
                     ) => (
@@ -172,11 +173,13 @@ export function InvoiceViewer({
                           {item.quantity || 1}
                         </td>
                         <td className="py-4 px-4 text-slate-600 text-right">
-                          {formatAppCurrency(item.unitPrice || 0)}
+                          {formatAppCurrency(
+                            item.unitPrice ?? item.amount ?? 0,
+                          )}
                         </td>
                         <td className="py-4 px-4 text-slate-800 font-medium text-right">
-                          {formatAppCurrency(item.total || 0)}
-                        </td>
+                          {formatAppCurrency(item.total ?? item.amount ?? 0)}
+                        </td>{' '}
                         <td className="py-4 px-4 text-center print:hidden">
                           {item.sourceId ? (
                             <Button
