@@ -202,13 +202,18 @@ export default function Condominiums() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('condominiums.title')}
+            {t('condominiums.title', 'Title')}
           </h1>
-          <p className="text-muted-foreground">{t('condominiums.subtitle')}</p>
+          <p className="text-muted-foreground">
+            {t('condominiums.subtitle', 'Subtitle')}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('condominiums.search_placeholder')}
+            placeholder={t(
+              'condominiums.search_placeholder',
+              'Search Placeholder',
+            )}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64 bg-white"
@@ -223,7 +228,8 @@ export default function Condominiums() {
             >
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue gap-2 text-white">
-                  <Plus className="h-4 w-4" /> {t('condominiums.new_condo')}
+                  <Plus className="h-4 w-4" />{' '}
+                  {t('condominiums.new_condo', 'New Condo')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -424,11 +430,13 @@ export default function Condominiums() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('condominiums.addressing')}</TableHead>
-                <TableHead>{t('common.manager_col')}</TableHead>
+                <TableHead>{t('common.name', 'Nome')}</TableHead>
+                <TableHead>
+                  {t('condominiums.addressing', 'Addressing')}
+                </TableHead>
+                <TableHead>{t('common.manager_col', 'Manager Col')}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions')}
+                  {t('common.actions', 'Ações')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -510,7 +518,7 @@ export default function Condominiums() {
                     colSpan={4}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('condominiums.no_condos')}
+                    {t('condominiums.no_condos', 'No Condos')}
                   </TableCell>
                 </TableRow>
               )}

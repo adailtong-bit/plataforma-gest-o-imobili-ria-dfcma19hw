@@ -42,10 +42,10 @@ export default function MarketAnalysis() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('market_analysis.title', 'Market Analysis')}
+          {t('market_analysis.title', 'Análise de Mercado')}
         </h1>
         <p className="text-muted-foreground">
-          {t('market_analysis.subtitle', 'Analytics for market trends.')}
+          {t('market_analysis.subtitle', 'Análise de tendências do mercado.')}
         </p>
       </div>
 

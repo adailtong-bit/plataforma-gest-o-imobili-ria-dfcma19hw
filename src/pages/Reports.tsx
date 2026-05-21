@@ -98,12 +98,12 @@ export default function Reports() {
     <div className="flex flex-col gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('reports.title', 'Reports')}
+          {t('reports.title', 'Relatórios')}
         </h1>
         <p className="text-muted-foreground">
           {t(
             'reports.subtitle',
-            'Advanced analytics and system reporting dashboard.',
+            'Painel analítico e de relatórios do sistema.',
           )}
         </p>
       </div>

@@ -77,11 +77,10 @@ export default function Financial() {
     addLedgerEntry,
     updateLedgerEntry,
     deleteLedgerEntry,
-    formatAppCurrency,
   } = useFinancialStore()
   const { properties } = usePropertyStore()
   const { owners } = useOwnerStore()
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
   const { toast } = useToast()
 
   const authStore = useAuthStore()
@@ -114,6 +113,15 @@ export default function Financial() {
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<any>(null)
+
+  const formatLocalCurrency = (value: number) => {
+    const loc =
+      language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US'
+    return new Intl.NumberFormat(loc, {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+  }
 
   const resetForm = () => {
     setForm({
@@ -475,8 +483,7 @@ export default function Financial() {
             {t('sidebar.financial') || 'Financial'}
           </h1>
           <p className="text-muted-foreground">
-            {t('financial.management_desc') ||
-              'Current accounts, fixed and variable costs management.'}
+            {t('financial.management_desc', 'Management Desc')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -634,7 +641,7 @@ export default function Financial() {
                       <SelectContent>
                         {!isOwner && (
                           <SelectItem value="none">
-                            {t('financial.pm_general') || 'PM (General)'}
+                            {t('financial.pm_general', 'Pm General')}
                           </SelectItem>
                         )}
                         {properties
@@ -753,11 +760,10 @@ export default function Financial() {
       <Card className="border-slate-200">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg">
-            {t('financial.balances_panel') || 'Balances and Reports Panel'}
+            {t('financial.balances_panel', 'Balances Panel')}
           </CardTitle>
           <CardDescription>
-            {t('financial.balances_desc') ||
-              'View the current account balance filtered by your preference.'}
+            {t('financial.balances_desc', 'Balances Desc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -775,15 +781,15 @@ export default function Financial() {
                   <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
                     <TabsTrigger value="pm" className="gap-2">
                       <Building className="w-4 h-4 hidden sm:block" />{' '}
-                      {t('financial.pm_general') || 'PM (General)'}
+                      {t('financial.pm_general', 'Pm General')}
                     </TabsTrigger>
                     <TabsTrigger value="owner" className="gap-2">
                       <User className="w-4 h-4 hidden sm:block" />{' '}
-                      {t('financial.owner') || 'Owner'}
+                      {t('financial.owner', 'Owner')}
                     </TabsTrigger>
                     <TabsTrigger value="property" className="gap-2">
                       <Building className="w-4 h-4 hidden sm:block" />{' '}
-                      {t('common.property') || 'Property'}
+                      {t('common.property', 'Propriedade')}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -874,7 +880,7 @@ export default function Financial() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      {t('financial.all_categories') || 'All Categories'}
+                      {t('financial.all_categories', 'All Categories')}
                     </SelectItem>
                     <SelectItem value="income">
                       {t('financial.incomes') || 'Incomes'}
@@ -903,7 +909,7 @@ export default function Financial() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">
-                      {t('financial.all_period') || 'All Period'}
+                      {t('financial.all_period', 'All Period')}
                     </SelectItem>
                     <SelectItem value="month">
                       {t('financial.current_month') || 'Current Month'}
@@ -943,8 +949,7 @@ export default function Financial() {
             >
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  {t('financial.projected_balance') ||
-                    'Projected Final Balance'}
+                  {t('financial.projected_balance', 'Projected Balance')}
                 </div>
                 <div
                   className={cn(
@@ -954,25 +959,27 @@ export default function Financial() {
                       : 'text-red-700',
                   )}
                 >
-                  {formatAppCurrency(balances.currentBalance)}
+                  {formatLocalCurrency(balances.currentBalance)}
                 </div>
                 <div className="text-xs text-slate-500 mt-2">
-                  {t('financial.projected_balance_desc') ||
-                    'Projected balance including the filtered history'}
+                  {t(
+                    'financial.projected_balance_desc',
+                    'Projected Balance Desc',
+                  )}
                 </div>
               </CardContent>
             </Card>
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  {t('financial.total_incomes') || 'Total Incomes (In Period)'}
+                  {t('financial.total_incomes', 'Total Incomes')}
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {formatAppCurrency(balances.income)}
+                  {formatLocalCurrency(balances.income)}
                 </div>
                 {balances.pendingIncome > 0 && (
                   <div className="text-xs text-blue-600 mt-2">
-                    +{formatAppCurrency(balances.pendingIncome)}{' '}
+                    +{formatLocalCurrency(balances.pendingIncome)}{' '}
                     {t('financial.pending_suffix') || 'pending'}
                   </div>
                 )}
@@ -981,15 +988,14 @@ export default function Financial() {
             <Card className="border-slate-100">
               <CardContent className="pt-6">
                 <div className="text-sm font-medium text-slate-600 mb-1">
-                  {t('financial.total_expenses') ||
-                    'Total Expenses (In Period)'}
+                  {t('financial.total_expenses', 'Total Expenses')}
                 </div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {formatAppCurrency(balances.expense)}
+                  {formatLocalCurrency(balances.expense)}
                 </div>
                 {balances.pendingExpense > 0 && (
                   <div className="text-xs text-orange-600 mt-2">
-                    +{formatAppCurrency(balances.pendingExpense)}{' '}
+                    +{formatLocalCurrency(balances.pendingExpense)}{' '}
                     {t('financial.pending_suffix') || 'pending'}
                   </div>
                 )}
@@ -1125,7 +1131,7 @@ export default function Financial() {
                       )}
                     >
                       {isIncome ? '+' : '-'}
-                      {formatAppCurrency(entry.amount)}
+                      {formatLocalCurrency(entry.amount)}
                     </TableCell>
                     <TableCell
                       className={cn(
@@ -1135,7 +1141,7 @@ export default function Financial() {
                           : 'text-red-600',
                       )}
                     >
-                      {formatAppCurrency(entry.runningBalance)}
+                      {formatLocalCurrency(entry.runningBalance)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2 items-center">

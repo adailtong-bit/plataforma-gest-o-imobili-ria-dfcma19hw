@@ -124,10 +124,10 @@ export default function Renewals() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('renewals.title', 'Renovações')}
+            {t('renewals.title', 'Title')}
           </h1>
           <p className="text-muted-foreground">
-            {t('renewals.subtitle', 'Gerenciamento de renovações de contrato.')}
+            {t('renewals.subtitle', 'Subtitle')}
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function Renewals() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('renewals.search_placeholder')}
+            placeholder={t('renewals.search_placeholder', 'Search Placeholder')}
             className="pl-9 bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -144,10 +144,12 @@ export default function Renewals() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full md:w-[200px] bg-white">
-            <SelectValue placeholder={t('renewals.all_status')} />
+            <SelectValue placeholder={t('renewals.all_status', 'All Status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t('renewals.all_status')}</SelectItem>
+            <SelectItem value="all">
+              {t('renewals.all_status', 'All Status')}
+            </SelectItem>
             <SelectItem value="critical">
               {t('renewals.critical_status')}
             </SelectItem>
@@ -278,7 +280,7 @@ export default function Renewals() {
                     colSpan={6}
                     className="text-center py-10 text-muted-foreground"
                   >
-                    {t('renewals.no_results')}
+                    {t('renewals.no_results', 'No Results')}
                   </TableCell>
                 </TableRow>
               )}
