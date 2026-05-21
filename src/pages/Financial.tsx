@@ -68,7 +68,7 @@ import { DateRange } from 'react-day-picker'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
-import { cn, exportToCSV } from '@/lib/utils'
+import { cn, exportToCSV, formatDate } from '@/lib/utils'
 import { Download } from 'lucide-react'
 
 export default function Financial() {
@@ -760,7 +760,7 @@ export default function Financial() {
       <Card className="border-slate-200">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg">
-            {t('financial.balances_panel', 'Balances Panel')}
+            {t('financial.statement', 'Statement')}
           </CardTitle>
           <CardDescription>
             {t('financial.balances_desc', 'Balances Desc')}
@@ -964,7 +964,7 @@ export default function Financial() {
                 <div className="text-xs text-slate-500 mt-2">
                   {t(
                     'financial.projected_balance_desc',
-                    'Projected Balance Desc',
+                    'Based on pending and cleared entries',
                   )}
                 </div>
               </CardContent>
@@ -1008,29 +1008,29 @@ export default function Financial() {
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader className="pb-2 border-b">
           <CardTitle className="text-lg">
-            {t('financial.statement') || 'Transaction Statement'}
+            {t('financial.statement', 'Statement')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('financial.table_date') || 'Date'}</TableHead>
+                <TableHead>{t('financial.table_date', 'Date')}</TableHead>
                 <TableHead>
-                  {t('financial.table_desc') || 'Description'}
+                  {t('financial.table_desc', 'Description')}
                 </TableHead>
                 <TableHead>
-                  {t('financial.table_type_cat') || 'Type / Category'}
+                  {t('financial.table_type_cat', 'Type / Category')}
                 </TableHead>
-                <TableHead>{t('financial.table_status') || 'Status'}</TableHead>
+                <TableHead>{t('financial.table_status', 'Status')}</TableHead>
                 <TableHead className="text-right">
-                  {t('financial.table_amount') || 'Amount'}
-                </TableHead>
-                <TableHead className="text-right">
-                  {t('financial.table_balance') || 'Balance'}
+                  {t('financial.table_amount', 'Amount')}
                 </TableHead>
                 <TableHead className="text-right">
-                  {t('financial.table_actions') || 'Actions'}
+                  {t('financial.table_balance', 'Balance')}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions', 'Actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -1039,9 +1039,7 @@ export default function Financial() {
                 const isIncome = entry.type === 'income'
                 return (
                   <TableRow key={entry.id} className="hover:bg-slate-50">
-                    <TableCell>
-                      {format(new Date(entry.date), 'dd/MM/yyyy')}
-                    </TableCell>
+                    <TableCell>{formatDate(entry.date, language)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium text-slate-900">
@@ -1088,8 +1086,8 @@ export default function Financial() {
                             <ArrowDownCircle className="w-3 h-3 mr-1" />
                           )}
                           {isIncome
-                            ? t('financial.income') || 'Income'
-                            : t('financial.expense') || 'Expense'}
+                            ? t('financial.income', 'Income')
+                            : t('financial.expense', 'Expense')}
                         </Badge>
                         {!isIncome && entry.costType && (
                           <Badge
@@ -1097,8 +1095,8 @@ export default function Financial() {
                             className="text-xs border-slate-300"
                           >
                             {entry.costType === 'fixed'
-                              ? t('financial.fixed_cost') || 'Fixed Cost'
-                              : t('financial.variable_cost') || 'Variable Cost'}
+                              ? t('financial.fixed_cost', 'Fixed Cost')
+                              : t('financial.variable_cost', 'Variable Cost')}
                           </Badge>
                         )}
                         {entry.category && entry.category !== 'other' && (
@@ -1112,7 +1110,7 @@ export default function Financial() {
                       {entry.status === 'cleared' ? (
                         <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200">
                           <CheckCircle2 className="w-3 h-3 mr-1" />{' '}
-                          {t('common.paid') || 'Paid'}
+                          {t('common.paid', 'Paid')}
                         </Badge>
                       ) : (
                         <Badge
@@ -1120,7 +1118,7 @@ export default function Financial() {
                           className="bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200"
                         >
                           <AlertCircle className="w-3 h-3 mr-1" />{' '}
-                          {t('common.pending') || 'Pending'}
+                          {t('common.pending', 'Pending')}
                         </Badge>
                       )}
                     </TableCell>

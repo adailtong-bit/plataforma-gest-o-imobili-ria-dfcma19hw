@@ -44,18 +44,27 @@ import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
 import { DataMask } from '@/components/DataMask'
+import { formatDate } from '@/lib/utils'
 
 export default function ShortTerm() {
   const {
     bookings,
     properties,
     promotions,
-    formatAppCurrency,
     addBooking,
     updateBooking,
     deleteBooking,
   } = useContext(AppContext)!
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+
+  const formatLocalCurrency = (value: number) => {
+    const loc =
+      language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US'
+    return new Intl.NumberFormat(loc, {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+  }
   const { toast } = useToast()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -177,9 +186,11 @@ export default function ShortTerm() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('common.short_term')}
+            {t('short_term.title', 'Short-Term Rentals')}
           </h1>
-          <p className="text-muted-foreground">Manage your vacation rentals.</p>
+          <p className="text-muted-foreground">
+            {t('short_term.subtitle', 'Manage your vacation rentals.')}
+          </p>
         </div>
         <Dialog
           open={isAddOpen}
@@ -190,7 +201,8 @@ export default function ShortTerm() {
         >
           <DialogTrigger asChild>
             <Button className="bg-trust-blue gap-2 text-white">
-              <Plus className="h-4 w-4" /> Incluir
+              <Plus className="h-4 w-4" />{' '}
+              {t('short_term.new_booking', '+ Include')}
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -293,13 +305,13 @@ export default function ShortTerm() {
               {discountAmount > 0 && (
                 <div className="flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded">
                   <span>Desconto Aplicado:</span>
-                  <span>-{formatAppCurrency(discountAmount)}</span>
+                  <span>-{formatLocalCurrency(discountAmount)}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center font-bold text-lg">
                 <span>Total Final:</span>
-                <span>{formatAppCurrency(finalAmount)}</span>
+                <span>{formatLocalCurrency(finalAmount)}</span>
               </div>
             </div>
             <DialogFooter>
@@ -314,13 +326,17 @@ export default function ShortTerm() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Guest Name</TableHead>
-                <TableHead>{t('common.property')}</TableHead>
-                <TableHead>Check-in</TableHead>
-                <TableHead>Check-out</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('short_term.guest', 'Guest Name')}</TableHead>
+                <TableHead>{t('common.property', 'Property')}</TableHead>
+                <TableHead>{t('short_term.check_in', 'Check-in')}</TableHead>
+                <TableHead>{t('short_term.check_out', 'Check-out')}</TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
+                <TableHead className="text-right">
+                  {t('short_term.amount', 'Total')}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions', 'Actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -330,12 +346,8 @@ export default function ShortTerm() {
                     <DataMask>{b.guestName}</DataMask>
                   </TableCell>
                   <TableCell>{b.propertyName}</TableCell>
-                  <TableCell>
-                    {format(new Date(b.checkIn), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(b.checkOut), 'MMM dd, yyyy')}
-                  </TableCell>
+                  <TableCell>{formatDate(b.checkIn, language)}</TableCell>
+                  <TableCell>{formatDate(b.checkOut, language)}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="uppercase text-[10px]">
                       {b.status}
@@ -344,11 +356,11 @@ export default function ShortTerm() {
                   <TableCell className="text-right">
                     <div className="flex flex-col items-end">
                       <span className="font-bold">
-                        {formatAppCurrency(b.totalAmount)}
+                        {formatLocalCurrency(b.totalAmount)}
                       </span>
                       {b.promotionId && (
                         <span className="text-xs text-green-600">
-                          Desc. {formatAppCurrency(b.discountAmount || 0)}
+                          Desc. {formatLocalCurrency(b.discountAmount || 0)}
                         </span>
                       )}
                     </div>
@@ -482,13 +494,13 @@ export default function ShortTerm() {
                               <div className="flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded">
                                 <span>Desconto Aplicado:</span>
                                 <span>
-                                  -{formatAppCurrency(discountAmount)}
+                                  -{formatLocalCurrency(discountAmount)}
                                 </span>
                               </div>
                             )}
                             <div className="flex justify-between items-center font-bold text-lg">
                               <span>Total Final:</span>
-                              <span>{formatAppCurrency(finalAmount)}</span>
+                              <span>{formatLocalCurrency(finalAmount)}</span>
                             </div>
                           </div>
                           <DialogFooter>
@@ -529,7 +541,7 @@ export default function ShortTerm() {
                     colSpan={7}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    {t('short_term.empty', 'No records found.')}
                   </TableCell>
                 </TableRow>
               )}

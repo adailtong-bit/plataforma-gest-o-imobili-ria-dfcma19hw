@@ -168,7 +168,7 @@ const DebugCleanup = () => {
     // Robust global removal of residual currentRoute debug blocks from older layouts
     document.querySelectorAll('pre').forEach((pre) => {
       if (pre.textContent?.includes('currentRoute')) {
-        pre.style.display = 'none'
+        pre.remove()
       }
     })
   }, [location.pathname])
