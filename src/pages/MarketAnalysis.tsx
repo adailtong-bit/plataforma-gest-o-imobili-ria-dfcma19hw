@@ -18,7 +18,16 @@ import {
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 
 export default function MarketAnalysis() {
-  const { t } = useLanguageStore()
+  const { t, language } = useLanguageStore()
+
+  const formatLocalCurrency = (value: number) => {
+    const loc =
+      language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US'
+    return new Intl.NumberFormat(loc, {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value)
+  }
 
   const data = [
     { name: 'Jan', avgRate: 150, ourRate: 140 },
@@ -33,50 +42,52 @@ export default function MarketAnalysis() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('market_analysis.title')}
+          {t('market_analysis.title', 'Market Analysis')}
         </h1>
-        <p className="text-muted-foreground">{t('market_analysis.subtitle')}</p>
+        <p className="text-muted-foreground">
+          {t('market_analysis.subtitle', 'Analytics for market trends.')}
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('market_analysis.demand_index')}
+              {t('market_analysis.demand_index', 'Demand Index')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {t('market_analysis.high')}
+              {t('market_analysis.high', 'High')}
             </div>
             <p className="text-xs text-muted-foreground">
-              {t('market_analysis.peak_season')}
+              {t('market_analysis.peak_season', 'Peak Season')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('market_analysis.comp_set_rank')}
+              {t('market_analysis.comp_set_rank', 'Comp Set Rank')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">#3</div>
             <p className="text-xs text-muted-foreground">
-              {t('market_analysis.rank_desc')}
+              {t('market_analysis.rank_desc', 'Top 10% in region')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('market_analysis.avg_daily_rate')}
+              {t('market_analysis.avg_daily_rate', 'Avg Daily Rate')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$175</div>
+            <div className="text-2xl font-bold">{formatLocalCurrency(175)}</div>
             <p className="text-xs text-muted-foreground">
-              +12% vs {t('common.last_month')}
+              {t('market_analysis.vs_last_month', '+12% vs Last Month')}
             </p>
           </CardContent>
         </Card>
@@ -84,17 +95,25 @@ export default function MarketAnalysis() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('market_analysis.avg_rate_comparison')}</CardTitle>
+          <CardTitle>
+            {t('market_analysis.avg_rate_comparison', 'Avg Rate Comparison')}
+          </CardTitle>
           <CardDescription>
-            {t('market_analysis.historical_view')}
+            {t('market_analysis.historical_view', 'Historical View')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[400px] w-full">
             <ChartContainer
               config={{
-                avgRate: { label: t('common.market_avg'), color: '#94a3b8' },
-                ourRate: { label: t('common.internal_perf'), color: '#3b82f6' },
+                avgRate: {
+                  label: t('common.market_avg', 'Market Avg'),
+                  color: '#94a3b8',
+                },
+                ourRate: {
+                  label: t('common.internal_perf', 'Internal Perf'),
+                  color: '#3b82f6',
+                },
               }}
               className="h-full w-full"
             >
@@ -109,14 +128,14 @@ export default function MarketAnalysis() {
                     dataKey="avgRate"
                     stroke="#94a3b8"
                     strokeWidth={2}
-                    name={t('common.market_avg')}
+                    name={t('common.market_avg', 'Market Avg')}
                   />
                   <Line
                     type="monotone"
                     dataKey="ourRate"
                     stroke="#3b82f6"
                     strokeWidth={3}
-                    name={t('common.internal_perf')}
+                    name={t('common.internal_perf', 'Internal Perf')}
                   />
                 </LineChart>
               </ResponsiveContainer>

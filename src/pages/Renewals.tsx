@@ -124,9 +124,11 @@ export default function Renewals() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('renewals.title')}
+            {t('renewals.title', 'Renovações')}
           </h1>
-          <p className="text-muted-foreground">{t('renewals.subtitle')}</p>
+          <p className="text-muted-foreground">
+            {t('renewals.subtitle', 'Gerenciamento de renovações de contrato.')}
+          </p>
         </div>
       </div>
 
@@ -162,13 +164,17 @@ export default function Renewals() {
           <Table>
             <TableHeader className="bg-slate-50 sticky top-0 z-10">
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.property')}</TableHead>
-                <TableHead>{t('renewals.current_proposed')}</TableHead>
-                <TableHead>{t('common.end_date')}</TableHead>
-                <TableHead>{t('renewals.negotiation_status')}</TableHead>
+                <TableHead>{t('common.name', 'Nome')}</TableHead>
+                <TableHead>{t('common.property', 'Propriedade')}</TableHead>
+                <TableHead>
+                  {t('renewals.current_proposed', 'Current Proposed')}
+                </TableHead>
+                <TableHead>{t('common.end_date', 'End Date')}</TableHead>
+                <TableHead>
+                  {t('renewals.negotiation_status', 'Negotiation Status')}
+                </TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions')}
+                  {t('common.actions', 'Ações')}
                 </TableHead>
               </TableRow>
             </TableHeader>

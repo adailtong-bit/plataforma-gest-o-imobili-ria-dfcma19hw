@@ -66,7 +66,7 @@ export default function Visits() {
     visitorName: '',
     visitorDocument: '',
     propertyId: 'none',
-    date: new Date().toISOString().slice(0, 16),
+    visitDate: new Date().toISOString().slice(0, 16),
     purpose: 'showing',
     status: 'scheduled',
     notes: '',
@@ -99,15 +99,19 @@ export default function Visits() {
       propertyId: form.propertyId === 'none' ? null : form.propertyId,
     }
 
+    const finalPayload = {
+      ...payload,
+      visit_date: form.visitDate || new Date().toISOString(),
+      visitDate: form.visitDate || new Date().toISOString(),
+      date: form.visitDate || new Date().toISOString(),
+    }
+
     if (editingRecord) {
-      await updateVisit({ ...editingRecord, ...payload })
-      toast({ title: t('common.success') || 'Success' })
+      await updateVisit({ ...editingRecord, ...finalPayload })
+      toast({ title: t('common.success', 'Success') })
     } else {
-      await addVisit({
-        ...payload,
-        date: form.date || new Date().toISOString(),
-      })
-      toast({ title: t('common.success') || 'Success' })
+      await addVisit(finalPayload)
+      toast({ title: t('common.success', 'Success') })
     }
 
     setIsSubmitting(false)
@@ -117,7 +121,7 @@ export default function Visits() {
       visitorName: '',
       visitorDocument: '',
       propertyId: 'none',
-      date: new Date().toISOString().slice(0, 16),
+      visitDate: new Date().toISOString().slice(0, 16),
       purpose: 'showing',
       status: 'scheduled',
       notes: '',
@@ -137,15 +141,15 @@ export default function Visits() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('common.visits') || 'Visits'}
+            {t('common.visits', 'Visits')}
           </h1>
           <p className="text-muted-foreground">
-            {t('visits.subtitle') || 'Manage scheduled property visits.'}
+            {t('visits.subtitle', 'Manage scheduled property visits.')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('common.search') || 'Search'}
+            placeholder={t('common.search', 'Search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -160,7 +164,7 @@ export default function Visits() {
                   visitorName: '',
                   visitorDocument: '',
                   propertyId: 'none',
-                  date: new Date().toISOString().slice(0, 16),
+                  visitDate: new Date().toISOString().slice(0, 16),
                   purpose: 'showing',
                   status: 'scheduled',
                   notes: '',
@@ -170,19 +174,21 @@ export default function Visits() {
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white">
-                <Plus className="h-4 w-4" /> {t('common.add') || 'Add'}
+                <Plus className="h-4 w-4" /> {t('common.add', 'Add')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>
-                  {editingRecord ? t('common.edit') : t('common.add')}
+                  {editingRecord
+                    ? t('common.edit', 'Edit')
+                    : t('common.add', 'Add')}
                 </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label>{t('common.visitor_name') || 'Visitor Name'}</Label>
+                    <Label>{t('common.visitor_name', 'Visitor Name')}</Label>
                     <Input
                       value={form.visitorName}
                       onChange={(e) =>
@@ -191,7 +197,7 @@ export default function Visits() {
                     />
                   </div>
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label>{t('common.visitor_document') || 'Document'}</Label>
+                    <Label>{t('common.visitor_document', 'Document')}</Label>
                     <Input
                       value={form.visitorDocument}
                       onChange={(e) =>
@@ -202,7 +208,7 @@ export default function Visits() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.property') || 'Property'}</Label>
+                  <Label>{t('common.property', 'Property')}</Label>
                   <Select
                     value={form.propertyId}
                     onValueChange={(val) =>
@@ -225,24 +231,24 @@ export default function Visits() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label>{t('common.date') || 'Date'}</Label>
+                    <Label>{t('common.date', 'Date')}</Label>
                     <Input
                       type="datetime-local"
                       value={
-                        form.date
-                          ? new Date(form.date).toISOString().slice(0, 16)
+                        form.visitDate
+                          ? new Date(form.visitDate).toISOString().slice(0, 16)
                           : ''
                       }
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          date: new Date(e.target.value).toISOString(),
+                          visitDate: new Date(e.target.value).toISOString(),
                         })
                       }
                     />
                   </div>
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <Label>{t('common.status') || 'Status'}</Label>
+                    <Label>{t('common.status', 'Status')}</Label>
                     <Select
                       value={form.status}
                       onValueChange={(val) => setForm({ ...form, status: val })}
@@ -252,13 +258,13 @@ export default function Visits() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="scheduled">
-                          {t('common.scheduled') || 'Scheduled'}
+                          {t('common.scheduled', 'Scheduled')}
                         </SelectItem>
                         <SelectItem value="completed">
-                          {t('common.completed') || 'Completed'}
+                          {t('common.completed', 'Completed')}
                         </SelectItem>
                         <SelectItem value="cancelled">
-                          {t('common.cancelled') || 'Cancelled'}
+                          {t('common.cancelled', 'Cancelled')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -266,7 +272,7 @@ export default function Visits() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.purpose') || 'Purpose'}</Label>
+                  <Label>{t('common.purpose', 'Purpose')}</Label>
                   <Select
                     value={form.purpose}
                     onValueChange={(val) => setForm({ ...form, purpose: val })}
@@ -276,23 +282,23 @@ export default function Visits() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="showing">
-                        {t('common.showing') || 'Showing'}
+                        {t('common.showing', 'Showing')}
                       </SelectItem>
                       <SelectItem value="inspection">
-                        {t('common.inspection') || 'Inspection'}
+                        {t('common.inspection', 'Inspection')}
                       </SelectItem>
                       <SelectItem value="maintenance">
-                        {t('common.maintenance') || 'Maintenance'}
+                        {t('common.maintenance', 'Maintenance')}
                       </SelectItem>
                       <SelectItem value="other">
-                        {t('common.other') || 'Other'}
+                        {t('common.other', 'Other')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('common.notes') || 'Notes'}</Label>
+                  <Label>{t('common.notes', 'Notes')}</Label>
                   <Textarea
                     value={form.notes}
                     onChange={(e) =>
@@ -304,7 +310,7 @@ export default function Visits() {
               </div>
               <DialogFooter>
                 <Button onClick={handleSave} disabled={isSubmitting}>
-                  {t('common.save') || 'Save'}
+                  {t('common.save', 'Save')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -318,14 +324,14 @@ export default function Visits() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead>
-                  {t('common.visitor_name') || 'Visitor Name'}
+                  {t('common.visitor_name', 'Visitor Name')}
                 </TableHead>
-                <TableHead>{t('common.property') || 'Property'}</TableHead>
-                <TableHead>{t('common.date') || 'Date'}</TableHead>
-                <TableHead>{t('common.purpose') || 'Purpose'}</TableHead>
-                <TableHead>{t('common.status') || 'Status'}</TableHead>
+                <TableHead>{t('common.property', 'Property')}</TableHead>
+                <TableHead>{t('common.date', 'Date')}</TableHead>
+                <TableHead>{t('common.purpose', 'Purpose')}</TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions') || 'Actions'}
+                  {t('common.actions', 'Actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -337,10 +343,15 @@ export default function Visits() {
                   </TableCell>
                   <TableCell>{visit.propertyName}</TableCell>
                   <TableCell>
-                    {format(new Date(visit.date), 'MMM dd, yyyy HH:mm')}
+                    {format(
+                      new Date(
+                        visit.visitDate || visit.visit_date || visit.date,
+                      ),
+                      'MMM dd, yyyy HH:mm',
+                    )}
                   </TableCell>
                   <TableCell className="capitalize">
-                    {t(`common.${visit.purpose}`) || visit.purpose}
+                    {t(`common.${visit.purpose}`, visit.purpose)}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -352,7 +363,7 @@ export default function Visits() {
                             : 'secondary'
                       }
                     >
-                      {t(`common.${visit.status}`) || visit.status}
+                      {t(`common.${visit.status}`, visit.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -369,7 +380,11 @@ export default function Visits() {
                             setForm({
                               ...visit,
                               propertyId: visit.propertyId || 'none',
-                              date: new Date(visit.date)
+                              visitDate: new Date(
+                                visit.visitDate ||
+                                  visit.visit_date ||
+                                  visit.date,
+                              )
                                 .toISOString()
                                 .slice(0, 16),
                             })
@@ -377,14 +392,14 @@ export default function Visits() {
                           }}
                         >
                           <Pencil className="h-4 w-4 mr-2" />{' '}
-                          {t('common.edit') || 'Edit'}
+                          {t('common.edit', 'Edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600"
                           onClick={() => setDeleteId(visit.id)}
                         >
                           <Trash2 className="h-4 w-4 mr-2" />{' '}
-                          {t('common.delete') || 'Delete'}
+                          {t('common.delete', 'Delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -397,7 +412,7 @@ export default function Visits() {
                     colSpan={6}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty') || 'No records found.'}
+                    {t('common.empty', 'No records found.')}
                   </TableCell>
                 </TableRow>
               )}
@@ -413,22 +428,24 @@ export default function Visits() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t('common.confirm_delete') || 'Confirm Deletion'}
+              {t('common.confirm_delete', 'Confirm Deletion')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('common.delete_desc') ||
-                'Are you sure you want to delete this record?'}
+              {t(
+                'common.delete_desc',
+                'Are you sure you want to delete this record?',
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
-              {t('common.cancel') || 'Cancel'}
+              {t('common.cancel', 'Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              {t('common.delete') || 'Delete'}
+              {t('common.delete', 'Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -98,10 +98,13 @@ export default function Reports() {
     <div className="flex flex-col gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('common.reports')}
+          {t('reports.title', 'Reports')}
         </h1>
         <p className="text-muted-foreground">
-          Advanced analytics and system reporting dashboard.
+          {t(
+            'reports.subtitle',
+            'Advanced analytics and system reporting dashboard.',
+          )}
         </p>
       </div>
 
@@ -109,31 +112,35 @@ export default function Reports() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {t('common.properties')}
+              {t('reports.properties', 'Properties')}
             </CardTitle>
             <Building className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalProperties}</div>
-            <p className="text-xs text-muted-foreground">Total managed units</p>
+            <p className="text-xs text-muted-foreground">
+              {t('reports.total_managed_units', 'Total managed units')}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Tenants
+              {t('reports.active_tenants', 'Active Tenants')}
             </CardTitle>
             <Users className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeTenants}</div>
-            <p className="text-xs text-muted-foreground">Currently leasing</p>
+            <p className="text-xs text-muted-foreground">
+              {t('reports.currently_leasing', 'Currently leasing')}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Revenue (Paid)
+              {t('reports.total_revenue', 'Total Revenue (Paid)')}
             </CardTitle>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
@@ -142,19 +149,24 @@ export default function Reports() {
               <DataMask>{formatAppCurrency(totalRevenue)}</DataMask>
             </div>
             <p className="text-xs text-muted-foreground">
-              From {totalInvoices} invoices
+              {t('reports.from_invoices', 'From {count} invoices').replace(
+                '{count}',
+                totalInvoices.toString(),
+              )}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Locations</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('reports.locations', 'Locations')}
+            </CardTitle>
             <MapPin className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{cityData.length}</div>
             <p className="text-xs text-muted-foreground">
-              Cities across portfolio
+              {t('reports.cities_across_portfolio', 'Cities across portfolio')}
             </p>
           </CardContent>
         </Card>
@@ -163,14 +175,27 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Financial Overview</CardTitle>
-            <CardDescription>Revenue vs Expenses over time</CardDescription>
+            <CardTitle>
+              {t('reports.financial_overview', 'Financial Overview')}
+            </CardTitle>
+            <CardDescription>
+              {t(
+                'reports.revenue_vs_expenses',
+                'Revenue vs Expenses over time',
+              )}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
               config={{
-                revenue: { label: 'Revenue', color: '#10b981' },
-                expenses: { label: 'Expenses', color: '#ef4444' },
+                revenue: {
+                  label: t('reports.revenue', 'Revenue'),
+                  color: '#10b981',
+                },
+                expenses: {
+                  label: t('reports.expenses', 'Expenses'),
+                  color: '#ef4444',
+                },
               }}
               className="h-[300px] w-full"
             >
@@ -200,8 +225,12 @@ export default function Reports() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Occupancy Status</CardTitle>
-            <CardDescription>Current property utilization</CardDescription>
+            <CardTitle>
+              {t('reports.occupancy_status', 'Occupancy Status')}
+            </CardTitle>
+            <CardDescription>
+              {t('reports.current_utilization', 'Current property utilization')}
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
             <ChartContainer
@@ -237,13 +266,23 @@ export default function Reports() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Properties by Location</CardTitle>
-            <CardDescription>Geographical distribution</CardDescription>
+            <CardTitle>
+              {t('reports.properties_by_location', 'Properties by Location')}
+            </CardTitle>
+            <CardDescription>
+              {t(
+                'reports.geographical_distribution',
+                'Geographical distribution',
+              )}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
               config={{
-                value: { label: 'Properties', color: '#3b82f6' },
+                value: {
+                  label: t('reports.properties', 'Properties'),
+                  color: '#3b82f6',
+                },
               }}
               className="h-[300px] w-full"
             >
