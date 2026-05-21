@@ -935,7 +935,8 @@ export function InvoiceForm({
                   ))}
                   {fields.length === 0 && (
                     <p className="text-sm text-slate-500 italic">
-                      No line items added. Add items to calculate the total amount.
+                      No line items added. Add items to calculate the total
+                      amount.
                     </p>
                   )}
                 </div>
