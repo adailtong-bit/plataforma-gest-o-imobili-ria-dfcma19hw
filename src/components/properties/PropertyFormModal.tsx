@@ -68,6 +68,22 @@ export function PropertyFormModal({
       })
     }
 
+    if (form.area && parseFloat(form.area) < 0) {
+      return toast({
+        title: 'Validation Error',
+        description: 'Area cannot be negative.',
+        variant: 'destructive',
+      })
+    }
+
+    if (form.listing_price && parseFloat(form.listing_price) < 0) {
+      return toast({
+        title: 'Validation Error',
+        description: 'Listing price cannot be negative.',
+        variant: 'destructive',
+      })
+    }
+
     if (form.type === 'room' && (!form.hotel_id || form.hotel_id === 'none')) {
       return toast({
         title: 'Error',

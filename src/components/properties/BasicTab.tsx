@@ -87,6 +87,8 @@ export function BasicTab({ form, setForm, owners, hotels, condos }: any) {
           <Label>Listing Price ($)</Label>
           <Input
             type="number"
+            min="0"
+            step="0.01"
             value={form.listing_price || ''}
             onChange={(e) =>
               setForm({ ...form, listing_price: e.target.value })
@@ -98,6 +100,8 @@ export function BasicTab({ form, setForm, owners, hotels, condos }: any) {
           <Label>HOA Value ($)</Label>
           <Input
             type="number"
+            min="0"
+            step="0.01"
             value={form.hoa_value || ''}
             onChange={(e) => setForm({ ...form, hoa_value: e.target.value })}
             placeholder="0.00"
@@ -203,26 +207,6 @@ export function BasicTab({ form, setForm, owners, hotels, condos }: any) {
               onChange={(e) => setForm({ ...form, guests: e.target.value })}
             />
           </div>
-          {form.type === 'room' && (
-            <>
-              <div className="space-y-2">
-                <Label>Room Number</Label>
-                <Input
-                  value={form.room_number || ''}
-                  onChange={(e) =>
-                    setForm({ ...form, room_number: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Floor</Label>
-                <Input
-                  value={form.floor || ''}
-                  onChange={(e) => setForm({ ...form, floor: e.target.value })}
-                />
-              </div>
-            </>
-          )}
         </div>
       </div>
     </div>

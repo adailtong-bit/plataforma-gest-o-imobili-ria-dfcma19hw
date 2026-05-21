@@ -10,7 +10,9 @@ export function LocationTab({ form, setForm }: any) {
         </Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2 space-y-2">
-            <Label>Street Address</Label>
+            <Label>
+              Street Address <span className="text-red-500">*</span>
+            </Label>
             <Input
               value={form.address || ''}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
@@ -78,6 +80,32 @@ export function LocationTab({ form, setForm }: any) {
       </div>
 
       <div className="border-t pt-4">
+        <Label className="text-lg font-semibold text-slate-900 mb-4 block">
+          Unit Logistics
+        </Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Floor</Label>
+            <Input
+              value={form.floor || ''}
+              onChange={(e) => setForm({ ...form, floor: e.target.value })}
+              placeholder="e.g. 4"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Room / Unit Number</Label>
+            <Input
+              value={form.room_number || ''}
+              onChange={(e) =>
+                setForm({ ...form, room_number: e.target.value })
+              }
+              placeholder="e.g. 402B"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t pt-4 mt-6">
         <Label className="text-lg font-semibold text-slate-900 mb-4 block">
           Security & Access Details
         </Label>

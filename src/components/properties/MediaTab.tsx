@@ -58,6 +58,8 @@ export function MediaTab({ form, setForm, setImageFile }: any) {
             <Label>Area (m²)</Label>
             <Input
               type="number"
+              min="0"
+              step="0.01"
               value={form.area || ''}
               onChange={(e) => setForm({ ...form, area: e.target.value })}
             />
