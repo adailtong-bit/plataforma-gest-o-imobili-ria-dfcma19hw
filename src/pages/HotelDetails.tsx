@@ -171,6 +171,11 @@ export default function HotelDetails() {
       billing_phone: formData.billing_phone,
       payment_data: formData.payment_data,
       gallery: formData.gallery,
+      general_access_code:
+        formData.generalAccessCode || formData.general_access_code,
+      pool_access_code: formData.poolAccessCode || formData.pool_access_code,
+      game_room_access_code:
+        formData.gameRoomAccessCode || formData.game_room_access_code,
     }
 
     const { error } = await supabase
@@ -515,6 +520,91 @@ export default function HotelDetails() {
                       setFormData({ ...formData, country: e.target.value })
                     }
                     disabled={!isEditing}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {t('hotels.access_security', 'Access & Security')}
+              </CardTitle>
+              <CardDescription>
+                Credentials and instructions for guests and staff.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>
+                    {t(
+                      'hotels.general_access_code',
+                      'Main Access Code/Instructions',
+                    )}
+                  </Label>
+                  <Input
+                    value={
+                      formData.generalAccessCode ||
+                      formData.general_access_code ||
+                      ''
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        generalAccessCode: e.target.value,
+                        general_access_code: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="e.g. 1234# or Keycard at reception"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>
+                    {t(
+                      'hotels.pool_access_code',
+                      'Pool Access Code/Instructions',
+                    )}
+                  </Label>
+                  <Input
+                    value={
+                      formData.poolAccessCode || formData.pool_access_code || ''
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        poolAccessCode: e.target.value,
+                        pool_access_code: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="e.g. 5678 or Open 8am-8pm"
+                  />
+                </div>
+                <div className="space-y-2 col-span-1 md:col-span-2">
+                  <Label>
+                    {t(
+                      'hotels.game_room_access_code',
+                      'Game Room Access Code/Instructions',
+                    )}
+                  </Label>
+                  <Input
+                    value={
+                      formData.gameRoomAccessCode ||
+                      formData.game_room_access_code ||
+                      ''
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        gameRoomAccessCode: e.target.value,
+                        game_room_access_code: e.target.value,
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="e.g. 9999 or Ask concierge"
                   />
                 </div>
               </div>

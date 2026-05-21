@@ -20,6 +20,9 @@ export const fetchHotels = async () => {
       managerPhone: h.manager_phone,
       managerEmail: h.manager_email,
       zipCode: h.zip_code,
+      generalAccessCode: h.general_access_code,
+      poolAccessCode: h.pool_access_code,
+      gameRoomAccessCode: h.game_room_access_code,
     })) as unknown as Hotel[]
   }
   if (towersRes.data) {
@@ -68,6 +71,11 @@ const useHotelStore = () => {
       state: hotel.state,
       zip_code: hotel.zipCode,
       country: hotel.country,
+      general_access_code: hotel.generalAccessCode,
+      pool_access_code: hotel.poolAccessCode,
+      game_room_access_code: hotel.gameRoomAccessCode,
+      image: hotel.image,
+      gallery: hotel.gallery,
     }
     const { error, data } = await supabase
       .from('hotels')
@@ -95,6 +103,11 @@ const useHotelStore = () => {
       state: hotel.state,
       zip_code: hotel.zipCode,
       country: hotel.country,
+      general_access_code: hotel.generalAccessCode,
+      pool_access_code: hotel.poolAccessCode,
+      game_room_access_code: hotel.gameRoomAccessCode,
+      image: hotel.image,
+      gallery: hotel.gallery,
     }
     const { error } = await supabase
       .from('hotels')

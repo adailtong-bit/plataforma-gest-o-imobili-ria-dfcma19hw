@@ -362,10 +362,14 @@ export interface Hotel {
   managerEmail?: string
   managerPhone?: string
   image?: string
+  gallery?: string[]
   towers?: string[]
   amenities?: string[]
   policies?: string[]
   contacts?: HotelContact[]
+  generalAccessCode?: string
+  poolAccessCode?: string
+  gameRoomAccessCode?: string
   organizationId?: string
 }
 

@@ -165,18 +165,6 @@ const App = () => {
   useEffect(() => {
     document.title = 'Summerpm'
 
-    // Remove technical debug overlays
-    const removeDebug = () => {
-      document.querySelectorAll('pre').forEach((el) => {
-        if (el.textContent?.includes('currentRoute')) {
-          el.remove()
-        }
-      })
-    }
-    removeDebug()
-    const observer = new MutationObserver(removeDebug)
-    observer.observe(document.body, { childList: true, subtree: true })
-
     // Ensure favicon is set and properly bundled
     let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']")
     if (!link) {

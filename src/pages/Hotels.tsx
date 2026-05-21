@@ -12,7 +12,7 @@ import { useDbTranslations } from '@/hooks/use-db-translations'
 import { supabase } from '@/lib/supabase/client'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
+import { Plus, Pencil, Trash2, Eye, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Link } from 'react-router-dom'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { FileUpload } from '@/components/ui/file-upload'
 
 export default function Hotels() {
   const { t } = useDbTranslations()
@@ -49,34 +50,6 @@ export default function Hotels() {
   const [activeTab, setActiveTab] = useState('general')
   const [paymentDataStr, setPaymentDataStr] = useState('{}')
   const [uploading, setUploading] = useState(false)
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setUploading(true)
-      if (!e.target.files || e.target.files.length === 0) return
-      const file = e.target.files[0]
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${Math.random()}.${fileExt}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('hotel-media')
-        .upload(filePath, file)
-      if (uploadError) throw uploadError
-
-      const { data } = supabase.storage
-        .from('hotel-media')
-        .getPublicUrl(filePath)
-      setForm({ ...form, image: data.publicUrl })
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      })
-    } finally {
-      setUploading(false)
-    }
-  }
 
   const handleGalleryUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -137,7 +110,13 @@ export default function Hotels() {
 
   const handleOpenAdd = () => {
     setEditingId(null)
-    setForm({ country: 'US', gallery: [] })
+    setForm({
+      country: 'US',
+      gallery: [],
+      general_access_code: '',
+      pool_access_code: '',
+      game_room_access_code: '',
+    })
     setPaymentDataStr('{}')
     setActiveTab('general')
     setIsOpen(true)
@@ -145,7 +124,13 @@ export default function Hotels() {
 
   const handleOpenEdit = (hotel: any) => {
     setEditingId(hotel.id)
-    setForm({ ...hotel, gallery: hotel.gallery || [] })
+    setForm({
+      ...hotel,
+      gallery: hotel.gallery || [],
+      general_access_code: hotel.general_access_code || '',
+      pool_access_code: hotel.pool_access_code || '',
+      game_room_access_code: hotel.game_room_access_code || '',
+    })
     setPaymentDataStr(JSON.stringify(hotel.payment_data || {}, null, 2))
     setActiveTab('general')
     setIsOpen(true)
@@ -197,6 +182,9 @@ export default function Hotels() {
       image: form.image,
       gallery: form.gallery,
       payment_data: parsedPaymentData,
+      general_access_code: form.general_access_code,
+      pool_access_code: form.pool_access_code,
+      game_room_access_code: form.game_room_access_code,
     }
 
     if (editingId) {
@@ -275,7 +263,7 @@ export default function Hotels() {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0">
           <DialogHeader className="p-6 pb-2 border-b">
             <DialogTitle>
               {editingId
@@ -285,7 +273,7 @@ export default function Hotels() {
           </DialogHeader>
           <ScrollArea className="flex-1 p-6">
             <div className="w-full">
-              <div className="flex w-full items-center justify-center rounded-md bg-slate-100 p-1 mb-4">
+              <div className="flex flex-wrap w-full items-center justify-start rounded-md bg-slate-100 p-1 mb-4 gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('general')}
@@ -299,6 +287,13 @@ export default function Hotels() {
                   className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${activeTab === 'location' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
                 >
                   {t('hotels.tab_location', 'Location')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('access')}
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${activeTab === 'access' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  {t('hotels.tab_access', 'Access & Security')}
                 </button>
                 <button
                   type="button"
@@ -470,6 +465,65 @@ export default function Hotels() {
                 </div>
               )}
 
+              {activeTab === 'access' && (
+                <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="space-y-2">
+                    <Label htmlFor="general_access_code">
+                      {t(
+                        'hotels.general_access_code',
+                        'Main Access Code/Instructions',
+                      )}
+                    </Label>
+                    <Input
+                      id="general_access_code"
+                      placeholder="e.g. 1234# or ask at reception"
+                      value={form.general_access_code || ''}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          general_access_code: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="pool_access_code">
+                      {t(
+                        'hotels.pool_access_code',
+                        'Pool Access Code/Instructions',
+                      )}
+                    </Label>
+                    <Input
+                      id="pool_access_code"
+                      placeholder="e.g. 5678 or Open 8am-8pm"
+                      value={form.pool_access_code || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, pool_access_code: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="game_room_access_code">
+                      {t(
+                        'hotels.game_room_access_code',
+                        'Game Room Access Code/Instructions',
+                      )}
+                    </Label>
+                    <Input
+                      id="game_room_access_code"
+                      placeholder="e.g. 9999 or Ask concierge"
+                      value={form.game_room_access_code || ''}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          game_room_access_code: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'billing' && (
                 <div className="space-y-6 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div className="grid gap-4">
@@ -524,48 +578,105 @@ export default function Hotels() {
                         onChange={(e) => setPaymentDataStr(e.target.value)}
                       />
                     </div>
-                    <div className="space-y-2 pt-2 border-t border-slate-100">
-                      <Label>
-                        {t('common.primary_image', 'Primary Image')}
-                      </Label>
-                      <div className="flex items-center gap-4">
-                        {form.image && (
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                      <FileUpload
+                        label={t('common.primary_image', 'Primary Image')}
+                        value={form.image}
+                        onChange={async (url, file) => {
+                          if (file) {
+                            try {
+                              setUploading(true)
+                              const fileExt = file.name.split('.').pop()
+                              const filePath = `${Math.random()}.${fileExt}`
+                              const { error: uploadError } =
+                                await supabase.storage
+                                  .from('hotel-media')
+                                  .upload(filePath, file)
+                              if (uploadError) throw uploadError
+                              const { data } = supabase.storage
+                                .from('hotel-media')
+                                .getPublicUrl(filePath)
+                              setForm({ ...form, image: data.publicUrl })
+                            } catch (error: any) {
+                              toast({
+                                title: 'Error',
+                                description: error.message,
+                                variant: 'destructive',
+                              })
+                            } finally {
+                              setUploading(false)
+                            }
+                          }
+                        }}
+                        disabled={uploading}
+                        accept="image/*"
+                      />
+                      {form.image && (
+                        <div className="mt-2 relative inline-block">
                           <img
                             src={form.image}
                             alt="Hotel"
-                            className="h-16 w-16 object-cover rounded-md border border-slate-200"
+                            className="h-24 w-32 object-cover rounded-md border border-slate-200"
                           />
-                        )}
-                        <Input
+                          <button
+                            type="button"
+                            onClick={() => setForm({ ...form, image: '' })}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-sm hover:bg-red-600 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2 mt-4">
+                      <Label>{t('common.gallery', 'Gallery')}</Label>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() =>
+                            document.getElementById('gallery-upload')?.click()
+                          }
+                          disabled={uploading}
+                          className="bg-white hover:bg-slate-50 border-slate-200 shadow-sm"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />{' '}
+                          {t('common.add_photos', 'Add Photos')}
+                        </Button>
+                        <input
+                          id="gallery-upload"
                           type="file"
                           accept="image/*"
-                          onChange={handleImageUpload}
+                          multiple
+                          className="hidden"
+                          onChange={handleGalleryUpload}
                           disabled={uploading}
-                          className="flex-1"
                         />
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t('common.gallery', 'Gallery')}</Label>
                       {form.gallery && form.gallery.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2">
+                        <div className="flex flex-wrap gap-3 mt-4">
                           {form.gallery.map((url: string, i: number) => (
-                            <img
-                              key={i}
-                              src={url}
-                              alt={`Gallery ${i}`}
-                              className="h-16 w-16 object-cover rounded-md border border-slate-200"
-                            />
+                            <div key={i} className="relative group">
+                              <img
+                                src={url}
+                                alt={`Gallery ${i}`}
+                                className="h-20 w-24 object-cover rounded-md border border-slate-200"
+                              />
+                              <button
+                                type="button"
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
+                                onClick={() => {
+                                  const newGallery = [...form.gallery]
+                                  newGallery.splice(i, 1)
+                                  setForm({ ...form, gallery: newGallery })
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
                           ))}
                         </div>
                       )}
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleGalleryUpload}
-                        disabled={uploading}
-                      />
                     </div>
                   </div>
                 </div>
@@ -576,8 +687,14 @@ export default function Hotels() {
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button onClick={handleSave} className="bg-trust-blue text-white">
-              {t('common.save', 'Save')}
+            <Button
+              onClick={handleSave}
+              className="bg-trust-blue text-white"
+              disabled={uploading}
+            >
+              {uploading
+                ? t('common.uploading', 'Uploading...')
+                : t('common.save', 'Save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -619,7 +736,22 @@ export default function Hotels() {
                   hotels.map((hotel) => (
                     <TableRow key={hotel.id} className="hover:bg-slate-50/50">
                       <TableCell className="font-medium text-slate-900">
-                        {hotel.name}
+                        <div className="flex items-center gap-3">
+                          {hotel.image ? (
+                            <img
+                              src={hotel.image}
+                              alt={hotel.name}
+                              className="h-10 w-10 rounded-md object-cover border border-slate-200 shrink-0"
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                              <span className="text-xs text-slate-400">
+                                N/A
+                              </span>
+                            </div>
+                          )}
+                          <span>{hotel.name}</span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-slate-600 max-w-[250px] truncate">
                         {formatAddress(hotel)}
