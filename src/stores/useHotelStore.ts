@@ -23,6 +23,7 @@ export const fetchHotels = async () => {
       generalAccessCode: h.general_access_code,
       poolAccessCode: h.pool_access_code,
       gameRoomAccessCode: h.game_room_access_code,
+      websiteUrl: h.website_url,
     })) as unknown as Hotel[]
   }
   if (towersRes.data) {
@@ -74,6 +75,7 @@ const useHotelStore = () => {
       general_access_code: hotel.generalAccessCode,
       pool_access_code: hotel.poolAccessCode,
       game_room_access_code: hotel.gameRoomAccessCode,
+      website_url: hotel.websiteUrl || (hotel as any).website_url,
       image: hotel.image,
       gallery: hotel.gallery,
     }
@@ -106,6 +108,7 @@ const useHotelStore = () => {
       general_access_code: hotel.generalAccessCode,
       pool_access_code: hotel.poolAccessCode,
       game_room_access_code: hotel.gameRoomAccessCode,
+      website_url: hotel.websiteUrl || (hotel as any).website_url,
       image: hotel.image,
       gallery: hotel.gallery,
     }

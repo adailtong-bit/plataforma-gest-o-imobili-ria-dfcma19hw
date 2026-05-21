@@ -117,6 +117,7 @@ export default function HotelDetails() {
           managerPhone: data.manager_phone,
           managerEmail: data.manager_email,
           zipCode: data.zip_code,
+          websiteUrl: data.website_url,
         }
         setHotel(h)
         setFormData(h)
@@ -151,6 +152,16 @@ export default function HotelDetails() {
   }
 
   const handleSave = async () => {
+    if (!formData.name || !formData.city) {
+      toast({
+        title: 'Error',
+        description:
+          t('hotels.validation_error') || 'Name and City are required fields.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     // Save to DB to persist billing fields, etc.
     const payload = {
       name: formData.name,
@@ -176,6 +187,7 @@ export default function HotelDetails() {
       pool_access_code: formData.poolAccessCode || formData.pool_access_code,
       game_room_access_code:
         formData.gameRoomAccessCode || formData.game_room_access_code,
+      website_url: formData.websiteUrl || (formData as any).website_url,
     }
 
     const { error } = await supabase
@@ -522,6 +534,25 @@ export default function HotelDetails() {
                     disabled={!isEditing}
                   />
                 </div>
+
+                <div className="space-y-2 col-span-2">
+                  <Label>{t('hotels.website_url') || 'Hotel Website'}</Label>
+                  <Input
+                    type="url"
+                    value={
+                      formData.websiteUrl || (formData as any).website_url || ''
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        websiteUrl: e.target.value,
+                        website_url: e.target.value,
+                      } as any)
+                    }
+                    disabled={!isEditing}
+                    placeholder="https://..."
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -733,7 +764,7 @@ export default function HotelDetails() {
                       const fileExt = file.name.split('.').pop()
                       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
                       const { error } = await supabase.storage
-                        .from('hotel_photos')
+                        .from('hotels')
                         .upload(fileName, file)
                       if (error) {
                         toast({
@@ -745,9 +776,7 @@ export default function HotelDetails() {
                       }
                       const {
                         data: { publicUrl },
-                      } = supabase.storage
-                        .from('hotel_photos')
-                        .getPublicUrl(fileName)
+                      } = supabase.storage.from('hotels').getPublicUrl(fileName)
                       setFormData({
                         ...formData,
                         gallery: [...(formData.gallery || []), publicUrl],

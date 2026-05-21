@@ -64,13 +64,11 @@ export default function Hotels() {
         const filePath = `${Math.random()}.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
-          .from('hotel-media')
+          .from('hotels')
           .upload(filePath, file)
         if (uploadError) throw uploadError
 
-        const { data } = supabase.storage
-          .from('hotel-media')
-          .getPublicUrl(filePath)
+        const { data } = supabase.storage.from('hotels').getPublicUrl(filePath)
         urls.push(data.publicUrl)
       }
       setForm({ ...form, gallery: urls })
@@ -116,6 +114,7 @@ export default function Hotels() {
       general_access_code: '',
       pool_access_code: '',
       game_room_access_code: '',
+      website_url: '',
     })
     setPaymentDataStr('{}')
     setActiveTab('general')
@@ -130,6 +129,7 @@ export default function Hotels() {
       general_access_code: hotel.general_access_code || '',
       pool_access_code: hotel.pool_access_code || '',
       game_room_access_code: hotel.game_room_access_code || '',
+      website_url: hotel.website_url || '',
     })
     setPaymentDataStr(JSON.stringify(hotel.payment_data || {}, null, 2))
     setActiveTab('general')
@@ -185,6 +185,7 @@ export default function Hotels() {
       general_access_code: form.general_access_code,
       pool_access_code: form.pool_access_code,
       game_room_access_code: form.game_room_access_code,
+      website_url: form.website_url,
     }
 
     if (editingId) {
@@ -359,17 +360,33 @@ export default function Hotels() {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="tax_id">
-                        {t('common.tax_id', 'Tax ID')}
-                      </Label>
-                      <Input
-                        id="tax_id"
-                        value={form.tax_id || ''}
-                        onChange={(e) =>
-                          setForm({ ...form, tax_id: e.target.value })
-                        }
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="tax_id">
+                          {t('common.tax_id', 'Tax ID')}
+                        </Label>
+                        <Input
+                          id="tax_id"
+                          value={form.tax_id || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, tax_id: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="website_url">
+                          {t('hotels.website_url', 'Hotel Website')}
+                        </Label>
+                        <Input
+                          id="website_url"
+                          type="url"
+                          placeholder="https://..."
+                          value={form.website_url || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, website_url: e.target.value })
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -590,11 +607,11 @@ export default function Hotels() {
                               const filePath = `${Math.random()}.${fileExt}`
                               const { error: uploadError } =
                                 await supabase.storage
-                                  .from('hotel-media')
+                                  .from('hotels')
                                   .upload(filePath, file)
                               if (uploadError) throw uploadError
                               const { data } = supabase.storage
-                                .from('hotel-media')
+                                .from('hotels')
                                 .getPublicUrl(filePath)
                               setForm({ ...form, image: data.publicUrl })
                             } catch (error: any) {
