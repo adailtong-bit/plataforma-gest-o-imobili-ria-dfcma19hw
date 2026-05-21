@@ -46,10 +46,12 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 const itemSchema = z.object({
   description: z.string().min(1, 'Required'),
-  amount: z.coerce.number().min(0, 'Must be positive'),
+  quantity: z.coerce.number().min(0.01, 'Must be positive').default(1),
+  unit_price: z.coerce.number().min(0, 'Must be positive').default(0),
 })
 
 const invoiceSchema = z.object({
@@ -160,7 +162,14 @@ export function InvoiceForm({
           type: invoice.type || 'standard',
           status: invoice.status || 'pending',
           property_id: invoice.property_id || 'none',
-          items: invoice.items || [],
+          items: (invoice.items || []).map((item: any) => ({
+            description: item.description || '',
+            quantity: item.quantity !== undefined ? Number(item.quantity) : 1,
+            unit_price:
+              item.unit_price !== undefined
+                ? Number(item.unit_price)
+                : Number(item.amount) || 0,
+          })),
           notes: invoice.notes || '',
         })
       } else {
@@ -194,7 +203,9 @@ export function InvoiceForm({
       if (!isLocked && name?.startsWith('items')) {
         const items = value.items || []
         const total = items.reduce(
-          (sum, item) => sum + (Number(item?.amount) || 0),
+          (sum, item) =>
+            sum +
+            (Number(item?.quantity) || 0) * (Number(item?.unit_price) || 0),
           0,
         )
         form.setValue('amount', total, { shouldValidate: true })
@@ -735,10 +746,11 @@ export function InvoiceForm({
                       <FormItem>
                         <FormLabel>Total Amount</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...field}
+                          <CurrencyInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            name={field.name}
                             disabled={isLocked || fields.length > 0}
                           />
                         </FormControl>
@@ -830,7 +842,9 @@ export function InvoiceForm({
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => append({ description: '', amount: 0 })}
+                      onClick={() =>
+                        append({ description: '', quantity: 1, unit_price: 0 })
+                      }
                       disabled={isLocked}
                       className="bg-white"
                     >
@@ -857,16 +871,35 @@ export function InvoiceForm({
                       />
                       <FormField
                         control={form.control}
-                        name={`items.${index}.amount`}
+                        name={`items.${index}.quantity`}
                         render={({ field: f }) => (
-                          <FormItem className="w-32">
+                          <FormItem className="w-20">
                             <FormControl>
                               <Input
                                 type="number"
-                                step="0.01"
+                                step="any"
                                 {...f}
                                 disabled={isLocked}
-                                placeholder="Amount"
+                                placeholder="Qty"
+                                className="bg-white no-spinner"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`items.${index}.unit_price`}
+                        render={({ field: f }) => (
+                          <FormItem className="w-32">
+                            <FormControl>
+                              <CurrencyInput
+                                value={f.value}
+                                onChange={f.onChange}
+                                onBlur={f.onBlur}
+                                name={f.name}
+                                disabled={isLocked}
+                                placeholder="Price"
                                 className="bg-white"
                               />
                             </FormControl>

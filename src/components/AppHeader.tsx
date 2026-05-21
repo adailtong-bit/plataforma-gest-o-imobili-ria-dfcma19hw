@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import useLanguageStore from '@/stores/useLanguageStore'
 import useAuthStore from '@/stores/useAuthStore'
+import { supabase } from '@/lib/supabase/client'
 import usePropertyStore from '@/stores/usePropertyStore'
 import {
   Select,
@@ -27,6 +28,16 @@ import usePrivacyStore from '@/stores/usePrivacyStore'
 
 export function AppHeader() {
   const { language, setLanguage, t } = useLanguageStore()
+
+  const handleLanguageChange = async (newLang: string) => {
+    setLanguage(newLang)
+    if (currentUser?.id) {
+      await supabase
+        .from('profiles')
+        .update({ language_preference: newLang })
+        .eq('id', currentUser.id)
+    }
+  }
   const {
     currentUser,
     allUsers,
@@ -144,19 +155,19 @@ export function AppHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32 bg-white">
             <DropdownMenuItem
-              onClick={() => setLanguage('en')}
+              onClick={() => handleLanguageChange('en')}
               className={language === 'en' ? 'bg-slate-50 font-bold' : ''}
             >
               English
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => setLanguage('pt')}
+              onClick={() => handleLanguageChange('pt')}
               className={language === 'pt' ? 'bg-slate-50 font-bold' : ''}
             >
               Português
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => setLanguage('es')}
+              onClick={() => handleLanguageChange('es')}
               className={language === 'es' ? 'bg-slate-50 font-bold' : ''}
             >
               Español
