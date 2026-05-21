@@ -10,6 +10,7 @@ interface FileUploadProps {
   label?: string
   accept?: string
   disabled?: boolean
+  isUploading?: boolean
 }
 
 export function FileUpload({
@@ -18,6 +19,7 @@ export function FileUpload({
   label,
   accept,
   disabled,
+  isUploading,
 }: FileUploadProps) {
   const { t } = useLanguageStore()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -46,10 +48,19 @@ export function FileUpload({
           type="button"
           variant="outline"
           onClick={() => inputRef.current?.click()}
-          disabled={disabled}
+          disabled={disabled || isUploading}
           className="w-full bg-white hover:bg-slate-50 border-slate-200 shadow-sm"
         >
-          <Upload className="h-4 w-4 mr-2" /> {t('common.upload')}
+          {isUploading ? (
+            <>
+              <span className="h-4 w-4 mr-2 border-2 border-slate-400 border-t-slate-900 rounded-full animate-spin" />
+              {t('common.uploading', 'Uploading...')}
+            </>
+          ) : (
+            <>
+              <Upload className="h-4 w-4 mr-2" /> {t('common.upload')}
+            </>
+          )}
         </Button>
       </div>
       {value && (

@@ -35,7 +35,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Link } from 'react-router-dom'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { FileUpload } from '@/components/ui/file-upload'
 
 export default function Hotels() {
@@ -153,6 +152,24 @@ export default function Hotels() {
       return
     }
 
+    let websiteUrl = form.website_url
+    if (websiteUrl && websiteUrl.trim() !== '') {
+      if (!/^https?:\/\//i.test(websiteUrl)) {
+        websiteUrl = 'https://' + websiteUrl
+      }
+      try {
+        new URL(websiteUrl)
+      } catch (_) {
+        toast({
+          title: 'Error',
+          description: 'Please enter a valid URL for Hotel Website',
+          variant: 'destructive',
+        })
+        setActiveTab('billing')
+        return
+      }
+    }
+
     let parsedPaymentData = {}
     try {
       parsedPaymentData = JSON.parse(paymentDataStr || '{}')
@@ -187,7 +204,7 @@ export default function Hotels() {
       general_access_code: form.general_access_code,
       pool_access_code: form.pool_access_code,
       game_room_access_code: form.game_room_access_code,
-      website_url: form.website_url,
+      website_url: websiteUrl,
     }
 
     if (editingId) {
@@ -274,7 +291,7 @@ export default function Hotels() {
                 : t('common.add_hotel', 'Add Hotel')}
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="flex-1 p-6">
+          <div className="flex-1 overflow-y-auto p-6">
             <div className="w-full">
               <div className="flex flex-wrap w-full items-center justify-start rounded-md bg-slate-100 p-1 mb-4 gap-1">
                 <button
@@ -615,6 +632,7 @@ export default function Hotels() {
                           }
                         }}
                         disabled={uploading}
+                        isUploading={uploading}
                         accept="image/*"
                       />
                       {form.image && (
@@ -646,8 +664,17 @@ export default function Hotels() {
                           disabled={uploading}
                           className="bg-white hover:bg-slate-50 border-slate-200 shadow-sm"
                         >
-                          <Plus className="h-4 w-4 mr-2" />{' '}
-                          {t('common.add_photos', 'Add Photos')}
+                          {uploading ? (
+                            <>
+                              <span className="h-4 w-4 mr-2 border-2 border-slate-400 border-t-slate-900 rounded-full animate-spin" />
+                              {t('common.uploading', 'Uploading...')}
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-2" />{' '}
+                              {t('common.add_photos', 'Add Photos')}
+                            </>
+                          )}
                         </Button>
                         <input
                           id="gallery-upload"
@@ -699,7 +726,7 @@ export default function Hotels() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
           <DialogFooter className="p-6 border-t mt-auto">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               {t('common.cancel', 'Cancel')}
