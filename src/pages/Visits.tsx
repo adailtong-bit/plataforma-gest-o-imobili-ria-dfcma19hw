@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react'
-import { AppContext } from '@/stores/AppContext'
+import { useState, useEffect } from 'react'
+import useVisitStore from '@/stores/useVisitStore'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Pencil, Trash2, MoreHorizontal, Eye } from 'lucide-react'
+import { Plus, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -38,71 +38,96 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import useLanguageStore from '@/stores/useLanguageStore'
 import { format } from 'date-fns'
-import { Visit } from '@/lib/types'
 import { DataMask } from '@/components/DataMask'
+import { supabase } from '@/lib/supabase/client'
 
 export default function Visits() {
-  const { visits, addVisit, updateVisit, deleteVisit } = useContext(AppContext)!
+  const { visits, addVisit, updateVisit, deleteVisit } = useVisitStore()
   const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
+  const [properties, setProperties] = useState<any[]>([])
   const [isAddOpen, setIsAddOpen] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<Visit | null>(null)
-  const [form, setForm] = useState<Partial<Visit>>({
-    clientName: '',
-    propertyName: '',
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [editingRecord, setEditingRecord] = useState<any | null>(null)
+  const [form, setForm] = useState<any>({
+    visitorName: '',
+    visitorDocument: '',
+    propertyId: 'none',
     date: new Date().toISOString().slice(0, 16),
-    reason: 'showing',
+    purpose: 'showing',
     status: 'scheduled',
+    notes: '',
   })
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
+  useEffect(() => {
+    supabase
+      .from('properties')
+      .select('id, name')
+      .then(({ data }) => setProperties(data || []))
+  }, [])
+
   const filteredVisits = visits.filter(
     (v) =>
-      v.clientName.toLowerCase().includes(search.toLowerCase()) ||
-      v.propertyName.toLowerCase().includes(search.toLowerCase()),
+      (v.visitorName || '').toLowerCase().includes(search.toLowerCase()) ||
+      (v.propertyName || '').toLowerCase().includes(search.toLowerCase()),
   )
 
-  const handleSave = () => {
-    if (!form.clientName || !form.propertyName) {
-      toast({ title: t('common.error'), variant: 'destructive' })
+  const handleSave = async () => {
+    if (!form.visitorName) {
+      toast({ title: t('common.error') || 'Error', variant: 'destructive' })
       return
     }
 
-    if (editingRecord) {
-      updateVisit({ ...editingRecord, ...form } as Visit)
-      toast({ title: t('common.success') })
-    } else {
-      addVisit({
-        id: `v-${Date.now()}`,
-        clientName: form.clientName,
-        propertyName: form.propertyName,
-        propertyId: 'p1', // mock
-        date: form.date || new Date().toISOString(),
-        reason: form.reason || 'showing',
-        status: form.status || 'scheduled',
-      } as Visit)
-      toast({ title: t('common.success') })
+    setIsSubmitting(true)
+
+    const payload = {
+      ...form,
+      propertyId: form.propertyId === 'none' ? null : form.propertyId,
     }
+
+    if (editingRecord) {
+      await updateVisit({ ...editingRecord, ...payload })
+      toast({ title: t('common.success') || 'Success' })
+    } else {
+      await addVisit({
+        ...payload,
+        date: form.date || new Date().toISOString(),
+      })
+      toast({ title: t('common.success') || 'Success' })
+    }
+
+    setIsSubmitting(false)
     setIsAddOpen(false)
     setEditingRecord(null)
     setForm({
-      clientName: '',
-      propertyName: '',
-      date: '',
-      reason: 'showing',
+      visitorName: '',
+      visitorDocument: '',
+      propertyId: 'none',
+      date: new Date().toISOString().slice(0, 16),
+      purpose: 'showing',
       status: 'scheduled',
+      notes: '',
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteId) {
-      deleteVisit(deleteId)
-      toast({ title: t('common.delete_success') })
+      await deleteVisit(deleteId)
+      toast({ title: t('common.delete_success') || 'Deleted successfully' })
       setDeleteId(null)
     }
   }
@@ -112,15 +137,15 @@ export default function Visits() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('common.visits')}
+            {t('common.visits') || 'Visits'}
           </h1>
           <p className="text-muted-foreground">
-            Manage scheduled property visits.
+            {t('visits.subtitle') || 'Manage scheduled property visits.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('common.search')}
+            placeholder={t('common.search') || 'Search'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -132,65 +157,155 @@ export default function Visits() {
               if (!v) {
                 setEditingRecord(null)
                 setForm({
-                  clientName: '',
-                  propertyName: '',
-                  date: '',
-                  reason: 'showing',
+                  visitorName: '',
+                  visitorDocument: '',
+                  propertyId: 'none',
+                  date: new Date().toISOString().slice(0, 16),
+                  purpose: 'showing',
                   status: 'scheduled',
+                  notes: '',
                 })
               }
             }}
           >
             <DialogTrigger asChild>
               <Button className="bg-trust-blue gap-2 text-white">
-                <Plus className="h-4 w-4" /> {t('common.add')}
+                <Plus className="h-4 w-4" /> {t('common.add') || 'Add'}
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>
                   {editingRecord ? t('common.edit') : t('common.add')}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>{t('common.client_name')}</Label>
-                  <Input
-                    value={form.clientName}
-                    onChange={(e) =>
-                      setForm({ ...form, clientName: e.target.value })
-                    }
-                  />
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2 col-span-2 md:col-span-1">
+                    <Label>{t('common.visitor_name') || 'Visitor Name'}</Label>
+                    <Input
+                      value={form.visitorName}
+                      onChange={(e) =>
+                        setForm({ ...form, visitorName: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2 md:col-span-1">
+                    <Label>{t('common.visitor_document') || 'Document'}</Label>
+                    <Input
+                      value={form.visitorDocument}
+                      onChange={(e) =>
+                        setForm({ ...form, visitorDocument: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label>{t('common.property')}</Label>
-                  <Input
-                    value={form.propertyName}
-                    onChange={(e) =>
-                      setForm({ ...form, propertyName: e.target.value })
+                  <Label>{t('common.property') || 'Property'}</Label>
+                  <Select
+                    value={form.propertyId}
+                    onValueChange={(val) =>
+                      setForm({ ...form, propertyId: val })
                     }
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Property" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {properties.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2 col-span-2 md:col-span-1">
+                    <Label>{t('common.date') || 'Date'}</Label>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        form.date
+                          ? new Date(form.date).toISOString().slice(0, 16)
+                          : ''
+                      }
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          date: new Date(e.target.value).toISOString(),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 col-span-2 md:col-span-1">
+                    <Label>{t('common.status') || 'Status'}</Label>
+                    <Select
+                      value={form.status}
+                      onValueChange={(val) => setForm({ ...form, status: val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="scheduled">
+                          {t('common.scheduled') || 'Scheduled'}
+                        </SelectItem>
+                        <SelectItem value="completed">
+                          {t('common.completed') || 'Completed'}
+                        </SelectItem>
+                        <SelectItem value="cancelled">
+                          {t('common.cancelled') || 'Cancelled'}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label>{t('common.date')}</Label>
-                  <Input
-                    type="datetime-local"
-                    value={
-                      form.date
-                        ? new Date(form.date).toISOString().slice(0, 16)
-                        : ''
-                    }
+                  <Label>{t('common.purpose') || 'Purpose'}</Label>
+                  <Select
+                    value={form.purpose}
+                    onValueChange={(val) => setForm({ ...form, purpose: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="showing">
+                        {t('common.showing') || 'Showing'}
+                      </SelectItem>
+                      <SelectItem value="inspection">
+                        {t('common.inspection') || 'Inspection'}
+                      </SelectItem>
+                      <SelectItem value="maintenance">
+                        {t('common.maintenance') || 'Maintenance'}
+                      </SelectItem>
+                      <SelectItem value="other">
+                        {t('common.other') || 'Other'}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{t('common.notes') || 'Notes'}</Label>
+                  <Textarea
+                    value={form.notes}
                     onChange={(e) =>
-                      setForm({
-                        ...form,
-                        date: new Date(e.target.value).toISOString(),
-                      })
+                      setForm({ ...form, notes: e.target.value })
                     }
+                    rows={2}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={handleSave}>{t('common.save')}</Button>
+                <Button onClick={handleSave} disabled={isSubmitting}>
+                  {t('common.save') || 'Save'}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -202,13 +317,15 @@ export default function Visits() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.client_name')}</TableHead>
-                <TableHead>{t('common.property')}</TableHead>
-                <TableHead>{t('common.date')}</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
+                <TableHead>
+                  {t('common.visitor_name') || 'Visitor Name'}
+                </TableHead>
+                <TableHead>{t('common.property') || 'Property'}</TableHead>
+                <TableHead>{t('common.date') || 'Date'}</TableHead>
+                <TableHead>{t('common.purpose') || 'Purpose'}</TableHead>
+                <TableHead>{t('common.status') || 'Status'}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions')}
+                  {t('common.actions') || 'Actions'}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -216,15 +333,27 @@ export default function Visits() {
               {filteredVisits.map((visit) => (
                 <TableRow key={visit.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
-                    <DataMask>{visit.clientName}</DataMask>
+                    <DataMask>{visit.visitorName}</DataMask>
                   </TableCell>
                   <TableCell>{visit.propertyName}</TableCell>
                   <TableCell>
                     {format(new Date(visit.date), 'MMM dd, yyyy HH:mm')}
                   </TableCell>
-                  <TableCell className="capitalize">{visit.reason}</TableCell>
+                  <TableCell className="capitalize">
+                    {t(`common.${visit.purpose}`) || visit.purpose}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{visit.status}</Badge>
+                    <Badge
+                      variant={
+                        visit.status === 'scheduled'
+                          ? 'outline'
+                          : visit.status === 'completed'
+                            ? 'default'
+                            : 'secondary'
+                      }
+                    >
+                      {t(`common.${visit.status}`) || visit.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -237,18 +366,25 @@ export default function Visits() {
                         <DropdownMenuItem
                           onClick={() => {
                             setEditingRecord(visit)
-                            setForm(visit)
+                            setForm({
+                              ...visit,
+                              propertyId: visit.propertyId || 'none',
+                              date: new Date(visit.date)
+                                .toISOString()
+                                .slice(0, 16),
+                            })
                             setIsAddOpen(true)
                           }}
                         >
-                          <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
+                          <Pencil className="h-4 w-4 mr-2" />{' '}
+                          {t('common.edit') || 'Edit'}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600"
                           onClick={() => setDeleteId(visit.id)}
                         >
                           <Trash2 className="h-4 w-4 mr-2" />{' '}
-                          {t('common.delete')}
+                          {t('common.delete') || 'Delete'}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -261,7 +397,7 @@ export default function Visits() {
                     colSpan={6}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    {t('common.empty') || 'No records found.'}
                   </TableCell>
                 </TableRow>
               )}
@@ -276,15 +412,23 @@ export default function Visits() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.confirm_delete')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('common.confirm_delete') || 'Confirm Deletion'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('common.delete_desc')}
+              {t('common.delete_desc') ||
+                'Are you sure you want to delete this record?'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              {t('common.delete')}
+            <AlertDialogCancel>
+              {t('common.cancel') || 'Cancel'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('common.delete') || 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
