@@ -46,6 +46,71 @@ export default function Hotels() {
   const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<any>({})
+  const [activeTab, setActiveTab] = useState('general')
+  const [paymentDataStr, setPaymentDataStr] = useState('{}')
+  const [uploading, setUploading] = useState(false)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true)
+      if (!e.target.files || e.target.files.length === 0) return
+      const file = e.target.files[0]
+      const fileExt = file.name.split('.').pop()
+      const filePath = `${Math.random()}.${fileExt}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('hotel-media')
+        .upload(filePath, file)
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from('hotel-media')
+        .getPublicUrl(filePath)
+      setForm({ ...form, image: data.publicUrl })
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleGalleryUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    try {
+      setUploading(true)
+      if (!e.target.files || e.target.files.length === 0) return
+
+      const urls: string[] = form.gallery || []
+      for (const file of Array.from(e.target.files)) {
+        const fileExt = file.name.split('.').pop()
+        const filePath = `${Math.random()}.${fileExt}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('hotel-media')
+          .upload(filePath, file)
+        if (uploadError) throw uploadError
+
+        const { data } = supabase.storage
+          .from('hotel-media')
+          .getPublicUrl(filePath)
+        urls.push(data.publicUrl)
+      }
+      setForm({ ...form, gallery: urls })
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      })
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const fetchHotels = async () => {
     setLoading(true)
@@ -72,13 +137,17 @@ export default function Hotels() {
 
   const handleOpenAdd = () => {
     setEditingId(null)
-    setForm({ country: 'US' })
+    setForm({ country: 'US', gallery: [] })
+    setPaymentDataStr('{}')
+    setActiveTab('general')
     setIsOpen(true)
   }
 
   const handleOpenEdit = (hotel: any) => {
     setEditingId(hotel.id)
-    setForm(hotel)
+    setForm({ ...hotel, gallery: hotel.gallery || [] })
+    setPaymentDataStr(JSON.stringify(hotel.payment_data || {}, null, 2))
+    setActiveTab('general')
     setIsOpen(true)
   }
 
@@ -87,6 +156,18 @@ export default function Hotels() {
       toast({
         title: 'Error',
         description: 'Name and city are required',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    let parsedPaymentData = {}
+    try {
+      parsedPaymentData = JSON.parse(paymentDataStr || '{}')
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: 'Invalid JSON in Payment Data',
         variant: 'destructive',
       })
       return
@@ -104,6 +185,13 @@ export default function Hotels() {
       manager_name: form.manager_name,
       manager_email: form.manager_email,
       manager_phone: form.manager_phone,
+      tax_id: form.tax_id,
+      billing_email: form.billing_email,
+      billing_phone: form.billing_phone,
+      billing_address: form.billing_address,
+      image: form.image,
+      gallery: form.gallery,
+      payment_data: parsedPaymentData,
     }
 
     if (editingId) {
@@ -191,150 +279,292 @@ export default function Hotels() {
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-1 p-6">
-            <div className="grid gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">{t('common.name', 'Hotel Name')}</Label>
-                <Input
-                  id="name"
-                  value={form.name || ''}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
+            <div className="w-full">
+              <div className="flex w-full items-center justify-center rounded-md bg-slate-100 p-1 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('general')}
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${activeTab === 'general' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  {t('hotels.tab_general', 'General')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('location')}
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${activeTab === 'location' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  {t('hotels.tab_location', 'Location')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('billing')}
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${activeTab === 'billing' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  {t('hotels.tab_billing', 'Billing & Media')}
+                </button>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm border-b pb-2">
-                  {t('common.manager_info', 'Management Info')}
-                </h4>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="col-span-2 space-y-2">
-                    <Label htmlFor="manager_name">
-                      {t('common.manager_name', 'Manager Name')}
-                    </Label>
-                    <Input
-                      id="manager_name"
-                      value={form.manager_name || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, manager_name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="manager_email">
-                      {t('common.email', 'Email')}
-                    </Label>
-                    <Input
-                      id="manager_email"
-                      type="email"
-                      value={form.manager_email || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, manager_email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="manager_phone">
-                      {t('common.phone', 'Phone')}
-                    </Label>
-                    <Input
-                      id="manager_phone"
-                      value={form.manager_phone || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, manager_phone: e.target.value })
-                      }
-                    />
+              {activeTab === 'general' && (
+                <div className="space-y-6 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">
+                        {t('common.name', 'Hotel Name')} *
+                      </Label>
+                      <Input
+                        id="name"
+                        value={form.name || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, name: e.target.value })
+                        }
+                        placeholder="e.g. Grande Hotel Teste"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="col-span-2 space-y-2">
+                        <Label htmlFor="manager_name">
+                          {t('common.manager_name', 'Manager Name')}
+                        </Label>
+                        <Input
+                          id="manager_name"
+                          value={form.manager_name || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, manager_name: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="manager_email">
+                          {t('common.email', 'Email')}
+                        </Label>
+                        <Input
+                          id="manager_email"
+                          type="email"
+                          value={form.manager_email || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, manager_email: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="manager_phone">
+                          {t('common.phone', 'Phone')}
+                        </Label>
+                        <Input
+                          id="manager_phone"
+                          value={form.manager_phone || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, manager_phone: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tax_id">
+                        {t('common.tax_id', 'Tax ID')}
+                      </Label>
+                      <Input
+                        id="tax_id"
+                        value={form.tax_id || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, tax_id: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm border-b pb-2">
-                  {t('common.address_info', 'Address Info')}
-                </h4>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="address">
-                      {t('common.address', 'Street/Address')}
-                    </Label>
-                    <Input
-                      id="address"
-                      value={form.address || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, address: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="number">
-                      {t('common.number', 'Number')}
-                    </Label>
-                    <Input
-                      id="number"
-                      value={form.number || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, number: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-2">
-                    <Label htmlFor="neighborhood">
-                      {t('common.neighborhood', 'Neighborhood')}
-                    </Label>
-                    <Input
-                      id="neighborhood"
-                      value={form.neighborhood || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, neighborhood: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="city">{t('common.city', 'City')}</Label>
-                    <Input
-                      id="city"
-                      value={form.city || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, city: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="state">
-                      {t('common.state', 'State/Province')}
-                    </Label>
-                    <Input
-                      id="state"
-                      value={form.state || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, state: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zip_code">
-                      {t('common.zip_code', 'Zip Code')}
-                    </Label>
-                    <Input
-                      id="zip_code"
-                      value={form.zip_code || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, zip_code: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="country">
-                      {t('common.country', 'Country')}
-                    </Label>
-                    <Input
-                      id="country"
-                      value={form.country || ''}
-                      onChange={(e) =>
-                        setForm({ ...form, country: e.target.value })
-                      }
-                    />
+              {activeTab === 'location' && (
+                <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address">
+                        {t('common.address', 'Street/Address')}
+                      </Label>
+                      <Input
+                        id="address"
+                        value={form.address || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, address: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="number">
+                        {t('common.number', 'Number')}
+                      </Label>
+                      <Input
+                        id="number"
+                        value={form.number || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, number: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <Label htmlFor="neighborhood">
+                        {t('common.neighborhood', 'Neighborhood')}
+                      </Label>
+                      <Input
+                        id="neighborhood"
+                        value={form.neighborhood || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, neighborhood: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">{t('common.city', 'City')} *</Label>
+                      <Input
+                        id="city"
+                        value={form.city || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, city: e.target.value })
+                        }
+                        placeholder="e.g. Orlando"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">
+                        {t('common.state', 'State/Province')}
+                      </Label>
+                      <Input
+                        id="state"
+                        value={form.state || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, state: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zip_code">
+                        {t('common.zip_code', 'Zip Code')}
+                      </Label>
+                      <Input
+                        id="zip_code"
+                        value={form.zip_code || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, zip_code: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">
+                        {t('common.country', 'Country')}
+                      </Label>
+                      <Input
+                        id="country"
+                        value={form.country || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, country: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {activeTab === 'billing' && (
+                <div className="space-y-6 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="grid gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="billing_email">
+                          {t('common.billing_email', 'Billing Email')}
+                        </Label>
+                        <Input
+                          id="billing_email"
+                          type="email"
+                          value={form.billing_email || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, billing_email: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="billing_phone">
+                          {t('common.billing_phone', 'Billing Phone')}
+                        </Label>
+                        <Input
+                          id="billing_phone"
+                          value={form.billing_phone || ''}
+                          onChange={(e) =>
+                            setForm({ ...form, billing_phone: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="billing_address">
+                        {t('common.billing_address', 'Billing Address')}
+                      </Label>
+                      <textarea
+                        id="billing_address"
+                        className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={form.billing_address || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, billing_address: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="payment_data">
+                        {t('common.payment_data', 'Payment Data (JSON)')}
+                      </Label>
+                      <textarea
+                        id="payment_data"
+                        className="flex min-h-[100px] font-mono w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={paymentDataStr}
+                        onChange={(e) => setPaymentDataStr(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <Label>
+                        {t('common.primary_image', 'Primary Image')}
+                      </Label>
+                      <div className="flex items-center gap-4">
+                        {form.image && (
+                          <img
+                            src={form.image}
+                            alt="Hotel"
+                            className="h-16 w-16 object-cover rounded-md border border-slate-200"
+                          />
+                        )}
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={uploading}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('common.gallery', 'Gallery')}</Label>
+                      {form.gallery && form.gallery.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {form.gallery.map((url: string, i: number) => (
+                            <img
+                              key={i}
+                              src={url}
+                              alt={`Gallery ${i}`}
+                              className="h-16 w-16 object-cover rounded-md border border-slate-200"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleGalleryUpload}
+                        disabled={uploading}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
           <DialogFooter className="p-6 border-t mt-auto">
