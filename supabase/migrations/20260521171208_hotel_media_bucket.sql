@@ -3,9 +3,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('hotel-media', 'hotel-media', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Ensure RLS is enabled for objects
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
 -- Configure storage policies
 DROP POLICY IF EXISTS "Public Access" ON storage.objects;
 CREATE POLICY "Public Access" ON storage.objects

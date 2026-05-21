@@ -155,9 +155,14 @@ export default function Hotels() {
     if (!form.name || !form.city) {
       toast({
         title: 'Error',
-        description: 'Name and city are required',
+        description: 'Name (General tab) and City (Location tab) are required',
         variant: 'destructive',
       })
+      if (!form.name) {
+        setActiveTab('general')
+      } else if (!form.city) {
+        setActiveTab('location')
+      }
       return
     }
 
