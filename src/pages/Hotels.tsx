@@ -64,11 +64,13 @@ export default function Hotels() {
         const filePath = `${Math.random()}.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
-          .from('hotels')
+          .from('hotel-images')
           .upload(filePath, file)
         if (uploadError) throw uploadError
 
-        const { data } = supabase.storage.from('hotels').getPublicUrl(filePath)
+        const { data } = supabase.storage
+          .from('hotel-images')
+          .getPublicUrl(filePath)
         urls.push(data.publicUrl)
       }
       setForm({ ...form, gallery: urls })
@@ -360,33 +362,17 @@ export default function Hotels() {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="tax_id">
-                          {t('common.tax_id', 'Tax ID')}
-                        </Label>
-                        <Input
-                          id="tax_id"
-                          value={form.tax_id || ''}
-                          onChange={(e) =>
-                            setForm({ ...form, tax_id: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="website_url">
-                          {t('hotels.website_url', 'Hotel Website')}
-                        </Label>
-                        <Input
-                          id="website_url"
-                          type="url"
-                          placeholder="https://..."
-                          value={form.website_url || ''}
-                          onChange={(e) =>
-                            setForm({ ...form, website_url: e.target.value })
-                          }
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tax_id">
+                        {t('common.tax_id', 'Tax ID')}
+                      </Label>
+                      <Input
+                        id="tax_id"
+                        value={form.tax_id || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, tax_id: e.target.value })
+                        }
+                      />
                     </div>
                   </div>
                 </div>
@@ -585,19 +571,22 @@ export default function Hotels() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="payment_data">
-                        {t('common.payment_data', 'Payment Data (JSON)')}
+                      <Label htmlFor="website_url">
+                        {t('hotels.website_url', 'Hotel Website')}
                       </Label>
-                      <textarea
-                        id="payment_data"
-                        className="flex min-h-[100px] font-mono w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        value={paymentDataStr}
-                        onChange={(e) => setPaymentDataStr(e.target.value)}
+                      <Input
+                        id="website_url"
+                        type="url"
+                        placeholder="https://..."
+                        value={form.website_url || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, website_url: e.target.value })
+                        }
                       />
                     </div>
                     <div className="space-y-4 pt-4 border-t border-slate-100">
                       <FileUpload
-                        label={t('common.primary_image', 'Primary Image')}
+                        label={t('hotels.hotel_photo', 'Hotel Photo')}
                         value={form.image}
                         onChange={async (url, file) => {
                           if (file) {
@@ -607,11 +596,11 @@ export default function Hotels() {
                               const filePath = `${Math.random()}.${fileExt}`
                               const { error: uploadError } =
                                 await supabase.storage
-                                  .from('hotels')
+                                  .from('hotel-images')
                                   .upload(filePath, file)
                               if (uploadError) throw uploadError
                               const { data } = supabase.storage
-                                .from('hotels')
+                                .from('hotel-images')
                                 .getPublicUrl(filePath)
                               setForm({ ...form, image: data.publicUrl })
                             } catch (error: any) {
@@ -694,6 +683,17 @@ export default function Hotels() {
                           ))}
                         </div>
                       )}
+                    </div>
+                    <div className="space-y-2 border-t border-slate-100 pt-4">
+                      <Label htmlFor="payment_data">
+                        {t('common.payment_data', 'Payment Data (JSON)')}
+                      </Label>
+                      <textarea
+                        id="payment_data"
+                        className="flex min-h-[100px] font-mono w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={paymentDataStr}
+                        onChange={(e) => setPaymentDataStr(e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>
