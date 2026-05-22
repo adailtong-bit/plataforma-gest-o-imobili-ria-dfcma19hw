@@ -27,10 +27,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function PromotionsManagement() {
   const { promotions, addPromotion } = useContext(AppContext)!
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({ code: '', type: 'percentage', value: '' })
 
@@ -54,18 +56,18 @@ export function PromotionsManagement() {
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between items-center">
-        <CardTitle>Promo Codes</CardTitle>
+        <CardTitle>{t('promotions.title', 'Promo Codes')}</CardTitle>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">Add Promo</Button>
+            <Button size="sm">{t('promotions.add', 'Add Promo')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>New Promo Code</DialogTitle>
+              <DialogTitle>{t('promotions.new', 'New Promo Code')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Code</Label>
+                <Label>{t('promotions.code', 'Code')}</Label>
                 <Input
                   value={form.code}
                   onChange={(e) =>
@@ -75,7 +77,7 @@ export function PromotionsManagement() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Type</Label>
+                  <Label>{t('promotions.type', 'Type')}</Label>
                   <Select
                     value={form.type}
                     onValueChange={(v) => setForm({ ...form, type: v })}
@@ -84,13 +86,17 @@ export function PromotionsManagement() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="percentage">Percentage</SelectItem>
-                      <SelectItem value="fixed_amount">Fixed Amount</SelectItem>
+                      <SelectItem value="percentage">
+                        {t('promotions.type.percentage', 'Percentage')}
+                      </SelectItem>
+                      <SelectItem value="fixed_amount">
+                        {t('promotions.type.fixed_amount', 'Fixed Amount')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Value</Label>
+                  <Label>{t('promotions.value', 'Value')}</Label>
                   <Input
                     type="number"
                     value={form.value}
@@ -101,7 +107,7 @@ export function PromotionsManagement() {
                 </div>
               </div>
               <Button onClick={handleSave} className="w-full">
-                Save
+                {t('common.save', 'Save')}
               </Button>
             </div>
           </DialogContent>
@@ -111,10 +117,10 @@ export function PromotionsManagement() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Usage</TableHead>
+              <TableHead>{t('promotions.code', 'Code')}</TableHead>
+              <TableHead>{t('promotions.type', 'Type')}</TableHead>
+              <TableHead>{t('promotions.value', 'Value')}</TableHead>
+              <TableHead>{t('promotions.usage', 'Usage')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -122,7 +128,9 @@ export function PromotionsManagement() {
               <TableRow key={p.id}>
                 <TableCell className="font-bold">{p.code}</TableCell>
                 <TableCell className="capitalize">
-                  {p.type.replace('_', ' ')}
+                  {p.type === 'percentage'
+                    ? t('promotions.type.percentage', 'Percentage')
+                    : t('promotions.type.fixed_amount', 'Fixed Amount')}
                 </TableCell>
                 <TableCell>
                   {p.type === 'percentage' ? `${p.value}%` : `$${p.value}`}

@@ -119,10 +119,14 @@ export function AppHeader() {
               onValueChange={setSelectedPropertyId}
             >
               <SelectTrigger className="h-9 bg-slate-50 border-slate-200 text-sm">
-                <SelectValue placeholder="Todas as Propriedades" />
+                <SelectValue
+                  placeholder={t('common.all_properties', 'All Properties')}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as Propriedades</SelectItem>
+                <SelectItem value="all">
+                  {t('common.all_properties', 'All Properties')}
+                </SelectItem>
                 {accessibleProperties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
@@ -205,7 +209,7 @@ export function AppHeader() {
             <DropdownMenuLabel className="font-normal border-b pb-2 mb-2">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-bold leading-none text-slate-900">
-                  {currentUser?.name || 'Visitante'}
+                  {currentUser?.name || t('common.visitor', 'Visitor')}
                 </p>
                 <p className="text-xs leading-none text-slate-500 font-medium">
                   {currentUser

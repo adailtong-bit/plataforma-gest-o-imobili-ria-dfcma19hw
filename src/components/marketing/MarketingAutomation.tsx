@@ -27,10 +27,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
+import useLanguageStore from '@/stores/useLanguageStore'
 
 export function MarketingAutomation() {
   const { marketingWorkflows, addMarketingWorkflow } = useContext(AppContext)!
   const { toast } = useToast()
+  const { t } = useLanguageStore()
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     name: '',
@@ -56,25 +58,25 @@ export function MarketingAutomation() {
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between items-center">
-        <CardTitle>Automated Workflows</CardTitle>
+        <CardTitle>{t('automation.title', 'Automated Workflows')}</CardTitle>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">Add Workflow</Button>
+            <Button size="sm">{t('automation.add', 'Add Workflow')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>New Automation</DialogTitle>
+              <DialogTitle>{t('automation.new', 'New Automation')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>{t('automation.name', 'Name')}</Label>
                 <Input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Trigger</Label>
+                <Label>{t('automation.trigger', 'Trigger')}</Label>
                 <Select
                   value={form.trigger}
                   onValueChange={(v) => setForm({ ...form, trigger: v })}
@@ -84,14 +86,19 @@ export function MarketingAutomation() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="booking_confirmed">
-                      Booking Confirmed
+                      {t(
+                        'automation.trigger.booking_confirmed',
+                        'Booking Confirmed',
+                      )}
                     </SelectItem>
-                    <SelectItem value="check_in">Check-in</SelectItem>
+                    <SelectItem value="check_in">
+                      {t('automation.trigger.check_in', 'Check-in')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <Button onClick={handleSave} className="w-full">
-                Save
+                {t('common.save', 'Save')}
               </Button>
             </div>
           </DialogContent>
@@ -101,9 +108,9 @@ export function MarketingAutomation() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Trigger</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('automation.name', 'Name')}</TableHead>
+              <TableHead>{t('automation.trigger', 'Trigger')}</TableHead>
+              <TableHead>{t('common.status', 'Status')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -111,9 +118,18 @@ export function MarketingAutomation() {
               <TableRow key={w.id}>
                 <TableCell className="font-medium">{w.name}</TableCell>
                 <TableCell className="capitalize">
-                  {w.trigger.replace('_', ' ')}
+                  {w.trigger === 'booking_confirmed'
+                    ? t(
+                        'automation.trigger.booking_confirmed',
+                        'Booking Confirmed',
+                      )
+                    : t('automation.trigger.check_in', 'Check-in')}
                 </TableCell>
-                <TableCell>{w.active ? 'Active' : 'Inactive'}</TableCell>
+                <TableCell>
+                  {w.active
+                    ? t('status.active', 'Active')
+                    : t('status.inactive', 'Inactive')}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

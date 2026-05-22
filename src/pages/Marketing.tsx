@@ -121,15 +121,23 @@ export default function Marketing() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {t('sidebar.marketing')}
           </h1>
-          <p className="text-muted-foreground">Manage marketing features.</p>
+          <p className="text-muted-foreground">
+            {t('marketing.subtitle', 'Manage marketing features.')}
+          </p>
         </div>
       </div>
 
       <Tabs defaultValue="campaigns" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-          <TabsTrigger value="promotions">Promotions</TabsTrigger>
-          <TabsTrigger value="automation">Automation</TabsTrigger>
+          <TabsTrigger value="campaigns">
+            {t('marketing.tabs.campaigns', 'Campaigns')}
+          </TabsTrigger>
+          <TabsTrigger value="promotions">
+            {t('marketing.tabs.promotions', 'Promotions')}
+          </TabsTrigger>
+          <TabsTrigger value="automation">
+            {t('marketing.tabs.automation', 'Automation')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="campaigns" className="mt-6 space-y-4">
@@ -137,12 +145,15 @@ export default function Marketing() {
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-trust-blue gap-2 text-white">
-                  <Plus className="h-4 w-4" /> Incluir Campanha
+                  <Plus className="h-4 w-4" />{' '}
+                  {t('marketing.add_campaign', 'Add Campaign')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Incluir Campanha</DialogTitle>
+                  <DialogTitle>
+                    {t('marketing.add_campaign', 'Add Campaign')}
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 py-4">
                   <div className="space-y-2 col-span-2">
@@ -240,14 +251,28 @@ export default function Marketing() {
               <Table>
                 <TableHeader className="bg-slate-50">
                   <TableRow>
-                    <TableHead className="w-16">Img</TableHead>
-                    <TableHead>Campaign Name</TableHead>
-                    <TableHead>Target Audience</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>End Date</TableHead>
-                    <TableHead>Discount</TableHead>
+                    <TableHead className="w-16">
+                      {t('marketing.table.img', 'Img')}
+                    </TableHead>
+                    <TableHead>
+                      {t('marketing.table.campaign_name', 'Campaign Name')}
+                    </TableHead>
+                    <TableHead>
+                      {t('marketing.table.target_audience', 'Target Audience')}
+                    </TableHead>
+                    <TableHead>
+                      {t('marketing.table.start_date', 'Start Date')}
+                    </TableHead>
+                    <TableHead>
+                      {t('marketing.table.end_date', 'End Date')}
+                    </TableHead>
+                    <TableHead>
+                      {t('marketing.table.discount', 'Discount')}
+                    </TableHead>
                     <TableHead>{t('common.status')}</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    <TableHead className="text-right">
+                      {t('common.actions', 'Actions')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -324,12 +349,18 @@ export default function Marketing() {
                                   })
                                 }}
                               >
-                                <Pencil className="h-4 w-4 mr-2" /> Alterar
+                                <Pencil className="h-4 w-4 mr-2" />{' '}
+                                {t('common.edit', 'Edit')}
                               </Button>
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl">
                               <DialogHeader>
-                                <DialogTitle>Alterar Campanha</DialogTitle>
+                                <DialogTitle>
+                                  {t(
+                                    'marketing.edit_campaign',
+                                    'Edit Campaign',
+                                  )}
+                                </DialogTitle>
                               </DialogHeader>
                               <div className="grid grid-cols-2 gap-4 py-4">
                                 <div className="space-y-2 col-span-2">
@@ -438,24 +469,33 @@ export default function Marketing() {
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                                <Trash2 className="h-4 w-4 mr-2" />{' '}
+                                {t('common.delete', 'Delete')}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>
-                                  Excluir Campanha
+                                  {t(
+                                    'marketing.delete_campaign',
+                                    'Delete Campaign',
+                                  )}
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Esta ação não pode ser desfeita.
+                                  {t(
+                                    'common.delete_desc',
+                                    'This action cannot be undone.',
+                                  )}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel>
+                                  {t('common.cancel', 'Cancel')}
+                                </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDelete(camp.id)}
                                 >
-                                  Excluir
+                                  {t('common.delete', 'Delete')}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>

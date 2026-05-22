@@ -206,7 +206,10 @@ export default function Partners() {
             {t('sidebar.partners') || 'Partners'}
           </h1>
           <p className="text-muted-foreground">
-            Manage service providers, functions, and teams.
+            {t(
+              'partners.subtitle',
+              'Manage service providers, functions, and teams.',
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
@@ -422,9 +425,11 @@ export default function Partners() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead>{t('common.name') || 'Name'}</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Function</TableHead>
-                <TableHead>Contact</TableHead>
+                <TableHead>{t('partners.table.type', 'Type')}</TableHead>
+                <TableHead>
+                  {t('partners.table.function', 'Function')}
+                </TableHead>
+                <TableHead>{t('partners.table.contact', 'Contact')}</TableHead>
                 <TableHead>{t('common.status') || 'Status'}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions') || 'Actions'}

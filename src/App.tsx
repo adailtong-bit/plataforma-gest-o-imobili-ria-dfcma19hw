@@ -161,21 +161,6 @@ const AuthGuard = ({ children }: { children: JSX.Element }) => {
   return children
 }
 
-const DebugCleanup = () => {
-  const location = useLocation()
-
-  useEffect(() => {
-    // Robust global removal of residual currentRoute debug blocks from older layouts
-    document.querySelectorAll('pre').forEach((pre) => {
-      if (pre.textContent?.includes('currentRoute')) {
-        pre.remove()
-      }
-    })
-  }, [location.pathname])
-
-  return null
-}
-
 const App = () => {
   useEffect(() => {
     document.title = 'Summerpm'
@@ -202,7 +187,6 @@ const App = () => {
                   v7_relativeSplatPath: false,
                 }}
               >
-                <DebugCleanup />
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
