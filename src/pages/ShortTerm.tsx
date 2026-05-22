@@ -119,7 +119,7 @@ export default function ShortTerm() {
 
   const handleAdd = () => {
     if (form.propertyId === 'none') {
-      toast({ title: t('common.error'), variant: 'destructive' })
+      toast({ title: t('common.error', 'Error'), variant: 'destructive' })
       return
     }
 
@@ -143,7 +143,9 @@ export default function ShortTerm() {
     })
     setIsAddOpen(false)
     setForm(defaultForm)
-    toast({ title: 'Reserva incluída com sucesso' })
+    toast({
+      title: t('short_term.success_add', 'Reservation added successfully'),
+    })
   }
 
   const handleEdit = () => {
@@ -161,12 +163,16 @@ export default function ShortTerm() {
       })
     }
     setEditingRecord(null)
-    toast({ title: 'Reserva alterada com sucesso' })
+    toast({
+      title: t('short_term.success_edit', 'Reservation updated successfully'),
+    })
   }
 
   const handleDelete = (id: string) => {
     deleteBooking(id)
-    toast({ title: 'Reserva excluída com sucesso' })
+    toast({
+      title: t('short_term.success_delete', 'Reservation deleted successfully'),
+    })
   }
 
   const openEdit = (b: any) => {
@@ -207,11 +213,13 @@ export default function ShortTerm() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Incluir Reserva</DialogTitle>
+              <DialogTitle>
+                {t('short_term.add_title', 'Include Reservation')}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Propriedade</Label>
+                <Label>{t('short_term.property', 'Property')}</Label>
                 <Select
                   value={form.propertyId}
                   onValueChange={(v) =>
@@ -219,10 +227,14 @@ export default function ShortTerm() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione..." />
+                    <SelectValue
+                      placeholder={t('common.select', 'Select...')}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Selecione...</SelectItem>
+                    <SelectItem value="none">
+                      {t('common.select', 'Select...')}
+                    </SelectItem>
                     {properties.map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         {p.name}
@@ -232,9 +244,9 @@ export default function ShortTerm() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Nome do Hóspede</Label>
+                <Label>{t('short_term.guest', 'Guest Name')}</Label>
                 <Input
-                  placeholder="Nome do Hóspede"
+                  placeholder={t('short_term.guest', 'Guest Name')}
                   value={form.guestName}
                   onChange={(e) =>
                     setForm({ ...form, guestName: e.target.value })
@@ -243,7 +255,7 @@ export default function ShortTerm() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Check-In</Label>
+                  <Label>{t('short_term.check_in', 'Check-in')}</Label>
                   <Input
                     type="date"
                     value={form.checkIn}
@@ -253,7 +265,7 @@ export default function ShortTerm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Check-Out</Label>
+                  <Label>{t('short_term.check_out', 'Check-out')}</Label>
                   <Input
                     type="date"
                     value={form.checkOut}
@@ -266,10 +278,10 @@ export default function ShortTerm() {
 
               <div className="grid grid-cols-2 gap-4 border-t pt-4">
                 <div className="space-y-2">
-                  <Label>Valor Base</Label>
+                  <Label>{t('short_term.base_amount', 'Base Amount')}</Label>
                   <Input
                     type="number"
-                    placeholder="Valor Base"
+                    placeholder={t('short_term.base_amount', 'Base Amount')}
                     value={form.baseAmount}
                     onChange={(e) =>
                       setForm({ ...form, baseAmount: e.target.value })
@@ -277,17 +289,19 @@ export default function ShortTerm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Promoção</Label>
+                  <Label>{t('short_term.promotion', 'Promotion')}</Label>
                   <Select
                     value={form.promotionId}
                     onValueChange={(v) => setForm({ ...form, promotionId: v })}
                     disabled={applicablePromotions.length === 0}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Nenhuma" />
+                      <SelectValue placeholder={t('common.none', 'None')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Nenhuma</SelectItem>
+                      <SelectItem value="none">
+                        {t('common.none', 'None')}
+                      </SelectItem>
                       {applicablePromotions.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           {p.code} (
@@ -304,18 +318,20 @@ export default function ShortTerm() {
 
               {discountAmount > 0 && (
                 <div className="flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded">
-                  <span>Desconto Aplicado:</span>
+                  <span>
+                    {t('short_term.discount_applied', 'Discount Applied:')}
+                  </span>
                   <span>-{formatLocalCurrency(discountAmount)}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center font-bold text-lg">
-                <span>Total Final:</span>
+                <span>{t('short_term.final_total', 'Final Total:')}</span>
                 <span>{formatLocalCurrency(finalAmount)}</span>
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleAdd}>Salvar</Button>
+              <Button onClick={handleAdd}>{t('common.save', 'Save')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -377,16 +393,21 @@ export default function ShortTerm() {
                             size="sm"
                             onClick={() => openEdit(b)}
                           >
-                            <Pencil className="h-4 w-4 mr-2" /> Alterar
+                            <Pencil className="h-4 w-4 mr-2" />{' '}
+                            {t('common.edit', 'Edit')}
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Alterar Reserva</DialogTitle>
+                            <DialogTitle>
+                              {t('short_term.edit_title', 'Edit Reservation')}
+                            </DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                              <Label>Propriedade</Label>
+                              <Label>
+                                {t('short_term.property', 'Property')}
+                              </Label>
                               <Select
                                 value={form.propertyId}
                                 onValueChange={(v) =>
@@ -402,7 +423,7 @@ export default function ShortTerm() {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="none">
-                                    Selecione...
+                                    {t('common.select', 'Select...')}
                                   </SelectItem>
                                   {properties.map((p) => (
                                     <SelectItem key={p.id} value={p.id}>
@@ -413,7 +434,9 @@ export default function ShortTerm() {
                               </Select>
                             </div>
                             <div className="space-y-2">
-                              <Label>Nome do Hóspede</Label>
+                              <Label>
+                                {t('short_term.guest', 'Guest Name')}
+                              </Label>
                               <Input
                                 value={form.guestName}
                                 onChange={(e) =>
@@ -426,7 +449,9 @@ export default function ShortTerm() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
-                                <Label>Check-In</Label>
+                                <Label>
+                                  {t('short_term.check_in', 'Check-in')}
+                                </Label>
                                 <Input
                                   type="date"
                                   value={form.checkIn}
@@ -439,7 +464,9 @@ export default function ShortTerm() {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Check-Out</Label>
+                                <Label>
+                                  {t('short_term.check_out', 'Check-out')}
+                                </Label>
                                 <Input
                                   type="date"
                                   value={form.checkOut}
@@ -454,7 +481,9 @@ export default function ShortTerm() {
                             </div>
                             <div className="grid grid-cols-2 gap-4 border-t pt-4">
                               <div className="space-y-2">
-                                <Label>Valor Base</Label>
+                                <Label>
+                                  {t('short_term.base_amount', 'Base Amount')}
+                                </Label>
                                 <Input
                                   type="number"
                                   value={form.baseAmount}
@@ -467,7 +496,9 @@ export default function ShortTerm() {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label>Promoção</Label>
+                                <Label>
+                                  {t('short_term.promotion', 'Promotion')}
+                                </Label>
                                 <Select
                                   value={form.promotionId}
                                   onValueChange={(v) =>
@@ -475,11 +506,13 @@ export default function ShortTerm() {
                                   }
                                 >
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Nenhuma" />
+                                    <SelectValue
+                                      placeholder={t('common.none', 'None')}
+                                    />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="none">
-                                      Nenhuma
+                                      {t('common.none', 'None')}
                                     </SelectItem>
                                     {applicablePromotions.map((p) => (
                                       <SelectItem key={p.id} value={p.id}>
@@ -492,41 +525,61 @@ export default function ShortTerm() {
                             </div>
                             {discountAmount > 0 && (
                               <div className="flex justify-between items-center text-sm text-green-600 bg-green-50 p-2 rounded">
-                                <span>Desconto Aplicado:</span>
+                                <span>
+                                  {t(
+                                    'short_term.discount_applied',
+                                    'Discount Applied:',
+                                  )}
+                                </span>
                                 <span>
                                   -{formatLocalCurrency(discountAmount)}
                                 </span>
                               </div>
                             )}
                             <div className="flex justify-between items-center font-bold text-lg">
-                              <span>Total Final:</span>
+                              <span>
+                                {t('short_term.final_total', 'Final Total:')}
+                              </span>
                               <span>{formatLocalCurrency(finalAmount)}</span>
                             </div>
                           </div>
                           <DialogFooter>
-                            <Button onClick={handleEdit}>Salvar</Button>
+                            <Button onClick={handleEdit}>
+                              {t('common.save', 'Save')}
+                            </Button>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" /> Excluir
+                            <Trash2 className="h-4 w-4 mr-2" />{' '}
+                            {t('common.delete', 'Delete')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir Reserva</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t(
+                                'short_term.delete_title',
+                                'Delete Reservation',
+                              )}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Esta ação não pode ser desfeita.
+                              {t(
+                                'short_term.delete_desc',
+                                'This action cannot be undone.',
+                              )}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t('common.cancel', 'Cancel')}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(b.id)}
                             >
-                              Excluir
+                              {t('common.delete', 'Delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

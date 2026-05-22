@@ -124,10 +124,10 @@ export default function Renewals() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('renewals.title', 'Title')}
+            {t('renewals.title', 'Renewals')}
           </h1>
           <p className="text-muted-foreground">
-            {t('renewals.subtitle', 'Subtitle')}
+            {t('renewals.subtitle', 'Manage lease renewals and negotiations.')}
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function Renewals() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('renewals.search_placeholder', 'Search Placeholder')}
+            placeholder={t('renewals.search_placeholder', 'Search tenants...')}
             className="pl-9 bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -151,12 +151,14 @@ export default function Renewals() {
               {t('renewals.all_status', 'All Status')}
             </SelectItem>
             <SelectItem value="critical">
-              {t('renewals.critical_status')}
+              {t('renewals.critical_status', 'Critical (<= 30 days)')}
             </SelectItem>
             <SelectItem value="warning">
-              {t('renewals.warning_status')}
+              {t('renewals.warning_status', 'Warning (31-60 days)')}
             </SelectItem>
-            <SelectItem value="safe">{t('renewals.safe_status')}</SelectItem>
+            <SelectItem value="safe">
+              {t('renewals.safe_status', 'Safe (> 60 days)')}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -166,17 +168,17 @@ export default function Renewals() {
           <Table>
             <TableHeader className="bg-slate-50 sticky top-0 z-10">
               <TableRow>
-                <TableHead>{t('common.name', 'Nome')}</TableHead>
-                <TableHead>{t('common.property', 'Propriedade')}</TableHead>
+                <TableHead>{t('common.name', 'Name')}</TableHead>
+                <TableHead>{t('common.property', 'Property')}</TableHead>
                 <TableHead>
-                  {t('renewals.current_proposed', 'Current Proposed')}
+                  {t('renewals.current_proposed', 'Current / Proposed')}
                 </TableHead>
                 <TableHead>{t('common.end_date', 'End Date')}</TableHead>
                 <TableHead>
                   {t('renewals.negotiation_status', 'Negotiation Status')}
                 </TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions', 'Ações')}
+                  {t('common.actions', 'Actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -224,12 +226,12 @@ export default function Renewals() {
                           variant="outline"
                           className="bg-green-100 text-green-800 border-green-300"
                         >
-                          {t('renewals.renewed')}
+                          {t('renewals.renewed', 'Renewed')}
                         </Badge>
                       ) : (
                         <div className="flex flex-col gap-1 text-xs mt-1">
                           <span>
-                            {t('renewals.owner')}:{' '}
+                            {t('renewals.owner', 'Owner')}:{' '}
                             <Badge
                               variant="outline"
                               className={cn(
@@ -237,11 +239,14 @@ export default function Renewals() {
                                 getDecisionColor(tenant.ownerDecision),
                               )}
                             >
-                              {t(`common.${tenant.ownerDecision || 'pending'}`)}
+                              {t(
+                                `common.${tenant.ownerDecision || 'pending'}`,
+                                tenant.ownerDecision || 'pending',
+                              )}
                             </Badge>
                           </span>
                           <span>
-                            {t('renewals.tenant')}:{' '}
+                            {t('renewals.tenant', 'Tenant')}:{' '}
                             <Badge
                               variant="outline"
                               className={cn(
@@ -251,6 +256,7 @@ export default function Renewals() {
                             >
                               {t(
                                 `common.${tenant.tenantDecision || 'pending'}`,
+                                tenant.tenantDecision || 'pending',
                               )}
                             </Badge>
                           </span>
@@ -268,7 +274,7 @@ export default function Renewals() {
                         }}
                       >
                         <FileText className="h-4 w-4" />
-                        {t('renewals.manage')}
+                        {t('renewals.manage', 'Manage')}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -280,7 +286,7 @@ export default function Renewals() {
                     colSpan={6}
                     className="text-center py-10 text-muted-foreground"
                   >
-                    {t('renewals.no_results', 'No Results')}
+                    {t('renewals.no_results', 'No results found.')}
                   </TableCell>
                 </TableRow>
               )}

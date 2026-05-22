@@ -483,13 +483,16 @@ export default function Financial() {
             {t('sidebar.financial') || 'Financial'}
           </h1>
           <p className="text-muted-foreground">
-            {t('financial.management_desc', 'Management Desc')}
+            {t(
+              'financial.management_desc',
+              'Manage your finances and transactions.',
+            )}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" />{' '}
-            {t('financial.export_csv') || 'Export (CSV)'}
+            {t('financial.export_csv', 'Export CSV')}
           </Button>
           <Dialog
             open={isAddOpen}
@@ -763,7 +766,10 @@ export default function Financial() {
             {t('financial.statement', 'Statement')}
           </CardTitle>
           <CardDescription>
-            {t('financial.balances_desc', 'Balances Desc')}
+            {t(
+              'financial.balances_desc',
+              'Summary of your balances and cash flow.',
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -781,7 +787,7 @@ export default function Financial() {
                   <TabsList className="grid w-full grid-cols-3 md:w-[400px]">
                     <TabsTrigger value="pm" className="gap-2">
                       <Building className="w-4 h-4 hidden sm:block" />{' '}
-                      {t('financial.pm_general', 'Pm General')}
+                      {t('financial.pm_general', 'PM (General)')}
                     </TabsTrigger>
                     <TabsTrigger value="owner" className="gap-2">
                       <User className="w-4 h-4 hidden sm:block" />{' '}

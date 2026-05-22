@@ -61,7 +61,7 @@ export function NegotiationSheet({
           }
         : undefined,
     })
-    toast({ title: 'Updated Successfully' })
+    toast({ title: t('common.success', 'Updated Successfully') })
     onOpenChange(false)
   }
 
@@ -71,37 +71,45 @@ export function NegotiationSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-md overflow-y-auto">
         <SheetHeader className="mb-6">
-          <SheetTitle>Manage Renewal</SheetTitle>
+          <SheetTitle>
+            {t('renewals.manage_title', 'Manage Renewal')}
+          </SheetTitle>
         </SheetHeader>
         <div className="space-y-6">
           <div className="bg-slate-50 p-4 rounded-lg border">
             <p className="font-semibold">{tenant.name}</p>
             <p className="text-sm text-slate-500">
-              Current Rent: ${tenant.rentValue}
+              {t('renewals.current_rent', 'Current Rent')}: ${tenant.rentValue}
             </p>
           </div>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>{t('renewals.status', 'Status')}</Label>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="negotiating">Negotiating</SelectItem>
+                  <SelectItem value="negotiating">
+                    {t('renewals.status_negotiating', 'Negotiating')}
+                  </SelectItem>
                   <SelectItem value="owner_contacted">
-                    Owner Contacted
+                    {t('renewals.status_owner_contacted', 'Owner Contacted')}
                   </SelectItem>
                   <SelectItem value="tenant_contacted">
-                    Tenant Contacted
+                    {t('renewals.status_tenant_contacted', 'Tenant Contacted')}
                   </SelectItem>
-                  <SelectItem value="vacating">Vacating</SelectItem>
-                  <SelectItem value="closed">Closed / Renewed</SelectItem>
+                  <SelectItem value="vacating">
+                    {t('renewals.status_vacating', 'Vacating')}
+                  </SelectItem>
+                  <SelectItem value="closed">
+                    {t('renewals.status_closed', 'Closed / Renewed')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Suggested Price</Label>
+              <Label>{t('renewals.suggested_price', 'Suggested Price')}</Label>
               <Input
                 type="number"
                 value={price}
@@ -109,21 +117,26 @@ export function NegotiationSheet({
               />
             </div>
             <div className="space-y-2">
-              <Label>Add Note</Label>
+              <Label>{t('renewals.add_note', 'Add Note')}</Label>
               <Textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Internal negotiation note..."
+                placeholder={t(
+                  'renewals.note_placeholder',
+                  'Internal negotiation note...',
+                )}
               />
             </div>
             <Button onClick={handleSave} className="w-full">
-              Save Changes
+              {t('renewals.save_changes', 'Save Changes')}
             </Button>
           </div>
 
           {tenant.negotiationLogs && tenant.negotiationLogs.length > 0 && (
             <div className="mt-8 space-y-4">
-              <h4 className="font-semibold text-sm">History</h4>
+              <h4 className="font-semibold text-sm">
+                {t('renewals.history', 'History')}
+              </h4>
               <div className="space-y-3">
                 {tenant.negotiationLogs.map((log) => (
                   <div

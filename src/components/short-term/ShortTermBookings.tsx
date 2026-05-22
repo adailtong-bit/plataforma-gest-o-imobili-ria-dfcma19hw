@@ -179,7 +179,7 @@ export function ShortTermBookings() {
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button onClick={() => setIsOpen(true)} className="bg-trust-blue gap-2">
-          <Plus className="h-4 w-4" /> {t('common.new')} Booking
+          <Plus className="h-4 w-4" /> {t('common.new', 'New')} Booking
         </Button>
       </div>
 
@@ -187,13 +187,15 @@ export function ShortTermBookings() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('short_term.guest')}</TableHead>
-              <TableHead>{t('common.property')}</TableHead>
-              <TableHead>{t('short_term.check_in')}</TableHead>
-              <TableHead>{t('short_term.check_out')}</TableHead>
-              <TableHead>{t('short_term.amount')}</TableHead>
-              <TableHead>{t('common.status')}</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('short_term.guest', 'Guest Name')}</TableHead>
+              <TableHead>{t('common.property', 'Property')}</TableHead>
+              <TableHead>{t('short_term.check_in', 'Check-in')}</TableHead>
+              <TableHead>{t('short_term.check_out', 'Check-out')}</TableHead>
+              <TableHead>{t('short_term.amount', 'Total Amount')}</TableHead>
+              <TableHead>{t('common.status', 'Status')}</TableHead>
+              <TableHead className="text-right">
+                {t('common.actions', 'Actions')}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -203,7 +205,7 @@ export function ShortTermBookings() {
                   colSpan={7}
                   className="text-center py-4 text-muted-foreground"
                 >
-                  No bookings found.
+                  {t('short_term.empty', 'No records found.')}
                 </TableCell>
               </TableRow>
             )}
@@ -240,7 +242,7 @@ export function ShortTermBookings() {
                         handleCheckIn(booking.id, booking.propertyId)
                       }
                     >
-                      Check-In
+                      {t('short_term.check_in_btn', 'Check-In')}
                     </Button>
                   )}
                   {booking.status === 'checked_in' && (
@@ -251,7 +253,7 @@ export function ShortTermBookings() {
                         handleCheckOut(booking.id, booking.propertyId)
                       }
                     >
-                      Check-Out
+                      {t('short_term.check_out_btn', 'Check-Out')}
                     </Button>
                   )}
                 </TableCell>
@@ -270,7 +272,9 @@ export function ShortTermBookings() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New Reservation</DialogTitle>
+            <DialogTitle>
+              {t('short_term.add_title', 'Include Reservation')}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             {errors.general && (
@@ -280,7 +284,7 @@ export function ShortTermBookings() {
             )}
             <div className="grid gap-2">
               <Label className={errors.guestName ? 'text-red-500' : ''}>
-                Guest Name
+                {t('short_term.guest', 'Guest Name')}
               </Label>
               <Input
                 value={formData.guestName}
@@ -308,7 +312,7 @@ export function ShortTermBookings() {
 
             <div className="grid gap-2">
               <Label className={errors.propertyId ? 'text-red-500' : ''}>
-                Property
+                {t('short_term.property', 'Property')}
               </Label>
               <select
                 className={`flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${errors.propertyId ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
@@ -323,7 +327,7 @@ export function ShortTermBookings() {
                     setErrors({ ...errors, propertyId: 'Property is required' })
                 }}
               >
-                <option value="">Select Property</option>
+                <option value="">{t('common.select', 'Select...')}</option>
                 {properties.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -340,7 +344,7 @@ export function ShortTermBookings() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label className={errors.checkIn ? 'text-red-500' : ''}>
-                  Check-in
+                  {t('short_term.check_in', 'Check-in')}
                 </Label>
                 <Input
                   type="date"
@@ -365,7 +369,7 @@ export function ShortTermBookings() {
               </div>
               <div className="grid gap-2">
                 <Label className={errors.checkOut ? 'text-red-500' : ''}>
-                  Check-out
+                  {t('short_term.check_out', 'Check-out')}
                 </Label>
                 <Input
                   type="date"
@@ -406,7 +410,7 @@ export function ShortTermBookings() {
 
             <div className="grid gap-2">
               <Label className={errors.totalAmount ? 'text-red-500' : ''}>
-                Total Amount
+                {t('short_term.amount', 'Total Amount')}
               </Label>
               <Input
                 type="number"
@@ -444,10 +448,10 @@ export function ShortTermBookings() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button onClick={handleSave} className="bg-trust-blue">
-              Save Reservation
+              {t('common.save', 'Save')}
             </Button>
           </DialogFooter>
         </DialogContent>
