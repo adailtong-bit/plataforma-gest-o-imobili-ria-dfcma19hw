@@ -57,8 +57,10 @@ export default function Pricing() {
             {t('menu.system.pricing', 'Pricing')}
           </h1>
           <p className="text-muted-foreground">
-            {t('pricing.desc') ||
-              'Manage room categories, base prices, and apply them across your properties.'}
+            {t(
+              'pricing.desc',
+              'Manage room categories, base prices, and apply them across your properties.',
+            )}
           </p>
         </div>
         {selectedHotel && (

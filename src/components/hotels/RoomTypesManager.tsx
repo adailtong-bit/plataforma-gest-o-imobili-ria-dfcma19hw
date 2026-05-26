@@ -20,7 +20,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import {
   Card,
   CardContent,
@@ -43,7 +43,7 @@ interface RoomType {
 }
 
 export function RoomTypesManager({ hotelId }: { hotelId: string }) {
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([])
   const [loading, setLoading] = useState(true)
@@ -78,7 +78,7 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
     if (!editingType.name) {
       toast({
         title: 'Error',
-        description: 'Name is required',
+        description: t('pricing.error_name_required', 'Name is required'),
         variant: 'destructive',
       })
       return
@@ -106,7 +106,10 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
           variant: 'destructive',
         })
       } else {
-        toast({ title: 'Success', description: 'Room category updated.' })
+        toast({
+          title: t('common.success', 'Success'),
+          description: t('pricing.success_update', 'Room category updated.'),
+        })
       }
     } else {
       const { error } = await supabase.from('room_types').insert(payload)
@@ -117,7 +120,10 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
           variant: 'destructive',
         })
       } else {
-        toast({ title: 'Success', description: 'Room category created.' })
+        toast({
+          title: t('common.success', 'Success'),
+          description: t('pricing.success_create', 'Room category created.'),
+        })
       }
     }
 
@@ -135,7 +141,10 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
         variant: 'destructive',
       })
     } else {
-      toast({ title: 'Success', description: 'Room category deleted.' })
+      toast({
+        title: t('common.success', 'Success'),
+        description: t('pricing.success_delete', 'Room category deleted.'),
+      })
       fetchRoomTypes()
     }
   }
@@ -145,11 +154,13 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>
-            {t('hotels.room_types') || 'Room Categories & Rates'}
+            {t('hotels.room_types', 'Room Categories & Rates')}
           </CardTitle>
           <CardDescription>
-            Define categories (e.g. Standard, Sea View) with their base prices
-            to apply them in bulk to rooms.
+            {t(
+              'hotels.room_types_desc',
+              'Define categories (e.g. Standard, Sea View) with their base prices to apply them in bulk to rooms.',
+            )}
           </CardDescription>
         </div>
         <div className="flex gap-2">
@@ -158,7 +169,8 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
             variant="outline"
             className="gap-2"
           >
-            <DollarSign className="h-4 w-4" /> Bulk Pricing
+            <DollarSign className="h-4 w-4" />{' '}
+            {t('pricing.bulk_pricing_btn', 'Bulk Pricing')}
           </Button>
           <Button
             onClick={() => {
@@ -167,8 +179,9 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
             }}
             className="bg-trust-blue text-white"
           >
-            <Plus className="mr-2 h-4 w-4" /> Add Category
-          </Button>
+            <Plus className="mr-2 h-4 w-4" />{' '}
+            {t('pricing.add_category', 'Add Category')}
+          </Button>{' '}
         </div>
       </CardHeader>
       <BulkPricingModal
@@ -183,11 +196,15 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Category Name</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Beds/Baths</TableHead>
-                <TableHead>Base Rate</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>
+                  {t('hotels.category_name', 'Category Name')}
+                </TableHead>
+                <TableHead>{t('hotels.capacity', 'Capacity')}</TableHead>
+                <TableHead>{t('hotels.beds_baths', 'Beds/Baths')}</TableHead>
+                <TableHead>{t('hotels.base_rate', 'Base Rate')}</TableHead>
+                <TableHead className="text-right">
+                  {t('common.actions', 'Actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -247,8 +264,11 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
                     colSpan={5}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    No categories defined. Create one to apply to rooms.
-                  </TableCell>
+                    {t(
+                      'pricing.no_categories',
+                      'No categories defined. Create one to apply to rooms.',
+                    )}
+                  </TableCell>{' '}
                 </TableRow>
               )}
             </TableBody>
@@ -260,14 +280,21 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingType.id ? 'Edit Category' : 'New Room Category'}
+              {editingType.id
+                ? t('pricing.edit_category', 'Edit Category')
+                : t('pricing.new_category', 'New Room Category')}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Category Name *</Label>
+              <Label>
+                {t('pricing.category_name_label', 'Category Name *')}
+              </Label>
               <Input
-                placeholder="e.g. Deluxe Sea View"
+                placeholder={t(
+                  'pricing.category_name_placeholder',
+                  'e.g. Deluxe Sea View',
+                )}
                 value={editingType.name || ''}
                 onChange={(e) =>
                   setEditingType({ ...editingType, name: e.target.value })
@@ -275,9 +302,12 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
               />
             </div>
             <div className="grid gap-2">
-              <Label>Description</Label>
+              <Label>{t('pricing.description', 'Description')}</Label>
               <Input
-                placeholder="Brief description of characteristics"
+                placeholder={t(
+                  'pricing.description_placeholder',
+                  'Brief description of characteristics',
+                )}
                 value={editingType.description || ''}
                 onChange={(e) =>
                   setEditingType({
@@ -289,7 +319,7 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Base Rate ($) *</Label>
+                <Label>{t('pricing.max_guests', 'Max Guests')}</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -303,7 +333,7 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Max Guests</Label>
+                <Label>{t('hotels.max_guests', 'Max Guests')}</Label>
                 <Input
                   type="number"
                   value={editingType.capacity || 1}
@@ -318,7 +348,7 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Bedrooms</Label>
+                <Label>{t('pricing.bedrooms', 'Bedrooms')}</Label>
                 <Input
                   type="number"
                   value={editingType.bedrooms || 1}
@@ -331,7 +361,7 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Bathrooms</Label>
+                <Label>{t('pricing.bathrooms', 'Bathrooms')}</Label>
                 <Input
                   type="number"
                   value={editingType.bathrooms || 1}
@@ -347,12 +377,12 @@ export function RoomTypesManager({ hotelId }: { hotelId: string }) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button onClick={handleSave} className="bg-trust-blue text-white">
-              Save Category
+              {t('pricing.save_category', 'Save Category')}
             </Button>
-          </DialogFooter>
+          </DialogFooter>{' '}
         </DialogContent>
       </Dialog>
     </Card>

@@ -389,7 +389,7 @@ function AppSidebarContent() {
         resource: 'users',
       },
       {
-        title: t('menu.system.ad_admin', 'Publicity Administration'),
+        title: t('menu.system.ad_admin', 'Publicity Admin'),
         url: '/admin/publicity',
         icon: Megaphone,
         resource: 'publicity',

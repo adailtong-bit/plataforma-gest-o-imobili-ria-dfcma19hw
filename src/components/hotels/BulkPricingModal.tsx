@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select'
 import { supabase } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export function BulkPricingModal({
   hotelId,
@@ -33,6 +34,7 @@ export function BulkPricingModal({
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
+  const { t } = useDbTranslations()
 
   const handleApply = async () => {
     if (!value || isNaN(Number(value))) {
@@ -76,8 +78,11 @@ export function BulkPricingModal({
       }
 
       toast({
-        title: 'Success',
-        description: 'Bulk pricing applied successfully.',
+        title: t('common.success', 'Success'),
+        description: t(
+          'pricing.bulk.success',
+          'Bulk pricing applied successfully.',
+        ),
       })
       onOpenChange(false)
       window.dispatchEvent(new Event('roomTypesUpdated'))
@@ -96,32 +101,44 @@ export function BulkPricingModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Bulk Pricing Engine</DialogTitle>
+          <DialogTitle>
+            {t('pricing.bulk_pricing_engine', 'Bulk Pricing Engine')}
+          </DialogTitle>
           <DialogDescription>
-            Apply a mass price update to all room categories in this hotel. The
-            system will automatically sync prices to all associated rooms.
+            {t(
+              'pricing.bulk_desc',
+              'Apply a mass price update to all room categories in this hotel. The system will automatically sync prices to all associated rooms.',
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
-            <Label>Adjustment Type</Label>
+            <Label>{t('pricing.adjustment_type', 'Adjustment Type')}</Label>
             <Select value={type} onValueChange={setType}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="percentage">
-                  Percentage Increase/Decrease (%)
+                  {t(
+                    'pricing.percentage_increase',
+                    'Percentage Increase/Decrease (%)',
+                  )}
                 </SelectItem>
                 <SelectItem value="fixed_increase">
-                  Fixed Amount Increase/Decrease ($)
+                  {t(
+                    'pricing.fixed_increase',
+                    'Fixed Amount Increase/Decrease ($)',
+                  )}
                 </SelectItem>
-                <SelectItem value="set_fixed">Set Exact Amount ($)</SelectItem>
+                <SelectItem value="set_fixed">
+                  {t('pricing.set_fixed', 'Set Exact Amount ($)')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Value</Label>
+            <Label>{t('pricing.value', 'Value')}</Label>
             <Input
               type="number"
               placeholder={
@@ -140,14 +157,16 @@ export function BulkPricingModal({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button
             onClick={handleApply}
             disabled={loading}
             className="bg-trust-blue text-white"
           >
-            {loading ? 'Applying...' : 'Apply Bulk Update'}
+            {loading
+              ? t('pricing.applying', 'Applying...')
+              : t('pricing.apply_bulk', 'Apply Bulk Update')}
           </Button>
         </DialogFooter>
       </DialogContent>
