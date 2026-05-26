@@ -706,6 +706,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const filterByOrg = useCallback(
     <T extends { organizationId?: string }>(items: T[]): T[] => {
+      if (!items || !Array.isArray(items)) return [] as T[]
       if (!currentUserObj) return items // Show all items if no user is logged in
       if (
         currentUserObj.role === 'platform_owner' ||
@@ -801,8 +802,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const scopedFinancials = useMemo(
     () => ({
       ...financials,
-      invoices: filterByOrg(financials.invoices),
-      payments: filterByOrg(financials.payments),
+      invoices: filterByOrg(financials?.invoices || []),
+      payments: filterByOrg(financials?.payments || []),
     }),
     [financials, filterByOrg],
   )

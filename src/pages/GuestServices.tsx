@@ -82,12 +82,12 @@ export default function GuestServices() {
   )
   const [selectedBookingId, setSelectedBookingId] = useState<string>('')
 
-  const activeBookings = bookings.filter(
+  const activeBookings = (bookings || []).filter(
     (b) => b.status === 'checked_in' || b.status === 'confirmed',
   )
 
-  const filteredServices = guestServices.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase()),
+  const filteredServices = (guestServices || []).filter((s) =>
+    (s.name || '').toLowerCase().includes((search || '').toLowerCase()),
   )
 
   const handleSave = (form: Partial<GuestService>) => {
@@ -129,8 +129,8 @@ export default function GuestServices() {
     }
 
     const currentPrice = getCurrentPrice(
-      selectedService.price,
-      selectedService.prices,
+      selectedService.price || 0,
+      selectedService.prices || [],
     )
 
     // Add to invoices connected to booking
@@ -201,8 +201,8 @@ export default function GuestServices() {
             <TableBody>
               {filteredServices.map((service) => {
                 const currentPrice = getCurrentPrice(
-                  service.price,
-                  service.prices,
+                  service.price || 0,
+                  service.prices || [],
                 )
                 return (
                   <TableRow key={service.id} className="hover:bg-slate-50">
