@@ -91,7 +91,10 @@ export default function Partners() {
     if (!form.name || !form.type) {
       toast({
         title: t('common.validation_error') || 'Validation Error',
-        description: 'Name and Function are required.',
+        description: t(
+          'partners.validation.name_function',
+          'Name and Function are required.',
+        ),
         variant: 'destructive',
       })
       return
@@ -122,7 +125,10 @@ export default function Partners() {
     setForm(initialFormState)
     toast({
       title: t('common.success') || 'Success',
-      description: 'Partner successfully added.',
+      description: t(
+        'partners.toast.add_success',
+        'Partner successfully added.',
+      ),
     })
   }
 
@@ -130,7 +136,10 @@ export default function Partners() {
     if (!form.name || !form.type) {
       toast({
         title: t('common.validation_error') || 'Validation Error',
-        description: 'Name and Function are required.',
+        description: t(
+          'partners.validation.name_function',
+          'Name and Function are required.',
+        ),
         variant: 'destructive',
       })
       return
@@ -156,7 +165,10 @@ export default function Partners() {
     setIsAddOpen(false)
     toast({
       title: t('common.success') || 'Success',
-      description: 'Partner successfully updated.',
+      description: t(
+        'partners.toast.edit_success',
+        'Partner successfully updated.',
+      ),
     })
   }
 
@@ -165,7 +177,10 @@ export default function Partners() {
       deletePartner(id)
       toast({
         title: t('common.delete_success') || 'Deleted',
-        description: 'The partner has been removed.',
+        description: t(
+          'partners.toast.delete_success',
+          'The partner has been removed.',
+        ),
       })
     }
   }
@@ -247,7 +262,7 @@ export default function Partners() {
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
                 <div className="space-y-2 col-span-2">
-                  <Label>Type</Label>
+                  <Label>{t('partners.form.type', 'Type')}</Label>
                   <RadioGroup
                     value={form.entityType}
                     onValueChange={(val) =>
@@ -264,7 +279,8 @@ export default function Partners() {
                         htmlFor="company"
                         className="font-normal flex items-center gap-1 cursor-pointer"
                       >
-                        <Building2 className="h-4 w-4" /> Company
+                        <Building2 className="h-4 w-4" />{' '}
+                        {t('partners.form.company', 'Company')}
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -273,7 +289,8 @@ export default function Partners() {
                         htmlFor="individual"
                         className="font-normal flex items-center gap-1 cursor-pointer"
                       >
-                        <User className="h-4 w-4" /> Individual
+                        <User className="h-4 w-4" />{' '}
+                        {t('partners.form.individual', 'Individual')}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -282,8 +299,8 @@ export default function Partners() {
                 <div className="space-y-2">
                   <Label>
                     {form.entityType === 'company'
-                      ? 'Company/Trade Name'
-                      : 'Full Name'}{' '}
+                      ? t('partners.form.company_name', 'Company/Trade Name')
+                      : t('partners.form.full_name', 'Full Name')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -295,9 +312,14 @@ export default function Partners() {
 
                 {form.entityType === 'company' && (
                   <div className="space-y-2">
-                    <Label>Legal/Corporate Name</Label>
+                    <Label>
+                      {t('partners.form.legal_name', 'Legal/Corporate Name')}
+                    </Label>
                     <Input
-                      placeholder="Corporate Name"
+                      placeholder={t(
+                        'partners.form.legal_name',
+                        'Legal/Corporate Name',
+                      )}
                       value={form.companyName}
                       onChange={(e) =>
                         setForm({ ...form, companyName: e.target.value })
@@ -308,11 +330,14 @@ export default function Partners() {
 
                 <div className="space-y-2">
                   <Label>
-                    Tax ID (CPF/CNPJ/EIN){' '}
+                    {t('partners.form.tax_id', 'Tax ID (CPF/CNPJ/EIN)')}{' '}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    placeholder="Tax ID"
+                    placeholder={t(
+                      'partners.form.tax_id',
+                      'Tax ID (CPF/CNPJ/EIN)',
+                    )}
                     value={form.cpfCnpj}
                     onChange={(e) =>
                       setForm({ ...form, cpfCnpj: e.target.value })
@@ -322,10 +347,14 @@ export default function Partners() {
 
                 <div className="space-y-2">
                   <Label>
-                    Function / Category <span className="text-red-500">*</span>
+                    {t('partners.form.function', 'Function / Category')}{' '}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    placeholder="e.g., Cleaning, Maintenance, Plumbing"
+                    placeholder={t(
+                      'partners.form.function_placeholder',
+                      'e.g., Cleaning, Maintenance, Plumbing',
+                    )}
                     value={form.type}
                     onChange={(e) => setForm({ ...form, type: e.target.value })}
                   />
@@ -356,17 +385,17 @@ export default function Partners() {
 
                 <div className="space-y-2 col-span-2 mt-2">
                   <Label className="font-semibold text-base border-b pb-1 mb-2 block">
-                    Address
+                    {t('common.address', 'Address')}
                   </Label>
                 </div>
 
                 <div className="space-y-2 col-span-2">
-                  <Label>Search Address</Label>
+                  <Label>{t('common.search_address', 'Search Address')}</Label>
                   <AddressInput onAddressSelect={handleAddressSelect} />
                 </div>
 
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label>Street</Label>
+                  <Label>{t('common.street', 'Street')}</Label>
                   <Input
                     value={form.address}
                     onChange={(e) =>
@@ -376,7 +405,7 @@ export default function Partners() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>City</Label>
+                  <Label>{t('common.city', 'City')}</Label>
                   <Input
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
@@ -384,7 +413,7 @@ export default function Partners() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>State</Label>
+                  <Label>{t('common.state', 'State')}</Label>
                   <Input
                     value={form.state}
                     onChange={(e) =>
@@ -394,7 +423,7 @@ export default function Partners() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Zip Code</Label>
+                  <Label>{t('common.zip_code', 'Zip Code')}</Label>
                   <Input
                     value={form.zipCode}
                     onChange={(e) =>
@@ -470,7 +499,10 @@ export default function Partners() {
                           variant="outline"
                           className="text-[10px] px-1 py-0 h-4 bg-emerald-50 text-emerald-700 border-emerald-200"
                         >
-                          Promoted Tenant
+                          {t(
+                            'partners.badges.promoted_tenant',
+                            'Promoted Tenant',
+                          )}
                         </Badge>
                       )}
                       {(partner as any).origin === 'opporjob' && (
@@ -478,7 +510,7 @@ export default function Partners() {
                           variant="outline"
                           className="text-[10px] px-1 py-0 h-4 bg-indigo-50 text-indigo-700 border-indigo-200"
                         >
-                          Opporjob
+                          {t('partners.badges.opporjob', 'Opporjob')}
                         </Badge>
                       )}
                     </div>

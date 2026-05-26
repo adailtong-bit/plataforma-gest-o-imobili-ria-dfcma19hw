@@ -30,12 +30,12 @@ export default function MarketAnalysis() {
   }
 
   const data = [
-    { name: 'Jan', avgRate: 150, ourRate: 140 },
-    { name: 'Feb', avgRate: 155, ourRate: 150 },
-    { name: 'Mar', avgRate: 165, ourRate: 160 },
-    { name: 'Apr', avgRate: 180, ourRate: 175 },
-    { name: 'May', avgRate: 200, ourRate: 190 },
-    { name: 'Jun', avgRate: 220, ourRate: 210 },
+    { name: t('common.months.jan', 'Jan'), avgRate: 150, ourRate: 140 },
+    { name: t('common.months.feb', 'Feb'), avgRate: 155, ourRate: 150 },
+    { name: t('common.months.mar', 'Mar'), avgRate: 165, ourRate: 160 },
+    { name: t('common.months.apr', 'Apr'), avgRate: 180, ourRate: 175 },
+    { name: t('common.months.may', 'May'), avgRate: 200, ourRate: 190 },
+    { name: t('common.months.jun', 'Jun'), avgRate: 220, ourRate: 210 },
   ]
 
   return (

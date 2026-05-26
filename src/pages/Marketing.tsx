@@ -88,7 +88,9 @@ export default function Marketing() {
       discountType: 'percentage',
       discountValue: '',
     })
-    toast({ title: 'Campanha incluída com sucesso' })
+    toast({
+      title: t('marketing.toast.add_success', 'Campaign successfully added'),
+    })
   }
 
   const handleEdit = () => {
@@ -106,12 +108,19 @@ export default function Marketing() {
       })
     }
     setEditingRecord(null)
-    toast({ title: 'Campanha alterada com sucesso' })
+    toast({
+      title: t('marketing.toast.edit_success', 'Campaign successfully updated'),
+    })
   }
 
   const handleDelete = (id: string) => {
     deleteCampaign(id)
-    toast({ title: 'Campanha excluída com sucesso' })
+    toast({
+      title: t(
+        'marketing.toast.delete_success',
+        'Campaign successfully deleted',
+      ),
+    })
   }
 
   return (
@@ -157,9 +166,12 @@ export default function Marketing() {
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 py-4">
                   <div className="space-y-2 col-span-2">
-                    <Label>Nome da Campanha</Label>
+                    <Label>{t('marketing.form.name', 'Campaign Name')}</Label>
                     <Input
-                      placeholder="Ex: Summer Sale"
+                      placeholder={t(
+                        'marketing.form.ph_name',
+                        'Ex: Summer Sale',
+                      )}
                       value={form.name}
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
@@ -167,9 +179,14 @@ export default function Marketing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Público Alvo</Label>
+                    <Label>
+                      {t('marketing.form.target_audience', 'Target Audience')}
+                    </Label>
                     <Input
-                      placeholder="Ex: all, leads"
+                      placeholder={t(
+                        'marketing.form.ph_audience',
+                        'Ex: all, leads',
+                      )}
                       value={form.targetAudience}
                       onChange={(e) =>
                         setForm({ ...form, targetAudience: e.target.value })
@@ -177,9 +194,14 @@ export default function Marketing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>URL da Imagem (Opcional)</Label>
+                    <Label>
+                      {t('marketing.form.image_url', 'Image URL (Optional)')}
+                    </Label>
                     <Input
-                      placeholder="https://exemplo.com/img.jpg"
+                      placeholder={t(
+                        'marketing.form.ph_image',
+                        'https://example.com/img.jpg',
+                      )}
                       value={form.imageUrl}
                       onChange={(e) =>
                         setForm({ ...form, imageUrl: e.target.value })
@@ -187,7 +209,9 @@ export default function Marketing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Data de Início</Label>
+                    <Label>
+                      {t('marketing.form.start_date', 'Start Date')}
+                    </Label>
                     <Input
                       type="date"
                       value={form.startDate}
@@ -197,7 +221,7 @@ export default function Marketing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Data de Fim</Label>
+                    <Label>{t('marketing.form.end_date', 'End Date')}</Label>
                     <Input
                       type="date"
                       value={form.endDate}
@@ -207,7 +231,9 @@ export default function Marketing() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Tipo de Desconto</Label>
+                    <Label>
+                      {t('marketing.form.discount_type', 'Discount Type')}
+                    </Label>
                     <Select
                       value={form.discountType}
                       onValueChange={(v) =>
@@ -219,16 +245,18 @@ export default function Marketing() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="percentage">
-                          Porcentagem (%)
+                          {t('marketing.form.percentage', 'Percentage (%)')}
                         </SelectItem>
                         <SelectItem value="fixed_amount">
-                          Valor Fixo ($)
+                          {t('marketing.form.fixed_amount', 'Fixed Amount ($)')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Valor do Desconto</Label>
+                    <Label>
+                      {t('marketing.form.discount_value', 'Discount Value')}
+                    </Label>
                     <Input
                       type="number"
                       placeholder="0"
@@ -240,7 +268,9 @@ export default function Marketing() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleAdd}>Salvar</Button>
+                  <Button onClick={handleAdd}>
+                    {t('common.save', 'Save')}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -287,7 +317,7 @@ export default function Marketing() {
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-md bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-medium">
-                            No Img
+                            {t('common.no_image', 'No Img')}
                           </div>
                         )}
                       </TableCell>
@@ -295,7 +325,7 @@ export default function Marketing() {
                         {camp.name}
                       </TableCell>
                       <TableCell className="capitalize">
-                        {camp.targetAudience || 'All'}
+                        {camp.targetAudience || t('common.all', 'All')}
                       </TableCell>
                       <TableCell>{camp.startDate}</TableCell>
                       <TableCell>{camp.endDate}</TableCell>
@@ -364,9 +394,14 @@ export default function Marketing() {
                               </DialogHeader>
                               <div className="grid grid-cols-2 gap-4 py-4">
                                 <div className="space-y-2 col-span-2">
-                                  <Label>Nome da Campanha</Label>
+                                  <Label>
+                                    {t('marketing.form.name', 'Campaign Name')}
+                                  </Label>
                                   <Input
-                                    placeholder="Nome da Campanha"
+                                    placeholder={t(
+                                      'marketing.form.name',
+                                      'Campaign Name',
+                                    )}
                                     value={form.name}
                                     onChange={(e) =>
                                       setForm({ ...form, name: e.target.value })
@@ -374,9 +409,17 @@ export default function Marketing() {
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Público Alvo</Label>
+                                  <Label>
+                                    {t(
+                                      'marketing.form.target_audience',
+                                      'Target Audience',
+                                    )}
+                                  </Label>
                                   <Input
-                                    placeholder="Público Alvo"
+                                    placeholder={t(
+                                      'marketing.form.target_audience',
+                                      'Target Audience',
+                                    )}
                                     value={form.targetAudience}
                                     onChange={(e) =>
                                       setForm({
@@ -387,9 +430,17 @@ export default function Marketing() {
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>URL da Imagem</Label>
+                                  <Label>
+                                    {t(
+                                      'marketing.form.image_url',
+                                      'Image URL (Optional)',
+                                    )}
+                                  </Label>
                                   <Input
-                                    placeholder="https://..."
+                                    placeholder={t(
+                                      'marketing.form.ph_image',
+                                      'https://example.com/img.jpg',
+                                    )}
                                     value={form.imageUrl}
                                     onChange={(e) =>
                                       setForm({
@@ -400,7 +451,12 @@ export default function Marketing() {
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Data de Início</Label>
+                                  <Label>
+                                    {t(
+                                      'marketing.form.start_date',
+                                      'Start Date',
+                                    )}
+                                  </Label>
                                   <Input
                                     type="date"
                                     value={form.startDate}
@@ -413,7 +469,9 @@ export default function Marketing() {
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Data de Fim</Label>
+                                  <Label>
+                                    {t('marketing.form.end_date', 'End Date')}
+                                  </Label>
                                   <Input
                                     type="date"
                                     value={form.endDate}
@@ -426,7 +484,12 @@ export default function Marketing() {
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Tipo de Desconto</Label>
+                                  <Label>
+                                    {t(
+                                      'marketing.form.discount_type',
+                                      'Discount Type',
+                                    )}
+                                  </Label>
                                   <Select
                                     value={form.discountType}
                                     onValueChange={(v) =>
@@ -438,16 +501,27 @@ export default function Marketing() {
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="percentage">
-                                        Porcentagem (%)
+                                        {t(
+                                          'marketing.form.percentage',
+                                          'Percentage (%)',
+                                        )}
                                       </SelectItem>
                                       <SelectItem value="fixed_amount">
-                                        Valor Fixo ($)
+                                        {t(
+                                          'marketing.form.fixed_amount',
+                                          'Fixed Amount ($)',
+                                        )}
                                       </SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Valor do Desconto</Label>
+                                  <Label>
+                                    {t(
+                                      'marketing.form.discount_value',
+                                      'Discount Value',
+                                    )}
+                                  </Label>
                                   <Input
                                     type="number"
                                     placeholder="0"
@@ -462,7 +536,9 @@ export default function Marketing() {
                                 </div>
                               </div>
                               <DialogFooter>
-                                <Button onClick={handleEdit}>Salvar</Button>
+                                <Button onClick={handleEdit}>
+                                  {t('common.save', 'Save')}
+                                </Button>
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>

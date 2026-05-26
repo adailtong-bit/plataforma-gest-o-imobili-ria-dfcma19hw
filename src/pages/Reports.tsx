@@ -67,31 +67,31 @@ export default function Reports() {
   // Occupancy Status
   const occupancyData = [
     {
-      name: 'Occupied',
+      name: t('reports.status.occupied', 'Occupied'),
       value: properties.filter(
         (p) => p.status === 'occupied' || p.status === 'rented',
       ).length,
     },
     {
-      name: 'Vacant',
+      name: t('reports.status.vacant', 'Vacant'),
       value: properties.filter(
         (p) => p.status === 'available' || p.status === 'vacant',
       ).length,
     },
     {
-      name: 'Maintenance',
+      name: t('reports.status.maintenance', 'Maintenance'),
       value: properties.filter((p) => p.status === 'maintenance').length,
     },
   ]
 
   // Monthly Revenue Mock (Based on invoices if available, fallback to static)
   const monthlyData = [
-    { month: 'Jan', revenue: 4000, expenses: 2400 },
-    { month: 'Feb', revenue: 3000, expenses: 1398 },
-    { month: 'Mar', revenue: 2000, expenses: 9800 },
-    { month: 'Apr', revenue: 2780, expenses: 3908 },
-    { month: 'May', revenue: 1890, expenses: 4800 },
-    { month: 'Jun', revenue: 2390, expenses: 3800 },
+    { month: t('common.months.jan', 'Jan'), revenue: 4000, expenses: 2400 },
+    { month: t('common.months.feb', 'Feb'), revenue: 3000, expenses: 1398 },
+    { month: t('common.months.mar', 'Mar'), revenue: 2000, expenses: 9800 },
+    { month: t('common.months.apr', 'Apr'), revenue: 2780, expenses: 3908 },
+    { month: t('common.months.may', 'May'), revenue: 1890, expenses: 4800 },
+    { month: t('common.months.jun', 'Jun'), revenue: 2390, expenses: 3800 },
   ]
 
   return (

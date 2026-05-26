@@ -60,21 +60,57 @@ export default function Performance() {
 
   // Mock data
   const performanceData = [
-    { month: 'Jan', rating: 4.5, reviews: 45, revPar: 120, occupancy: 75 },
-    { month: 'Feb', rating: 4.6, reviews: 52, revPar: 135, occupancy: 78 },
-    { month: 'Mar', rating: 4.7, reviews: 48, revPar: 140, occupancy: 82 },
-    { month: 'Apr', rating: 4.8, reviews: 61, revPar: 155, occupancy: 85 },
-    { month: 'May', rating: 4.7, reviews: 55, revPar: 160, occupancy: 88 },
-    { month: 'Jun', rating: 4.9, reviews: 67, revPar: 180, occupancy: 92 },
+    {
+      month: t('common.months.jan', 'Jan'),
+      rating: 4.5,
+      reviews: 45,
+      revPar: 120,
+      occupancy: 75,
+    },
+    {
+      month: t('common.months.feb', 'Feb'),
+      rating: 4.6,
+      reviews: 52,
+      revPar: 135,
+      occupancy: 78,
+    },
+    {
+      month: t('common.months.mar', 'Mar'),
+      rating: 4.7,
+      reviews: 48,
+      revPar: 140,
+      occupancy: 82,
+    },
+    {
+      month: t('common.months.apr', 'Apr'),
+      rating: 4.8,
+      reviews: 61,
+      revPar: 155,
+      occupancy: 85,
+    },
+    {
+      month: t('common.months.may', 'May'),
+      rating: 4.7,
+      reviews: 55,
+      revPar: 160,
+      occupancy: 88,
+    },
+    {
+      month: t('common.months.jun', 'Jun'),
+      rating: 4.9,
+      reviews: 67,
+      revPar: 180,
+      occupancy: 92,
+    },
   ]
 
   const chartConfig = {
     rating: {
-      label: t('performance.average_rating'),
+      label: t('performance.average_rating', 'Average Rating'),
       color: 'hsl(var(--chart-1))',
     },
     reviews: {
-      label: t('performance.guest_reviews'),
+      label: t('performance.guest_reviews', 'Guest Reviews'),
       color: 'hsl(var(--chart-2))',
     },
     revPar: {
@@ -82,24 +118,13 @@ export default function Performance() {
       color: 'hsl(var(--chart-3))',
     },
     occupancy: {
-      label: t('market_analysis.avg_occupancy'),
+      label: t('market_analysis.avg_occupancy', 'Avg Occupancy'),
       color: 'hsl(var(--chart-4))',
     },
   }
 
-  const viewAllText =
-    language === 'pt'
-      ? 'Ver Todas as Avaliações'
-      : language === 'es'
-        ? 'Ver Todas las Reseñas'
-        : 'View All Reviews'
-
-  const reviewsTitleText =
-    language === 'pt'
-      ? 'Avaliações dos Hóspedes'
-      : language === 'es'
-        ? 'Reseñas de Huéspedes'
-        : 'Guest Reviews'
+  const viewAllText = t('performance.view_all_reviews', 'View All Reviews')
+  const reviewsTitleText = t('performance.guest_reviews_title', 'Guest Reviews')
 
   return (
     <div className="flex flex-col gap-6">
@@ -132,12 +157,14 @@ export default function Performance() {
                 />
               ) : (
                 <div className="absolute inset-0 w-full h-full bg-slate-200 flex items-center justify-center">
-                  <span className="text-slate-400 font-medium">No Image</span>
+                  <span className="text-slate-400 font-medium">
+                    {t('common.no_image', 'No Image')}
+                  </span>
                 </div>
               )}
               <div className="absolute inset-0 bg-black/50 p-4 flex flex-col justify-center">
                 <span className="text-white text-[10px] font-bold uppercase tracking-wider mb-1 bg-black/60 w-fit px-1.5 py-0.5 rounded">
-                  Sponsored
+                  {t('common.sponsored', 'Sponsored')}
                 </span>
                 <h4 className="text-white font-bold truncate text-sm">
                   {ad.title}
@@ -153,8 +180,8 @@ export default function Performance() {
           {t('sidebar.performance')}
         </h1>
         <p className="text-slate-700 font-medium">
-          {t('performance.guest_reviews')} & KPIs
-        </p>
+          {t('performance.guest_reviews', 'Guest Reviews')} & KPIs
+        </p>{' '}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -193,7 +220,9 @@ export default function Performance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$148.33</div>
-            <p className="text-xs text-muted-foreground">+12% vs last year</p>
+            <p className="text-xs text-muted-foreground">
+              {t('performance.vs_last_year', '+12% vs last year')}
+            </p>
           </CardContent>
         </Card>
         <Card className="flex flex-col">
@@ -205,7 +234,9 @@ export default function Performance() {
           </CardHeader>
           <CardContent className="flex-1">
             <div className="text-2xl font-bold">328</div>
-            <p className="text-xs text-muted-foreground">+28 new this month</p>
+            <p className="text-xs text-muted-foreground">
+              {t('performance.new_this_month', '+28 new this month')}
+            </p>
           </CardContent>
           <CardFooter className="pt-0 pb-4">
             <Button
@@ -345,7 +376,7 @@ export default function Performance() {
               ))
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                No reviews found.
+                {t('performance.no_reviews', 'No reviews found.')}
               </p>
             )}
           </div>
