@@ -1,0 +1,23 @@
+INSERT INTO public.ui_translations (key, locale, value) VALUES
+  ('menu.system.pricing', 'pt', 'Precificação'),
+  ('menu.system.pricing', 'en', 'Pricing'),
+  ('menu.system.pricing', 'es', 'Precios'),
+  ('menu.system.users', 'pt', 'Usuários'),
+  ('menu.system.users', 'en', 'Users'),
+  ('menu.system.users', 'es', 'Usuarios'),
+  ('menu.system.ad_admin', 'pt', 'Admin de Publicidade'),
+  ('menu.system.ad_admin', 'en', 'Ad Admin'),
+  ('menu.system.ad_admin', 'es', 'Admin de Publicidad'),
+  ('menu.system.migration_hub', 'pt', 'Hub de Migração'),
+  ('menu.system.migration_hub', 'en', 'Migration Hub'),
+  ('menu.system.migration_hub', 'es', 'Hub de Migración'),
+  ('menu.system.advanced_analytics', 'pt', 'Analytics Avançado'),
+  ('menu.system.advanced_analytics', 'en', 'Advanced Analytics'),
+  ('menu.system.advanced_analytics', 'es', 'Análisis Avanzado'),
+  ('menu.system.automation_rules', 'pt', 'Regras de Automação'),
+  ('menu.system.automation_rules', 'en', 'Automation Rules'),
+  ('menu.system.automation_rules', 'es', 'Reglas de Automatización'),
+  ('menu.system', 'pt', 'Sistema'),
+  ('menu.system', 'en', 'System'),
+  ('menu.system', 'es', 'Sistema')
+ON CONFLICT (key, locale) DO UPDATE SET value = EXCLUDED.value;

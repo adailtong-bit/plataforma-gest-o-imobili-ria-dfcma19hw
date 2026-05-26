@@ -54,7 +54,7 @@ export default function Pricing() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.pricing') || 'Pricing'}
+            {t('menu.system.pricing', 'Pricing')}
           </h1>
           <p className="text-muted-foreground">
             {t('pricing.desc') ||

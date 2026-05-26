@@ -282,7 +282,7 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('users.title', 'Identity & Players Management')}
+            {t('menu.system.users', 'Users')}
           </h1>
           <p className="text-muted-foreground">
             {t(

@@ -371,7 +371,7 @@ function AppSidebarContent() {
         resource: 'settings',
       },
       {
-        title: t('sidebar.pricing', 'Pricing'),
+        title: t('menu.system.pricing', 'Pricing'),
         url: '/pricing',
         icon: DollarSign,
         resource: 'settings',
@@ -383,31 +383,31 @@ function AppSidebarContent() {
         resource: 'service_pricing',
       },
       {
-        title: t('sidebar.users', 'Users'),
+        title: t('menu.system.users', 'Users'),
         url: '/users',
         icon: Users,
         resource: 'users',
       },
       {
-        title: t('sidebar.publicity_admin', 'Publicity Administration'),
+        title: t('menu.system.ad_admin', 'Publicity Administration'),
         url: '/admin/publicity',
         icon: Megaphone,
         resource: 'publicity',
       },
       {
-        title: t('sidebar.migration_hub', 'Migration Hub'),
+        title: t('menu.system.migration_hub', 'Migration Hub'),
         url: '/admin/migration',
         icon: Database,
         resource: 'migration',
       },
       {
-        title: t('common.advanced_analytics', 'Advanced Analytics'),
+        title: t('menu.system.advanced_analytics', 'Advanced Analytics'),
         url: '/admin/analytics',
         icon: PieChart,
         resource: 'analytics',
       },
       {
-        title: t('common.automation_rules', 'Automation Rules'),
+        title: t('menu.system.automation_rules', 'Automation Rules'),
         url: '/admin/automation',
         icon: Zap,
         resource: 'automation',
@@ -706,7 +706,7 @@ function AppSidebarContent() {
             {filteredSystem.length > 0 && (
               <SidebarGroup className="mt-4">
                 <SidebarGroupLabel className="text-slate-500 uppercase text-[10px] font-bold tracking-wider px-4 mb-2">
-                  {t('sidebar.system', 'System')}
+                  {t('menu.system', 'System')}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
