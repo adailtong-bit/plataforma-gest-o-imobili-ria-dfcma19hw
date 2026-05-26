@@ -45,7 +45,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { DataMask } from '@/components/DataMask'
 import { Partner } from '@/lib/types'
 import { Link } from 'react-router-dom'
@@ -55,7 +55,7 @@ export default function Partners() {
   const { partners, addPartner, updatePartner, deletePartner } =
     usePartnerStore()
 
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
@@ -77,8 +77,8 @@ export default function Partners() {
   }
   const [form, setForm] = useState<Partial<Partner>>(initialFormState)
 
-  const filteredPartners = partners.filter((p) => {
-    const term = search.toLowerCase()
+  const filteredPartners = (partners || []).filter((p) => {
+    const term = search?.toLowerCase() || ''
     return (
       (p?.name || '').toLowerCase().includes(term) ||
       (p?.companyName || '').toLowerCase().includes(term) ||
@@ -470,14 +470,14 @@ export default function Partners() {
                 <TableRow key={partner?.id} className="hover:bg-slate-50">
                   <TableCell className="font-medium text-slate-900">
                     <div className="flex items-center gap-2">
-                      {partner.entityType === 'individual' ? (
+                      {partner?.entityType === 'individual' ? (
                         <User className="h-4 w-4 text-slate-400" />
                       ) : (
                         <Building2 className="h-4 w-4 text-slate-400" />
                       )}
-                      <DataMask>{partner?.name}</DataMask>
+                      <DataMask>{partner?.name || ''}</DataMask>
                     </div>
-                    {partner.companyName && (
+                    {partner?.companyName && (
                       <div className="text-xs text-muted-foreground ml-6">
                         <DataMask>{partner.companyName}</DataMask>
                       </div>
@@ -583,7 +583,9 @@ export default function Partners() {
                               {t('common.cancel') || 'Cancel'}
                             </AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDelete(partner?.id)}
+                              onClick={() =>
+                                partner?.id && handleDelete(partner.id)
+                              }
                               className="bg-red-600 hover:bg-red-700 text-white"
                             >
                               {t('common.delete') || 'Delete'}

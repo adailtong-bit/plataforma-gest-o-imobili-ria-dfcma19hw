@@ -75,11 +75,13 @@ export default function Pricing() {
       <Card className="bg-white border-slate-200">
         <CardHeader>
           <CardTitle>
-            {t('hotels.select_property') || 'Select Property'}
+            {t('hotels.select_property', 'Select Property')}
           </CardTitle>
           <CardDescription>
-            {t('pricing.select_desc') ||
-              'Choose a hotel to manage its room categories and rates.'}
+            {t(
+              'pricing.select_desc',
+              'Choose a hotel to manage its room categories and rates.',
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -59,8 +59,8 @@ export default function Workflows() {
   })
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filteredWorkflows = workflows.filter((wf) =>
-    wf.name.toLowerCase().includes(search.toLowerCase()),
+  const filteredWorkflows = (workflows || []).filter((wf) =>
+    (wf?.name || '').toLowerCase().includes(search?.toLowerCase() || ''),
   )
 
   const handleSave = () => {
@@ -101,7 +101,7 @@ export default function Workflows() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('common.workflows')}
+            {t('common.workflows', 'Workflows')}
           </h1>
           <p className="text-muted-foreground">
             {t('workflows.subtitle', 'Manage automated task workflows.')}

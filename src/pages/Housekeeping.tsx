@@ -10,34 +10,40 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { format } from 'date-fns'
 
 export default function Housekeeping() {
   const { tasks } = useContext(AppContext)!
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
 
-  const housekeepingTasks = tasks.filter((task) => task.type === 'cleaning')
+  const housekeepingTasks = (tasks || []).filter(
+    (task) => task?.type === 'cleaning',
+  )
 
   return (
     <div className="flex flex-col gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('housekeeping.title')}
+          {t('housekeeping.title', 'Housekeeping')}
         </h1>
-        <p className="text-muted-foreground">{t('housekeeping.subtitle')}</p>
+        <p className="text-muted-foreground">
+          {t('housekeeping.subtitle', 'Manage cleaning and maintenance tasks.')}
+        </p>
       </div>
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardContent className="p-0 overflow-auto">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('housekeeping.task_title')}</TableHead>
-                <TableHead>{t('common.property')}</TableHead>
-                <TableHead>{t('housekeeping.assignee')}</TableHead>
-                <TableHead>{t('housekeeping.date')}</TableHead>
+                <TableHead>
+                  {t('housekeeping.task_title', 'Task Title')}
+                </TableHead>
+                <TableHead>{t('common.property', 'Property')}</TableHead>
+                <TableHead>{t('housekeeping.assignee', 'Assignee')}</TableHead>
+                <TableHead>{t('housekeeping.date', 'Date')}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.status')}
+                  {t('common.status', 'Status')}
                 </TableHead>
               </TableRow>
             </TableHeader>
