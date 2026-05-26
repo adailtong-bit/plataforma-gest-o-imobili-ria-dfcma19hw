@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppHeader } from '@/components/AppHeader'
 import { AppSidebar } from '@/components/AppSidebar'
+
 export function DashboardLayout() {
   return (
     <SidebarProvider>

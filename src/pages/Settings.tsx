@@ -108,7 +108,10 @@ export default function Settings() {
           {t('sidebar.settings') || 'Settings'}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Manage your account settings and preferences.
+          {t(
+            'settings.subtitle',
+            'Manage your account settings and preferences.',
+          )}
         </p>
       </div>
 
@@ -118,26 +121,28 @@ export default function Settings() {
             value="profile"
             className="data-[state=active]:bg-white data-[state=active]:text-black gap-2"
           >
-            <User className="h-4 w-4" /> Profile
+            <User className="h-4 w-4" /> {t('settings.profile', 'Profile')}
           </TabsTrigger>
           <TabsTrigger
             value="preferences"
             className="data-[state=active]:bg-white data-[state=active]:text-black gap-2"
           >
-            <Bell className="h-4 w-4" /> Preferences
+            <Bell className="h-4 w-4" />{' '}
+            {t('settings.preferences', 'Preferences')}
           </TabsTrigger>
           <TabsTrigger
             value="security"
             className="data-[state=active]:bg-white data-[state=active]:text-black gap-2"
           >
-            <Shield className="h-4 w-4" /> Security
+            <Shield className="h-4 w-4" /> {t('settings.security', 'Security')}
           </TabsTrigger>
           {canViewSubscription && (
             <TabsTrigger
               value="subscription"
               className="data-[state=active]:bg-white data-[state=active]:text-black gap-2"
             >
-              <CreditCard className="h-4 w-4" /> Subscription
+              <CreditCard className="h-4 w-4" />{' '}
+              {t('settings.subscription', 'Subscription')}
             </TabsTrigger>
           )}
         </TabsList>
@@ -145,9 +150,14 @@ export default function Settings() {
         <TabsContent value="profile">
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+              <CardTitle>
+                {t('settings.profile_title', 'Profile Information')}
+              </CardTitle>
               <CardDescription>
-                Update your personal details and public profile.
+                {t(
+                  'settings.profile_desc',
+                  'Update your personal details and public profile.',
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -159,12 +169,12 @@ export default function Settings() {
                   </AvatarFallback>
                 </Avatar>
                 <Button variant="outline" className="border-slate-300">
-                  Change Avatar
+                  {t('settings.change_avatar', 'Change Avatar')}
                 </Button>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label>Full Name</Label>
+                  <Label>{t('settings.full_name', 'Full Name')}</Label>
                   <Input
                     value={profileData.name}
                     onChange={(e) =>
@@ -173,7 +183,7 @@ export default function Settings() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Email Address</Label>
+                  <Label>{t('settings.email', 'Email Address')}</Label>
                   <Input
                     value={profileData.email}
                     disabled
@@ -181,7 +191,7 @@ export default function Settings() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Phone Number</Label>
+                  <Label>{t('settings.phone', 'Phone Number')}</Label>
                   <Input
                     value={profileData.phone}
                     onChange={(e) =>
@@ -195,14 +205,23 @@ export default function Settings() {
                 </div>
                 <div className="grid gap-2 md:col-span-2 mt-4 pt-4 border-t">
                   <Label className="flex items-center gap-2 text-base font-bold">
-                    <Globe className="h-4 w-4" /> Interface Language
+                    <Globe className="h-4 w-4" />{' '}
+                    {t('settings.interface_language', 'Interface Language')}
                   </Label>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Change the language of the application interfaces.
+                    {t(
+                      'settings.language_desc',
+                      'Change the language of the application interfaces.',
+                    )}
                   </p>
                   <Select value={locale} onValueChange={changeLanguage}>
                     <SelectTrigger className="max-w-xs">
-                      <SelectValue placeholder="Select Language" />
+                      <SelectValue
+                        placeholder={t(
+                          'settings.select_language',
+                          'Select Language',
+                        )}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="en">English</SelectItem>
@@ -218,7 +237,7 @@ export default function Settings() {
                 onClick={handleSaveProfile}
                 className="bg-trust-blue text-white font-bold"
               >
-                Save Changes
+                {t('common.save_changes', 'Save Changes')}
               </Button>
             </CardFooter>
           </Card>
@@ -227,9 +246,14 @@ export default function Settings() {
         <TabsContent value="preferences">
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader>
-              <CardTitle>System Preferences</CardTitle>
+              <CardTitle>
+                {t('settings.system_preferences', 'System Preferences')}
+              </CardTitle>
               <CardDescription>
-                Manage how you receive notifications and updates.
+                {t(
+                  'settings.preferences_desc',
+                  'Manage how you receive notifications and updates.',
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -237,10 +261,13 @@ export default function Settings() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label className="text-base font-bold">
-                      Email Notifications
+                      {t('settings.email_notif', 'Email Notifications')}
                     </Label>
                     <p className="text-sm text-muted-foreground font-medium">
-                      Receive updates via email.
+                      {t(
+                        'settings.email_notif_desc',
+                        'Receive updates via email.',
+                      )}
                     </p>
                   </div>
                   <Switch
@@ -253,10 +280,13 @@ export default function Settings() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label className="text-base font-bold">
-                      SMS Notifications
+                      {t('settings.sms_notif', 'SMS Notifications')}
                     </Label>
                     <p className="text-sm text-muted-foreground font-medium">
-                      Receive important alerts via text message.
+                      {t(
+                        'settings.sms_notif_desc',
+                        'Receive important alerts via text message.',
+                      )}
                     </p>
                   </div>
                   <Switch
@@ -269,10 +299,13 @@ export default function Settings() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label className="text-base font-bold">
-                      Marketing Emails
+                      {t('settings.marketing_emails', 'Marketing Emails')}
                     </Label>
                     <p className="text-sm text-muted-foreground font-medium">
-                      Receive news and promotional offers.
+                      {t(
+                        'settings.marketing_emails_desc',
+                        'Receive news and promotional offers.',
+                      )}
                     </p>
                   </div>
                   <Switch
@@ -289,7 +322,7 @@ export default function Settings() {
                 onClick={handleSavePreferences}
                 className="bg-trust-blue text-white font-bold"
               >
-                Save Preferences
+                {t('settings.save_preferences', 'Save Preferences')}
               </Button>
             </CardFooter>
           </Card>
@@ -298,23 +331,34 @@ export default function Settings() {
         <TabsContent value="security">
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
+              <CardTitle>
+                {t('settings.security_settings', 'Security Settings')}
+              </CardTitle>
               <CardDescription>
-                Manage your password and security protocols.
+                {t(
+                  'settings.security_desc',
+                  'Manage your password and security protocols.',
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 max-w-md">
                 <div className="grid gap-2">
-                  <Label className="font-bold">Current Password</Label>
+                  <Label className="font-bold">
+                    {t('settings.current_password', 'Current Password')}
+                  </Label>
                   <Input type="password" />
                 </div>
                 <div className="grid gap-2">
-                  <Label className="font-bold">New Password</Label>
+                  <Label className="font-bold">
+                    {t('settings.new_password', 'New Password')}
+                  </Label>
                   <Input type="password" />
                 </div>
                 <div className="grid gap-2">
-                  <Label className="font-bold">Confirm New Password</Label>
+                  <Label className="font-bold">
+                    {t('settings.confirm_password', 'Confirm New Password')}
+                  </Label>
                   <Input type="password" />
                 </div>
               </div>
@@ -322,14 +366,17 @@ export default function Settings() {
                 <div className="space-y-0.5">
                   <Label className="text-base font-bold flex items-center gap-2">
                     <KeyRound className="h-4 w-4" />
-                    Two-Factor Authentication
+                    {t('settings.two_factor', 'Two-Factor Authentication')}
                   </Label>
                   <p className="text-sm text-muted-foreground font-medium">
-                    Add an extra layer of security to your account.
+                    {t(
+                      'settings.two_factor_desc',
+                      'Add an extra layer of security to your account.',
+                    )}
                   </p>
                 </div>
                 <Button variant="outline" className="font-bold">
-                  Enable 2FA
+                  {t('settings.enable_2fa', 'Enable 2FA')}
                 </Button>
               </div>
             </CardContent>
@@ -338,7 +385,7 @@ export default function Settings() {
                 onClick={handleSaveSecurity}
                 className="bg-trust-blue text-white font-bold"
               >
-                Update Password
+                {t('settings.update_password', 'Update Password')}
               </Button>
             </CardFooter>
           </Card>

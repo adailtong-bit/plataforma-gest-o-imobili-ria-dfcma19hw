@@ -104,7 +104,7 @@ export default function Workflows() {
             {t('common.workflows')}
           </h1>
           <p className="text-muted-foreground">
-            Manage automated task workflows.
+            {t('workflows.subtitle', 'Manage automated task workflows.')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function Workflows() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Trigger</Label>
+                  <Label>{t('workflows.trigger', 'Trigger')}</Label>
                   <Input
                     value={form.trigger}
                     onChange={(e) =>
@@ -167,8 +167,10 @@ export default function Workflows() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead>{t('common.name')}</TableHead>
-                <TableHead>Trigger</TableHead>
-                <TableHead>Steps Count</TableHead>
+                <TableHead>{t('workflows.trigger', 'Trigger')}</TableHead>
+                <TableHead>
+                  {t('workflows.steps_count', 'Steps Count')}
+                </TableHead>
                 <TableHead>{t('common.status')}</TableHead>
                 <TableHead className="text-right">
                   {t('common.actions')}

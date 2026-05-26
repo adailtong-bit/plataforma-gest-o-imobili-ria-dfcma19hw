@@ -167,13 +167,17 @@ export default function Users() {
     <Table>
       <TableHeader className="bg-slate-50">
         <TableRow>
-          <TableHead>{t('common.name') || 'Nome'}</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Role</TableHead>
-          {isPM && <TableHead>Company</TableHead>}
-          {!isPM && <TableHead>Permissions</TableHead>}
-          <TableHead>{t('common.status') || 'Status'}</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          <TableHead>{t('common.name', 'Name')}</TableHead>
+          <TableHead>{t('common.email', 'Email')}</TableHead>
+          <TableHead>{t('common.role', 'Role')}</TableHead>
+          {isPM && <TableHead>{t('users.company', 'Company')}</TableHead>}
+          {!isPM && (
+            <TableHead>{t('users.permissions', 'Permissions')}</TableHead>
+          )}
+          <TableHead>{t('common.status', 'Status')}</TableHead>
+          <TableHead className="text-right">
+            {t('common.actions', 'Actions')}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -224,25 +228,33 @@ export default function Users() {
                     setIsAddOpen(true)
                   }}
                 >
-                  <Pencil className="h-4 w-4 mr-2" /> Edit
+                  <Pencil className="h-4 w-4 mr-2" /> {t('common.edit', 'Edit')}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="sm">
-                      <Trash2 className="h-4 w-4 mr-2" /> Delete
+                      <Trash2 className="h-4 w-4 mr-2" />{' '}
+                      {t('common.delete', 'Delete')}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete User</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        {t('users.delete_user', 'Delete User')}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone.
+                        {t(
+                          'common.delete_desc',
+                          'This action cannot be undone.',
+                        )}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>
+                        {t('common.cancel', 'Cancel')}
+                      </AlertDialogCancel>
                       <AlertDialogAction onClick={() => handleDelete(user.id)}>
-                        Delete
+                        {t('common.delete', 'Delete')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -267,11 +279,13 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Identity & Players Management
+            {t('users.title', 'Identity & Players Management')}
           </h1>
           <p className="text-muted-foreground">
-            Manage team members, permissions, property managers, and financial
-            agreements.
+            {t(
+              'users.subtitle',
+              'Manage team members, permissions, property managers, and financial agreements.',
+            )}
           </p>
         </div>
         <Button
@@ -281,7 +295,10 @@ export default function Users() {
           }}
           className="bg-trust-blue text-white gap-2"
         >
-          <Plus className="h-4 w-4" /> Add {activeTab === 'pms' ? 'PM' : 'User'}
+          <Plus className="h-4 w-4" />{' '}
+          {activeTab === 'pms'
+            ? t('users.add_pm', 'Add PM')
+            : t('users.add_user', 'Add User')}
         </Button>
       </div>
 
@@ -295,18 +312,22 @@ export default function Users() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingRecord ? 'Edit Player Configuration' : 'Add New Player'}
+              {editingRecord
+                ? t('users.edit_player', 'Edit Player Configuration')
+                : t('users.add_player', 'Add New Player')}
             </DialogTitle>
           </DialogHeader>
 
           <Tabs defaultValue="profile" className="w-full mt-2">
             <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="profile">Profile Details</TabsTrigger>
+              <TabsTrigger value="profile">
+                {t('users.profile_details', 'Profile Details')}
+              </TabsTrigger>
               <TabsTrigger
                 value="permissions"
                 disabled={form.role !== 'internal_user'}
               >
-                Permissions
+                {t('users.permissions', 'Permissions')}
               </TabsTrigger>
               <TabsTrigger
                 value="billing"
@@ -315,21 +336,21 @@ export default function Users() {
                   !['software_tenant', 'property_owner'].includes(form.role)
                 }
               >
-                Billing Agreements
+                {t('users.billing_agreements', 'Billing Agreements')}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label>Name</Label>
+                  <Label>{t('common.name', 'Name')}</Label>
                   <Input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label>Email</Label>
+                  <Label>{t('common.email', 'Email')}</Label>
                   <Input
                     type="email"
                     value={form.email}
@@ -339,14 +360,16 @@ export default function Users() {
                   />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <Label>Role</Label>
+                  <Label>{t('common.role', 'Role')}</Label>
                   <Select
                     value={form.role}
                     onValueChange={(v) => setForm({ ...form, role: v })}
                     disabled={activeTab === 'pms'}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Role" />
+                      <SelectValue
+                        placeholder={t('users.select_role', 'Select Role')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {availableRoles.map((r) => (
@@ -361,7 +384,7 @@ export default function Users() {
                 {activeTab === 'pms' && form.role === 'software_tenant' && (
                   <>
                     <div className="space-y-2 col-span-2 md:col-span-1">
-                      <Label>Company Name</Label>
+                      <Label>{t('users.company_name', 'Company Name')}</Label>
                       <Input
                         value={pmForm.companyName}
                         onChange={(e) =>
@@ -370,7 +393,7 @@ export default function Users() {
                       />
                     </div>
                     <div className="space-y-2 col-span-2 md:col-span-1">
-                      <Label>Tax ID</Label>
+                      <Label>{t('users.tax_id', 'Tax ID')}</Label>
                       <Input
                         value={pmForm.taxId}
                         onChange={(e) =>
@@ -379,7 +402,9 @@ export default function Users() {
                       />
                     </div>
                     <div className="space-y-2 col-span-2">
-                      <Label>Billing Address</Label>
+                      <Label>
+                        {t('users.billing_address', 'Billing Address')}
+                      </Label>
                       <Input
                         value={pmForm.address}
                         onChange={(e) =>
@@ -388,7 +413,9 @@ export default function Users() {
                       />
                     </div>
                     <div className="space-y-2 col-span-2">
-                      <Label>Subscription Plan</Label>
+                      <Label>
+                        {t('users.subscription_plan', 'Subscription Plan')}
+                      </Label>
                       <Select
                         value={pmForm.subscriptionPlan}
                         onValueChange={(v) =>
@@ -400,9 +427,11 @@ export default function Users() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="pay_per_house">
-                            Pay Per House
+                            {t('users.pay_per_house', 'Pay Per House')}
                           </SelectItem>
-                          <SelectItem value="unlimited">Unlimited</SelectItem>
+                          <SelectItem value="unlimited">
+                            {t('users.unlimited', 'Unlimited')}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -411,17 +440,21 @@ export default function Users() {
               </div>
               <div className="flex justify-end pt-4">
                 <Button onClick={editingRecord ? handleEdit : handleAdd}>
-                  Save Profile
+                  {t('users.save_profile', 'Save Profile')}
                 </Button>
               </div>
             </TabsContent>
 
             <TabsContent value="permissions">
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Access Control (CRUD)</h3>
+                <h3 className="text-lg font-medium">
+                  {t('users.access_control', 'Access Control (CRUD)')}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Define exactly what this team member can view and edit across
-                  the platform.
+                  {t(
+                    'users.access_control_desc',
+                    'Define exactly what this team member can view and edit across the platform.',
+                  )}
                 </p>
                 <PermissionSelector
                   role={form.role as UserRole}
@@ -430,7 +463,7 @@ export default function Users() {
                 />
                 <div className="flex justify-end pt-4">
                   <Button onClick={editingRecord ? handleEdit : handleAdd}>
-                    Save Permissions
+                    {t('users.save_permissions', 'Save Permissions')}
                   </Button>
                 </div>
               </div>
@@ -440,9 +473,10 @@ export default function Users() {
               {editingRecord && (
                 <div className="space-y-4">
                   <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
-                    Configure the financial agreements and billing periods for
-                    this player. These rules will be used automatically when
-                    generating period invoices.
+                    {t(
+                      'users.billing_desc',
+                      'Configure the financial agreements and billing periods for this player. These rules will be used automatically when generating period invoices.',
+                    )}
                   </div>
                   <BillingManager
                     targetId={editingRecord.id}
@@ -464,8 +498,12 @@ export default function Users() {
               className="w-full"
             >
               <TabsList className="m-4">
-                <TabsTrigger value="team">Team Members</TabsTrigger>
-                <TabsTrigger value="pms">Property Managers</TabsTrigger>
+                <TabsTrigger value="team">
+                  {t('users.team_members', 'Team Members')}
+                </TabsTrigger>
+                <TabsTrigger value="pms">
+                  {t('users.property_managers', 'Property Managers')}
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="team" className="m-0 overflow-auto">
                 {renderTable(teamMembers, false)}

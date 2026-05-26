@@ -66,7 +66,8 @@ export default function Pricing() {
             onClick={() => setIsBulkOpen(true)}
             className="bg-trust-blue text-white gap-2"
           >
-            <Settings className="h-4 w-4" /> Bulk Pricing Engine
+            <Settings className="h-4 w-4" />{' '}
+            {t('pricing.bulk_pricing', 'Bulk Pricing Engine')}
           </Button>
         )}
       </div>
@@ -85,18 +86,20 @@ export default function Pricing() {
           {loading ? (
             <div className="flex items-center gap-2 text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading hotels...</span>
+              <span>{t('pricing.loading_hotels', 'Loading hotels...')}</span>
             </div>
           ) : hotels.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              No hotels found. Create a hotel first.
+              {t('pricing.no_hotels', 'No hotels found. Create a hotel first.')}
             </p>
           ) : (
             <div className="w-full max-w-sm space-y-2">
-              <Label>Hotel / Property</Label>
+              <Label>{t('pricing.hotel_property', 'Hotel / Property')}</Label>
               <Select value={selectedHotel} onValueChange={setSelectedHotel}>
                 <SelectTrigger className="bg-slate-50">
-                  <SelectValue placeholder="Select a hotel" />
+                  <SelectValue
+                    placeholder={t('pricing.select_hotel', 'Select a hotel')}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {hotels.map((h) => (
