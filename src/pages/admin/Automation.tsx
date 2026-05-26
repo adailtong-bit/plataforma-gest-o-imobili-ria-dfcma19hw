@@ -5,49 +5,37 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
-import useLanguageStore from '@/stores/useLanguageStore'
-import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function Automation() {
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
 
   return (
-    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
+    <div className="p-6 space-y-6 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('automation_admin.title', 'Automation Rules')}
+        <h1 className="text-3xl font-bold text-slate-900">
+          {t('automation.title', 'Automation Rules')}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-slate-500">
           {t(
-            'automation_admin.subtitle',
-            'Configure system-wide triggers, logic builders, and notifications.',
+            'automation.subtitle',
+            'Configure system automation triggers and actions.',
           )}
         </p>
       </div>
-
-      <div className="grid gap-6">
-        <MarketingAutomation />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {t('automation_admin.system_rules', 'System Automation Rules')}
-            </CardTitle>
-            <CardDescription>
-              {t(
-                'automation_admin.system_rules_desc',
-                'Internal operational logic.',
-              )}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground py-8 text-center bg-slate-50 rounded-md border">
-            {t(
-              'automation_admin.no_system_rules',
-              'No system automation rules configured.',
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('automation.rules', 'Rules')}</CardTitle>
+          <CardDescription>
+            {t('automation.rules_desc', 'Active automation rules')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-slate-500">
+            {t('common.empty', 'No data available.')}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

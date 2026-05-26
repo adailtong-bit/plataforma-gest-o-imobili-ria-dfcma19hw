@@ -18,11 +18,11 @@ import { Label } from '@/components/ui/label'
 import { RoomTypesManager } from '@/components/hotels/RoomTypesManager'
 import { BulkPricingModal } from '@/components/hotels/BulkPricingModal'
 import { Button } from '@/components/ui/button'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Loader2, Settings } from 'lucide-react'
 
 export default function Pricing() {
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const [hotels, setHotels] = useState<any[]>([])
   const [selectedHotel, setSelectedHotel] = useState<string>('')
   const [loading, setLoading] = useState(true)

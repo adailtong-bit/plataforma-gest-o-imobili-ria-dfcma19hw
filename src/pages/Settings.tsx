@@ -14,7 +14,6 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { SubscriptionSettings } from '@/components/settings/SubscriptionSettings'
 import useAuthStore from '@/stores/useAuthStore'
-import useLanguageStore from '@/stores/useLanguageStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useToast } from '@/hooks/use-toast'
 import { Shield, User, Bell, CreditCard, KeyRound, Globe } from 'lucide-react'
@@ -31,11 +30,10 @@ import { applyPhoneMask } from '@/lib/utils'
 
 export default function Settings() {
   const { currentUser, isAuthLoading } = useAuthStore()
-  const { t } = useLanguageStore()
   const { toast } = useToast()
 
   const [isLoading, setIsLoading] = useState(true)
-  const { locale, changeLanguage } = useDbTranslations()
+  const { t, locale, changeLanguage } = useDbTranslations()
 
   const [profileData, setProfileData] = useState({
     name: '',

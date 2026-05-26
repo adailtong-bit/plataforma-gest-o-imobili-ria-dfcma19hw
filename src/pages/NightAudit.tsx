@@ -7,10 +7,10 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PlayCircle, CheckCircle2 } from 'lucide-react'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function NightAudit() {
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
 
   return (
     <div className="flex flex-col gap-6 p-6">

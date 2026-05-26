@@ -39,14 +39,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Workflow } from '@/lib/types'
 import { DataMask } from '@/components/DataMask'
 
 export default function Workflows() {
   const { workflows, addWorkflow, updateWorkflow, deleteWorkflow } =
     useContext(AppContext)!
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')

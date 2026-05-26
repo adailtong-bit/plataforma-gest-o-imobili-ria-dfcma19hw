@@ -5,111 +5,35 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
-import useLanguageStore from '@/stores/useLanguageStore'
-import usePublicityStore from '@/stores/usePublicityStore'
-import { format } from 'date-fns'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 
 export default function PublicityAdmin() {
-  const { t } = useLanguageStore()
-  const { campaigns } = usePublicityStore()
+  const { t } = useDbTranslations()
 
   return (
-    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
+    <div className="p-6 space-y-6 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('publicity_admin.title', 'Ad Admin')}
+        <h1 className="text-3xl font-bold text-slate-900">
+          {t('publicity.title', 'Advertising Admin')}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-slate-500">
           {t(
-            'publicity_admin.subtitle',
-            'Manage global publicity campaigns and monitor performance.',
+            'publicity.subtitle',
+            'Manage advertising campaigns and placements.',
           )}
         </p>
       </div>
-
-      <Card className="border-slate-200 shadow-sm bg-white">
+      <Card>
         <CardHeader>
-          <CardTitle>
-            {t('publicity_admin.campaigns_title', 'Active Campaigns')}
-          </CardTitle>
+          <CardTitle>{t('publicity.campaigns', 'Campaigns')}</CardTitle>
           <CardDescription>
-            {t(
-              'publicity_admin.campaigns_desc',
-              'Track impressions, clicks, and status.',
-            )}
+            {t('publicity.campaigns_desc', 'Active and pending campaigns')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0 overflow-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead>{t('publicity_admin.col_title', 'Title')}</TableHead>
-                <TableHead>
-                  {t('publicity_admin.col_status', 'Status')}
-                </TableHead>
-                <TableHead>
-                  {t('publicity_admin.col_impressions', 'Impressions')}
-                </TableHead>
-                <TableHead>
-                  {t('publicity_admin.col_clicks', 'Clicks')}
-                </TableHead>
-                <TableHead>
-                  {t('publicity_admin.col_start', 'Start Date')}
-                </TableHead>
-                <TableHead>
-                  {t('publicity_admin.col_end', 'End Date')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {campaigns.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    {t('common.empty', 'No data found')}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                campaigns.map((camp) => (
-                  <TableRow key={camp.id} className="hover:bg-slate-50">
-                    <TableCell className="font-medium">{camp.title}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          camp.status === 'active' ? 'default' : 'secondary'
-                        }
-                      >
-                        {t(`status.${camp.status}`, camp.status || 'unknown')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{camp.impressions_count || 0}</TableCell>
-                    <TableCell>{camp.clicks_count || 0}</TableCell>
-                    <TableCell>
-                      {camp.start_date
-                        ? format(new Date(camp.start_date), 'PP')
-                        : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {camp.end_date
-                        ? format(new Date(camp.end_date), 'PP')
-                        : '-'}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <div className="text-sm text-slate-500">
+            {t('common.empty', 'No data available.')}
+          </div>
         </CardContent>
       </Card>
     </div>

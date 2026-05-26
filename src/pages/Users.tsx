@@ -42,7 +42,7 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { DataMask } from '@/components/DataMask'
 import { UserRole, Permission } from '@/lib/types'
 import { PermissionSelector } from '@/components/users/PermissionSelector'
@@ -52,7 +52,7 @@ import { BillingManager } from '@/components/users/BillingManager'
 export default function Users() {
   const { currentUser } = useContext(AppContext)!
   const { profiles, updateProfile, deleteProfile, addProfile } = useUserStore()
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
