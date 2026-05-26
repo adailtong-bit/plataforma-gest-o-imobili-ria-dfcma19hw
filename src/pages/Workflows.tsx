@@ -71,7 +71,7 @@ export default function Workflows() {
 
     if (editingRecord) {
       updateWorkflow({ ...editingRecord, ...form } as Workflow)
-      toast({ title: t('common.success') })
+      toast({ title: t('common.success', 'Success') })
     } else {
       addWorkflow({
         id: `wf-${Date.now()}`,
@@ -81,7 +81,7 @@ export default function Workflows() {
         steps: [],
         active: form.active ?? true,
       } as Workflow)
-      toast({ title: t('common.success') })
+      toast({ title: t('common.success', 'Success') })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
@@ -184,7 +184,7 @@ export default function Workflows() {
                     <DataMask>{wf.name}</DataMask>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
-                    {wf.trigger}
+                    {t(`workflows.trigger.${wf.trigger}`, wf.trigger)}
                   </TableCell>
                   <TableCell>{wf.steps?.length || 0}</TableCell>
                   <TableCell>

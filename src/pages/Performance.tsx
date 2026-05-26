@@ -104,30 +104,33 @@ export default function Performance() {
     },
   ]
 
-  const chartConfig = {
-    rating: {
-      label: t('performance.average_rating', 'Average Rating'),
-      color: 'hsl(var(--chart-1))',
-    },
-    reviews: {
-      label: t('performance.guest_reviews', 'Guest Reviews'),
-      color: 'hsl(var(--chart-2))',
-    },
-    revPar: {
-      label: 'RevPAR',
-      color: 'hsl(var(--chart-3))',
-    },
-    occupancy: {
-      label: t('market_analysis.avg_occupancy', 'Avg Occupancy'),
-      color: 'hsl(var(--chart-4))',
-    },
-  }
+  const chartConfig = useMemo(
+    () => ({
+      rating: {
+        label: t('performance.average_rating', 'Average Rating'),
+        color: 'hsl(var(--chart-1))',
+      },
+      reviews: {
+        label: t('performance.guest_reviews', 'Guest Reviews'),
+        color: 'hsl(var(--chart-2))',
+      },
+      revPar: {
+        label: 'RevPAR',
+        color: 'hsl(var(--chart-3))',
+      },
+      occupancy: {
+        label: t('market_analysis.avg_occupancy', 'Avg Occupancy'),
+        color: 'hsl(var(--chart-4))',
+      },
+    }),
+    [t],
+  )
 
   const viewAllText = t('performance.view_all_reviews', 'View All Reviews')
   const reviewsTitleText = t('performance.guest_reviews_title', 'Guest Reviews')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-in fade-in duration-500">
       {visibleAds.length > 0 && (
         <div
           className={cn(

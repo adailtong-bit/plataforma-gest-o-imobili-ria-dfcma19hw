@@ -6,70 +6,95 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import useLanguageStore from '@/stores/useLanguageStore'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
-import { marketAnalysisData } from '@/lib/mockData'
+import { Activity, Users, DollarSign, TrendingUp } from 'lucide-react'
 
 export default function Analytics() {
   const { t } = useLanguageStore()
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('common.advanced_analytics')}
+          {t('analytics.title', 'Advanced Analytics')}
         </h1>
         <p className="text-muted-foreground">
-          Deep dive into performance metrics.
+          {t('analytics.subtitle', 'Platform-wide insights and metrics.')}
         </p>
       </div>
 
-      <Card className="border-slate-200 shadow-sm bg-white">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('analytics.total_users', 'Total Users')}
+            </CardTitle>
+            <Users className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,248</div>
+            <p className="text-xs text-muted-foreground">
+              +12% {t('dashboard.from_last_month', 'from last month')}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('analytics.active_properties', 'Active Properties')}
+            </CardTitle>
+            <Activity className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">486</div>
+            <p className="text-xs text-muted-foreground">
+              +4% {t('dashboard.from_last_month', 'from last month')}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('analytics.total_revenue', 'Total Revenue')}
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$124,500</div>
+            <p className="text-xs text-muted-foreground">
+              +18% {t('dashboard.from_last_month', 'from last month')}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('analytics.growth_rate', 'Growth Rate')}
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">24%</div>
+            <p className="text-xs text-muted-foreground">
+              {t('analytics.year_over_year', 'Year over year')}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="min-h-[400px]">
         <CardHeader>
-          <CardTitle>Market Trends & Occupancy</CardTitle>
+          <CardTitle>
+            {t('analytics.revenue_chart', 'Revenue Overview')}
+          </CardTitle>
           <CardDescription>
-            Monthly view of average rates and occupancy metrics
+            {t(
+              'analytics.revenue_desc',
+              'Monthly revenue across all properties.',
+            )}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[400px] w-full">
-            <ChartContainer
-              config={{
-                rate: { label: 'Avg Rate ($)', color: '#3b82f6' },
-                occupancy: { label: 'Occupancy (%)', color: '#10b981' },
-              }}
-              className="h-full w-full"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={marketAnalysisData.marketTrends}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="rate"
-                    fill="#3b82f6"
-                    name="Avg Rate"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="occupancy"
-                    fill="#10b981"
-                    name="Occupancy"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
+        <CardContent className="flex items-center justify-center text-muted-foreground h-[300px] border-t bg-slate-50/50">
+          {t('analytics.chart_placeholder', 'Chart visualizer loading...')}
         </CardContent>
       </Card>
     </div>

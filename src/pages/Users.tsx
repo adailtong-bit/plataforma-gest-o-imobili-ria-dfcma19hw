@@ -100,7 +100,10 @@ export default function Users() {
 
   const handleAdd = () => {
     if (!form.name || !form.email || !form.role) {
-      toast({ title: 'Validation Error', variant: 'destructive' })
+      toast({
+        title: t('common.error', 'Validation Error'),
+        variant: 'destructive',
+      })
       return
     }
 
@@ -122,7 +125,7 @@ export default function Users() {
     })
     setIsAddOpen(false)
     resetForm()
-    toast({ title: 'Usuário incluído com sucesso' })
+    toast({ title: t('users.add_success', 'User added successfully') })
   }
 
   const handleEdit = () => {
@@ -136,12 +139,12 @@ export default function Users() {
     }
     setEditingRecord(null)
     setIsAddOpen(false)
-    toast({ title: 'Usuário alterado com sucesso' })
+    toast({ title: t('users.edit_success', 'User updated successfully') })
   }
 
   const handleDelete = (id: string) => {
     deleteProfile(id)
-    toast({ title: 'Usuário excluído com sucesso' })
+    toast({ title: t('users.delete_success', 'User deleted successfully') })
   }
 
   const renderPermBadges = (perms?: Permission[]) => {

@@ -1,78 +1,53 @@
-import { useContext } from 'react'
-import { AppContext } from '@/stores/AppContext'
-import { Card, CardContent } from '@/components/ui/card'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
 import useLanguageStore from '@/stores/useLanguageStore'
+import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
 
 export default function Automation() {
-  const { automationRules } = useContext(AppContext)!
   const { t } = useLanguageStore()
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('common.automation_rules') || 'Automation Rules'}
+          {t('automation_admin.title', 'Automation Rules')}
         </h1>
         <p className="text-muted-foreground">
-          {t('settings.automation_desc') ||
-            'Configure system automation rules.'}
+          {t(
+            'automation_admin.subtitle',
+            'Configure system-wide triggers, logic builders, and notifications.',
+          )}
         </p>
       </div>
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardContent className="p-0 overflow-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead>{t('common.type') || 'Rule Type'}</TableHead>
-                <TableHead>{t('common.description') || 'Conditions'}</TableHead>
-                <TableHead className="text-right">
-                  {t('common.status') || 'Status'}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {automationRules.map((rule) => (
-                <TableRow key={rule.id} className="hover:bg-slate-50">
-                  <TableCell className="font-medium text-slate-900">
-                    {rule.type.replace(/_/g, ' ')}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {rule.threshold ? `Threshold: ${rule.threshold}` : ''}
-                    {rule.daysBefore ? `Days Before: ${rule.daysBefore}` : ''}
-                    {rule.event ? `Event: ${rule.event}` : ''}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={rule.enabled ? 'default' : 'secondary'}>
-                      {rule.enabled
-                        ? t('common.active') || 'Enabled'
-                        : t('common.inactive') || 'Disabled'}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {automationRules.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    className="text-center py-6 text-muted-foreground"
-                  >
-                    {t('common.empty') || 'No records found.'}
-                  </TableCell>
-                </TableRow>
+
+      <div className="grid gap-6">
+        <MarketingAutomation />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t('automation_admin.system_rules', 'System Automation Rules')}
+            </CardTitle>
+            <CardDescription>
+              {t(
+                'automation_admin.system_rules_desc',
+                'Internal operational logic.',
               )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-muted-foreground py-8 text-center bg-slate-50 rounded-md border">
+            {t(
+              'automation_admin.no_system_rules',
+              'No system automation rules configured.',
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

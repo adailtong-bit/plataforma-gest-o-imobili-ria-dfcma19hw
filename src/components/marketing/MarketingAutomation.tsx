@@ -104,7 +104,7 @@ export function MarketingAutomation() {
           </DialogContent>
         </Dialog>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0 overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>

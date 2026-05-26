@@ -32,7 +32,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast()
   const [translations, setTranslations] = useState<Record<string, string>>({})
   const [locale, setLocale] = useState<string>('en')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!globalTranslationsCache)
 
   // Fetch user's language preference
   useEffect(() => {
@@ -68,34 +68,16 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true
 
-    const loadTranslations = async () => {
-      if (!globalTranslationsCache) {
-        setLoading(true)
-        const { data, error } = await supabase
-          .from('ui_translations')
-          .select('key, locale, value')
-
-        if (data && !error) {
-          const grouped: Record<string, Record<string, string>> = {}
-          data.forEach((t) => {
-            if (!grouped[t.locale]) grouped[t.locale] = {}
-            grouped[t.locale][t.key] = t.value
-          })
-          globalTranslationsCache = grouped
-        } else {
-          globalTranslationsCache = {}
-        }
-      }
-
-      if (!isMounted) return
-
+    const applyTranslations = (
+      cache: Record<string, Record<string, string>>,
+    ) => {
       const currentLangMap = {
         ...(staticTranslations[locale] || {}),
-        ...(globalTranslationsCache[locale] || {}),
+        ...(cache[locale] || {}),
       }
       const fallbackMap = {
         ...(staticTranslations['en'] || {}),
-        ...(globalTranslationsCache['en'] || {}),
+        ...(cache['en'] || {}),
       }
 
       // Fallback mechanism: English fills missing keys
@@ -104,7 +86,32 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
 
-    loadTranslations()
+    const loadTranslations = async () => {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('ui_translations')
+        .select('key, locale, value')
+
+      if (data && !error) {
+        const grouped: Record<string, Record<string, string>> = {}
+        data.forEach((t) => {
+          if (!grouped[t.locale]) grouped[t.locale] = {}
+          grouped[t.locale][t.key] = t.value
+        })
+        globalTranslationsCache = grouped
+      } else {
+        globalTranslationsCache = {}
+      }
+
+      if (!isMounted) return
+      applyTranslations(globalTranslationsCache)
+    }
+
+    if (globalTranslationsCache) {
+      applyTranslations(globalTranslationsCache)
+    } else {
+      loadTranslations()
+    }
 
     return () => {
       isMounted = false

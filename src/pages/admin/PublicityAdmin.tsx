@@ -1,66 +1,117 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AdsManager } from '@/components/publicity/AdsManager'
-import { AdvertiserList } from '@/components/publicity/AdvertiserList'
-import { PricingConfig } from '@/components/publicity/PricingConfig'
-import { CampaignInvoices } from '@/components/publicity/CampaignInvoices'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
 import useLanguageStore from '@/stores/useLanguageStore'
+import usePublicityStore from '@/stores/usePublicityStore'
+import { format } from 'date-fns'
 
 export default function PublicityAdmin() {
   const { t } = useLanguageStore()
+  const { campaigns } = usePublicityStore()
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-[1600px] mx-auto w-full">
+    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          {t('sidebar.publicity_admin') || 'Publicity Management'}
+          {t('publicity_admin.title', 'Ad Admin')}
         </h1>
         <p className="text-muted-foreground">
-          Manage platform advertisements, marketing campaigns, and partner
-          billing.
+          {t(
+            'publicity_admin.subtitle',
+            'Manage global publicity campaigns and monitor performance.',
+          )}
         </p>
       </div>
 
-      <Tabs defaultValue="ads" className="w-full">
-        <TabsList className="mb-4 bg-white border">
-          <TabsTrigger value="ads" className="data-[state=active]:bg-slate-100">
-            Campaigns & Ads
-          </TabsTrigger>
-          <TabsTrigger
-            value="advertisers"
-            className="data-[state=active]:bg-slate-100"
-          >
-            Advertisers
-          </TabsTrigger>
-          <TabsTrigger
-            value="pricing"
-            className="data-[state=active]:bg-slate-100"
-          >
-            Pricing Rules
-          </TabsTrigger>
-          <TabsTrigger
-            value="invoices"
-            className="data-[state=active]:bg-slate-100"
-          >
-            Billing & Invoices
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="ads" className="m-0">
-          <AdsManager />
-        </TabsContent>
-
-        <TabsContent value="advertisers" className="m-0">
-          <AdvertiserList />
-        </TabsContent>
-
-        <TabsContent value="pricing" className="m-0">
-          <PricingConfig />
-        </TabsContent>
-
-        <TabsContent value="invoices" className="m-0">
-          <CampaignInvoices />
-        </TabsContent>
-      </Tabs>
+      <Card className="border-slate-200 shadow-sm bg-white">
+        <CardHeader>
+          <CardTitle>
+            {t('publicity_admin.campaigns_title', 'Active Campaigns')}
+          </CardTitle>
+          <CardDescription>
+            {t(
+              'publicity_admin.campaigns_desc',
+              'Track impressions, clicks, and status.',
+            )}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 overflow-auto">
+          <Table>
+            <TableHeader className="bg-slate-50">
+              <TableRow>
+                <TableHead>{t('publicity_admin.col_title', 'Title')}</TableHead>
+                <TableHead>
+                  {t('publicity_admin.col_status', 'Status')}
+                </TableHead>
+                <TableHead>
+                  {t('publicity_admin.col_impressions', 'Impressions')}
+                </TableHead>
+                <TableHead>
+                  {t('publicity_admin.col_clicks', 'Clicks')}
+                </TableHead>
+                <TableHead>
+                  {t('publicity_admin.col_start', 'Start Date')}
+                </TableHead>
+                <TableHead>
+                  {t('publicity_admin.col_end', 'End Date')}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {campaigns.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    {t('common.empty', 'No data found')}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                campaigns.map((camp) => (
+                  <TableRow key={camp.id} className="hover:bg-slate-50">
+                    <TableCell className="font-medium">{camp.title}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          camp.status === 'active' ? 'default' : 'secondary'
+                        }
+                      >
+                        {t(`status.${camp.status}`, camp.status || 'unknown')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{camp.impressions_count || 0}</TableCell>
+                    <TableCell>{camp.clicks_count || 0}</TableCell>
+                    <TableCell>
+                      {camp.start_date
+                        ? format(new Date(camp.start_date), 'PP')
+                        : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {camp.end_date
+                        ? format(new Date(camp.end_date), 'PP')
+                        : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }

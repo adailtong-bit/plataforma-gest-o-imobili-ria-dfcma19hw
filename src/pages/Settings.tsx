@@ -64,23 +64,31 @@ export default function Settings() {
 
   const handleSaveProfile = () => {
     toast({
-      title: 'Profile Updated',
-      description: 'Your profile information has been saved successfully.',
+      title: t('settings.profile_updated', 'Profile Updated'),
+      description: t(
+        'settings.profile_updated_desc',
+        'Your profile information has been saved successfully.',
+      ),
     })
   }
 
   const handleSavePreferences = () => {
     toast({
-      title: 'Preferences Saved',
-      description:
+      title: t('settings.preferences_saved', 'Preferences Saved'),
+      description: t(
+        'settings.preferences_saved_desc',
         'Your notification and system preferences have been updated.',
+      ),
     })
   }
 
   const handleSaveSecurity = () => {
     toast({
-      title: 'Security Updated',
-      description: 'Your security settings have been updated successfully.',
+      title: t('settings.security_updated', 'Security Updated'),
+      description: t(
+        'settings.security_updated_desc',
+        'Your security settings have been updated successfully.',
+      ),
     })
   }
 
