@@ -51,7 +51,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { GuestService } from '@/lib/types'
 import { DataMask } from '@/components/DataMask'
 import { ServiceDialog } from '@/components/services/ServiceDialog'
@@ -67,7 +67,7 @@ export default function GuestServices() {
     bookings,
     addInvoice,
   } = useContext(AppContext)!
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
 
   const [search, setSearch] = useState('')
@@ -93,7 +93,7 @@ export default function GuestServices() {
   const handleSave = (form: Partial<GuestService>) => {
     if (editingRecord) {
       updateGuestService({ ...editingRecord, ...form } as GuestService)
-      toast({ title: t('common.success') })
+      toast({ title: t('common.success', 'Success') })
     } else {
       addGuestService({
         id: `gs-${Date.now()}`,
@@ -104,7 +104,7 @@ export default function GuestServices() {
         active: form.active ?? true,
         prices: form.prices || [],
       } as GuestService)
-      toast({ title: t('common.success') })
+      toast({ title: t('common.success', 'Success') })
     }
     setIsAddOpen(false)
     setEditingRecord(null)
@@ -113,7 +113,7 @@ export default function GuestServices() {
   const handleDelete = () => {
     if (deleteId) {
       deleteGuestService(deleteId)
-      toast({ title: t('common.delete_success') })
+      toast({ title: t('common.delete_success', 'Deleted successfully') })
       setDeleteId(null)
     }
   }
@@ -121,8 +121,11 @@ export default function GuestServices() {
   const handleConsume = () => {
     if (!selectedService || !selectedBookingId) {
       toast({
-        title: t('common.validation_error'),
-        description: 'Selecione uma reserva.',
+        title: t('common.validation_error', 'Validation Error'),
+        description: t(
+          'guest_services.validation_error_desc',
+          'Please select a booking.',
+        ),
         variant: 'destructive',
       })
       return
@@ -136,7 +139,7 @@ export default function GuestServices() {
     // Add to invoices connected to booking
     addInvoice({
       id: `inv-gs-${Date.now()}`,
-      description: `Consumo: ${selectedService.name}`,
+      description: `${t('guest_services.consume_prefix', 'Consume:')} ${selectedService.name}`,
       amount: currentPrice,
       status: 'pending',
       date: new Date().toISOString(),
@@ -145,8 +148,11 @@ export default function GuestServices() {
     })
 
     toast({
-      title: t('common.success'),
-      description: 'Serviço faturado na reserva.',
+      title: t('common.success', 'Success'),
+      description: t(
+        'guest_services.invoice_added',
+        'Service successfully billed to invoice.',
+      ),
     })
     setIsConsumeOpen(false)
     setSelectedService(null)
@@ -154,20 +160,22 @@ export default function GuestServices() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t('sidebar.guest_services')}
+            {t('sidebar.guest_services', 'Guest Services')}
           </h1>
           <p className="text-muted-foreground">
-            Catálogo de serviços, preços temporais e lançamento na fatura do
-            hóspede.
+            {t(
+              'guest_services.subtitle',
+              'Service catalog, temporary pricing, and billing for guests.',
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder={t('common.search')}
+            placeholder={t('common.search', 'Search...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
@@ -179,7 +187,7 @@ export default function GuestServices() {
               setIsAddOpen(true)
             }}
           >
-            <Plus className="h-4 w-4" /> {t('common.add')}
+            <Plus className="h-4 w-4" /> {t('common.add', 'Add')}
           </Button>
         </div>
       </div>
@@ -189,12 +197,14 @@ export default function GuestServices() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>{t('common.name')}</TableHead>
-                <TableHead>{t('common.category')}</TableHead>
-                <TableHead>Preço Atual</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
+                <TableHead>{t('common.name', 'Name')}</TableHead>
+                <TableHead>{t('common.category', 'Category')}</TableHead>
+                <TableHead>
+                  {t('guest_services.current_price', 'Current Price')}
+                </TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
                 <TableHead className="text-right">
-                  {t('common.actions')}
+                  {t('common.actions', 'Actions')}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -210,17 +220,21 @@ export default function GuestServices() {
                       <DataMask>{service.name}</DataMask>
                       {service.prices && service.prices.length > 0 && (
                         <div className="text-xs text-muted-foreground mt-1">
-                          {service.prices.length} preço(s) agendado(s)
+                          {service.prices.length}{' '}
+                          {t(
+                            'guest_services.prices_scheduled',
+                            'scheduled price(s)',
+                          )}
                         </div>
                       )}
                     </TableCell>
                     <TableCell className="capitalize">
                       {service.category === 'dining'
-                        ? 'Restaurante'
+                        ? t('guest_services.category.dining', 'Dining')
                         : service.category === 'transport'
-                          ? 'Transporte'
+                          ? t('guest_services.category.transport', 'Transport')
                           : service.category === 'other'
-                            ? 'Outro'
+                            ? t('guest_services.category.other', 'Other')
                             : service.category}
                     </TableCell>
                     <TableCell className="font-medium">
@@ -229,8 +243,8 @@ export default function GuestServices() {
                     <TableCell>
                       <Badge variant={service.active ? 'default' : 'secondary'}>
                         {service.active
-                          ? t('common.active')
-                          : t('common.inactive')}
+                          ? t('common.active', 'Active')
+                          : t('common.inactive', 'Inactive')}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -247,8 +261,11 @@ export default function GuestServices() {
                               setIsConsumeOpen(true)
                             }}
                           >
-                            <ShoppingCart className="h-4 w-4 mr-2" /> Lançar na
-                            Fatura
+                            <ShoppingCart className="h-4 w-4 mr-2" />{' '}
+                            {t(
+                              'guest_services.bill_to_invoice',
+                              'Bill to Invoice',
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -257,14 +274,14 @@ export default function GuestServices() {
                             }}
                           >
                             <Pencil className="h-4 w-4 mr-2" />{' '}
-                            {t('common.edit')}
+                            {t('common.edit', 'Edit')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600"
                             onClick={() => setDeleteId(service.id)}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />{' '}
-                            {t('common.delete')}
+                            {t('common.delete', 'Delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -278,7 +295,7 @@ export default function GuestServices() {
                     colSpan={5}
                     className="text-center py-6 text-muted-foreground"
                   >
-                    {t('common.empty')}
+                    {t('common.empty', 'No data available.')}
                   </TableCell>
                 </TableRow>
               )}
@@ -298,16 +315,20 @@ export default function GuestServices() {
       <Dialog open={isConsumeOpen} onOpenChange={setIsConsumeOpen}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>Lançar Consumo na Fatura</DialogTitle>
+            <DialogTitle>
+              {t('guest_services.consume_title', 'Bill Service to Invoice')}
+            </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div>
-              <Label className="text-muted-foreground">Serviço</Label>
+              <Label className="text-muted-foreground">
+                {t('guest_services.service_label', 'Service')}
+              </Label>
               <div className="font-semibold text-lg">
                 {selectedService?.name}
               </div>
               <div className="text-sm">
-                Valor:{' '}
+                {t('guest_services.value_label', 'Value:')}{' '}
                 {formatAppCurrency(
                   getCurrentPrice(
                     selectedService?.price || 0,
@@ -317,13 +338,20 @@ export default function GuestServices() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Reserva / Hóspede *</Label>
+              <Label>
+                {t('guest_services.booking_label', 'Booking / Guest *')}
+              </Label>
               <Select
                 value={selectedBookingId}
                 onValueChange={setSelectedBookingId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione a reserva" />
+                  <SelectValue
+                    placeholder={t(
+                      'guest_services.select_booking',
+                      'Select booking',
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {activeBookings.map((b) => (
@@ -333,7 +361,10 @@ export default function GuestServices() {
                   ))}
                   {activeBookings.length === 0 && (
                     <SelectItem value="none" disabled>
-                      Nenhuma reserva ativa
+                      {t(
+                        'guest_services.no_active_bookings',
+                        'No active bookings',
+                      )}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -342,13 +373,13 @@ export default function GuestServices() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsConsumeOpen(false)}>
-              Cancelar
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button
               onClick={handleConsume}
               className="bg-trust-blue text-white"
             >
-              Lançar Custo
+              {t('guest_services.bill_cost_btn', 'Bill Cost')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -360,15 +391,22 @@ export default function GuestServices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.confirm_delete')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('common.confirm_delete', 'Confirm Deletion')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('common.delete_desc')}
+              {t(
+                'common.delete_desc',
+                'Are you sure? This action cannot be undone.',
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t('common.cancel', 'Cancel')}
+            </AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>
-              {t('common.delete')}
+              {t('common.delete', 'Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
