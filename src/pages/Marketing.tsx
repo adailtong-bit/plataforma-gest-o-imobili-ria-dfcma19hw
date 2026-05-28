@@ -41,7 +41,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MarketingAutomation } from '@/components/marketing/MarketingAutomation'
 import { PromotionsManagement } from '@/components/marketing/PromotionsManagement'
@@ -50,7 +50,7 @@ import { Campaign } from '@/lib/types'
 export default function Marketing() {
   const { campaigns, addCampaign, updateCampaign, deleteCampaign } =
     useContext(AppContext)!
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const { toast } = useToast()
 
   const [isAddOpen, setIsAddOpen] = useState(false)

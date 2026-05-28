@@ -3,23 +3,18 @@ import {
   useContext,
   useEffect,
   useState,
-  type ReactNode,
+  ReactNode,
 } from 'react'
-import type { User, Session, AuthError } from '@supabase/supabase-js'
+import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
+import useAuthStore from '@/stores/useAuthStore'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
-  signUp: (
-    email: string,
-    password: string,
-  ) => Promise<{ error: AuthError | null }>
-  signIn: (
-    email: string,
-    password: string,
-  ) => Promise<{ error: AuthError | null }>
-  signOut: () => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string) => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: any }>
+  signOut: () => Promise<{ error: any }>
   loading: boolean
 }
 
@@ -35,22 +30,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const setAuthStore = useAuthStore((s: any) => s.setAuth)
 
   useEffect(() => {
+    let mounted = true
+
+    // Set initial session
+    supabase.auth
+      .getSession()
+      .then(({ data: { session }, error }) => {
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+          setLoading(false)
+          if (setAuthStore) {
+            setAuthStore(!!session?.user, session?.user)
+          }
+        }
+      })
+      .catch(() => {
+        if (mounted) setLoading(false)
+      })
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (mounted) {
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+        if (setAuthStore) {
+          setAuthStore(!!session?.user, session?.user)
+        }
+      }
     })
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [setAuthStore])
 
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({

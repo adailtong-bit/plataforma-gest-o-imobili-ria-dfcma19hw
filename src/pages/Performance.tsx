@@ -24,7 +24,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import { Star, MessageSquare, DollarSign, Activity } from 'lucide-react'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { useAdRotation } from '@/hooks/useAdRotation'
 import usePublicityStore from '@/stores/usePublicityStore'
 import { AppContext } from '@/stores/AppContext'
@@ -39,7 +39,7 @@ import {
 import { format } from 'date-fns'
 
 export default function Performance() {
-  const { t, language } = useLanguageStore()
+  const { t, locale: language } = useDbTranslations()
   const { campaigns } = usePublicityStore()
   const appContext = useContext(AppContext)
   const feedbacks = appContext?.feedbacks || []

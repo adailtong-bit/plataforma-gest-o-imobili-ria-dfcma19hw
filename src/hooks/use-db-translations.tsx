@@ -31,7 +31,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   const { currentUser, setCurrentUser } = useAuthStore()
   const { toast } = useToast()
   const [translations, setTranslations] = useState<Record<string, string>>({})
-  const [locale, setLocale] = useState<string>('en')
+  const [locale, setLocale] = useState<string>('pt')
   const [loading, setLoading] = useState(!globalTranslationsCache)
 
   // Fetch user's language preference
@@ -76,11 +76,11 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
         ...(cache[locale] || {}),
       }
       const fallbackMap = {
-        ...(staticTranslations['en'] || {}),
-        ...(cache['en'] || {}),
+        ...(staticTranslations['pt'] || {}),
+        ...(cache['pt'] || {}),
       }
 
-      // Fallback mechanism: English fills missing keys
+      // Fallback mechanism: Portuguese fills missing keys
       const merged = { ...fallbackMap, ...currentLangMap }
       setTranslations(merged)
       setLoading(false)
@@ -123,6 +123,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       if (translations[key]) return translations[key]
       if (fallback) return fallback
 
+      if (typeof key !== 'string') return ''
       const parts = key.split('.')
       const lastPart = parts[parts.length - 1] || key
       return lastPart
@@ -189,7 +190,7 @@ export const useTranslationContext = () => {
           .replace(/_/g, ' ')
           .replace(/\b\w/g, (l) => l.toUpperCase())
       },
-      locale: 'en',
+      locale: 'pt',
       changeLanguage: async () => {},
       loading: false,
     }

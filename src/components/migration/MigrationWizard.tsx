@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import { Upload, Database, CheckCircle2 } from 'lucide-react'
 
 export function MigrationWizard() {
-  const { t } = useLanguageStore()
+  const { t } = useDbTranslations()
   const [step, setStep] = useState(1)
 
   return (

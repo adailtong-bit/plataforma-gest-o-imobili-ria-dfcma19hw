@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import useLanguageStore from '@/stores/useLanguageStore'
+import { useDbTranslations } from '@/hooks/use-db-translations'
 import useAuthStore from '@/stores/useAuthStore'
 import { supabase } from '@/lib/supabase/client'
 import usePropertyStore from '@/stores/usePropertyStore'
@@ -27,16 +27,10 @@ import { Badge } from '@/components/ui/badge'
 import usePrivacyStore from '@/stores/usePrivacyStore'
 
 export function AppHeader() {
-  const { language, setLanguage, t } = useLanguageStore()
+  const { locale: language, changeLanguage, t } = useDbTranslations()
 
   const handleLanguageChange = async (newLang: string) => {
-    setLanguage(newLang)
-    if (currentUser?.id) {
-      await supabase
-        .from('profiles')
-        .update({ language_preference: newLang })
-        .eq('id', currentUser.id)
-    }
+    await changeLanguage(newLang)
   }
   const {
     currentUser,
