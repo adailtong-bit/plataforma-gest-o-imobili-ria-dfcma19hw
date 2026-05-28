@@ -30,10 +30,12 @@ import { Link } from 'react-router-dom'
 import { ImportPropertiesModal } from '@/components/properties/ImportPropertiesModal'
 import { BulkPricingModal } from '@/components/properties/BulkPricingModal'
 import { PropertyFormModal } from '@/components/properties/PropertyFormModal'
+import useSearchStore from '@/stores/useSearchStore'
 
 export default function Properties() {
   const { t } = useDbTranslations()
   const { toast } = useToast()
+  const { searchQuery } = useSearchStore()
 
   const [properties, setProperties] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -97,6 +99,14 @@ export default function Properties() {
     ]
       .filter(Boolean)
       .join(', ')
+
+  const filteredProperties = properties.filter((property) => {
+    if (!searchQuery) return true
+    const lowerQuery = searchQuery.toLowerCase()
+    const nameMatch = property.name?.toLowerCase().includes(lowerQuery)
+    const addressMatch = property.address?.toLowerCase().includes(lowerQuery)
+    return nameMatch || addressMatch
+  })
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-500 p-6">
@@ -174,7 +184,7 @@ export default function Properties() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {properties.length === 0 ? (
+                {filteredProperties.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={7}
@@ -184,7 +194,7 @@ export default function Properties() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  properties.map((property) => (
+                  filteredProperties.map((property) => (
                     <TableRow
                       key={property.id}
                       className="hover:bg-slate-50/50"
