@@ -16,7 +16,7 @@ import {
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { DashboardLayout } from '@/components/DashboardLayout'
+import Layout from '@/components/Layout'
 import { AppProvider } from '@/stores/AppContext'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
@@ -234,7 +234,7 @@ const App = () => {
                       <Route
                         element={
                           <AuthGuard>
-                            <DashboardLayout />
+                            <Layout />
                           </AuthGuard>
                         }
                       >
@@ -247,6 +247,7 @@ const App = () => {
                         {/* Restored Menu Aliases */}
                         <Route path="/bookings" element={<CalendarPage />} />
                         <Route path="/guests" element={<Tenants />} />
+                        <Route path="/finance" element={<Financial />} />
                         <Route path="/ledger" element={<Financial />} />
                         <Route path="/campaigns" element={<Marketing />} />
 

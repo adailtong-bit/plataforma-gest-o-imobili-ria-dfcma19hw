@@ -41,3 +41,15 @@ screenshot.png
 *.failed-*
 *.tmp
 core.[0-9]*
+
+# Build and large assets to avoid sync timeouts
+.next
+out
+build
+coverage
+*.mp4
+*.mov
+*.mp3
+*.zip
+*.tar.gz
+*.rar
