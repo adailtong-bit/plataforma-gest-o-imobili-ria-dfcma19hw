@@ -35,10 +35,10 @@ BEGIN
     UPDATE public.profiles SET role = 'master' WHERE id = new_user_id;
   END IF;
 
-  -- 2. Clean up duplicates (keep oldest)
+  -- 2. Clean up duplicates (keep one)
   DELETE FROM public.app_menus a
   USING (
-    SELECT min(id) as id, route
+    SELECT min(id::text)::uuid as id, route
     FROM public.app_menus
     GROUP BY route
     HAVING count(*) > 1
