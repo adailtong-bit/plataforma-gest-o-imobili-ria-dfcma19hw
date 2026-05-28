@@ -72,6 +72,53 @@ export type Database = {
         }
         Relationships: []
       }
+      app_menus: {
+        Row: {
+          created_at: string | null
+          icon: string | null
+          id: string
+          label: string
+          order_index: number | null
+          parent_id: string | null
+          resource: string | null
+          role_required: string | null
+          route: string
+          section: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          label: string
+          order_index?: number | null
+          parent_id?: string | null
+          resource?: string | null
+          role_required?: string | null
+          route: string
+          section?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          label?: string
+          order_index?: number | null
+          parent_id?: string | null
+          resource?: string | null
+          role_required?: string | null
+          route?: string
+          section?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'app_menus_parent_id_fkey'
+            columns: ['parent_id']
+            isOneToOne: false
+            referencedRelation: 'app_menus'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       bookings: {
         Row: {
           approval_status: string | null
@@ -1285,6 +1332,17 @@ export const Constants = {
 //   zip_code: text (nullable)
 //   country: text (nullable)
 //   contacts: jsonb (nullable, default: '[]'::jsonb)
+// Table: app_menus
+//   id: uuid (not null, default: gen_random_uuid())
+//   label: text (not null)
+//   icon: text (nullable)
+//   route: text (not null)
+//   parent_id: uuid (nullable)
+//   order_index: integer (nullable, default: 0)
+//   role_required: text (nullable)
+//   created_at: timestamp with time zone (nullable, default: now())
+//   section: text (nullable)
+//   resource: text (nullable)
 // Table: bookings
 //   id: uuid (not null, default: gen_random_uuid())
 //   property_id: uuid (nullable)
@@ -1530,6 +1588,9 @@ export const Constants = {
 // --- CONSTRAINTS ---
 // Table: advertisers
 //   PRIMARY KEY advertisers_pkey: PRIMARY KEY (id)
+// Table: app_menus
+//   FOREIGN KEY app_menus_parent_id_fkey: FOREIGN KEY (parent_id) REFERENCES app_menus(id) ON DELETE CASCADE
+//   PRIMARY KEY app_menus_pkey: PRIMARY KEY (id)
 // Table: bookings
 //   FOREIGN KEY bookings_guest_id_fkey: FOREIGN KEY (guest_id) REFERENCES guests(id) ON DELETE CASCADE
 //   PRIMARY KEY bookings_pkey: PRIMARY KEY (id)
@@ -1602,7 +1663,9 @@ export const Constants = {
 // Table: advertisers
 //   Policy "admin_all_advertisers" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
-//     WITH CHECK: is_admin_or_pm()
+// Table: app_menus
+//   Policy "authenticated_select_app_menus" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: true
 // Table: bookings
 //   Policy "bookings_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -1707,13 +1770,11 @@ export const Constants = {
 // Table: publicity_campaigns
 //   Policy "admin_all_campaigns" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
-//     WITH CHECK: is_admin_or_pm()
 //   Policy "campaigns_advertiser_select" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: (is_admin_or_pm() OR (advertiser_id IN ( SELECT advertisers.id    FROM advertisers   WHERE (advertisers.billing_email = (( SELECT users.email            FROM auth.users           WHERE (users.id = auth.uid())))::text))))
 // Table: publicity_pricing_matrix
 //   Policy "admin_all_pricing" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
-//     WITH CHECK: is_admin_or_pm()
 // Table: room_types
 //   Policy "room_types_all" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: true
@@ -1739,8 +1800,9 @@ export const Constants = {
 //     USING: true
 //     WITH CHECK: true
 // Table: ui_translations
-//   Policy "admin_manage_translations" (ALL, PERMISSIVE) roles={public}
+//   Policy "admin_manage_translations" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: is_admin_or_pm()
+//     WITH CHECK: is_admin_or_pm()
 //   Policy "authenticated_select_translations" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: true
 // Table: visits
@@ -1893,7 +1955,8 @@ export const Constants = {
 //   AS $function$
 //   BEGIN
 //     INSERT INTO public.profiles (id, email, name, role)
-//     VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'name', NEW.email), COALESCE(NEW.raw_user_meta_data->>'role', 'master'));
+//     VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'name', 'User'), COALESCE(NEW.raw_user_meta_data->>'role', 'tenant'))
+//     ON CONFLICT (id) DO NOTHING;
 //     RETURN NEW;
 //   END;
 //   $function$

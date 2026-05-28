@@ -123,12 +123,14 @@ type DbMenu = {
   id: string
   label: string
   icon: string
-  path: string
+  route: string
+  path?: string
   parent_id: string | null
   order_index: number
-  required_role: string[] | null
-  section: string
-  resource: string | null
+  role_required?: string | null
+  required_role?: string[] | null
+  section?: string
+  resource?: string | null
 }
 
 function AppSidebarContent() {
@@ -146,7 +148,7 @@ function AppSidebarContent() {
     const fetchMenus = async () => {
       try {
         const { data, error } = await supabase
-          .from('app_menus')
+          .from('app_menus' as never)
           .select('*')
           .order('order_index', { ascending: true })
 
@@ -186,305 +188,346 @@ function AppSidebarContent() {
 
   const mapDbMenu = (m: DbMenu) => ({
     title: t(m.label, m.label.split('.').pop() || m.label),
-    url: m.path,
+    url: m.route || m.path || '/',
     icon: iconMap[m.icon] || AlertCircle,
     resource: m.resource,
-    roles: m.required_role,
-    role: m.required_role?.[0],
+    roles: m.required_role || (m.role_required ? [m.role_required] : undefined),
+    role: m.role_required || m.required_role?.[0],
   })
 
   const mainNavItems = useMemo(() => {
+    let items = []
     if (!menusLoading && !menuError && dbMenus.length > 0) {
-      return dbMenus.filter((m) => m.section === 'main').map(mapDbMenu)
+      items = dbMenus.filter((m) => m.section === 'main').map(mapDbMenu)
+    } else {
+      items = [
+        {
+          title: t('menu.dashboard', 'Dashboard'),
+          url: '/',
+          icon: Home,
+          resource: 'dashboard',
+        },
+        {
+          title: t('menu.properties', 'Properties'),
+          url: '/properties',
+          icon: Building2,
+          resource: 'properties',
+        },
+        {
+          title: t('hotels.title', 'Hotels'),
+          url: '/hotels',
+          icon: Hotel,
+          resource: 'hotels',
+        },
+        {
+          title: t('sidebar.condominiums', 'Condominiums'),
+          url: '/condominiums',
+          icon: MapPin,
+          resource: 'condominiums',
+        },
+        {
+          title: t('sidebar.owners', 'Owners'),
+          url: '/owners',
+          icon: Briefcase,
+          resource: 'owners',
+        },
+        {
+          title: t('sidebar.tenants', 'Tenants'),
+          url: '/tenants',
+          icon: Users,
+          resource: 'tenants',
+        },
+        {
+          title: t('sidebar.calendar', 'Calendar'),
+          url: '/calendar',
+          icon: Calendar,
+          resource: 'calendar',
+        },
+        {
+          title: t('menu.finances', 'Finances'),
+          url: '/financial',
+          icon: DollarSign,
+          resource: 'financial',
+        },
+        {
+          title: t('menu.invoices', 'Invoices'),
+          url: '/invoices',
+          icon: FileText,
+          resource: 'financial',
+        },
+        {
+          title: t('common.short_term', 'Short Term Rental'),
+          url: '/short-term',
+          icon: Building2,
+          resource: 'short_term',
+        },
+        {
+          title: t('common.visits', 'Visits'),
+          url: '/visits',
+          icon: MapPin,
+          resource: 'visits',
+        },
+        {
+          title: t('common.renewals', 'Renewals'),
+          url: '/renewals',
+          icon: Repeat,
+          resource: 'renewals',
+        },
+        {
+          title: t('sidebar.reports', 'Reports'),
+          url: '/reports',
+          icon: FileText,
+          resource: 'reports',
+        },
+        {
+          title: t('common.market_analysis', 'Market Analysis'),
+          url: '/market-analysis',
+          icon: PieChart,
+          resource: 'market_analysis',
+        },
+      ]
     }
-    return [
-      {
-        title: t('menu.dashboard', 'Dashboard'),
-        url: '/',
-        icon: Home,
-        resource: 'dashboard',
-      },
-      {
-        title: t('menu.properties', 'Properties'),
-        url: '/properties',
-        icon: Building2,
-        resource: 'properties',
-      },
-      {
-        title: t('hotels.title', 'Hotels'),
-        url: '/hotels',
-        icon: Hotel,
-        resource: 'hotels',
-      },
-      {
-        title: t('sidebar.condominiums', 'Condominiums'),
-        url: '/condominiums',
-        icon: MapPin,
-        resource: 'condominiums',
-      },
-      {
-        title: t('sidebar.owners', 'Owners'),
-        url: '/owners',
-        icon: Briefcase,
-        resource: 'owners',
-      },
-      {
-        title: t('sidebar.tenants', 'Tenants'),
-        url: '/tenants',
-        icon: Users,
-        resource: 'tenants',
-      },
-      {
-        title: t('sidebar.calendar', 'Calendar'),
-        url: '/calendar',
-        icon: Calendar,
-        resource: 'calendar',
-      },
-      {
-        title: t('menu.finances', 'Finances'),
-        url: '/financial',
-        icon: DollarSign,
-        resource: 'financial',
-      },
-      {
-        title: t('menu.invoices', 'Invoices'),
-        url: '/invoices',
-        icon: FileText,
-        resource: 'financial',
-      },
-      {
-        title: t('common.short_term', 'Short Term Rental'),
-        url: '/short-term',
-        icon: Building2,
-        resource: 'short_term',
-      },
-      {
-        title: t('common.visits', 'Visits'),
-        url: '/visits',
-        icon: MapPin,
-        resource: 'visits',
-      },
-      {
-        title: t('common.renewals', 'Renewals'),
-        url: '/renewals',
-        icon: Repeat,
-        resource: 'renewals',
-      },
-      {
-        title: t('sidebar.reports', 'Reports'),
-        url: '/reports',
-        icon: FileText,
-        resource: 'reports',
-      },
-      {
-        title: t('common.market_analysis', 'Market Analysis'),
-        url: '/market-analysis',
-        icon: PieChart,
-        resource: 'market_analysis',
-      },
-    ]
+    return Array.from(new Map(items.map((item) => [item.url, item])).values())
   }, [t, dbMenus, menusLoading, menuError])
 
   const operationsItems = useMemo(() => {
+    let items = []
     if (!menusLoading && !menuError && dbMenus.length > 0) {
-      return dbMenus.filter((m) => m.section === 'operations').map(mapDbMenu)
+      items = dbMenus.filter((m) => m.section === 'operations').map(mapDbMenu)
+    } else {
+      items = [
+        {
+          title: t('sidebar.performance', 'Performance'),
+          url: '/performance',
+          icon: Activity,
+          resource: 'performance',
+        },
+        {
+          title: t('sidebar.guest_services', 'Guest Services'),
+          url: '/guest-services',
+          icon: HeartHandshake,
+          resource: 'guest_services',
+        },
+        {
+          title: t('sidebar.pos', 'POS'),
+          url: '/pos',
+          icon: ShoppingCart,
+          resource: 'pos',
+        },
+        {
+          title: t('sidebar.marketing', 'Marketing'),
+          url: '/marketing',
+          icon: Zap,
+          resource: 'marketing',
+        },
+        {
+          title: t('menu.tasks', 'Tasks'),
+          url: '/tasks',
+          icon: Wrench,
+          resource: 'tasks',
+        },
+        {
+          title: t('sidebar.front_desk', 'Front Desk'),
+          url: '/front-desk',
+          icon: ConciergeBell,
+          resource: 'properties',
+        },
+        {
+          title: t('sidebar.housekeeping', 'Housekeeping'),
+          url: '/housekeeping',
+          icon: HardHat,
+          resource: 'tasks',
+        },
+        {
+          title: t('sidebar.night_audit', 'Night Audit'),
+          url: '/night-audit',
+          icon: MoonStar,
+          resource: 'financial',
+        },
+        {
+          title: t('sidebar.partners', 'Partners'),
+          url: '/partners',
+          icon: HardHat,
+          resource: 'partners',
+        },
+        {
+          title: t('menu.messages', 'Messages'),
+          url: '/messages',
+          icon: MessageSquare,
+          resource: 'messages',
+        },
+        {
+          title: t('common.workflows', 'Workflows'),
+          url: '/workflows',
+          icon: Repeat,
+          resource: 'workflows',
+        },
+      ]
     }
-    return [
-      {
-        title: t('sidebar.performance', 'Performance'),
-        url: '/performance',
-        icon: Activity,
-        resource: 'performance',
-      },
-      {
-        title: t('sidebar.guest_services', 'Guest Services'),
-        url: '/guest-services',
-        icon: HeartHandshake,
-        resource: 'guest_services',
-      },
-      {
-        title: t('sidebar.pos', 'POS'),
-        url: '/pos',
-        icon: ShoppingCart,
-        resource: 'pos',
-      },
-      {
-        title: t('sidebar.marketing', 'Marketing'),
-        url: '/marketing',
-        icon: Zap,
-        resource: 'marketing',
-      },
-      {
-        title: t('menu.tasks', 'Tasks'),
-        url: '/tasks',
-        icon: Wrench,
-        resource: 'tasks',
-      },
-      {
-        title: t('sidebar.front_desk', 'Front Desk'),
-        url: '/front-desk',
-        icon: ConciergeBell,
-        resource: 'properties',
-      },
-      {
-        title: t('sidebar.housekeeping', 'Housekeeping'),
-        url: '/housekeeping',
-        icon: HardHat,
-        resource: 'tasks',
-      },
-      {
-        title: t('sidebar.night_audit', 'Night Audit'),
-        url: '/night-audit',
-        icon: MoonStar,
-        resource: 'financial',
-      },
-      {
-        title: t('sidebar.partners', 'Partners'),
-        url: '/partners',
-        icon: HardHat,
-        resource: 'partners',
-      },
-      {
-        title: t('menu.messages', 'Messages'),
-        url: '/messages',
-        icon: MessageSquare,
-        resource: 'messages',
-      },
-      {
-        title: t('common.workflows', 'Workflows'),
-        url: '/workflows',
-        icon: Repeat,
-        resource: 'workflows',
-      },
-    ]
+    return Array.from(new Map(items.map((item) => [item.url, item])).values())
   }, [t, dbMenus, menusLoading, menuError])
 
   const systemItems = useMemo(() => {
+    let items = []
     if (!menusLoading && !menuError && dbMenus.length > 0) {
-      return dbMenus.filter((m) => m.section === 'system').map(mapDbMenu)
+      items = dbMenus.filter((m) => m.section === 'system').map(mapDbMenu)
+    } else {
+      items = [
+        {
+          title: t('menu.settings', 'Settings'),
+          url: '/settings',
+          icon: Settings,
+          resource: 'settings',
+        },
+        {
+          title: t('menu.system.pricing', 'Pricing'),
+          url: '/pricing',
+          icon: DollarSign,
+          resource: 'settings',
+        },
+        {
+          title: t('common.service_pricing', 'Price Catalog'),
+          url: '/service-pricing',
+          icon: DollarSign,
+          resource: 'service_pricing',
+        },
+        {
+          title: t('menu.system.users', 'Users'),
+          url: '/users',
+          icon: Users,
+          resource: 'users',
+        },
+        {
+          title: t('menu.system.ad_admin', 'Publicity Admin'),
+          url: '/admin/publicity',
+          icon: Megaphone,
+          resource: 'publicity',
+        },
+        {
+          title: t('menu.system.migration_hub', 'Migration Hub'),
+          url: '/admin/migration',
+          icon: Database,
+          resource: 'migration',
+        },
+        {
+          title: t('menu.system.advanced_analytics', 'Advanced Analytics'),
+          url: '/admin/analytics',
+          icon: PieChart,
+          resource: 'analytics',
+        },
+        {
+          title: t('menu.system.automation_rules', 'Automation Rules'),
+          url: '/admin/automation',
+          icon: Zap,
+          resource: 'automation',
+        },
+        {
+          title: t('sidebar.audit_panel', 'Audit Panel'),
+          url: '/admin/audit',
+          icon: ShieldCheck,
+          resource: 'audit_logs',
+          roles: ['platform_owner'],
+        },
+        {
+          title: t('sidebar.environment', 'Environment'),
+          url: '/admin/environment',
+          icon: MonitorPlay,
+          resource: 'settings',
+          roles: ['platform_owner'],
+        },
+        {
+          title: t('sidebar.translations', 'Translations'),
+          url: '/admin/translations',
+          icon: Languages,
+          resource: 'settings',
+          roles: [
+            'platform_owner',
+            'master',
+            'internal_user',
+            'software_tenant',
+          ],
+        },
+      ]
     }
-    return [
-      {
-        title: t('menu.settings', 'Settings'),
-        url: '/settings',
-        icon: Settings,
-        resource: 'settings',
-      },
-      {
-        title: t('menu.system.pricing', 'Pricing'),
-        url: '/pricing',
-        icon: DollarSign,
-        resource: 'settings',
-      },
-      {
-        title: t('common.service_pricing', 'Price Catalog'),
-        url: '/service-pricing',
-        icon: DollarSign,
-        resource: 'service_pricing',
-      },
-      {
-        title: t('menu.system.users', 'Users'),
-        url: '/users',
-        icon: Users,
-        resource: 'users',
-      },
-      {
-        title: t('menu.system.ad_admin', 'Publicity Admin'),
-        url: '/admin/publicity',
-        icon: Megaphone,
-        resource: 'publicity',
-      },
-      {
-        title: t('menu.system.migration_hub', 'Migration Hub'),
-        url: '/admin/migration',
-        icon: Database,
-        resource: 'migration',
-      },
-      {
-        title: t('menu.system.advanced_analytics', 'Advanced Analytics'),
-        url: '/admin/analytics',
-        icon: PieChart,
-        resource: 'analytics',
-      },
-      {
-        title: t('menu.system.automation_rules', 'Automation Rules'),
-        url: '/admin/automation',
-        icon: Zap,
-        resource: 'automation',
-      },
-      {
-        title: t('sidebar.audit_panel', 'Audit Panel'),
-        url: '/admin/audit',
-        icon: ShieldCheck,
-        resource: 'audit_logs',
-        roles: ['platform_owner'],
-      },
-      {
-        title: t('sidebar.environment', 'Environment'),
-        url: '/admin/environment',
-        icon: MonitorPlay,
-        resource: 'settings',
-        roles: ['platform_owner'],
-      },
-      {
-        title: t('sidebar.translations', 'Translations'),
-        url: '/admin/translations',
-        icon: Languages,
-        resource: 'settings',
-        roles: ['platform_owner', 'master', 'internal_user', 'software_tenant'],
-      },
-    ]
+    return Array.from(new Map(items.map((item) => [item.url, item])).values())
   }, [t, dbMenus, menusLoading, menuError])
 
   const portalItems = useMemo(() => {
+    let items = []
     if (!menusLoading && !menuError && dbMenus.length > 0) {
-      return dbMenus.filter((m) => m.section === 'portal').map(mapDbMenu)
+      items = dbMenus.filter((m) => m.section === 'portal').map(mapDbMenu)
+    } else {
+      items = [
+        {
+          title: t('menu.main_dashboard', 'Main Dashboard'),
+          url: '/',
+          icon: Home,
+          resource: 'dashboard',
+          role: 'tenant',
+        },
+        {
+          title: t('menu.main_dashboard', 'Main Dashboard'),
+          url: '/',
+          icon: Home,
+          resource: 'dashboard',
+          role: 'property_owner',
+        },
+        {
+          title: t('menu.main_dashboard', 'Main Dashboard'),
+          url: '/',
+          icon: Home,
+          resource: 'dashboard',
+          role: 'partner',
+        },
+        {
+          title: t('menu.main_dashboard', 'Main Dashboard'),
+          url: '/',
+          icon: Home,
+          resource: 'dashboard',
+          role: 'partner_employee',
+        },
+      ]
     }
-    return [
-      {
-        title: t('menu.main_dashboard', 'Main Dashboard'),
-        url: '/',
-        icon: Home,
-        resource: 'dashboard',
-        role: 'tenant',
-      },
-      {
-        title: t('menu.main_dashboard', 'Main Dashboard'),
-        url: '/',
-        icon: Home,
-        resource: 'dashboard',
-        role: 'property_owner',
-      },
-      {
-        title: t('menu.main_dashboard', 'Main Dashboard'),
-        url: '/',
-        icon: Home,
-        resource: 'dashboard',
-        role: 'partner',
-      },
-      {
-        title: t('menu.main_dashboard', 'Main Dashboard'),
-        url: '/',
-        icon: Home,
-        resource: 'dashboard',
-        role: 'partner_employee',
-      },
-    ]
+    return Array.from(new Map(items.map((item) => [item.role, item])).values())
   }, [t, dbMenus, menusLoading, menuError])
 
   const filteredMain = useMemo(
     () =>
-      mainNavItems.filter((item) =>
-        hasPermissionSync(effectiveUser, item.resource as never, 'view'),
-      ),
+      mainNavItems.filter((item) => {
+        if (item.roles && effectiveUser?.role === 'platform_owner') return true
+        const hasPerm = hasPermissionSync(
+          effectiveUser,
+          item.resource as never,
+          'view',
+        )
+        if (
+          item.roles &&
+          (!effectiveUser || !item.roles.includes(effectiveUser.role))
+        ) {
+          return false
+        }
+        return hasPerm
+      }),
     [mainNavItems, effectiveUser, hasPermissionSync],
   )
 
   const filteredOps = useMemo(
     () =>
-      operationsItems.filter((item) =>
-        hasPermissionSync(effectiveUser, item.resource as never, 'view'),
-      ),
+      operationsItems.filter((item) => {
+        if (item.roles && effectiveUser?.role === 'platform_owner') return true
+        const hasPerm = hasPermissionSync(
+          effectiveUser,
+          item.resource as never,
+          'view',
+        )
+        if (
+          item.roles &&
+          (!effectiveUser || !item.roles.includes(effectiveUser.role))
+        ) {
+          return false
+        }
+        return hasPerm
+      }),
     [operationsItems, effectiveUser, hasPermissionSync],
   )
 
