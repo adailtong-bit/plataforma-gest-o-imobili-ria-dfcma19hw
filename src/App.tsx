@@ -146,27 +146,6 @@ const App = () => {
   useEffect(() => {
     document.title = 'Summerpm'
 
-    // Clean up any persistent JSON debug overlays (e.g. currentRoute objects)
-    const removeDebugOverlays = () => {
-      document.querySelectorAll('pre, code, div, span').forEach((el) => {
-        if (
-          el.textContent?.includes('currentRoute') &&
-          el.textContent?.includes('{') &&
-          (el.tagName === 'PRE' ||
-            el.tagName === 'CODE' ||
-            el.classList.contains('fixed') ||
-            el.classList.contains('absolute') ||
-            el.id.includes('debug') ||
-            el.className.includes('debug'))
-        ) {
-          el.remove()
-        }
-      })
-    }
-    removeDebugOverlays()
-    const observer = new MutationObserver(removeDebugOverlays)
-    observer.observe(document.body, { childList: true, subtree: true })
-
     // Ensure favicon is set and properly bundled
     let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']")
     if (!link) {
@@ -175,8 +154,6 @@ const App = () => {
       document.head.appendChild(link)
     }
     link.href = logoImg
-
-    return () => observer.disconnect()
   }, [])
 
   return (
