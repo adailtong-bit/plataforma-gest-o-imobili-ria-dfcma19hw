@@ -12,7 +12,7 @@ export default function Dashboard() {
           {t('dashboard.title', 'Dashboard')}
         </h1>
         <p className="text-slate-500">
-          {t('dashboard.subtitle', 'Welcome to Dashboard')}
+          {t('dashboard.subtitle', 'Overview of your properties')}
         </p>
       </div>
 

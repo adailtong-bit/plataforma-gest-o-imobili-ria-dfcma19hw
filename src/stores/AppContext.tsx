@@ -373,6 +373,15 @@ const defaultTestUsers = [
   {
     id: 'u-master',
     name: 'Master Admin',
+    email: 'adailtong@gmail.com',
+    role: 'master',
+    status: 'active',
+    isFirstLogin: false,
+    isDemo: true,
+  },
+  {
+    id: 'u-master-legacy',
+    name: 'Master Admin Legacy',
     email: 'master@plataforma.com',
     role: 'master',
     status: 'active',
@@ -837,6 +846,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const user = rawAllUsers.find((u) => u.email.toLowerCase() === emailLower)
     if (user) {
       const isDefaultAccount = [
+        'adailtong@gmail.com',
         'master@plataforma.com',
         'admin@plataforma.com',
         'parceiro@plataforma.com',
@@ -845,6 +855,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       ].includes(emailLower)
 
       if (isDefaultAccount) {
+        if (emailLower === 'adailtong@gmail.com' && password !== 'Skip@Pass')
+          return false
         if (emailLower === 'master@plataforma.com' && password !== 'master123')
           return false
         if (emailLower === 'admin@plataforma.com' && password !== 'admin123')
