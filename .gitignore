@@ -47,9 +47,14 @@ core.[0-9]*
 out
 build
 coverage
+.turbo
+.vercel
+supabase/.temp
+supabase/.branches
 *.mp4
 *.mov
 *.mp3
 *.zip
 *.tar.gz
 *.rar
+*.pdf

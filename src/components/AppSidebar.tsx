@@ -184,10 +184,27 @@ export function AppSidebar() {
       return true
     })
 
+    const uniqueRoutes = new Set<string>()
+    const deduplicatedList = filteredList.filter((m) => {
+      if (m.route && m.route !== '#' && m.route !== '/') {
+        if (uniqueRoutes.has(m.route)) return false
+        uniqueRoutes.add(m.route)
+      } else if (m.route === '/') {
+        if (uniqueRoutes.has('/')) return false
+        uniqueRoutes.add('/')
+        uniqueRoutes.add('/dashboard')
+      } else if (m.route === '/dashboard') {
+        if (uniqueRoutes.has('/')) return false
+        uniqueRoutes.add('/dashboard')
+        uniqueRoutes.add('/')
+      }
+      return true
+    })
+
     const nodeMap = new Map<string, DbMenu>()
     const roots: DbMenu[] = []
-    filteredList.forEach((m) => nodeMap.set(m.id, { ...m, children: [] }))
-    filteredList.forEach((m) => {
+    deduplicatedList.forEach((m) => nodeMap.set(m.id, { ...m, children: [] }))
+    deduplicatedList.forEach((m) => {
       if (m.parent_id && nodeMap.has(m.parent_id)) {
         nodeMap.get(m.parent_id)!.children!.push(nodeMap.get(m.id)!)
       } else {
