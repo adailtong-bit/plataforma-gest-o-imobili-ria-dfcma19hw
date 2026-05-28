@@ -47,7 +47,7 @@ export function AppHeader() {
       <div className="flex-1 max-w-md mx-4 hidden md:flex items-center relative">
         <Search className="w-4 h-4 absolute left-3 text-slate-400" />
         <Input
-          placeholder={t('common.search', 'Search...')}
+          placeholder={t('common.search', 'Pesquisar...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-9 bg-slate-50 border-slate-200 h-9 w-full rounded-full focus-visible:ring-1"
@@ -58,7 +58,7 @@ export function AppHeader() {
         <div className="md:hidden flex items-center relative w-32 sm:w-48">
           <Search className="w-4 h-4 absolute left-3 text-slate-400" />
           <Input
-            placeholder={t('common.search', 'Search...')}
+            placeholder={t('common.search', 'Pesquisar...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-slate-50 border-slate-200 h-9 w-full rounded-full focus-visible:ring-1"

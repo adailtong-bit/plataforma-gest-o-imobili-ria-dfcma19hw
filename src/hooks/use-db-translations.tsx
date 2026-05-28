@@ -88,23 +88,34 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
     const loadTranslations = async () => {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('ui_translations')
-        .select('key, locale, value')
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 5000)
 
-      if (data && !error) {
-        const grouped: Record<string, Record<string, string>> = {}
-        data.forEach((t) => {
-          if (!grouped[t.locale]) grouped[t.locale] = {}
-          grouped[t.locale][t.key] = t.value
-        })
-        globalTranslationsCache = grouped
-      } else {
+      try {
+        const { data, error } = await supabase
+          .from('ui_translations')
+          .select('key, locale, value')
+          .abortSignal(abortController.signal)
+
+        clearTimeout(timeoutId)
+
+        if (data && !error) {
+          const grouped: Record<string, Record<string, string>> = {}
+          data.forEach((t) => {
+            if (!grouped[t.locale]) grouped[t.locale] = {}
+            grouped[t.locale][t.key] = t.value
+          })
+          globalTranslationsCache = grouped
+        } else {
+          globalTranslationsCache = {}
+        }
+      } catch (err) {
+        console.error('Translations fetch failed or timed out:', err)
         globalTranslationsCache = {}
       }
 
       if (!isMounted) return
-      applyTranslations(globalTranslationsCache)
+      applyTranslations(globalTranslationsCache || {})
     }
 
     if (globalTranslationsCache) {
